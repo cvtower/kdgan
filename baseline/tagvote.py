@@ -1,0 +1,1 @@
+from instance_based.tagvote import TagVoteTagger
