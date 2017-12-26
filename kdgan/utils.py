@@ -436,8 +436,8 @@ def baseline_data():
     print('#image={}'.format(len(images)))
 
 if __name__ == '__main__':
-    # prepare_data()
-    # compute_statistics()
+    prepare_data()
+    compute_statistics()
 
     baseline_data()
 
