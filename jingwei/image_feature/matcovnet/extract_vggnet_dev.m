@@ -1,7 +1,7 @@
 clear
 
-% data_folder = '/home/xiaojie/Projects/data/yfcc100m/';
-data_folder = '/Users/xiaojiew1/Projects/data/yfcc100m/';
+data_folder = '/home/xiaojie/Projects/data/yfcc100m/';
+% data_folder = '/Users/xiaojiew1/Projects/data/yfcc100m/';
 ds = 'yfcc8k';
 
 %data_folder = '/fishtank/urix/survey/';   % corresponds to SURVEY_DATA
