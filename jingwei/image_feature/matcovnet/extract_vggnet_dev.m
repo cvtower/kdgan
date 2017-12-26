@@ -104,6 +104,50 @@ for j=1:numTurns
         vl_imreadjpeg(nextBatch,'numThreads',numCores,'Prefetch');
     end
     toc;
-  
 
+    n_chunks = ceil(length(images) / chunk_size);
+    for i = 1 : n_chunks
+        fprintf('%d chunk of %d\n', i, n_chunks);
+        batch = zeros(net.normalization.imageSize(1), net.normalization.imageSize(2), 3, chunk_size, 'single');
+        
+        tic;
+        start_idx = (i-1)*chunk_size+1;
+        if i ~= n_chunks
+            end_idx = i*chunk_size;
+        else
+            end_idx = length(images);
+        end
+        for k = start_idx : end_idx;
+            im = images{k};
+            if isempty(im)
+                try
+                    im = imread(previousBatch{k});
+                catch
+                    fprintf('failed to read: %s\n', previousBatch{k});
+                    failedToRead = [failedToRead, previousBatch{k}];
+                    failed = [failed, ((j-1) * numImgsForTurn) + start_idx + k];
+                    continue
+                end
+            end
+            if size(im,3)~=3
+                im=gray2rgb(im);
+            end            
+            im_ = single(im) ; % note: 255 range
+            im_ = imresize(im_, net.normalization.imageSize(1:2)) ;
+            im_ = im_ - net.normalization.averageImage ;           
+            batch(:,:,:,k-start_idx+1) = im_;
+        end
+        toc;
+        
+        tic;            
+        % run the CNN
+        %%%batch = gpuArray(batch);
+        res = vl_simplenn(net, batch) ;
+        feat_fc7 = squeeze(gather(res(layer_selected).x));
+
+        fc7(:, ((j-1) * numImgsForTurn) + start_idx : ((j-1) * numImgsForTurn) + end_idx) = single(feat_fc7(:,1:end_idx-start_idx+1));
+        toc;
+    end
+
+    clear images
 end
