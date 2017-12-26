@@ -217,3 +217,5 @@ for i = 1:length(images_paths)
     fprintf(fid, '%s ', idfile);
 end
 fclose(fid);
+
+exit();
