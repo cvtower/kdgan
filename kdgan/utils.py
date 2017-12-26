@@ -442,4 +442,5 @@ if __name__ == '__main__':
     compute_statistics()
 
     baseline_data()
+    # find ImageData | grep .jpg > ImageData/yfcc8k.txt
 

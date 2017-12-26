@@ -1,7 +1,10 @@
 clear
 
-data_folder = '/fishtank/urix/survey/';   % corresponds to SURVEY_DATA
-ds = 'train10k';                          % dataset to be processed
+data_folder = '/home/xiaojie/Projects/data/yfcc100m/';
+ds = 'yfcc8k';
+
+%data_folder = '/fishtank/urix/survey/';   % corresponds to SURVEY_DATA
+%ds = 'train10k';                          % dataset to be processed
 %ds = 'train1m';
 %ds = 'nuswide';
 %ds = 'train10k';
