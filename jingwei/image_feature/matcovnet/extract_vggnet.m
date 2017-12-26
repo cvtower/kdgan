@@ -154,7 +154,7 @@ end
 if ~isempty(failed)
     fprintf('trimming failed images...\n');
     
-    assert(sum(sum(fc7(:,failed))) == 0);
+    %%%assert(sum(sum(fc7(:,failed))) == 0);
     fc7(:, failed) = [];
     
     datasetSize = datasetSize - length(failed);
