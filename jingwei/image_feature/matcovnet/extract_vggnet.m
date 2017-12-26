@@ -16,7 +16,7 @@ relu = 1;                                 % Do relu after fc7
 % Job splitting
 this_part = 1;                            % Part to be processed. One could get this from command line or environment.
 parts = 1;                                % Total parts.
-% gpuDevice(this_part);                     % Use this GPU id
+%%%gpuDevice(this_part);                     % Use this GPU id
 
 cnn_nets_folder = 'cnn_models/';
 data_output_folder = 'FeatureData';
@@ -70,7 +70,7 @@ fc7 = zeros(descrSize,length(images_paths),'single');
 %% --------------------LOAD MODEL-------------------
 run matconvnet-1.0-beta8/matlab/vl_setupnn
 net = load(preTrainedModel);
-net=vl_simplenn_move(net,'gpu');
+%%%net=vl_simplenn_move(net,'gpu');
 
 %% --------------- NUMBER OF CORES IN THE MACHINE-----------------
 numCores=12;
