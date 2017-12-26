@@ -404,10 +404,10 @@ def prepare_data():
 
 def baseline_data():
     survey_data = config.yfcc_dir
-    image_data = path.join(survey_data, config.dataset, 'ImageData')
+    image_data = path.join(survey_data, 'yfcc8k/ImageData')
     create_if_nonexist(image_data)
     posts = set()
-    fin = open(config.data_filepath)
+    fin = open(config.train_filepath)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -431,6 +431,7 @@ def baseline_data():
         image_url = fields[IMAGE_INDEX]
         src_filepath = get_image_path(config.image_dir, image_url)
         filename = path.basename(image_url)
+        images.add(filename)
         dst_filepath = path.join(image_data, filename)
         shutil.copyfile(src_filepath, dst_filepath)
     fin.close()
@@ -441,5 +442,4 @@ if __name__ == '__main__':
     compute_statistics()
 
     baseline_data()
-
 
