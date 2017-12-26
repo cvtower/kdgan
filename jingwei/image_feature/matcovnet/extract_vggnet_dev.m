@@ -89,3 +89,21 @@ vl_imreadjpeg(nextBatch,'numThreads',numCores,'Prefetch');
 failedToRead = {};
 failed = [];
 k=1;
+for j=1:numTurns
+    fprintf('%d TURN of %d\n*******************\n', j, numTurns);
+  
+    tic;
+    images=vl_imreadjpeg(nextBatch,'numThreads',numCores);
+    previousBatch = nextBatch;
+    if j ~= numTurns
+        if j==(numTurns-1)
+           nextBatch=cellstr(images_paths(((j)*numImgsForTurn+1):end));
+        else
+           nextBatch=cellstr(images_paths(((j)*numImgsForTurn+1):numImgsForTurn*(j+1)));
+        end
+        vl_imreadjpeg(nextBatch,'numThreads',numCores,'Prefetch');
+    end
+    toc;
+  
+
+end
