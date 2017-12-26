@@ -16,7 +16,7 @@ relu = 1;                                 % Do relu after fc7
 % Job splitting
 this_part = 1;                            % Part to be processed. One could get this from command line or environment.
 parts = 1;                                % Total parts.
-gpuDevice(this_part);                     % Use this GPU id
+% gpuDevice(this_part);                     % Use this GPU id
 
 cnn_nets_folder = 'cnn_models/';
 data_output_folder = 'FeatureData';
