@@ -140,8 +140,8 @@ for j=1:numTurns
         
         tic;            
         % run the CNN
-        batch = gpuArray(batch);
-        res = vl_simplenn(net, batch) ;
+        %%%batch = gpuArray(batch);
+        %%%res = vl_simplenn(net, batch) ;
         feat_fc7 = squeeze(gather(res(layer_selected).x));
 
         fc7(:, ((j-1) * numImgsForTurn) + start_idx : ((j-1) * numImgsForTurn) + end_idx) = single(feat_fc7(:,1:end_idx-start_idx+1));
