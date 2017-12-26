@@ -5,6 +5,7 @@ from datasets import imagenet
 import operator
 import os
 import random
+import shutil
 
 from os import path
 
