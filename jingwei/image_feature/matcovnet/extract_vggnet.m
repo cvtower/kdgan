@@ -159,7 +159,7 @@ if ~isempty(failed)
     
     datasetSize = datasetSize - length(failed);
     
-    images_paths(failed) = [];
+    %%%images_paths(failed) = [];
 end
 
 
