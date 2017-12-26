@@ -11,7 +11,7 @@ from os import path
 
 ################################################################
 #
-# prepare yfcc10k
+# create data for baseline and kdgan
 #
 ################################################################
 
@@ -31,6 +31,16 @@ TOT_POST = 10000
 MIN_USER_CORE = 10
 MAX_USER_CORE = 100
 MIN_LABEL_CORE = 100
+TRAIN_RATIO = 0.80
+
+def get_image_path(image_dir, image_url):
+    fields = image_url.split('/')
+    image_path = path.join(image_dir, fields[-2], fields[-1])
+    return image_path
+
+def create_if_nonexist(outdir):
+    if not path.exists(outdir):
+        os.makedirs(outdir)
 
 def select_labels(infile):
     valid = set()
@@ -86,7 +96,7 @@ def in_label_set(labels, label_set):
         return False
     return True
 
-def cleanse(labels, label_set):
+def keep_selected(labels, label_set):
     old_labels = labels.split(LABEL_SEPERATOR)
     new_labels = []
     for label in old_labels:
@@ -95,22 +105,13 @@ def cleanse(labels, label_set):
         new_labels.append(label)
     return new_labels
 
-def get_image_path(image_dir, image_url):
-    fields = image_url.split('/')
-    image_path = path.join(image_dir, fields[-2], fields[-1])
-    return image_path
-
-def create_if_nonexist(outdir):
-    if not path.exists(outdir):
-        os.makedirs(outdir)
-
-def count_post(user_posts):
+def count_posts(user_posts):
     tot_post = 0
     for user, posts in user_posts.items():
         tot_post += len(posts)
     return tot_post
 
-def personalize(infile, label_set):
+def select_posts(infile, label_set):
     copy = False
     if path.isdir(config.image_dir):
         copy = True
@@ -126,7 +127,7 @@ def personalize(infile, label_set):
         image_url = fields[IMAGE_INDEX]
         if not in_label_set(labels, label_set):
             continue
-        labels = cleanse(labels, label_set)
+        labels = keep_selected(labels, label_set)
         fields[LABEL_INDEX] = LABEL_SEPERATOR.join(labels)
         fields[IMAGE_INDEX] = path.basename(image_url)
         if user not in user_posts:
@@ -198,7 +199,7 @@ def personalize(infile, label_set):
                 for label in labels:
                     label_count[label] -= 1
 
-    tot_post = count_post(user_posts)
+    tot_post = count_posts(user_posts)
     dif_post = tot_post - TOT_POST
     print('{} to be removed'.format(dif_post))
     users = list(user_posts.keys())
@@ -237,7 +238,7 @@ def personalize(infile, label_set):
                 dif_post -= num_post
                 del user_posts[user]
 
-    tot_post = count_post(user_posts)
+    tot_post = count_posts(user_posts)
     user_count = {}
     for user, posts in user_posts.items():
         user_count[user] = len(posts)
@@ -296,14 +297,14 @@ def personalize(infile, label_set):
             fout.write('{}\n'.format(post))
     fout.close()
 
-def save_data(user_posts, outfile):
+def save_posts(user_posts, outfile):
     fout = open(outfile, 'w')
     for user, posts in user_posts.items():
         for post in posts:
             fout.write('{}\n'.format(post))
     fout.close()
 
-def validate_data(infile, label_set):
+def check_data(infile, label_set):
     print(path.basename(infile), len(label_set))
     fin = open(infile)
     while True:
@@ -343,19 +344,25 @@ def split_data(label_set):
         random.shuffle(posts)
         num_post = len(posts)
         if (num_post % 5) == 0:
-            seperator = int(num_post * 0.80)
+            seperator = int(num_post * TRAIN_RATIO)
         else:
-            seperator = int(num_post * 0.80) + 1
+            seperator = int(num_post * TRAIN_RATIO) + 1
         train_user_posts[user] = posts[:seperator]
         valid_user_posts[user] = posts[seperator:]
 
-    save_data(train_user_posts, config.train_filepath)
-    save_data(valid_user_posts, config.valid_filepath)
+    save_posts(train_user_posts, config.train_filepath)
+    save_posts(valid_user_posts, config.valid_filepath)
 
-    validate_data(config.train_filepath, label_set.copy())
-    validate_data(config.valid_filepath, label_set.copy())
+    check_data(config.train_filepath, label_set.copy())
+    check_data(config.valid_filepath, label_set.copy())
 
-def compute_statistics():
+def create_kdgan_data():
+    label_set = select_labels(config.sample_filepath)
+    select_posts(config.sample_filepath, label_set)
+    print('#label={}'.format(len(label_set)))
+    split_data(label_set)
+
+def summarize_data():
     create_if_nonexist(config.temp_dir)
     user_count = {}
     fin = open(config.data_filepath)
@@ -396,13 +403,7 @@ def compute_statistics():
         for label, count in sorted_label_count:
             fout.write('{}\t{}\n'.format(label, count))
 
-def prepare_data():
-    label_set = select_labels(config.sample_filepath)
-    personalize(config.sample_filepath, label_set)
-    print('#label={}'.format(len(label_set)))
-    split_data(label_set)
-
-def baseline_data():
+def create_baseline_data():
     survey_data = config.yfcc_dir
     image_data = path.join(survey_data, 'yfcc8k/ImageData')
     create_if_nonexist(image_data)
@@ -438,9 +439,10 @@ def baseline_data():
     print('#image={}'.format(len(images)))
 
 if __name__ == '__main__':
-    prepare_data()
-    compute_statistics()
+    create_kdgan_data()
+    summarize_data()
 
-    baseline_data()
+    # create_baseline_data()
     # find . | grep .jpg > yfcc8k.txt
+    # matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
 
