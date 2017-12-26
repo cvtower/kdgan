@@ -1,10 +1,7 @@
 clear
 
-data_folder = '/home/xiaojie/Projects/data/yfcc100m/';
-ds = 'yfcc8k';
-
-%data_folder = '/fishtank/urix/survey/';   % corresponds to SURVEY_DATA
-%ds = 'train10k';                          % dataset to be processed
+data_folder = '/fishtank/urix/survey/';   % corresponds to SURVEY_DATA
+ds = 'train10k';                          % dataset to be processed
 %ds = 'train1m';
 %ds = 'nuswide';
 %ds = 'train10k';
@@ -16,7 +13,7 @@ relu = 1;                                 % Do relu after fc7
 % Job splitting
 this_part = 1;                            % Part to be processed. One could get this from command line or environment.
 parts = 1;                                % Total parts.
-%%%gpuDevice(this_part);                     % Use this GPU id
+gpuDevice(this_part);                     % Use this GPU id
 
 cnn_nets_folder = 'cnn_models/';
 data_output_folder = 'FeatureData';
@@ -70,7 +67,7 @@ fc7 = zeros(descrSize,length(images_paths),'single');
 %% --------------------LOAD MODEL-------------------
 run matconvnet-1.0-beta8/matlab/vl_setupnn
 net = load(preTrainedModel);
-%%%net=vl_simplenn_move(net,'gpu');
+net=vl_simplenn_move(net,'gpu');
 
 %% --------------- NUMBER OF CORES IN THE MACHINE-----------------
 numCores=12;
@@ -140,11 +137,11 @@ for j=1:numTurns
         
         tic;            
         % run the CNN
-        %%%batch = gpuArray(batch);
-        %%%res = vl_simplenn(net, batch) ;
-        %%%feat_fc7 = squeeze(gather(res(layer_selected).x));
+        batch = gpuArray(batch);
+        res = vl_simplenn(net, batch) ;
+        feat_fc7 = squeeze(gather(res(layer_selected).x));
 
-        %%%fc7(:, ((j-1) * numImgsForTurn) + start_idx : ((j-1) * numImgsForTurn) + end_idx) = single(feat_fc7(:,1:end_idx-start_idx+1));
+        fc7(:, ((j-1) * numImgsForTurn) + start_idx : ((j-1) * numImgsForTurn) + end_idx) = single(feat_fc7(:,1:end_idx-start_idx+1));
         toc;
     end
 
@@ -154,12 +151,12 @@ end
 if ~isempty(failed)
     fprintf('trimming failed images...\n');
     
-    %%%assert(sum(sum(fc7(:,failed))) == 0);
-    %%%fc7(:, failed) = [];
+    assert(sum(sum(fc7(:,failed))) == 0);
+    fc7(:, failed) = [];
     
     datasetSize = datasetSize - length(failed);
     
-    %%%images_paths(failed) = [];
+    images_paths(failed) = [];
 end
 
 
@@ -217,5 +214,3 @@ for i = 1:length(images_paths)
     fprintf(fid, '%s ', idfile);
 end
 fclose(fid);
-
-exit;
