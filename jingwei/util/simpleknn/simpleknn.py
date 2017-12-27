@@ -10,9 +10,11 @@ import os
 import platform
 
 LIB_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
+LIB_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cpp')
 
 if sys.platform.startswith('linux'):
     filename = os.path.join(LIB_PATH, 'linux', 'libsearch.so')
+    filename = os.path.join(LIB_PATH, 'libsearch.so')
     libsearch = CDLL(filename)
 elif sys.platform.startswith('darwin'):
     filename = os.path.join(LIB_PATH, 'mac', 'libsearch.so')
