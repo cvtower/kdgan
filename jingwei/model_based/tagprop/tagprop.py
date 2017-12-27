@@ -71,7 +71,7 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
         makedirsforfile(train_model_file)
 
         script = """
-                tagprop_path = 'model_based/tagprop/TagProp/';
+                tagprop_path = '/home/xiaojie/Projects/kdgan/jingwei/model_based/tagprop/TagProp/';
                 addpath(tagprop_path);
                 tagmatrix = h5read('%s', '/tagmatrix') > 0.5;
                 tagmatrix = sparse(tagmatrix);
