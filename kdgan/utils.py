@@ -554,9 +554,25 @@ def lemmatize_labels(infile):
     fin.close()
     fout.close()
 
+def create_feature_sets(infile):
+    datasize = count_datasize(infile)
+    dataset = get_dataset(datasize)
+    image_sets = path.join(config.surv_dir, dataset, 'ImageSets')
+    create_if_nonexist(image_sets)
+
+    fout = open(path.join(image_sets, '%s.txt' % dataset), 'w')
+    fin = open(infile)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        image = fields[IMAGE_INDEX]
+        fout.write('{}\n'.format(image))
+    fin.close()
+    fout.close()
+
 def create_baseline_data():
-    collect_images(config.train_filepath)
-    lemmatize_labels(config.train_filepath)
     # post = '99951995'
     # yfcc100m_filepath = '/data/yfcc100m/yfcc100m_dataset'
     # fin = open(yfcc100m_filepath)
@@ -572,8 +588,13 @@ def create_baseline_data():
     #         print(field)
     #     break
     # fin.close()
-    collect_images(config.valid_filepath)
-    lemmatize_labels(config.valid_filepath)
+
+    # collect_images(config.train_filepath)
+    # lemmatize_labels(config.train_filepath)
+    create_feature_sets(config.train_filepath)
+    # collect_images(config.valid_filepath)
+    # lemmatize_labels(config.valid_filepath)
+    create_feature_sets(config.valid_filepath)
 
 def select_lemmatizer():
     def read_tags(infile):
@@ -604,8 +625,8 @@ def select_lemmatizer():
             pass
 
 if __name__ == '__main__':
-    create_kdgan_data()
-    summarize_data()
+    # create_kdgan_data()
+    # summarize_data()
 
     # select_lemmatizer()
     create_baseline_data()
