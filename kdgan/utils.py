@@ -135,10 +135,6 @@ def save_posts(user_posts, outfile):
     fout.close()
 
 def select_posts(infile, label_set):
-    copy = False
-    if path.isdir(config.image_dir):
-        copy = True
-
     user_posts = {}
     fin = open(infile)
     while True:
@@ -156,13 +152,6 @@ def select_posts(infile, label_set):
         if user not in user_posts:
             user_posts[user] = []
         user_posts[user].append(FIELD_SEPERATOR.join(fields))
-        if copy:
-            src_filepath = get_image_path(config.image_dir, image_url)
-            filename = path.basename(image_url)
-            user_dir = path.join(config.image_dir, user)
-            create_if_nonexist(user_dir)
-            dst_filepath = path.join(user_dir, filename)
-            shutil.copyfile(src_filepath, dst_filepath)
     fin.close()
 
     user_posts_cpy = user_posts
