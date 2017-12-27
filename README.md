@@ -12,3 +12,5 @@ sudo apt-get install libboost-dev
 ./jingwei/util/simpleknn/build.sh
 ./do_getknn.sh yfcc8k yfcc8k vgg-verydeep-16fc7relu 0 1 1
 ./do_getknn.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu 0 1 1
+
+conda install libgcc

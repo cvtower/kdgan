@@ -30,6 +30,7 @@ def process(options, testCollection, trainCollection, annotationName, feature):
     resultfile_test = os.path.join(rootpath, testCollection, 'TagProp-data', testset, trainCollection, annotationName, '%s,%s,%d'%(feature,nnName,k), 'nn_test.h5')
     
     if (not onlytest and checkToSkip(resultfile_train, overwrite)) or checkToSkip(resultfile_test, overwrite):
+        print('asdf')
         return 0
 
     testSet = readImageSet(testCollection, testset, rootpath)
