@@ -8,7 +8,7 @@ from basic.constant import ROOT_PATH
 from basic.util import readImageSet, bisect_index
 
 _min_freq = {'train10k': 50, 'train100k': 250, 'train1m': 750, 'mirflickr08': 50, 'flickr81test': 50, 'flickr81': 50,
-             'flickr51': 50, 'imagenet166': 10}
+             'flickr51': 50, 'imagenet166': 10, 'yfcc8k': 40, }
 
 def validateAnnotation(ann_syns, other_syns):
     for syn in other_syns[:]:

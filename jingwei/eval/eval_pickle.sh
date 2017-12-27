@@ -1,3 +1,12 @@
+# ./eval_pickle.sh yfcc2k tagvote
+
+export BASEDIR=/Users/xiaojiew1/Projects
+export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
+export SURVEY_CODE=$BASEDIR/kdgan/jingwei
+export SURVEY_DB=$BASEDIR/kdgan/logs
+export MATLAB_PATH=/Applications/MATLAB_R2017b.app/bin
+export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
+
 rootpath=$SURVEY_DATA
 codepath=$SURVEY_CODE
 
@@ -11,10 +20,10 @@ method=$2
 runfile=$rootpath/eval_output/runs_"$method"_"$testCollection".txt
 resfile=$rootpath/eval_output/runs_"$method"_"$testCollection".res
 
-if [ -f "$resfile" ]; then
-    echo "result file exists at $resfile"
-    exit
-fi
+# if [ -f "$resfile" ]; then
+#     echo "result file exists at $resfile"
+#     exit
+# fi
 
 
 if [ ! -f "$runfile" ]; then
@@ -28,10 +37,13 @@ elif [ "$testCollection" == "mirflickr08" ]; then
     annotationName=conceptsmir14.txt
 elif [ "$testCollection" == "flickr55" -o "$testCollection" == "flickr51" ]; then
     annotationName=concepts51ms.txt
+elif [ "$testCollection" == "yfcc2k" ]; then
+    annotationName=concepts.txt
 else
     echo "unknown testCollection $testCollection"
     exit
 fi
 
-python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile > $resfile
+# python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile > $resfile
+python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile
 

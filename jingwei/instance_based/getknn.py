@@ -84,12 +84,16 @@ def process(options, trainCollection, testCollection, feature):
 
         s_time = time.time()
         renamed,vectors = test_feat_file.read(workingSet[start:end])
+        # print(renamed)
+        # exit()
         read_time += time.time() - s_time
         nr_images = len(renamed)
         
         s_time = time.time()
         for i in range(nr_images):
             resultfile = os.path.join(resultdir, renamed[i][-2:], '%s.txt' % renamed[i])
+            # print(resultfile)
+            # exit()
             if checkToSkip(resultfile, overwrite):
                 continue
             knn = searcher.search_knn(vectors[i], max_hits=max(3000,k*3))

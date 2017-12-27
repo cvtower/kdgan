@@ -2,11 +2,20 @@ import os, sys, array, shutil
 import numpy as np
 import glob
 
-concepts = open('Annotations/' + sys.argv[1]).read().strip().split('\r\n')
-print concepts
-os.mkdir('TextData/tagged,lemm')
+from os import path
 
-h_files = dict([(C, open('TextData/tagged,lemm/' + C + ".txt", 'w')) for C in concepts])
+
+# cd yfcc2k & rm -rf tagged,lemm & tagged_lemm_labels.py concepts.txt
+# window
+# concepts = open('Annotations/' + sys.argv[1]).read().strip().split('\r\n')
+# ubuntu
+concepts = open('Annotations/' + sys.argv[1]).read().strip().split('\n')
+print concepts
+outdir = 'tagged,lemm'
+if not path.exists(outdir):
+	os.mkdir(outdir)
+
+h_files = dict([(C, open(path.join(outdir, C + ".txt"), 'w')) for C in concepts])
 cnt = 0
 with open('TextData/id.userid.lemmtags.txt') as f:
 	for line in f:

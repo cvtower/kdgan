@@ -39,12 +39,18 @@ def process(options, collection, annotationName, runfile):
         names,labels = readAnnotationsFrom(collection, annotationName, concepts[i], skip_0=False, rootpath=rootpath)
         #names = map(int, names)
         name2label[i] = dict(zip(names,labels))
-        
+        # print(name2label[i])
+        # exit()
+
         for im,lab in zip(names,labels):
             if lab > 0:
                 rel_conset.setdefault(im,set()).add(i)
+        # print(rel_conset)
+        # exit()
 
         label_file = os.path.join(rootpath, collection, 'tagged,lemm', '%s.txt'% concepts[i])
+        # print(label_file)
+        # exit()
         try:
             hit_imgset[i] = set(map(string.strip, map(str, open(label_file).readlines()))) # set(map(int, open(label_file).readlines()))
         except:
@@ -65,22 +71,31 @@ def process(options, collection, annotationName, runfile):
         scores = data['scores']
         assert(scores.shape[1] == nr_of_concepts)
         imset = data['id_images']
+        # for im in imset:
+        #     print(im)
+        #     raw_input()
         nr_of_images = len(imset)
         #print datafiles[run_idx], imset[:5], imset[-5:]
                    
         for c_idx in range(nr_of_concepts):
             ground_truth = name2label[c_idx]
+            # print(ground_truth)
             ranklist =  zip(imset, scores[:,c_idx])
             ranklist.sort(key=lambda v:(v[1], str(v[0])), reverse=True)
+            # print(ranklist)
             ranklist = [x for x in ranklist if x[0] in ground_truth]
+            # print(ranklist)
             
             sorted_labels = [ground_truth[x[0]] for x in ranklist]
+            # print(sorted_labels)
             assert(len(sorted_labels)>0)
             #print concepts[c_idx], ranklist[:5], sorted_labels[:5]
 
             ap_table[run_idx, c_idx] = apscorer.score(sorted_labels)
-
-            sorted_labels = [ground_truth[x[0]] for x in ranklist if x[0] in hit_imgset[c_idx]]
+            # print(hit_imgset[c_idx])
+            # sorted_labels = [ground_truth[x[0]] for x in ranklist if x[0] in hit_imgset[c_idx]]
+            # print(sorted_labels)
+            # raw_input()
             ap2_table[run_idx, c_idx] = apscorer.score(sorted_labels)
             ndcg_table[run_idx, c_idx] = ndcg.score(sorted_labels)
             ndcg2_table[run_idx, c_idx] = ndcg2.score(sorted_labels)
@@ -89,11 +104,15 @@ def process(options, collection, annotationName, runfile):
         for j in range(nr_of_images):
             ranklist = zip(range(nr_of_concepts), scores[j,:])
             ranklist.sort(key=lambda v:v[1], reverse=True)
+            # print(ranklist)
+            # raw_input()
             rel_set = rel_conset.get(imset[j], set())
             sorted_labels = [int(x[0] in rel_set) for x in ranklist]
             ap = apscorer.score(sorted_labels)
             hit1 = p1scorer.score(sorted_labels)
             hit5 = p5scorer.score(sorted_labels) > 0.1
+            # print(imset[j], sorted_labels[0:5], ap, hit1, hit5)
+            # raw_input()
             res[j,:] = [ap, hit1, hit5]
         avg_perf = res.mean(axis=0)
         print os.path.split(datafiles[run_idx])[-1], ' '.join(['%.3f' % x for x in avg_perf])

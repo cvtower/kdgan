@@ -1,6 +1,5 @@
 # ./do_tagvote.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu
 
-
 export BASEDIR=/Users/xiaojiew1/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
 export SURVEY_CODE=$BASEDIR/kdgan/jingwei

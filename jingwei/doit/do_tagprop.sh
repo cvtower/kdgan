@@ -1,3 +1,12 @@
+# ./do_tagprop.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu
+
+export BASEDIR=/Users/xiaojiew1/Projects
+export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
+export SURVEY_CODE=$BASEDIR/kdgan/jingwei
+export SURVEY_DB=$BASEDIR/kdgan/logs
+export MATLAB_PATH=/Applications/MATLAB_R2017b.app
+export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
+
 rootpath=$SURVEY_DATA
 codepath=$SURVEY_CODE
 
@@ -13,7 +22,7 @@ resultfile=$SURVEY_DB/"$trainCollection"_"$testCollection"_$feature,tagprop.pkl
 
 if [ "$feature" = "color64+dsift" ]; then
     distance=l1
-elif [ "$feature" = "vgg-verydeep-16-fc7relu" ]; then
+elif [ "$feature" = "vgg-verydeep-16fc7relu" ]; then
     distance=cosine
 else
     echo "unknown feature $feature"
@@ -26,6 +35,8 @@ elif [ "$testCollection" == "flickr51" ]; then
     testAnnotationName=concepts51ms.txt
 elif [ "$testCollection" == "mirflickr08" ]; then
     testAnnotationName=conceptsmir14.txt
+elif [ "$testCollection" == "yfcc2k" ]; then
+    testAnnotationName=concepts.txt
 else
     echo "unknown testCollection $testCollection"
     exit
@@ -38,6 +49,6 @@ if [ ! -f "$tagsh5file" ]; then
     cd -
 fi
 
-python model_based/tagprop/prepare_tagprop_data.py --distance $distance ${testCollection} ${trainCollection} $testAnnotationName $feature
+python $codepath/model_based/tagprop/prepare_tagprop_data.py --distance $distance ${testCollection} ${trainCollection} $testAnnotationName $feature
 
-python model_based/tagprop/tagprop.py --distance $distance ${testCollection} ${trainCollection} $testAnnotationName $feature $resultfile
+python $codepath/model_based/tagprop/tagprop.py --distance $distance ${testCollection} ${trainCollection} $testAnnotationName $feature $resultfile

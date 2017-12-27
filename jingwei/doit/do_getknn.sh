@@ -1,3 +1,13 @@
+# ./do_getknn.sh yfcc8k yfcc8k vgg-verydeep-16fc7relu 0 1 1
+# ./do_getknn.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu 0 1 1
+
+export BASEDIR=/Users/xiaojiew1/Projects
+export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
+export SURVEY_CODE=$BASEDIR/kdgan/jingwei
+export SURVEY_DB=$BASEDIR/kdgan/logs
+export MATLAB_PATH=/Applications/MATLAB_R2017b.app/bin
+export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
+
 rootpath=$SURVEY_DATA
 codepath=$SURVEY_CODE
 
@@ -12,7 +22,7 @@ feature=$3
 
 if [ "$feature" = "color64+dsift" ]; then
     distance=l1
-elif [ "$feature" = "vgg-verydeep-16-fc7relu" ]; then 
+elif [ "$feature" = "vgg-verydeep-16fc7relu" ]; then 
     distance=cosine
 else
     echo "unknown feature $feature"

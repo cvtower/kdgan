@@ -577,22 +577,46 @@ def create_annotations(infile):
     dataset = get_dataset(datasize)
     annotations = path.join(config.surv_dir, dataset, 'Annotations')
     create_if_nonexist(annotations)
+    concepts = 'concepts.txt'
     
     label_set = set()
+    label_images = {}
+    image_set = set()
     fin = open(infile)
     while True:
         line = fin.readline().strip()
         if not line:
             break
         fields = line.split(FIELD_SEPERATOR)
+        image = fields[IMAGE_INDEX]
         labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
         for label in labels:
             label_set.add(label)
+            if label not in label_images:
+                label_images[label] = []
+            label_images[label].append(image)
+        image_set.add(image)
     fin.close()
-    fout = open(path.join(annotations, 'concepts.txt'), 'w')
+    fout = open(path.join(annotations, concepts), 'w')
     for label in sorted(label_set):
         fout.write('{}\n'.format(label))
     fout.close()
+
+    if not infile.endswith('.valid'):
+        return
+
+    concepts_dir = path.join(annotations, 'Image', concepts)
+    create_if_nonexist(concepts_dir)
+    image_list = sorted(image_set)
+    for label in label_set:
+        label_filepath = path.join(concepts_dir, '%s.txt' % label)
+        fout = open(label_filepath, 'w')
+        for image in image_list:
+            rele = -1
+            if image in label_images[label]:
+                rele = 1
+            fout.write('{} {}\n'.format(image, rele))
+        fout.close()
 
 def create_baseline_data():
     # post = '99951995'
