@@ -29,9 +29,8 @@ def process(options, testCollection, trainCollection, annotationName, feature):
     resultfile_train = os.path.join(rootpath, trainCollection, 'TagProp-data', trainCollection, '%s,%s,%d'%(feature,nnName,k), 'nn_train.h5')
     resultfile_test = os.path.join(rootpath, testCollection, 'TagProp-data', testset, trainCollection, annotationName, '%s,%s,%d'%(feature,nnName,k), 'nn_test.h5')
     
-    if (not onlytest and checkToSkip(resultfile_train, overwrite)) or checkToSkip(resultfile_test, overwrite):
-        print('asdf')
-        return 0
+    # if (not onlytest and checkToSkip(resultfile_train, overwrite)) or checkToSkip(resultfile_test, overwrite):
+    #     return 0
 
     testSet = readImageSet(testCollection, testset, rootpath)
     trainSet = readImageSet(trainCollection, trainCollection, rootpath)
@@ -75,6 +74,7 @@ def process(options, testCollection, trainCollection, annotationName, feature):
         fout['trainSet'] = trainSet
         fout['concepts'] = tagger.concepts
         fout.close()
+
 
         del NN
         del NND
