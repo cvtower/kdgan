@@ -572,6 +572,28 @@ def create_feature_sets(infile):
     fin.close()
     fout.close()
 
+def create_annotations(infile):
+    datasize = count_datasize(infile)
+    dataset = get_dataset(datasize)
+    annotations = path.join(config.surv_dir, dataset, 'Annotations')
+    create_if_nonexist(annotations)
+    
+    label_set = set()
+    fin = open(infile)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+        for label in labels:
+            label_set.add(label)
+    fin.close()
+    fout = open(path.join(annotations, 'concepts.txt'), 'w')
+    for label in sorted(label_set):
+        fout.write('{}\n'.format(label))
+    fout.close()
+
 def create_baseline_data():
     # post = '99951995'
     # yfcc100m_filepath = '/data/yfcc100m/yfcc100m_dataset'
@@ -591,10 +613,13 @@ def create_baseline_data():
 
     # collect_images(config.train_filepath)
     # lemmatize_labels(config.train_filepath)
-    create_feature_sets(config.train_filepath)
+    # create_feature_sets(config.train_filepath)
+    create_annotations(config.train_filepath)
+
     # collect_images(config.valid_filepath)
     # lemmatize_labels(config.valid_filepath)
-    create_feature_sets(config.valid_filepath)
+    # create_feature_sets(config.valid_filepath)
+    create_annotations(config.valid_filepath)
 
 def select_lemmatizer():
     def read_tags(infile):
