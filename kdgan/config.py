@@ -8,13 +8,19 @@ root_dir = path.join(proj_dir, 'kdgan')
 data_dir = path.join(proj_dir, 'data')
 yfcc_dir = path.join(data_dir, 'yfcc100m')
 temp_dir = path.join(root_dir, 'temp')
+surv_dir = path.join(yfcc_dir, 'survey_data')
 
 slim_dir = path.join(root_dir, 'slim')
 sys.path.insert(0, slim_dir)
 
 dataset = 'yfcc10k'
 image_dir = path.join(yfcc_dir, 'images')
-sample_filepath = path.join(yfcc_dir, 'sample_09')
+init_sample_filepath = path.join(yfcc_dir, 'sample_00')
+last_sample_filepath = path.join(yfcc_dir, 'sample_09')
 data_filepath = path.join(yfcc_dir, '%s.data'%dataset)
 train_filepath = path.join(yfcc_dir, '%s.train'%dataset)
 valid_filepath = path.join(yfcc_dir, '%s.valid'%dataset)
+
+
+
+

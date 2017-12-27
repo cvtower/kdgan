@@ -6,12 +6,13 @@ import operator
 import os
 import random
 import shutil
+import urllib
 
 from os import path
 
 ################################################################
 #
-# create data for baseline and kdgan
+# create kdgan data
 #
 ################################################################
 
@@ -31,7 +32,13 @@ TOT_POST = 10000
 MIN_USER_CORE = 10
 MAX_USER_CORE = 100
 MIN_LABEL_CORE = 100
+
+TRAIN_RATIO = 0.90
+UNIT_POST = 10
 TRAIN_RATIO = 0.80
+UNIT_POST = 5
+
+COPY_IMAGE = False
 
 def get_image_path(image_dir, image_url):
     fields = image_url.split('/')
@@ -111,6 +118,18 @@ def count_posts(user_posts):
         tot_post += len(posts)
     return tot_post
 
+def save_posts(user_posts, outfile):
+    fout = open(outfile, 'w')
+    image_set = set()
+    for user, posts in user_posts.items():
+        for post in posts:
+            fields = post.split(FIELD_SEPERATOR)
+            image = fields[IMAGE_INDEX]
+            image_set.add(image)
+            fout.write('{}\n'.format(post))
+    print('{} #image={}'.format(path.basename(outfile), len(image_set)))
+    fout.close()
+
 def select_posts(infile, label_set):
     copy = False
     if path.isdir(config.image_dir):
@@ -167,7 +186,7 @@ def select_posts(infile, label_set):
     for user in user_posts_cpy.keys():
         posts = user_posts_cpy[user]
         num_post = len(posts)
-        num_post = min(num_post // 5 * 5, MAX_USER_CORE)
+        num_post = min(num_post // UNIT_POST * UNIT_POST, MAX_USER_CORE)
         not_keep = len(posts) - num_post
         user_posts[user] = []
         count = 0
@@ -190,8 +209,8 @@ def select_posts(infile, label_set):
                         label_count[label] -= 1
         posts = user_posts[user]
         num_post = len(user_posts[user])
-        if (num_post // 5) != 0:
-            num_post = num_post // 5 * 5
+        if (num_post // UNIT_POST) != 0:
+            num_post = num_post // UNIT_POST * UNIT_POST
             user_posts[user] = posts[:num_post]
             for post in posts[num_post:]:
                 fields = post.split(FIELD_SEPERATOR)
@@ -266,8 +285,8 @@ def select_posts(infile, label_set):
                     label_count[label] -= 1
 
         num_keep = max(len(keep_posts), MIN_USER_CORE)
-        if num_keep % 5 != 0:
-            num_keep = (num_keep // 5 + 1) * 5
+        if num_keep % UNIT_POST != 0:
+            num_keep = (num_keep // UNIT_POST + 1) * UNIT_POST
 
         if dif_post == 0:
             num_keep = len(posts)
@@ -290,19 +309,19 @@ def select_posts(infile, label_set):
         user_posts[user] = keep_posts
     print('{} to be removed'.format(dif_post))
 
-    fout = open(config.data_filepath, 'w')
-    for user in user_posts.keys():
-        posts = user_posts[user]
+    user_posts_cpy = user_posts
+    user_posts = {}
+    for user, posts in user_posts_cpy.items():
+        user_posts[user] = []
         for post in posts:
-            fout.write('{}\n'.format(post))
-    fout.close()
+            fields = post.split(FIELD_SEPERATOR)
+            filename = fields[IMAGE_INDEX]
+            image = filename.split('_')[0]
+            fields[IMAGE_INDEX] = image
+            post = FIELD_SEPERATOR.join(fields)
+            user_posts[user].append(post)
 
-def save_posts(user_posts, outfile):
-    fout = open(outfile, 'w')
-    for user, posts in user_posts.items():
-        for post in posts:
-            fout.write('{}\n'.format(post))
-    fout.close()
+    save_posts(user_posts, config.data_filepath)
 
 def check_data(infile, label_set):
     print(path.basename(infile), len(label_set))
@@ -343,7 +362,7 @@ def split_data(label_set):
     for user, posts in user_posts.items():
         random.shuffle(posts)
         num_post = len(posts)
-        if (num_post % 5) == 0:
+        if (num_post % UNIT_POST) == 0:
             seperator = int(num_post * TRAIN_RATIO)
         else:
             seperator = int(num_post * TRAIN_RATIO) + 1
@@ -357,8 +376,8 @@ def split_data(label_set):
     check_data(config.valid_filepath, label_set.copy())
 
 def create_kdgan_data():
-    label_set = select_labels(config.sample_filepath)
-    select_posts(config.sample_filepath, label_set)
+    label_set = select_labels(config.last_sample_filepath)
+    select_posts(config.last_sample_filepath, label_set)
     print('#label={}'.format(len(label_set)))
     split_data(label_set)
 
@@ -403,12 +422,31 @@ def summarize_data():
         for label, count in sorted_label_count:
             fout.write('{}\t{}\n'.format(label, count))
 
-def create_baseline_data():
-    survey_data = config.yfcc_dir
-    image_data = path.join(survey_data, 'yfcc8k/ImageData')
+################################################################
+#
+# create baseline data (must create kdgan data first)
+#
+################################################################
+
+def count_datasize(infile):
+    with open(infile) as fout:
+        for i, l in enumerate(fout):
+            pass
+    datasize = i + 1
+    return datasize
+
+def get_dataset(datasize):
+    dataset = 'yfcc{}k'.format(datasize // 1000)
+    return dataset
+
+def collect_images(infile):
+    datasize = count_datasize(infile)
+    dataset = get_dataset(datasize)
+    image_data = path.join(config.surv_dir, dataset, 'ImageData')
     create_if_nonexist(image_data)
+
     posts = set()
-    fin = open(config.train_filepath)
+    fin = open(infile)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -420,7 +458,7 @@ def create_baseline_data():
     print('#post={}'.format(len(posts)))
 
     images = set()
-    fin = open(config.sample_filepath)
+    fin = open(config.init_sample_filepath)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -432,17 +470,90 @@ def create_baseline_data():
         image_url = fields[IMAGE_INDEX]
         src_filepath = get_image_path(config.image_dir, image_url)
         filename = path.basename(image_url)
-        images.add(filename)
+        image = filename.split('_')[0]
+        images.add(image)
+        filename = '%s.jpg' % image
         dst_filepath = path.join(image_data, filename)
+        if not COPY_IMAGE:
+            continue
         shutil.copyfile(src_filepath, dst_filepath)
     fin.close()
     print('#image={}'.format(len(images)))
 
+def lemmatize_labels(infile):
+    datasize = count_datasize(infile)
+    dataset = get_dataset(datasize)
+    text_data = path.join(config.surv_dir, dataset, 'TextData')
+    create_if_nonexist(text_data)
+
+    post_image = {}
+    fin = open(infile)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        post = fields[POST_INDEX]
+        image = fields[IMAGE_INDEX]
+        post_image[post] = image
+    fin.close()
+    print('#post={}'.format(len(post_image)))
+
+    filepath = path.join(text_data, 'id.userid.rawtags.txt')
+    fout = open(filepath, 'w')
+    fin = open(config.init_sample_filepath)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        post = fields[0]
+        if post not in post_image:
+            continue
+        post = fields[POST_INDEX]
+        image = post_image[post]
+        user = fields[USER_INDEX]
+        old_labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+        new_labels = []
+        for old_label in old_labels:
+            old_label = urllib.parse.unquote(old_label)
+            old_label = old_label.lower()
+            new_label = ''
+            for c in old_label:
+                if not c.isalnum():
+                    continue
+                new_label += c
+            new_labels.append(new_label)
+        labels = ' '.join(new_labels)
+        fout.write('{}\t{}\t{}\n'.format(image, user, labels))
+    fin.close()
+    fout.close()
+
+def create_baseline_data():
+    collect_images(config.train_filepath)
+    lemmatize_labels(config.train_filepath)
+
 if __name__ == '__main__':
-    create_kdgan_data()
-    summarize_data()
+    # create_kdgan_data()
+    # summarize_data()
 
     # create_baseline_data()
     # find . | grep .jpg > yfcc8k.txt
     # matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
+
+    post = '99951995'
+    yfcc100m_filepath = '/data/yfcc100m/yfcc100m_dataset'
+    fin = open(yfcc100m_filepath)
+    label_count = {}
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        if fields[0] != post:
+            continue
+        for field in fields:
+            print(field)
+        break
+    fin.close()
 
