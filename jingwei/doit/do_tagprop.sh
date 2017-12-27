@@ -5,7 +5,8 @@ export BASEDIR=/home/xiaojie/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
 export SURVEY_CODE=$BASEDIR/kdgan/jingwei
 export SURVEY_DB=$BASEDIR/kdgan/logs
-export MATLAB_PATH=/Applications/MATLAB_R2017b.app
+# export MATLAB_PATH=/Applications/MATLAB_R2017b.app # mac
+export MATLAB_PATH=/usr/local
 export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
 
 rootpath=$SURVEY_DATA
