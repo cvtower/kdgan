@@ -637,12 +637,12 @@ def create_baseline_data():
 
     # collect_images(config.train_filepath)
     # lemmatize_labels(config.train_filepath)
-    # create_feature_sets(config.train_filepath)
+    create_feature_sets(config.train_filepath)
     create_annotations(config.train_filepath)
 
     # collect_images(config.valid_filepath)
     # lemmatize_labels(config.valid_filepath)
-    # create_feature_sets(config.valid_filepath)
+    create_feature_sets(config.valid_filepath)
     create_annotations(config.valid_filepath)
 
 def select_lemmatizer():
