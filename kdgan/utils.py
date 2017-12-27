@@ -10,6 +10,10 @@ import urllib
 
 from os import path
 
+# nltk.download('wordnet')
+from nltk.stem import WordNetLemmatizer
+lemmatizer = WordNetLemmatizer()
+
 ################################################################
 #
 # create kdgan data
@@ -38,7 +42,7 @@ UNIT_POST = 10
 TRAIN_RATIO = 0.80
 UNIT_POST = 5
 
-COPY_IMAGE = False
+COPY_IMAGE = True
 
 def get_image_path(image_dir, image_url):
     fields = image_url.split('/')
@@ -418,9 +422,16 @@ def summarize_data():
     fin.close()
     sorted_label_count = sorted(label_count.items(), key=operator.itemgetter(0), reverse=True)
     outfile = path.join(config.temp_dir, 'label_count')
+    labels, lemms = set(), set()
     with open(outfile, 'w') as fout:
         for label, count in sorted_label_count:
+            labels.add(label)
+            lemm = lemmatizer.lemmatize(label)
+            lemms.add(lemm)
+            if lemm != label:
+                print('{} {}'.format(lemm, label))
             fout.write('{}\t{}\n'.format(label, count))
+    print('#label={} #lemm={}'.format(len(labels), len(lemms)))
 
 ################################################################
 #
@@ -458,6 +469,7 @@ def collect_images(infile):
     print('#post={}'.format(len(posts)))
 
     images = set()
+    fout = open(path.join(image_data, '%s.txt' % dataset), 'w')
     fin = open(config.init_sample_filepath)
     while True:
         line = fin.readline().strip()
@@ -473,11 +485,15 @@ def collect_images(infile):
         image = filename.split('_')[0]
         images.add(image)
         filename = '%s.jpg' % image
+        fout.write('{}\n'.format(filename))
         dst_filepath = path.join(image_data, filename)
         if not COPY_IMAGE:
             continue
+        if not path.isfile(src_filepath):
+            continue
         shutil.copyfile(src_filepath, dst_filepath)
     fin.close()
+    fout.close()
     print('#image={}'.format(len(images)))
 
 def lemmatize_labels(infile):
@@ -499,8 +515,9 @@ def lemmatize_labels(infile):
     fin.close()
     print('#post={}'.format(len(post_image)))
 
-    filepath = path.join(text_data, 'id.userid.rawtags.txt')
-    fout = open(filepath, 'w')
+    rawtags_filename = 'id.userid.rawtags.txt'
+    rawtags_filepath = path.join(text_data, rawtags_filename)
+    fout = open(rawtags_filepath, 'w')
     fin = open(config.init_sample_filepath)
     while True:
         line = fin.readline().strip()
@@ -529,31 +546,80 @@ def lemmatize_labels(infile):
     fin.close()
     fout.close()
 
-def create_baseline_data():
-    collect_images(config.train_filepath)
-    lemmatize_labels(config.train_filepath)
-
-if __name__ == '__main__':
-    # create_kdgan_data()
-    # summarize_data()
-
-    # create_baseline_data()
-    # find . | grep .jpg > yfcc8k.txt
-    # matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
-
-    post = '99951995'
-    yfcc100m_filepath = '/data/yfcc100m/yfcc100m_dataset'
-    fin = open(yfcc100m_filepath)
-    label_count = {}
+    lemmtags_filename = 'id.userid.lemmtags.txt'
+    lemmtags_filepath = path.join(text_data, lemmtags_filename)
+    fout = open(lemmtags_filepath, 'w')
+    fin = open(rawtags_filepath)
     while True:
         line = fin.readline().strip()
         if not line:
             break
         fields = line.split(FIELD_SEPERATOR)
-        if fields[0] != post:
-            continue
-        for field in fields:
-            print(field)
-        break
+        old_labels = fields[-1].split(' ')
+        new_labels = []
+        for old_label in old_labels:
+            new_label = lemmatizer.lemmatize(old_label)
+            new_labels.append(new_label)
+        fields[-1] = ' '.join(new_labels)
+        fout.write('{}\n'.format(FIELD_SEPERATOR.join(fields)))
     fin.close()
+    fout.close()
+
+def create_baseline_data():
+    collect_images(config.train_filepath)
+    lemmatize_labels(config.train_filepath)
+    # post = '99951995'
+    # yfcc100m_filepath = '/data/yfcc100m/yfcc100m_dataset'
+    # fin = open(yfcc100m_filepath)
+    # label_count = {}
+    # while True:
+    #     line = fin.readline().strip()
+    #     if not line:
+    #         break
+    #     fields = line.split(FIELD_SEPERATOR)
+    #     if fields[0] != post:
+    #         continue
+    #     for field in fields:
+    #         print(field)
+    #     break
+    # fin.close()
+    collect_images(config.valid_filepath)
+    lemmatize_labels(config.valid_filepath)
+
+def select_lemmatizer():
+    def read_tags(infile):
+        fin = open(infile)
+        tags = []
+        while True:
+            line = fin.readline().strip()
+            if not line:
+                break
+            fields = line.split(FIELD_SEPERATOR)
+            labels = fields[-1].split(' ')
+            tags.extend(labels)
+        fin.close()
+        return tags
+
+    text_data = path.join(config.data_dir, 'jingwei/train10k/TextData')
+    rawtags_filepath = path.join(text_data, 'id.userid.rawtags.txt')
+    lemmtags_filepath = path.join(text_data, 'id.userid.lemmtags.txt')
+    rawtags = read_tags(rawtags_filepath)
+    lemmtags = read_tags(lemmtags_filepath)
+    for rawtag, lemmtag in zip(rawtags, lemmtags):
+        mylemm = lemmatizer.lemmatize(rawtag)
+        if mylemm != lemmtag:
+            print('{}\t{}\t{}'.format(rawtag, lemmtag, mylemm))
+            input()
+        else:
+            # print(rawtag, lemmtag, mylemm)
+            pass
+
+if __name__ == '__main__':
+    create_kdgan_data()
+    summarize_data()
+
+    # select_lemmatizer()
+    create_baseline_data()
+    # find . | grep .jpg > yfcc8k.txt
+    # matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
 
