@@ -609,6 +609,5 @@ if __name__ == '__main__':
 
     # select_lemmatizer()
     create_baseline_data()
-    # find . | grep .jpg > yfcc8k.txt
     # matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
 

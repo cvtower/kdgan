@@ -1,7 +1,10 @@
 clear
 
-data_folder = '/home/xiaojie/Projects/data/yfcc100m/';
+%matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
+
+data_folder = '/home/xiaojie/Projects/data/yfcc100m/survey_data';
 ds = 'yfcc8k';
+%ds = 'yfcc2k';
 
 %data_folder = '/fishtank/urix/survey/';   % corresponds to SURVEY_DATA
 %ds = 'train10k';                          % dataset to be processed
