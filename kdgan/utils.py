@@ -576,7 +576,13 @@ def lemmatize_labels(infile):
     tagfreq_filename = 'lemmtag.userfreq.imagefreq.txt'
     tagfreq_filepath = path.join(text_data, tagfreq_filename)
     fout = open(tagfreq_filepath, 'w')
-    for label in sorted(label_set):
+
+    label_count = {}
+    for label in label_set:
+        label_count[label] = len(label_users[label]) + len(label_images[label])
+    sorted_label_count = sorted(label_count.items(), key=operator.itemgetter(1), reverse=True)
+    
+    for label, _ in sorted_label_count:
         userfreq = len(label_users[label])
         imagefreq = len(label_images[label])
         fout.write('{} {} {}\n'.format(label, userfreq, imagefreq))
