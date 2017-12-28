@@ -29,8 +29,8 @@ def process(options, testCollection, trainCollection, annotationName, feature):
     resultfile_train = os.path.join(rootpath, trainCollection, 'TagProp-data', trainCollection, '%s,%s,%d'%(feature,nnName,k), 'nn_train.h5')
     resultfile_test = os.path.join(rootpath, testCollection, 'TagProp-data', testset, trainCollection, annotationName, '%s,%s,%d'%(feature,nnName,k), 'nn_test.h5')
     
-    # if (not onlytest and checkToSkip(resultfile_train, overwrite)) or checkToSkip(resultfile_test, overwrite):
-    #     return 0
+    if (not onlytest and checkToSkip(resultfile_train, overwrite)) or checkToSkip(resultfile_test, overwrite):
+        return 0
 
     testSet = readImageSet(testCollection, testset, rootpath)
     trainSet = readImageSet(trainCollection, trainCollection, rootpath)
@@ -66,6 +66,7 @@ def process(options, testCollection, trainCollection, annotationName, feature):
             if i % 1000 == 0:
                 printStatus(INFO, '%d / %d images' % (i, len(trainSet)))    
 
+        # print(NN.min(), NN.max())
         printStatus(INFO, 'Saving train matrices to file %s' % (resultfile_train))
         makedirsforfile(resultfile_train)
         fout = h5py.File(resultfile_train, 'w')
@@ -74,7 +75,6 @@ def process(options, testCollection, trainCollection, annotationName, feature):
         fout['trainSet'] = trainSet
         fout['concepts'] = tagger.concepts
         fout.close()
-
 
         del NN
         del NND
@@ -99,7 +99,8 @@ def process(options, testCollection, trainCollection, annotationName, feature):
 
         if i % 1000 == 0:
             printStatus(INFO, '%d / %d images' % (i, len(testSet)))    
-   
+
+    # print(NNT.min(), NNT.max())
     printStatus(INFO, 'Saving test matrices to file %s' % (resultfile_test))
     makedirsforfile(resultfile_test)
     fout = h5py.File(resultfile_test, 'w')

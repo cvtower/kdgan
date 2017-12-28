@@ -54,3 +54,4 @@ fi
 python $codepath/model_based/tagprop/prepare_tagprop_data.py --distance $distance ${testCollection} ${trainCollection} $testAnnotationName $feature
 
 python $codepath/model_based/tagprop/tagprop.py --distance $distance ${testCollection} ${trainCollection} $testAnnotationName $feature $resultfile
+

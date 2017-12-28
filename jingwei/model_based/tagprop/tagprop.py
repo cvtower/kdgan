@@ -17,6 +17,8 @@ DEFAULT_VARIANT = "ranksigmoids"
 DEFAULT_K = 1000
 DEFAULT_DISTANCE = "cosine"
 
+survey_code = os.environ['SURVEY_CODE']
+
 def call_matlab(script):
     id_file = os.getpid()
 
@@ -49,8 +51,8 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
 
     resultfile = os.path.join(outputpkl)
     resultfile_tagprop = os.path.join(rootpath, testCollection, 'TagProp-Prediction', testset, trainCollection, annotationName, modelName, '%s,%s,%s,%d'%(feature,nnName,variant,k), 'prediction.mat')
-    if checkToSkip(resultfile, overwrite) or checkToSkip(resultfile_tagprop, overwrite):
-        return 0
+    # if checkToSkip(resultfile, overwrite) or checkToSkip(resultfile_tagprop, overwrite):
+    #     return 0
 
     tagmatrix_file = os.path.join(rootpath, trainCollection, 'TextData', 'lemm_wordnet_freq_tags.h5')
     if not os.path.exists(tagmatrix_file):
@@ -70,15 +72,17 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
         printStatus(INFO, "starting learning model for %s" % (trainCollection))
         makedirsforfile(train_model_file)
 
+        # print(tagmatrix_file, train_neighs_file)
+        # exit()
         script = """
-                tagprop_path = '/home/xiaojie/Projects/kdgan/jingwei/model_based/tagprop/TagProp/';
+                tagprop_path = '%s/model_based/tagprop/TagProp/';
                 addpath(tagprop_path);
                 tagmatrix = h5read('%s', '/tagmatrix') > 0.5;
                 tagmatrix = sparse(tagmatrix);
                 NN = h5read('%s', '/NN');
                 NN = NN(2:end, :);
                 NN = double(NN);
-        """ % (tagmatrix_file, train_neighs_file)
+        """ % (survey_code, tagmatrix_file, train_neighs_file)
 
         if variant == 'dist' or variant == 'distsigmoids':
             script += """
@@ -112,6 +116,8 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
 
         call_matlab(script)
 
+    # return
+
     # we perform prediction
     printStatus(INFO, "starting prediction")
     test_neighs_file = os.path.join(rootpath, testCollection, 'TagProp-data', testset, trainCollection, annotationName, '%s,%s,%d'%(feature,nnName,k), 'nn_test.h5')
@@ -120,7 +126,7 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
         sys.exit(1)
 
     script = """
-            tagprop_path = 'model_based/tagprop/TagProp/';
+            tagprop_path = '%s/model_based/tagprop/TagProp/';
             addpath(tagprop_path);
             load('%s');
             tagmatrix = h5read('%s', '/tagmatrix') > 0.5;
@@ -128,7 +134,7 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
             NNT = h5read('%s', '/NNT');
             NNT = double(NNT);
 
-    """ % (train_model_file, tagmatrix_file, test_neighs_file)
+    """ % (survey_code, train_model_file, tagmatrix_file, test_neighs_file)
 
     if variant == 'dist' or variant == 'distsigmoids':
         script += """
@@ -142,9 +148,11 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
             save('%s', '-v7.3');
             exit;
     """ % resultfile_tagprop
+    # print(script)
+    # exit()
 
-    makedirsforfile(resultfile_tagprop)
-    call_matlab(script)
+    # makedirsforfile(resultfile_tagprop)
+    # call_matlab(script)
 
     # save results in pkl format
     printStatus(INFO, "Dump results in pkl format at %s" % resultfile)
