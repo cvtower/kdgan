@@ -1,6 +1,7 @@
-# ./eval_pickle.sh yfcc2k tagvote
+# ./eval_pickle.sh yfcc2k jingwei
 
-export BASEDIR=/Users/xiaojiew1/Projects
+# export BASEDIR=/Users/xiaojiew1/Projects # mac
+export BASEDIR=/home/xiaojie/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
 export SURVEY_CODE=$BASEDIR/kdgan/jingwei
 export SURVEY_DB=$BASEDIR/kdgan/logs
@@ -44,6 +45,6 @@ else
     exit
 fi
 
-# python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile > $resfile
-python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile
+python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile > $resfile
+# python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile
 

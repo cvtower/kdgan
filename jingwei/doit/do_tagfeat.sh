@@ -1,3 +1,14 @@
+# ./do_tagfeat.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu
+
+# export BASEDIR=/Users/xiaojiew1/Projects # mac
+export BASEDIR=/home/xiaojie/Projects
+export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
+export SURVEY_CODE=$BASEDIR/kdgan/jingwei
+export SURVEY_DB=$BASEDIR/kdgan/logs
+# export MATLAB_PATH=/Applications/MATLAB_R2017b.app # mac
+export MATLAB_PATH=/usr/local
+export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
+
 rootpath=$SURVEY_DATA
 codepath=$SURVEY_CODE
 
@@ -16,13 +27,12 @@ testCollection=$2
 vis_feature=$3
 
 
-if [ "$vis_feature" != "color64+dsift" -a "$vis_feature" != "vgg-verydeep-16-fc7relul2" ]; then
+if [ "$vis_feature" != "color64+dsift" -a "$vis_feature" != "vgg-verydeep-16fc7relu" ]; then
     echo "unknown visual feature $vis_feature"
     exit
 fi
 
 feature=tag400-$trainCollection+$vis_feature
-
 
 if [ $do_training == 1 ]; then
     feat_dir=$rootpath/$trainCollection/FeatureData/$feature
@@ -32,6 +42,9 @@ if [ $do_training == 1 ]; then
         exit
     fi
 fi
+
+echo $feature
+exit
 
 conceptset=concepts130social
 baseAnnotationName=$conceptset.txt

@@ -1,3 +1,14 @@
+# ./do_extract_tagfeat.sh yfcc8k vgg-verydeep-16fc7relu
+
+# export BASEDIR=/Users/xiaojiew1/Projects # mac
+export BASEDIR=/home/xiaojie/Projects
+export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
+export SURVEY_CODE=$BASEDIR/kdgan/jingwei
+export SURVEY_DB=$BASEDIR/kdgan/logs
+# export MATLAB_PATH=/Applications/MATLAB_R2017b.app # mac
+export MATLAB_PATH=/usr/local
+export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
+
 rootpath=$SURVEY_DATA
 codepath=$SURVEY_CODE
 
@@ -12,7 +23,7 @@ vobsize=400
 modelName=fastlinear
 feature=$2
 
-if [ "$feature" != "color64+dsift" -a "$feature" != "vgg-verydeep-16-fc7relul2" ]; then
+if [ "$feature" != "color64+dsift" -a "$feature" != "vgg-verydeep-16fc7relu" ]; then
     echo "unknown feature $feature"
     exit
 fi
@@ -29,6 +40,7 @@ pos_end=$(($nr_pos_bags - 1))
 neg_end=$(($nr_neg_bags - 1))
 
 python $codepath/preprocess/selectToptags.py $trainCollection $vobsize
+exit
 python $codepath/util/imagesearch/obtain_labeled_examples.py $trainCollection $rootpath/$trainCollection/Annotations/$annotationName 
 python $codepath/util/tagsim/expand_tags.py $trainCollection $annotationName
 python $codepath/model_based/dataengine/createSocialAnnotations.py $trainCollection $annotationName 

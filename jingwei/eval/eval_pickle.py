@@ -49,8 +49,8 @@ def process(options, collection, annotationName, runfile):
         # exit()
 
         label_file = os.path.join(rootpath, collection, 'tagged,lemm', '%s.txt'% concepts[i])
-        # print(label_file)
-        # exit()
+        print(label_file)
+        exit()
         try:
             hit_imgset[i] = set(map(string.strip, map(str, open(label_file).readlines()))) # set(map(int, open(label_file).readlines()))
         except:
