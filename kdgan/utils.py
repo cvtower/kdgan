@@ -554,6 +554,34 @@ def lemmatize_labels(infile):
     fin.close()
     fout.close()
 
+    fin = open(lemmtags_filepath)
+    label_users, label_images = {}, {}
+    label_set = set()
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        image, user = fields[0], fields[1]
+        labels = fields[2].split()
+        for label in labels:
+            if label not in label_users:
+                label_users[label] = set()
+            label_users[label].add(user)
+            if label not in label_images:
+                label_images[label] = set()
+            label_images[label].add(image)
+            label_set.add(label)
+    fin.close()
+    tagfreq_filename = 'lemmtag.userfreq.imagefreq.txt'
+    tagfreq_filepath = path.join(text_data, tagfreq_filename)
+    fout = open(tagfreq_filepath, 'w')
+    for label in sorted(label_set):
+        userfreq = len(label_users[label])
+        imagefreq = len(label_images[label])
+        fout.write('{} {} {}\n'.format(label, userfreq, imagefreq))
+    fout.close()
+
 def create_feature_sets(infile):
     datasize = count_datasize(infile)
     dataset = get_dataset(datasize)
@@ -636,14 +664,14 @@ def create_baseline_data():
     # fin.close()
 
     # collect_images(config.train_filepath)
-    # lemmatize_labels(config.train_filepath)
-    create_feature_sets(config.train_filepath)
-    create_annotations(config.train_filepath)
+    lemmatize_labels(config.train_filepath)
+    # create_feature_sets(config.train_filepath)
+    # create_annotations(config.train_filepath)
 
     # collect_images(config.valid_filepath)
-    # lemmatize_labels(config.valid_filepath)
-    create_feature_sets(config.valid_filepath)
-    create_annotations(config.valid_filepath)
+    lemmatize_labels(config.valid_filepath)
+    # create_feature_sets(config.valid_filepath)
+    # create_annotations(config.valid_filepath)
 
 def select_lemmatizer():
     def read_tags(infile):
@@ -673,6 +701,27 @@ def select_lemmatizer():
             # print(rawtag, lemmtag, mylemm)
             pass
 
+def main():
+    infile = path.join(config.data_dir, 'jingwei/train10k/TextData/id.userid.lemmtags.txt')
+    fin = open(infile)
+    label_users, label_images = {}, {}
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        image, user = fields[0], fields[1]
+        labels = fields[2].split()
+        for label in labels:
+            if label not in label_users:
+                label_users[label] = set()
+            label_users[label].add(user)
+            if label not in label_images:
+                label_images[label] = set()
+            label_images[label].add(image)
+    fin.close()
+    print(len(label_users['car']), len(label_images['car']))
+
 if __name__ == '__main__':
     # create_kdgan_data()
     # summarize_data()
@@ -681,3 +730,4 @@ if __name__ == '__main__':
     create_baseline_data()
     # matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
 
+    # main()
