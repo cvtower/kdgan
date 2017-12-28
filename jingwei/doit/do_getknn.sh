@@ -1,8 +1,8 @@
 # ./do_getknn.sh yfcc8k yfcc8k vgg-verydeep-16fc7relu 0 1 1
 # ./do_getknn.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu 0 1 1
 
-# export BASEDIR=/Users/xiaojiew1/Projects # mac
-export BASEDIR=/home/xiaojie/Projects
+export BASEDIR=/Users/xiaojiew1/Projects # mac
+# export BASEDIR=/home/xiaojie/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
 export SURVEY_CODE=$BASEDIR/kdgan/jingwei
 export SURVEY_DB=$BASEDIR/kdgan/logs

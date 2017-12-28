@@ -18,6 +18,7 @@ if sys.platform.startswith('linux'):
     libsearch = CDLL(filename)
 elif sys.platform.startswith('darwin'):
     filename = os.path.join(LIB_PATH, 'mac', 'libsearch.so')
+    filename = os.path.join(LIB_PATH, 'libsearch.so')
     libsearch = CDLL(filename)
 else:
     libdir = 'win32' if platform.architecture()[0] == '32bit' else 'win64'

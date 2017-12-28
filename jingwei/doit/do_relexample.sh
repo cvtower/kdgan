@@ -1,3 +1,14 @@
+# ./do_relexample.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu
+
+export BASEDIR=/Users/xiaojiew1/Projects # mac
+# export BASEDIR=/home/xiaojie/Projects
+export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
+export SURVEY_CODE=$BASEDIR/kdgan/jingwei
+export SURVEY_DB=$BASEDIR/kdgan/logs
+# export MATLAB_PATH=/Applications/MATLAB_R2017b.app # mac
+export MATLAB_PATH=/usr/local
+export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
+
 rootpath=$SURVEY_DATA
 codepath=$SURVEY_CODE
 
@@ -15,7 +26,7 @@ prob_output=1
 
 if [ "$feature" = "color64+dsift" ]; then
     posName=fcswnsiftbc
-elif [ "$feature" = "vgg-verydeep-16-fc7relu" -o "$feature" = "vgg-verydeep-16-fc7relul2" ]; then
+elif [ "$feature" = "vgg-verydeep-16fc7relu" -o "$feature" = "vgg-verydeep-16-fc7relul2" ]; then
     posName=fcswncnnbc
 else
     echo "unknown feature $feature"

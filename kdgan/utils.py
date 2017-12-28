@@ -10,6 +10,7 @@ import urllib
 
 from os import path
 
+from nltk.corpus import wordnet as wn
 # nltk.download('wordnet')
 from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
@@ -485,7 +486,7 @@ def collect_images(infile):
     fout.close()
     print('#image={}'.format(len(images)))
 
-def lemmatize_labels(infile):
+def create_text_data(infile):
     datasize = count_datasize(infile)
     dataset = get_dataset(datasize)
     text_data = path.join(config.surv_dir, dataset, 'TextData')
@@ -579,13 +580,148 @@ def lemmatize_labels(infile):
 
     label_count = {}
     for label in label_set:
-        label_count[label] = len(label_users[label]) + len(label_images[label])
+        label_count[label] = len(label_users[label]) # + len(label_images[label])
     sorted_label_count = sorted(label_count.items(), key=operator.itemgetter(1), reverse=True)
     
     for label, _ in sorted_label_count:
         userfreq = len(label_users[label])
         imagefreq = len(label_images[label])
         fout.write('{} {} {}\n'.format(label, userfreq, imagefreq))
+    fout.close()
+
+    jointfreq_filename = 'ucij.uuij.icij.iuij.txt'
+    jointfreq_filepath = path.join(text_data, jointfreq_filename)
+    seperator = '###'
+    def getkey(label_i, label_j):
+        if label_i < label_j:
+            key = label_i + seperator + label_j
+        else:
+            key = label_j + seperator + label_i
+        return key
+    def getpair(key):
+        fields = key.split(seperator)
+        label_i, label_j = fields[0], fields[1]
+        return label_i, label_j
+
+    if not infile.endswith('.valid'):
+        min_count = 6
+    else:
+        min_count = 3
+    label_count = {}
+    fin = open(lemmtags_filepath)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        image, user = fields[0], fields[1]
+        labels = fields[2].split()
+        for label in labels:
+            if label not in label_count:
+                label_count[label] = 0
+            label_count[label] += 1
+    fin.close()
+    print('#label={}'.format(len(label_count)))
+    pair_icij_temp = {}
+    fin = open(lemmtags_filepath)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        image, user = fields[0], fields[1]
+        labels = fields[2].split()
+        num_label = len(labels)
+        for i in range(num_label - 1):
+            for j in range(i + 1, num_label):
+                label_i = labels[i]
+                label_j = labels[j]
+                if label_i == label_j:
+                    continue
+                if label_count[label_i] < min_count:
+                    continue
+                if label_count[label_j] < min_count:
+                    continue
+                key = getkey(label_i, label_j)
+                if key not in pair_icij_temp:
+                    pair_icij_temp[key] = 0
+                pair_icij_temp[key] += 1
+    fin.close()
+    pair_icij_images = {}
+    pair_iuij_images = {}
+    fin = open(lemmtags_filepath)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        image, user = fields[0], fields[1]
+        labels = fields[2].split()
+        num_label = len(labels)
+        for i in range(num_label - 1):
+            for j in range(i + 1, num_label):
+                label_i = labels[i]
+                label_j = labels[j]
+                if label_i == label_j:
+                    continue
+
+                if label_i not in pair_iuij_images:
+                    pair_iuij_images[label_i] = set()
+                pair_iuij_images[label_i].add(image)
+                if label_j not in pair_iuij_images:
+                    pair_iuij_images[label_j] = set()
+                pair_iuij_images[label_j].add(image)
+
+                if label_count[label_i] < min_count:
+                    continue
+                if label_count[label_j] < min_count:
+                    continue
+
+                key = getkey(label_i, label_j)
+                if pair_icij_temp[key] < min_count:
+                    continue
+
+                if key not in pair_icij_images:
+                    pair_icij_images[key] = set()
+                pair_icij_images[key].add(image)
+    fin.close()
+    pair_icij, pair_iuij = {}, {}
+    keys = set()
+    for key, iuij_images in pair_icij_images.items():
+        pair_icij[key] = len(iuij_images)
+        label_i, label_j = getpair(key)
+        label_i_images = pair_iuij_images[label_i]
+        label_j_images = pair_iuij_images[label_j]
+        label_ij_images = label_i_images.union(label_j_images)
+        pair_iuij[key] = len(label_ij_images)
+        keys.add(key)
+    fout = open(jointfreq_filepath, 'w')
+    for key in sorted(keys):
+        label_i, label_j = getpair(key)
+        fout.write('{} {} {} {} {} {}\n'.format(label_i, label_j,
+                pair_icij[key], pair_iuij[key], pair_icij[key], pair_iuij[key]))
+    fout.close()
+
+    fin = open(lemmtags_filepath)
+    vocab = set()
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        image, user = fields[0], fields[1]
+        labels = fields[2].split()
+        for label in labels:
+            if wn.synsets(label):
+                vocab.add(label)
+            else:
+                pass
+    fin.close()
+    vocab_filename = 'wn.%s.txt' % dataset
+    vocab_filepath = path.join(text_data, vocab_filename)
+    fout = open(vocab_filepath, 'w')
+    for label in sorted(vocab):
+        fout.write('{}\n'.format(label))
     fout.close()
 
 def create_feature_sets(infile):
@@ -604,6 +740,9 @@ def create_feature_sets(infile):
         image = fields[IMAGE_INDEX]
         fout.write('{}\n'.format(image))
     fin.close()
+    fout.close()
+
+    fout = open(path.join(image_sets, 'holdout.txt'), 'w')
     fout.close()
 
 def create_annotations(infile):
@@ -636,8 +775,8 @@ def create_annotations(infile):
         fout.write('{}\n'.format(label))
     fout.close()
 
-    if not infile.endswith('.valid'):
-        return
+    # if not infile.endswith('.valid'):
+    #     return
 
     concepts_dir = path.join(annotations, 'Image', concepts)
     create_if_nonexist(concepts_dir)
@@ -670,12 +809,12 @@ def create_baseline_data():
     # fin.close()
 
     # collect_images(config.train_filepath)
-    lemmatize_labels(config.train_filepath)
+    create_text_data(config.train_filepath)
     # create_feature_sets(config.train_filepath)
     # create_annotations(config.train_filepath)
 
     # collect_images(config.valid_filepath)
-    lemmatize_labels(config.valid_filepath)
+    create_text_data(config.valid_filepath)
     # create_feature_sets(config.valid_filepath)
     # create_annotations(config.valid_filepath)
 
@@ -709,8 +848,25 @@ def select_lemmatizer():
 
 def main():
     infile = path.join(config.data_dir, 'jingwei/train10k/TextData/id.userid.lemmtags.txt')
+    
+    # text_data = path.join(config.surv_dir, 'yfcc8k', 'TextData')
+    # infile = path.join(text_data, 'id.userid.lemmtags.txt')
+    # print(infile)
+
+    seperator = '###'
+    def getkey(label_i, label_j):
+        if label_i < label_j:
+            key = label_i + seperator + label_j
+        else:
+            key = label_j + seperator + label_i
+        return key
+    def getpair(key):
+        fields = key.split(seperator)
+        label_i, label_j = fields[0], fields[1]
+        return label_i, label_j
+    min_count = 10
+    label_count = {}
     fin = open(infile)
-    label_users, label_images = {}, {}
     while True:
         line = fin.readline().strip()
         if not line:
@@ -719,14 +875,112 @@ def main():
         image, user = fields[0], fields[1]
         labels = fields[2].split()
         for label in labels:
-            if label not in label_users:
-                label_users[label] = set()
-            label_users[label].add(user)
-            if label not in label_images:
-                label_images[label] = set()
-            label_images[label].add(image)
+            if label not in label_count:
+                label_count[label] = 0
+            label_count[label] += 1
     fin.close()
-    print(len(label_users['car']), len(label_images['car']))
+    print('#label={}'.format(len(label_count)))
+    pair_icij_temp = {}
+    fin = open(infile)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        image, user = fields[0], fields[1]
+        labels = fields[2].split()
+        num_label = len(labels)
+        for i in range(num_label - 1):
+            for j in range(i + 1, num_label):
+                label_i = labels[i]
+                label_j = labels[j]
+                if label_i == label_j:
+                    continue
+                if label_count[label_i] < min_count:
+                    continue
+                if label_count[label_j] < min_count:
+                    continue
+                key = getkey(label_i, label_j)
+                if key not in pair_icij_temp:
+                    pair_icij_temp[key] = 0
+                pair_icij_temp[key] += 1
+    fin.close()
+    pair_icij_images = {}
+    pair_iuij_images = {}
+    fin = open(infile)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        image, user = fields[0], fields[1]
+        labels = fields[2].split()
+        num_label = len(labels)
+        for i in range(num_label - 1):
+            for j in range(i + 1, num_label):
+                label_i = labels[i]
+                label_j = labels[j]
+                if label_i == label_j:
+                    continue
+
+                if label_i not in pair_iuij_images:
+                    pair_iuij_images[label_i] = set()
+                pair_iuij_images[label_i].add(image)
+                if label_j not in pair_iuij_images:
+                    pair_iuij_images[label_j] = set()
+                pair_iuij_images[label_j].add(image)
+
+                if label_count[label_i] < min_count:
+                    continue
+                if label_count[label_j] < min_count:
+                    continue
+
+                key = getkey(label_i, label_j)
+                if pair_icij_temp[key] < min_count:
+                    continue
+
+                if key not in pair_icij_images:
+                    pair_icij_images[key] = set()
+                pair_icij_images[key].add(image)
+    fin.close()
+    pair_icij, pair_iuij = {}, {}
+    for key, iuij_images in pair_icij_images.items():
+        pair_icij[key] = len(iuij_images)
+        label_i, label_j = getpair(key)
+        label_i_images = pair_iuij_images[label_i]
+        label_j_images = pair_iuij_images[label_j]
+        label_ij_images = label_i_images.union(label_j_images)
+        pair_iuij[key] = len(label_ij_images)
+
+    print('#pair={}'.format(len(pair_icij)))
+    print(pair_icij[getkey('black', 'light')]) # 42 673
+    print(pair_icij[getkey('art', 'blackandwhite')]) # 24 465
+    print(pair_icij[getkey('animal', 'snow')]) # 11 603
+    print(pair_icij[getkey('dog', 'fashion')]) # 13 316
+    print(pair_icij[getkey('cat', 'film')]) # 17 352
+    print(pair_icij[getkey('insect', 'macro')]) # 38 341
+
+    print(pair_iuij[getkey('black', 'light')]) # 42 673
+    print(pair_iuij[getkey('art', 'blackandwhite')]) # 24 465
+    print(pair_iuij[getkey('animal', 'snow')]) # 11 603
+    print(pair_iuij[getkey('dog', 'fashion')]) # 13 316
+    print(pair_iuij[getkey('cat', 'film')]) # 17 352
+    print(pair_iuij[getkey('insect', 'macro')]) # 38 341
+
+    # user_set = set()
+    # fin = open(infile)
+    # while True:
+    #     line = fin.readline().strip()
+    #     if not line:
+    #         break
+    #     fields = line.split(FIELD_SEPERATOR)
+    #     image, user = fields[0], fields[1]
+    #     labels = fields[2].split()
+    #     user_set.add(user)
+    # fin.close()
+    # print('#user={}'.format(len(user_set)))
+
+    pass
 
 if __name__ == '__main__':
     # create_kdgan_data()

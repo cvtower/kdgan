@@ -1,7 +1,7 @@
 # ./do_tagfeat.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu
 
-# export BASEDIR=/Users/xiaojiew1/Projects # mac
-export BASEDIR=/home/xiaojie/Projects
+export BASEDIR=/Users/xiaojiew1/Projects # mac
+# export BASEDIR=/home/xiaojie/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
 export SURVEY_CODE=$BASEDIR/kdgan/jingwei
 export SURVEY_DB=$BASEDIR/kdgan/logs
@@ -32,21 +32,20 @@ if [ "$vis_feature" != "color64+dsift" -a "$vis_feature" != "vgg-verydeep-16fc7r
     exit
 fi
 
-feature=tag400-$trainCollection+$vis_feature
+# feature=tag400-$trainCollection+$vis_feature
+# if [ $do_training == 1 ]; then
+#     feat_dir=$rootpath/$trainCollection/FeatureData/$feature
+#     if [ ! -d "$feat_dir" ]; then
+#         echo "$feat_dir does not exist"
+#         #$codepath/doit/do_extract_tagfeat.sh $trainCollection $vis_feature
+#         exit
+#     fi
+# fi
+feature=$vis_feature
+feat_dir=$rootpath/$trainCollection/FeatureData/$feature
 
-if [ $do_training == 1 ]; then
-    feat_dir=$rootpath/$trainCollection/FeatureData/$feature
-    if [ ! -d "$feat_dir" ]; then
-        echo "$feat_dir does not exist"
-        #$codepath/doit/do_extract_tagfeat.sh $trainCollection $vis_feature
-        exit
-    fi
-fi
-
-echo $feature
-exit
-
-conceptset=concepts130social
+# conceptset=concepts130social
+conceptset=concepts
 baseAnnotationName=$conceptset.txt
 
 conceptfile=$rootpath/$trainCollection/Annotations/$baseAnnotationName
@@ -96,6 +95,8 @@ elif [ "$testCollection" = "flickr51" ]; then
     testAnnotationName=concepts51ms.txt
 elif [ "$testCollection" = "flickr81" ]; then
     testAnnotationName=concepts81.txt
+elif [ "$testCollection" == "yfcc2k" ]; then
+    testAnnotationName=concepts.txt
 else
     echo "unknown testCollection $testCollection"
     exit

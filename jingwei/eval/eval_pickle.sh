@@ -1,7 +1,7 @@
-# ./eval_pickle.sh yfcc2k jingwei
+# ./eval_pickle.sh yfcc2k 
 
-# export BASEDIR=/Users/xiaojiew1/Projects # mac
-export BASEDIR=/home/xiaojie/Projects
+export BASEDIR=/Users/xiaojiew1/Projects # mac
+# export BASEDIR=/home/xiaojie/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
 export SURVEY_CODE=$BASEDIR/kdgan/jingwei
 export SURVEY_DB=$BASEDIR/kdgan/logs

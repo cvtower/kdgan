@@ -20,13 +20,39 @@ FEATURE_TO_MEDIAN = {"color64":0.9140, "cslbp80":0.2930, "gist":1.6535, "dsift":
 FEATURE_TO_STD    = {"color64":0.1865, "cslbp80":0.1709, "gist":0.3836, "dsift":0.0404}
 FEATURE_TO_L1MAX =  {"color64":12.5, "cslbp80":9.12, "gist":170.64, "dsift":2.0}
 
-COLLECTION_TO_SIZE = {"flickr800k":815320, "flickr1m":1198818, "geoflickr1m":964849, "web13train":250000, 'flickr10m':int(1e7),
-                      'tentagv10dev':1382290, 'flickr20m':int(2e7),'flickr20':19971,'msr2013train':int(1e6),
-                      'mirflickr08dev':15000, 'mirflickr08test':10000,
-                      'flickr81train':155545, 'train10k':int(1e4), 'train100k':int(1e5), 'train1m':1198818,
-                      'social800k':815320, 'flickr81':259233, 'flickr55':81541}
-                        
-COLLECTION_TO_USERNUM = {'social800k':177871, 'tentagv10dev':42206, 'flickr81train':40202, 'flickr1m':347369, 'train1m':347369, 'flickr10m':941202, 'train10k':9249, 'train100k':68215}
+COLLECTION_TO_SIZE = {
+    "flickr800k":815320,
+    "flickr1m":1198818,
+    "geoflickr1m":964849,
+    "web13train":250000,
+    'flickr10m':int(1e7),
+    'tentagv10dev':1382290,
+    'flickr20m':int(2e7),
+    'flickr20':19971,
+    'msr2013train':int(1e6),
+    'mirflickr08dev':15000,
+    'mirflickr08test':10000,
+    'flickr81train':155545,
+    'train10k':int(1e4),
+    'train100k':int(1e5),
+    'train1m':1198818,
+    'social800k':815320,
+    'flickr81':259233,
+    'flickr55':81541,
+    'yfcc8k':int(8e3),
+}
+
+COLLECTION_TO_USERNUM = {
+    'social800k':177871,
+    'tentagv10dev':42206,
+    'flickr81train':40202,
+    'flickr1m':347369,
+    'train1m':347369,
+    'flickr10m':941202,
+    'train10k':9249,
+    'train100k':68215,
+    'yfcc8k':443,
+}
 
 COLLECTION_TO_CONCEPTSET = {'flickr20':'concepts20','flickr55':'concepts55', 'flickr81':'concepts81', 'flickr81train':'concepts81train', 'flickr81test':'concepts81test', 
 'tentagv10dev':'conceptstentagv10dev', 'mirflickr08test':'conceptsmir18test','msr2013dev0':'conceptsweb15dev', 'ucsd18test':'conceptsucsd18test', 

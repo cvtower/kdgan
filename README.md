@@ -13,4 +13,6 @@ sudo apt-get install libboost-dev
 ./do_getknn.sh yfcc8k yfcc8k vgg-verydeep-16fc7relu 0 1 1
 ./do_getknn.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu 0 1 1
 
-conda install libgcc
+# simple knn
+conda install libgcc # ubuntu
+brew install boost --c++11 # mac

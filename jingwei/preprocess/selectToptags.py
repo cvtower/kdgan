@@ -38,8 +38,8 @@ if __name__ == '__main__':
     
     for line in open(tagfreqfile).readlines():
         tag,userfreq,imfreq = str.split(line.strip())
-        if int(userfreq) < 100:
-            continue
+        # if int(userfreq) < 100:
+        #     continue
 
         tag2freq[tag] = int(imfreq)
         if len(tag)<3:

@@ -1,7 +1,7 @@
 # ./do_extract_tagfeat.sh yfcc8k vgg-verydeep-16fc7relu
 
-# export BASEDIR=/Users/xiaojiew1/Projects # mac
-export BASEDIR=/home/xiaojie/Projects
+export BASEDIR=/Users/xiaojiew1/Projects # mac
+# export BASEDIR=/home/xiaojie/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
 export SURVEY_CODE=$BASEDIR/kdgan/jingwei
 export SURVEY_DB=$BASEDIR/kdgan/logs
@@ -40,7 +40,6 @@ pos_end=$(($nr_pos_bags - 1))
 neg_end=$(($nr_neg_bags - 1))
 
 python $codepath/preprocess/selectToptags.py $trainCollection $vobsize
-exit
 python $codepath/util/imagesearch/obtain_labeled_examples.py $trainCollection $rootpath/$trainCollection/Annotations/$annotationName 
 python $codepath/util/tagsim/expand_tags.py $trainCollection $annotationName
 python $codepath/model_based/dataengine/createSocialAnnotations.py $trainCollection $annotationName 
@@ -53,7 +52,7 @@ if [ ! -f "$bagfile" ]; then
 fi
 
 python $codepath/model_based/negative_bagging.py $trainCollection $bagfile $feature $modelName
-
+exit
 
 
 modelAnnotationName=concepts"$trainCollection"top"$vobsize"social.random$nr_pos.0-$pos_end.npr"$neg_pos_ratio".0-$neg_end.txt
@@ -76,7 +75,8 @@ if [ ! -f "$rootpath/$trainCollection/Annotations/$modelAnnotationName" ]; then
     exit
 fi
 
-for testCollection in mirflickr08 flickr51 flickr81
+# for testCollection in mirflickr08 flickr51 flickr81
+for testCollection in yfcc8k
 do
     python $codepath/model_based/svms/applyConcepts_s.py $testCollection $trainCollection $modelAnnotationName $feature $modelName --prob_output 1
     

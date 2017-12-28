@@ -1,3 +1,13 @@
+# ./do_create_refined_annotation.sh yfcc8k vgg-verydeep-16fc7relu
+
+export BASEDIR=/Users/xiaojiew1/Projects # mac
+# export BASEDIR=/home/xiaojie/Projects
+export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
+export SURVEY_CODE=$BASEDIR/kdgan/jingwei
+export SURVEY_DB=$BASEDIR/kdgan/logs
+# export MATLAB_PATH=/Applications/MATLAB_R2017b.app # mac
+export MATLAB_PATH=/usr/local
+export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
 
 rootpath=$SURVEY_DATA
 codepath=$SURVEY_CODE
@@ -10,15 +20,16 @@ fi
 overwrite=0
 trainCollection=$1
 feature=$2 #vgg-verydeep-16-fc7relu
-conceptset=concepts130
+conceptset=concepts
 annotationName=$conceptset.txt
 socialAnnotationName="$conceptset"social.txt
 
 if [ "$feature" = "color64+dsift" ]; then
     distance=l1
     posName=fcswnsiftbc
-elif [ "$feature" = "vgg-verydeep-16-fc7relu" ]; then
-    distance=cosine
+elif [ "$feature" = "vgg-verydeep-16fc7relu" ]; then
+    # distance=cosine
+    distance=l2
     posName=fcswncnnbc
 else
     echo "unknown feature $feature"
@@ -32,7 +43,6 @@ visual=$feature,"$distance"knn,1000,lemm
 
 $codepath/doit/do_semfield.sh $trainCollection $trainCollection $tagsimMethod
 
-
 conceptfile=$rootpath/$trainCollection/Annotations/$annotationName
 tagfile=$rootpath/$trainCollection/TextData/id.userid.lemmtags.txt
 
@@ -42,7 +52,6 @@ visfile=$rootpath/$trainCollection/tagrel/$trainCollection/$trainCollection/$vis
 runfile=$codepath/data/"$semantic"_"$feature"_"$trainCollection".txt
 newRunName=tagged,lemm/$trainCollection/"$semantic"_"$feature"_borda
 
-
 for datafile in $conceptfile $tagfile $semfile $visfile $runfile
 do
 
@@ -51,6 +60,7 @@ do
         exit
     fi
 done
+
 
 python $codepath/util/imagesearch/obtain_labeled_examples.py $trainCollection $rootpath/$trainCollection/Annotations/$annotationName --overwrite $overwrite
 python $codepath/util/tagsim/expand_tags.py $trainCollection $annotationName
@@ -63,5 +73,6 @@ done
 
 
 python $codepath/util/imagesearch/combineImageRanking.py $trainCollection $socialAnnotationName $runfile $newRunName --torank 1 --overwrite $overwrite
+exit
 python $codepath/model_based/dataengine/createRefinedAnnotations.py $trainCollection $socialAnnotationName $newRunName $posName --overwrite $overwrite
 

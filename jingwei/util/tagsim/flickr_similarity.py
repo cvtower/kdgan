@@ -4,7 +4,12 @@ from math import log, exp
 from basic.constant import ROOT_PATH
 from basic.data import COLLECTION_TO_SIZE,COLLECTION_TO_USERNUM
 
-COLLECTION_TO_GAMMA = {'train10k':(1,1.512), 'train100k':(1,1.262), 'train1m':(1,1.18)}
+COLLECTION_TO_GAMMA = {
+    'train10k':(1,1.512),
+    'train100k':(1,1.262),
+    'train1m':(1,1.18),
+    'yfcc8k':(1,1.512),
+}
 MASK = (1<<16)-1
 
 def encodeKey(x, y):
