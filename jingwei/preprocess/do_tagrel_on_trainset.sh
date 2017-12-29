@@ -23,8 +23,8 @@ feature=$2
 if [ "$feature" = "color64+dsift" ]; then
     distance=l1
 elif [ "$feature" = "vgg-verydeep-16fc7relu" ]; then 
-    # distance=cosine
-    distance=l2
+    distance=cosine
+    # distance=l2
 else
     echo "unknown feature $feature"
     exit

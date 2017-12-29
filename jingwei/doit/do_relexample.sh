@@ -34,7 +34,8 @@ else
 fi
 
 
-conceptset=concepts130
+# conceptset=concepts130
+conceptset=concepts
 baseAnnotationName="$conceptset"social.txt
 posNum=500
 startAnnotationName="$conceptset"social."$posName""$posNum".random"$posNum".0.txt
@@ -42,11 +43,11 @@ modelName=fik
 fullModelName=fik50
 $codepath/doit/do_create_refined_annotation.sh $trainCollection $feature
 
-
-
 minmaxfile=$rootpath/$trainCollection/FeatureData/$feature/minmax.txt
 
 if [ ! -f "$minmaxfile" ]; then 
+    echo 'f**k'
+    exit
     feat_dir=$rootpath/train1m/FeatureData/$feature
     python $codepath/model_based/svms/fiksvm/find_min_max.py $feat_dir
 
@@ -55,7 +56,9 @@ if [ ! -f "$minmaxfile" ]; then
     fi
 fi
 
+
 python $codepath/model_based/negbp.py $trainCollection $baseAnnotationName $startAnnotationName $feature $modelName
+exit
 
 
 modelAnnotationName="$conceptset"social."$posName""$posNum".random"$posNum".0."$fullModelName".top.npr10.T10.txt

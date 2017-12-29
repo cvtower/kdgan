@@ -119,6 +119,9 @@ class TagrelSearchEngine (TagBasedSearchEngine):
         TagBasedSearchEngine.__init__(self, collection, dataset, tpp, rootpath)
         self.reader = TagrelReader(collection, dataset, tagrelMethod, nonnegative=0, rootpath=rootpath)
         self.name = "%s(%s)" % (self.__class__.__name__, self.reader.name)
+
+        # print(self.outputdir, tagrelMethod)
+        # exit()
         self.outputdir = os.path.join(self.outputdir, tagrelMethod)
         
     def computeScore(self, concept, photoid):
@@ -147,6 +150,8 @@ def submit(searchers, collection,annotationName, rootpath=ROOT_PATH, overwrite=0
 
     for concept in concepts:
         for j in range(nr_of_runs):
+            # print(searchers[j].getOutputdir())
+            # exit()
             resultfile = os.path.join(searchers[j].getOutputdir(), concept + ".txt")
             if checkToSkip(resultfile, overwrite):
                 continue

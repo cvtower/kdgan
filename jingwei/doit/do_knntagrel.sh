@@ -1,6 +1,15 @@
+# ./do_knntagrel.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu
+
+export BASEDIR=/Users/xiaojiew1/Projects # mac
+# export BASEDIR=/home/xiaojie/Projects
+export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
+export SURVEY_CODE=$BASEDIR/kdgan/jingwei
+export SURVEY_DB=$BASEDIR/kdgan/logs
+export MATLAB_PATH=/Applications/MATLAB_R2017b.app/bin
+export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
+
 rootpath=$SURVEY_DATA
 codepath=$SURVEY_CODE
-
 
 if [ "$#" -ne 3 ]; then
     echo "Usage: $0 trainCollection testCollection feature"
@@ -15,7 +24,7 @@ tagger=preknn
 
 if [ "$feature" = "color64+dsift" ]; then
     distance=l1
-elif [ "$feature" = "vgg-verydeep-16-fc7relu" ]; then
+elif [ "$feature" = "vgg-verydeep-16fc7relu" ]; then
     distance=cosine
 else
     echo "unknown feature $feature"
@@ -30,13 +39,15 @@ elif [ "$testCollection" == "flickr51" ]; then
     testAnnotationName=concepts51ms.txt
 elif [ "$testCollection" == "mirflickr08" ]; then
     testAnnotationName=conceptsmir14.txt
+elif [ "$testCollection" == "yfcc2k" ]; then
+    testAnnotationName=concepts.txt
 else
     echo "unknown testCollection $testCollection"
     exit
 fi
 
-annotationName=concepts130.txt
-
+# annotationName=concepts130.txt
+annotationName=concepts.txt
 
 preknn_dir=$rootpath/$testCollection/SimilarityIndex/$testCollection/$trainCollection/$feature,"$distance"knn,1500
 if [ ! -d "$preknn_dir" ]; then
@@ -44,7 +55,6 @@ if [ ! -d "$preknn_dir" ]; then
     echo "-> $preknn_dir"
     ./do_getknn.sh $trainCollection $testCollection $feature 0 1 1
 fi
-
 
 python $codepath/instance_based/apply_tagger.py $testCollection $trainCollection $annotationName $feature --tagger $tagger --distance $distance --k $k
 tagvotesfile=$rootpath/$testCollection/autotagging/$testCollection/$trainCollection/$annotationName/$tagger/$feature,"$distance"knn,$k/id.tagvotes.txt

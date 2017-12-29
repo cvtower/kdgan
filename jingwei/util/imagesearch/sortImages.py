@@ -14,6 +14,8 @@ def process(options, collection, annotationName, engine, engineparams):
 
     engineclass = getSearchEngine(engine)
     
+    # print(engine, engineparams)
+    # exit()
     if engine == 'detector':
         searcher = engineclass(collection, collection, engineparams, rootpath)
     elif engine == 'rawtagnum':
@@ -21,6 +23,8 @@ def process(options, collection, annotationName, engine, engineparams):
     else:
         searcher = engineclass(collection, collection, engineparams, tpp=tpp, rootpath=rootpath)
   
+    # print(rootpath)
+    # exit()
     submit([searcher], collection, annotationName, rootpath=rootpath, overwrite=overwrite)
 
 

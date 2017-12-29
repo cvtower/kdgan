@@ -28,8 +28,8 @@ if [ "$feature" = "color64+dsift" ]; then
     distance=l1
     posName=fcswnsiftbc
 elif [ "$feature" = "vgg-verydeep-16fc7relu" ]; then
-    # distance=cosine
-    distance=l2
+    distance=cosine
+    # distance=l2
     posName=fcswncnnbc
 else
     echo "unknown feature $feature"
@@ -49,7 +49,8 @@ tagfile=$rootpath/$trainCollection/TextData/id.userid.lemmtags.txt
 semfile=$rootpath/$trainCollection/tagrel/$trainCollection/$trainCollection/$semantic/id.tagvotes.txt
 visfile=$rootpath/$trainCollection/tagrel/$trainCollection/$trainCollection/$visual/id.tagvotes.txt
 
-runfile=$codepath/data/"$semantic"_"$feature"_"$trainCollection".txt
+# runfile=$codepath/data/"$semantic"_"$feature"_"$trainCollection".txt
+runfile=$rootpath/$trainCollection/SimilarityIndex/"$semantic"_"$feature"_"$trainCollection".txt
 newRunName=tagged,lemm/$trainCollection/"$semantic"_"$feature"_borda
 
 for datafile in $conceptfile $tagfile $semfile $visfile $runfile
@@ -69,10 +70,10 @@ python $codepath/model_based/dataengine/createSocialAnnotations.py $trainCollect
 for tagrelMethod in $semantic $visual
 do
     python $codepath/util/imagesearch/sortImages.py $trainCollection $annotationName tagrel $trainCollection/$tagrelMethod  --overwrite $overwrite
+    # python $codepath/util/imagesearch/sortImages.py $trainCollection $annotationName tagrel $tagrelMethod  --overwrite $overwrite
 done
 
-
 python $codepath/util/imagesearch/combineImageRanking.py $trainCollection $socialAnnotationName $runfile $newRunName --torank 1 --overwrite $overwrite
-exit
 python $codepath/model_based/dataengine/createRefinedAnnotations.py $trainCollection $socialAnnotationName $newRunName $posName --overwrite $overwrite
+exit
 
