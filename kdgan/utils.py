@@ -29,7 +29,9 @@ LABEL_SEPERATOR = ','
 POST_INDEX = 0
 USER_INDEX = 1
 IMAGE_INDEX = 2
-LABEL_INDEX = -1
+TITLE_INDEX = 3
+DESCRIPTION_INDEX = 4
+LABEL_INDEX = 5
 NUM_FIELD = 6
 
 TOT_LABEL = 100
@@ -847,126 +849,6 @@ def select_lemmatizer():
             pass
 
 def main():
-    infile = path.join(config.data_dir, 'jingwei/train10k/TextData/id.userid.lemmtags.txt')
-    
-    # text_data = path.join(config.surv_dir, 'yfcc8k', 'TextData')
-    # infile = path.join(text_data, 'id.userid.lemmtags.txt')
-    # print(infile)
-
-    seperator = '###'
-    def getkey(label_i, label_j):
-        if label_i < label_j:
-            key = label_i + seperator + label_j
-        else:
-            key = label_j + seperator + label_i
-        return key
-    def getpair(key):
-        fields = key.split(seperator)
-        label_i, label_j = fields[0], fields[1]
-        return label_i, label_j
-    min_count = 10
-    label_count = {}
-    fin = open(infile)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image, user = fields[0], fields[1]
-        labels = fields[2].split()
-        for label in labels:
-            if label not in label_count:
-                label_count[label] = 0
-            label_count[label] += 1
-    fin.close()
-    print('#label={}'.format(len(label_count)))
-    pair_icij_temp = {}
-    fin = open(infile)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image, user = fields[0], fields[1]
-        labels = fields[2].split()
-        num_label = len(labels)
-        for i in range(num_label - 1):
-            for j in range(i + 1, num_label):
-                label_i = labels[i]
-                label_j = labels[j]
-                if label_i == label_j:
-                    continue
-                if label_count[label_i] < min_count:
-                    continue
-                if label_count[label_j] < min_count:
-                    continue
-                key = getkey(label_i, label_j)
-                if key not in pair_icij_temp:
-                    pair_icij_temp[key] = 0
-                pair_icij_temp[key] += 1
-    fin.close()
-    pair_icij_images = {}
-    pair_iuij_images = {}
-    fin = open(infile)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image, user = fields[0], fields[1]
-        labels = fields[2].split()
-        num_label = len(labels)
-        for i in range(num_label - 1):
-            for j in range(i + 1, num_label):
-                label_i = labels[i]
-                label_j = labels[j]
-                if label_i == label_j:
-                    continue
-
-                if label_i not in pair_iuij_images:
-                    pair_iuij_images[label_i] = set()
-                pair_iuij_images[label_i].add(image)
-                if label_j not in pair_iuij_images:
-                    pair_iuij_images[label_j] = set()
-                pair_iuij_images[label_j].add(image)
-
-                if label_count[label_i] < min_count:
-                    continue
-                if label_count[label_j] < min_count:
-                    continue
-
-                key = getkey(label_i, label_j)
-                if pair_icij_temp[key] < min_count:
-                    continue
-
-                if key not in pair_icij_images:
-                    pair_icij_images[key] = set()
-                pair_icij_images[key].add(image)
-    fin.close()
-    pair_icij, pair_iuij = {}, {}
-    for key, iuij_images in pair_icij_images.items():
-        pair_icij[key] = len(iuij_images)
-        label_i, label_j = getpair(key)
-        label_i_images = pair_iuij_images[label_i]
-        label_j_images = pair_iuij_images[label_j]
-        label_ij_images = label_i_images.union(label_j_images)
-        pair_iuij[key] = len(label_ij_images)
-
-    print('#pair={}'.format(len(pair_icij)))
-    print(pair_icij[getkey('black', 'light')]) # 42 673
-    print(pair_icij[getkey('art', 'blackandwhite')]) # 24 465
-    print(pair_icij[getkey('animal', 'snow')]) # 11 603
-    print(pair_icij[getkey('dog', 'fashion')]) # 13 316
-    print(pair_icij[getkey('cat', 'film')]) # 17 352
-    print(pair_icij[getkey('insect', 'macro')]) # 38 341
-
-    print(pair_iuij[getkey('black', 'light')]) # 42 673
-    print(pair_iuij[getkey('art', 'blackandwhite')]) # 24 465
-    print(pair_iuij[getkey('animal', 'snow')]) # 11 603
-    print(pair_iuij[getkey('dog', 'fashion')]) # 13 316
-    print(pair_iuij[getkey('cat', 'film')]) # 17 352
-    print(pair_iuij[getkey('insect', 'macro')]) # 38 341
-
     # user_set = set()
     # fin = open(infile)
     # while True:
@@ -980,14 +862,99 @@ def main():
     # fin.close()
     # print('#user={}'.format(len(user_set)))
 
-    pass
+    def preprocess(text):
+        text = urllib.parse.unquote(text)
+        text = text.replace(SPACE_PLACEHOLDER, ' ')
+        return text
+
+    def postprocess(text):
+        # import re
+        # tag_re = re.compile(r'<.*?>')
+        # text = tag_re.sub('', text)
+        from bs4 import BeautifulSoup
+        from bs4.element import NavigableString
+        soup = BeautifulSoup(text, 'html.parser')
+        # for child in soup.recursiveChildGenerator():
+        #     print(type(child))
+        #     print(child)
+        #     input()
+        children = []
+        for child in soup.children:
+            if type(child) != NavigableString:
+                continue
+            children.append(str(child))
+        text = ' '.join(children)
+        return text
+
+    def tokenize(text):
+        from nltk import word_tokenize
+        tokens = word_tokenize(text)
+
+        def in_synsets(token):
+            if wn.synsets(token):
+                return True
+            else:
+                return False
+        tokens = [token for token in tokens if in_synsets(token)]
+
+        from nltk.corpus import stopwords
+        stopwords = set(stopwords.words('english'))
+        tokens = [token for token in tokens if not token in stopwords]
+
+        from nltk.stem import PorterStemmer
+        # stemmer = PorterStemmer()
+        from nltk.stem.snowball import SnowballStemmer
+        stemmer = SnowballStemmer('english')
+        tokens = [stemmer.stem(token) for token in tokens]
+
+        return tokens
+
+    infile = config.train_filepath
+    infile = config.valid_filepath
+    outdir = '/Users/xiaojiew1/Projects/kdgan/temp/yfcc10k'
+    fin = open(infile)
+    outfile = path.join(outdir, path.basename(infile))
+    fout = open(outfile, 'w')
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        post = fields[POST_INDEX]
+        labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+        title = fields[TITLE_INDEX]
+        description = fields[DESCRIPTION_INDEX]
+        # print('{0}\n{0}'.format('#'*80))
+        title = preprocess(title)
+        # print(title)
+        # print('#'*80)
+        # print()
+        description = preprocess(description)
+        # print(description)
+        # print('#'*80)
+        title = postprocess(title)
+        # print(title)
+        # print('#'*80)
+        # print()
+        description = postprocess(description)
+        # print(description)
+        # print('{0}\n{0}'.format('#'*80))
+        text = ' '.join([title, description])
+        tokens = tokenize(text)
+        # print('{2}\n{0}\n{2}{1}\n{2}'.format(text, tokens, '#'*80))
+        # input()
+        for label in labels:
+            fout.write('__label__%s ' % label)
+        fout.write('%s\n' % ' '.join(tokens))
+    fout.close()
+    fin.close()
 
 if __name__ == '__main__':
     # create_kdgan_data()
     # summarize_data()
 
     # select_lemmatizer()
-    create_baseline_data()
+    # create_baseline_data()
     # matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
 
-    # main()
+    main()

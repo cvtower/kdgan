@@ -16,3 +16,6 @@ sudo apt-get install libboost-dev
 # simple knn
 conda install libgcc # ubuntu
 brew install boost --c++11 # mac
+
+./fasttext supervised -input yfcc10k/yfcc10k.train -output yfcc10k/model_yfcc10k -lr 1.0 -epoch 100
+./fasttext test yfcc10k/model_yfcc10k.bin yfcc10k/yfcc10k.valid 5
