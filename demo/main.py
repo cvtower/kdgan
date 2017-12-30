@@ -1,9 +1,10 @@
 from os import path
 
 from collections import Counter
+from tensorflow.contrib import slim
+
 import numpy as np
 import tensorflow as tf
-
 
 tf.flags.DEFINE_boolean('dev', False, 'dev')
 tf.flags.DEFINE_string('facebook_infile', None, '')
@@ -44,7 +45,8 @@ if FLAGS.dev:
 TEXT_KEY = 'text'
 LABELS_KEY = 'labels'
 NGRAMS_KEY = 'ngrams'
-DEFAULT_WORD = ' '
+# DEFAULT_WORD = ' '
+DEFAULT_WORD = len(open(FLAGS.vocab_file).readlines())
 
 def parse_ngrams(ngrams):
     ngrams = [int(g) for g in ngrams.split(',')]
@@ -69,6 +71,16 @@ def load_id_to_label():
     label_to_id = load_label_to_id()
     id_to_label = dict([(v, k) for k, v in label_to_id.items()])
     return id_to_label
+
+def load_sth_to_id(infile):
+    with open(infile) as fin:
+        sth_list = [sth.strip() for sth in fin.readlines()]
+    sth_to_id = dict(zip(sth_list, range(len(sth_list))))
+    return sth_to_id
+
+def load_vocab_to_id():
+    vocab_to_id = load_sth_to_id(FLAGS.vocab_file)
+    return vocab_to_id
 
 def parse_facebook_infile(infile, ngrams):
     label_prefix = '__label__'
@@ -95,13 +107,17 @@ def parse_facebook_infile(infile, ngrams):
         examples.append(example)
     return examples
 
-def build_tfrecord(example, label_to_id):
+def build_tfrecord(example, label_to_id, vocab_to_id):
     text = example[TEXT_KEY]
     labels = example[LABELS_KEY]
     ngrams = example.get(NGRAMS_KEY, None)
     record = tf.train.Example()
-    text = [tf.compat.as_bytes(x) for x in text]
-    record.features.feature[TEXT_KEY].bytes_list.value.extend(text)
+    
+    # text = [tf.compat.as_bytes(x) for x in text]
+    # record.features.feature[TEXT_KEY].bytes_list.value.extend(text)
+    unk = len(vocab_to_id)
+    text = [vocab_to_id.get(x, unk) for x in text]
+    record.features.feature[TEXT_KEY].int64_list.value.extend(text)
     
     # labels = [tf.compat.as_bytes(x) for x in labels]
     # record.features.feature[LABELS_KEY].bytes_list.value.extend(labels)
@@ -117,9 +133,11 @@ def build_tfrecord(example, label_to_id):
 
 def write_examples(examples, tfrecord_file):
     label_to_id = load_label_to_id()
+    vocab_to_id = load_vocab_to_id()
+    # print(vocab_to_id)
     writer = tf.python_io.TFRecordWriter(tfrecord_file)
     for n, example in enumerate(examples):
-        record = build_tfrecord(example, label_to_id)
+        record = build_tfrecord(example, label_to_id, vocab_to_id)
         writer.write(record.SerializeToString())
 
 def write_vocab(examples, vocab_file, label_file):
@@ -143,19 +161,25 @@ def cleanse():
     if not FLAGS.label_file:
         print('no --label_file')
         exit()
+    if not FLAGS.vocab_file:
+        print('no --vocab_file')
+        exit()
     ngrams = None
     if FLAGS.ngrams:
         ngrams = parse_ngrams(FLAGS.ngrams)
+
+    # vocab_file = path.join(FLAGS.facebook_infile + '.vocab')
+    # write_vocab(vocab_file)
+
     examples = parse_facebook_infile(FLAGS.facebook_infile, ngrams)
     tfrecord_file = path.join(FLAGS.facebook_infile + '.tfrecord')
     write_examples(examples, tfrecord_file)
-    vocab_file = path.join(FLAGS.facebook_infile + '.vocab')
-    label_file = path.join(FLAGS.facebook_infile + '.label')
-    write_vocab(examples, vocab_file, label_file)
+
 
 def get_parse_spec(use_ngrams, num_label):
     parse_spec = {
-        TEXT_KEY:tf.VarLenFeature(dtype=tf.string),
+        # TEXT_KEY:tf.VarLenFeature(dtype=tf.string),
+        TEXT_KEY:tf.VarLenFeature(dtype=tf.int64),
         LABELS_KEY:tf.FixedLenFeature([num_label], tf.float32, default_value=tf.zeros([num_label], dtype=tf.float32)),
     }
     if use_ngrams:
@@ -213,12 +237,16 @@ def train():
             reader_num_threads=FLAGS.num_threads)
     text_ts = tf.sparse_tensor_to_dense(features[TEXT_KEY], default_value=DEFAULT_WORD)
     label_ts = features.pop(LABELS_KEY)
-    text_ph = tf.placeholder(tf.string, shape=(None, None))
+    
+    # text_ph = tf.placeholder(tf.string, shape=(None, None))
+    text_ph = tf.placeholder(tf.int64, shape=(None, None))
     label_ph = tf.placeholder(tf.float32, shape=(None, num_label))
-    text_lookup_table = tf.contrib.lookup.index_table_from_file(
-            FLAGS.vocab_file, FLAGS.num_oov_vocab_buckets, vocab_size)
-    text_ids = text_lookup_table.lookup(text_ph)
-    text_embedding_w = tf.Variable(tf.random_uniform([vocab_size + FLAGS.num_oov_vocab_buckets, FLAGS.embedding_dimension], -0.1, 0.1))
+    # text_lookup_table = tf.contrib.lookup.index_table_from_file(
+    #         FLAGS.vocab_file, FLAGS.num_oov_vocab_buckets, vocab_size)
+    # text_ids = text_lookup_table.lookup(text_ph)
+    text_ids = text_ph
+    # text_embedding_w = tf.Variable(tf.random_uniform([vocab_size + FLAGS.num_oov_vocab_buckets, FLAGS.embedding_dimension], -0.1, 0.1))
+    text_embedding_w = tf.Variable(tf.random_uniform([vocab_size + 1, FLAGS.embedding_dimension], -0.1, 0.1))
     text_embedding = tf.reduce_mean(tf.nn.embedding_lookup(text_embedding_w, text_ids), axis=-2)
     input_layer = text_embedding
     logits_ts = tf.contrib.layers.fully_connected(inputs=input_layer, num_outputs=num_label, activation_fn=None)
@@ -304,9 +332,69 @@ def train():
 
       coord.join(threads)
 
+def test():
+    vocab_size = len(open(FLAGS.vocab_file).readlines())
+    id_to_label = load_id_to_label()
+    num_label = len(id_to_label)
+    print('#vocab={} #label={}'.format(vocab_size, num_label))
+
+    data_sources = [FLAGS.train_tfrecord,]
+    is_training = True
+    reader = tf.TFRecordReader
+    keys_to_features = {
+        TEXT_KEY:tf.VarLenFeature(dtype=tf.string),
+        LABELS_KEY:tf.FixedLenFeature([num_label], tf.float32, default_value=tf.zeros([num_label], dtype=tf.float32)),
+    }
+
+    items_to_handlers = {
+        'text':slim.tfexample_decoder.Tensor(TEXT_KEY, default_value=DEFAULT_WORD),
+        'labels':slim.tfexample_decoder.Tensor(LABELS_KEY),
+    }
+    decoder = slim.tfexample_decoder.TFExampleDecoder(
+            keys_to_features, items_to_handlers)
+    num_samples = 1 # np.inf
+    items_to_descriptions = {
+        'text': 'text',
+        'labels': 'labels',
+    }
+    dataset = slim.dataset.Dataset(
+        data_sources=data_sources,
+        reader=reader,
+        decoder=decoder,
+        num_samples=num_samples,
+        items_to_descriptions=items_to_descriptions,
+    )
+    provider = slim.dataset_data_provider.DatasetDataProvider(dataset, shuffle=is_training)
+    text_ts, labels_ts, = provider.get(['text', 'labels'])
+
+    # with tf.Session() as sess:
+    #     with slim.queues.QueueRunners(sess):
+    #         for i in range(10000):
+    #             text_np, labels_np = sess.run([text_ts, labels_ts])
+    #             label_ids = [i for i in range(num_label) if labels_np[i] != 0]
+    #             labels = [id_to_label[label_id] for label_id in label_ids]
+    #             text = [text_np[i].decode('utf-8') for i in range(text_np.shape[0]) if text_np[i] != b' ']
+    #             text = ' '.join(text)
+    #             print(str(text), labels)
+    #             input()
+
+    text_bt, labels_bt = tf.train.batch(
+            [text_ts, labels_ts], 
+            batch_size=FLAGS.batch_size,
+            dynamic_pad=True)
+
+    with tf.Session() as sess:
+        with slim.queues.QueueRunners(sess):
+            for i in range(10000):
+                text_np, labels_np = sess.run([text_bt, labels_bt])
+                print(type(text_np), type(labels_np))
+                print(text_np.shape, labels_np.shape)
+                input()
+
 def main(_):
     # cleanse()
     train()
+    # test()
 
 if __name__ == '__main__':
     tf.app.run()

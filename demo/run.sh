@@ -4,20 +4,23 @@ DATASET=yfcc10k
 TRAIN_FBINPUT=$DATADIR/${DATASET}.train
 VALID_FBINPUT=$DATADIR/${DATASET}.valid
 LABEL_FILE=$DATADIR/${DATASET}.label
+VOCAB_FILE=$TRAIN_FBINPUT.vocab
 
 # python main.py \
 #     --facebook_infile=${TRAIN_FBINPUT} \
 #     --label_file=$LABEL_FILE \
+#     --vocab_file=$VOCAB_FILE \
 #     --ngrams=2,3,4
 
 # python main.py \
 #     --facebook_infile=${VALID_FBINPUT} \
 #     --label_file=$LABEL_FILE \
+#     --vocab_file=$VOCAB_FILE \
 #     --ngrams=2,3,4
 
+# exit
 
 TRAIN_TFRECORD=$TRAIN_FBINPUT.tfrecord
-VOCAB_FILE=$TRAIN_FBINPUT.vocab
 VALID_TFRECORD=$VALID_FBINPUT.tfrecord
 LOGS_DIR=$DATADIR/logs
 
