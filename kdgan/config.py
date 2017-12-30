@@ -22,6 +22,7 @@ yfcc10k_dir = path.join(yfcc_dir, 'yfcc10k')
 data_filepath = path.join(yfcc10k_dir, '%s.data'%dataset)
 train_filepath = path.join(yfcc10k_dir, '%s.train'%dataset)
 valid_filepath = path.join(yfcc10k_dir, '%s.valid'%dataset)
+label_filepath = path.join(yfcc10k_dir, '%s.label'%dataset)
 
 
 

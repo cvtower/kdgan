@@ -372,10 +372,27 @@ def split_data(label_set):
     check_data(config.valid_filepath, label_set.copy())
 
 def create_kdgan_data():
-    label_set = select_labels(config.last_sample_filepath)
-    select_posts(config.last_sample_filepath, label_set)
-    print('#label={}'.format(len(label_set)))
-    split_data(label_set)
+    # label_set = select_labels(config.last_sample_filepath)
+    # select_posts(config.last_sample_filepath, label_set)
+    # print('#label={}'.format(len(label_set)))
+    # split_data(label_set)
+
+    infile = config.data_filepath
+    label_set = set()
+    fin = open(infile)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+        for label in labels:
+            label_set.add(label)
+    fin.close()
+    fout = open(config.label_filepath, 'w')
+    for label in sorted(label_set):
+        fout.write('%s\n' % label)
+    fout.close()
 
 def summarize_data():
     create_if_nonexist(config.temp_dir)
@@ -895,19 +912,35 @@ def main():
                 return True
             else:
                 return False
-        tokens = [token for token in tokens if in_synsets(token)]
 
         from nltk.corpus import stopwords
         stopwords = set(stopwords.words('english'))
-        tokens = [token for token in tokens if not token in stopwords]
-
+        
         from nltk.stem import PorterStemmer
         # stemmer = PorterStemmer()
         from nltk.stem.snowball import SnowballStemmer
         stemmer = SnowballStemmer('english')
-        tokens = [stemmer.stem(token) for token in tokens]
+
+        def _tokenize(tokens):
+            tokens = [token for token in tokens if in_synsets(token)]
+            tokens = [token for token in tokens if not token in stopwords]
+            tokens = [stemmer.stem(token) for token in tokens]
+            return tokens
+
+        tokens = _tokenize(tokens)
+
+        if len(tokens) == 0:
+            from nltk.tokenize import RegexpTokenizer
+            tokenizer = RegexpTokenizer('[a-z]+')
+            tokens = tokenizer.tokenize(text)
+            tokens = _tokenize(tokens)
 
         return tokens
+
+    # text = 'building-harsh buliding a bulding'
+    # tokens = tokenize(text)
+    # print(tokens)
+    # exit()
 
     infile = config.train_filepath
     infile = config.valid_filepath
@@ -946,15 +979,18 @@ def main():
         for label in labels:
             fout.write('__label__%s ' % label)
         fout.write('%s\n' % ' '.join(tokens))
+        # if len(tokens) == 0:
+        #     print('text: {}'.format(text))
+        #     print('labels: {}'.format(labels))
     fout.close()
     fin.close()
 
 if __name__ == '__main__':
-    # create_kdgan_data()
+    create_kdgan_data()
     # summarize_data()
 
     # select_lemmatizer()
     # create_baseline_data()
     # matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
 
-    main()
+    # main()

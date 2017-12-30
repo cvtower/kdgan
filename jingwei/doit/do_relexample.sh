@@ -56,10 +56,8 @@ if [ ! -f "$minmaxfile" ]; then
     fi
 fi
 
-
+# takes long time
 python $codepath/model_based/negbp.py $trainCollection $baseAnnotationName $startAnnotationName $feature $modelName
-exit
-
 
 modelAnnotationName="$conceptset"social."$posName""$posNum".random"$posNum".0."$fullModelName".top.npr10.T10.txt
 trainAnnotationName="$conceptset"social.random"$posNum".0.npr5.0.txt
@@ -72,10 +70,7 @@ if [ ! -f "$conceptfile" ]; then
     exit
 fi
 
-
 python $codepath/model_based/svms/find_ab.py $trainCollection $modelAnnotationName $trainAnnotationName $feature --overwrite $overwrite
-
-
 
 if [ "$testCollection" = "mirflickr08" ]; then
     testAnnotationName=conceptsmir14.txt
@@ -83,16 +78,19 @@ elif [ "$testCollection" = "flickr51" ]; then
     testAnnotationName=concepts51ms.txt
 elif [ "$testCollection" = "flickr81" ]; then
     testAnnotationName=concepts81.txt
+elif [ "$testCollection" == "yfcc2k" ]; then
+    testAnnotationName=concepts.txt
 else
     echo "unknown testCollection $testCollection"
     exit
 fi
 
 python  $codepath/model_based/svms/applyConcepts.py $testCollection $trainCollection $modelAnnotationName $feature $fullModelName --prob_output $prob_output
-    
+
 tagvotesfile=$rootpath/$testCollection/autotagging/$testCollection/$trainCollection/$modelAnnotationName/$feature,$fullModelName,prob/id.tagvotes.txt
 conceptfile=$rootpath/$testCollection/Annotations/$testAnnotationName
 resfile=$SURVEY_DB/"$trainCollection"_"$testCollection"_$feature,relexample.pkl
 
 python $codepath/postprocess/pickle_tagvotes.py $conceptfile $tagvotesfile $resfile
+exit
 
