@@ -19,16 +19,15 @@ LABEL_FILE=$DATADIR/${DATASET}.label
 TRAIN_TFRECORD=$TRAIN_FBINPUT.tfrecord
 VOCAB_FILE=$TRAIN_FBINPUT.vocab
 VALID_TFRECORD=$VALID_FBINPUT.tfrecord
-EXPORT_DIR=$DATADIR/models/${DATASET}
-OUTPUT=$DATADIR/models/${DATASET}
+LOGS_DIR=$DATADIR/logs
+
+# VOCAB_SIZE=`cat $VOCAB_FILE | wc -l | sed -e "s/[ \t]//g"`
+# echo $VOCAB_SIZE
 
 python main.py \
     --train_tfrecord=$TRAIN_TFRECORD \
     --valid_tfrecord=$VALID_TFRECORD \
     --label_file=$LABEL_FILE \
     --vocab_file=$VOCAB_FILE \
-    --model_dir=$OUTPUT \
-    --export_dir=$EXPORT_DIR \
-    --learning_rate=0.01 \
-    --nolog_device_placement \
-    --fast
+    --logs_dir=$LOGS_DIR \
+    --num_epochs=1000

@@ -13,12 +13,13 @@ tf.flags.DEFINE_string('train_tfrecord', None, '')
 tf.flags.DEFINE_string('valid_tfrecord', None, '')
 tf.flags.DEFINE_string('label_file', None, '')
 tf.flags.DEFINE_string('vocab_file', None, '')
+tf.flags.DEFINE_string('logs_dir', None, '')
 
-tf.flags.DEFINE_integer('batch_size', 128, '')
-tf.flags.DEFINE_integer('train_steps', 5000, '')
+tf.flags.DEFINE_integer('batch_size', 100, '')
+tf.flags.DEFINE_integer('train_steps', 50000, '')
 tf.flags.DEFINE_integer('valid_steps', 100, '')
-tf.flags.DEFINE_integer('num_epochs', 100, '')
-
+tf.flags.DEFINE_integer('num_epochs', 1000, '')
+tf.flags.DEFINE_float('learning_rate', 0.01, '')
 
 tf.flags.DEFINE_integer('num_oov_vocab_buckets', 20,
         'number of hash buckets to use for OOV words')
@@ -43,6 +44,7 @@ if FLAGS.dev:
 TEXT_KEY = 'text'
 LABELS_KEY = 'labels'
 NGRAMS_KEY = 'ngrams'
+DEFAULT_WORD = ' '
 
 def parse_ngrams(ngrams):
     ngrams = [int(g) for g in ngrams.split(',')]
@@ -104,9 +106,9 @@ def build_tfrecord(example, label_to_id):
     # labels = [tf.compat.as_bytes(x) for x in labels]
     # record.features.feature[LABELS_KEY].bytes_list.value.extend(labels)
     label_ids = [label_to_id[label] for label in labels]
-    labels = np.zeros((len(label_to_id),), dtype=np.int64)
+    labels = np.zeros((len(label_to_id),), dtype=np.float32)
     labels[label_ids] = 1
-    record.features.feature[LABELS_KEY].int64_list.value.extend(labels)
+    record.features.feature[LABELS_KEY].float_list.value.extend(labels)
 
     if ngrams is not None:
         ngrams = [tf.compat.as_bytes(x) for x in ngrams]
@@ -154,11 +156,46 @@ def cleanse():
 def get_parse_spec(use_ngrams, num_label):
     parse_spec = {
         TEXT_KEY:tf.VarLenFeature(dtype=tf.string),
-        LABELS_KEY:tf.FixedLenFeature([num_label], tf.int64, default_value=tf.zeros([num_label], dtype=tf.int64)),
+        LABELS_KEY:tf.FixedLenFeature([num_label], tf.float32, default_value=tf.zeros([num_label], dtype=tf.float32)),
     }
     if use_ngrams:
         parse_spec[NGRAMS_KEY] = tf.VarLenFeature(dtype=tf.string)
     return parse_spec
+
+def evaluate(logits, labels, cutoff, normalize):
+    predictions = np.argsort(-logits, axis=1)[:,:cutoff]
+    batch_size, _ = labels.shape
+    scores = []
+    for batch in range(batch_size):
+        label_bt = labels[batch,:]
+        label_bt = np.nonzero(label_bt)[0]
+        prediction_bt = predictions[batch,:]
+        num_label = len(label_bt)
+        present = 0
+        for label in label_bt:
+            if label in prediction_bt:
+                present += 1
+        score = present
+        if score > 0:
+            score *= (1.0 / normalize(cutoff, num_label))
+        # print('score={0:.4f}'.format(score))
+        scores.append(score)
+    score = np.mean(scores)
+    return score
+
+def precision(logits, labels, cutoff):
+    def normalize(cutoff, num_label):
+        return min(cutoff, num_label)
+    prec = evaluate(logits, labels, cutoff, normalize)
+    # print('prec={0:.4f}'.format(prec))
+    return prec
+
+def recall(logits, labels, cutoff):
+    def normalize(cutoff, num_label):
+        return num_label
+    rec = evaluate(logits, labels, cutoff, normalize)
+    # print('rec={0:.4f}'.format(rec))
+    return rec
 
 def train():
     vocab_size = len(open(FLAGS.vocab_file).readlines())
@@ -174,36 +211,94 @@ def train():
             tf.TFRecordReader,
             num_epochs=FLAGS.num_epochs,
             reader_num_threads=FLAGS.num_threads)
-    features['text'] = tf.sparse_tensor_to_dense(features['text'], default_value=' ')
-    # text_ts = features.get(TEXT_KEY)
-    # label_ts = features.get(LABELS_KEY)
-    # text_ts = features[TEXT_KEY]
-    # label_ts = features[LABELS_KEY]
+    text_ts = tf.sparse_tensor_to_dense(features[TEXT_KEY], default_value=DEFAULT_WORD)
+    label_ts = features.pop(LABELS_KEY)
+    text_ph = tf.placeholder(tf.string, shape=(None, None))
+    label_ph = tf.placeholder(tf.float32, shape=(None, num_label))
+    text_lookup_table = tf.contrib.lookup.index_table_from_file(
+            FLAGS.vocab_file, FLAGS.num_oov_vocab_buckets, vocab_size)
+    text_ids = text_lookup_table.lookup(text_ph)
+    text_embedding_w = tf.Variable(tf.random_uniform([vocab_size + FLAGS.num_oov_vocab_buckets, FLAGS.embedding_dimension], -0.1, 0.1))
+    text_embedding = tf.reduce_mean(tf.nn.embedding_lookup(text_embedding_w, text_ids), axis=-2)
+    input_layer = text_embedding
+    logits_ts = tf.contrib.layers.fully_connected(inputs=input_layer, num_outputs=num_label, activation_fn=None)
+    loss_ts = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=label_ph, logits=logits_ts))
+    optimizer = tf.train.AdamOptimizer(FLAGS.learning_rate)
+    train_op = optimizer.minimize(loss_ts, global_step=tf.train.get_global_step())
+    var_init = tf.global_variables_initializer()
+    tab_init = tf.tables_initializer()
+
+    tf.summary.scalar('loss', loss_ts)
+    summary_op = tf.summary.merge_all()
+
+
+    features_v = tf.contrib.learn.read_batch_features(
+            FLAGS.valid_tfrecord,
+            FLAGS.batch_size,
+            parse_spec,
+            tf.TFRecordReader,
+            num_epochs=1,
+            reader_num_threads=FLAGS.num_threads)
+    text_ts_v = tf.sparse_tensor_to_dense(features_v[TEXT_KEY], default_value=DEFAULT_WORD)
+    label_ts_v = features_v.pop(LABELS_KEY)
+    
     from tensorflow.python.framework import errors
     from tensorflow.python.ops import variables
     from tensorflow.python.training import coordinator
     from tensorflow.python.training import queue_runner_impl
-    with tf.Session() as session:
-      session.run(variables.local_variables_initializer())
-      coord = coordinator.Coordinator()
-      threads = queue_runner_impl.start_queue_runners(session, coord=coord)
+    with tf.Session() as sess:
+      writer = tf.summary.FileWriter(FLAGS.logs_dir, graph=tf.get_default_graph())
 
+      sess.run(variables.local_variables_initializer())
+      coord = coordinator.Coordinator()
+      threads = queue_runner_impl.start_queue_runners(sess, coord=coord)
+      sess.run(var_init)
+      sess.run(tab_init)
+      total_size = 0
       try:
         while not coord.should_stop():
-            feature_np, = session.run([features])
-            # res = session.run([text_ts, label_ts])
-            text_np, label_np = feature_np['text'], feature_np['labels']
-            print(type(text_np), text_np.shape, type(label_np), label_np.shape)
-            for i in range(FLAGS.batch_size):
-                label_ids = [j for j in range(num_label) if label_np[i,j] != 0]
-                labels = [id_to_label[label_id] for label_id in label_ids]
-                text = [text_np[i,j].decode('utf-8') for j in range(text_np.shape[1]) if text_np[i,j] != b' ']
-                text = ' '.join(text)
-                print(str(text), labels)
-                input()
-            input()
+            # feature_np, label_np = sess.run([features, label_ts])
+            # text_np = feature_np[TEXT_KEY]
+            # print(type(text_np), text_np.shape, type(label_np), label_np.shape)
+            # for i in range(FLAGS.batch_size):
+            #     label_ids = [j for j in range(num_label) if label_np[i,j] != 0]
+            #     labels = [id_to_label[label_id] for label_id in label_ids]
+            #     text = [text_np[i,j].decode('utf-8') for j in range(text_np.shape[1]) if text_np[i,j] != b' ']
+            #     text = ' '.join(text)
+            #     print(str(text), labels)
+            #     input()
+            # input()
+            for train_step in range(1000000):
+                text_np, label_np = sess.run([text_ts, label_ts])
+                total_size += FLAGS.batch_size
+                # print(type(text_np), text_np.shape, type(label_np), label_np.shape)
+                # for i in range(FLAGS.batch_size):
+                #     label_ids = [j for j in range(num_label) if label_np[i,j] != 0]
+                #     labels = [id_to_label[label_id] for label_id in label_ids]
+                #     text = [text_np[i,j].decode('utf-8') for j in range(text_np.shape[1]) if text_np[i,j] != b' ']
+                #     text = ' '.join(text)
+                #     print(str(text), labels)
+                #     input()
+                
+                feed_dict = {text_ph:text_np, label_ph:label_np}
+                _, loss, summary = sess.run([train_op, loss_ts, summary_op], feed_dict=feed_dict)
+                if (train_step + 1) % 100 == 0:
+                    writer.add_summary(summary, train_step)
+                    print('#{0} loss={1:.4f}'.format(train_step, loss))
       except errors.OutOfRangeError:
-        pass
+        print('total={}'.format(total_size))
+        cutoff = 3
+        prec_v, rec_v = [], []
+        for valid_step in range(int(2000 / FLAGS.batch_size)):
+            text_np, label_np = sess.run([text_ts_v, label_ts_v])
+            feed_dict = {text_ph:text_np, label_ph:label_np}
+            logits, = sess.run([logits_ts], feed_dict=feed_dict)
+            prec_bt = precision(logits, label_np, cutoff)
+            prec_v.append(prec_bt)
+            rec_bt = recall(logits, label_np, cutoff)
+            rec_v.append(rec_bt)
+        prec_v, rec_v = np.mean(prec_v), np.mean(rec_v)
+        print('prec={0:.4f} rec={1:.4f}'.format(prec_v, rec_v))
       finally:
         coord.request_stop()
 
