@@ -21,7 +21,8 @@ def process(options, collection, annotationName, runfile):
     ndcg = getScorer('NDCG@20')
     ndcg2 = getScorer('NDCG2@20')
     p1scorer = getScorer('P@1')
-    p5scorer = getScorer('P@5')
+    p3scorer = getScorer('P@3')
+    # p5scorer = getScorer('P@5')
 
     datafiles = [x.strip() for x in open(runfile).readlines() if x.strip() and not x.strip().startswith('#')]
     nr_of_runs = len(datafiles)
@@ -63,7 +64,8 @@ def process(options, collection, annotationName, runfile):
     ndcg2_table = np.zeros((nr_of_runs, nr_of_concepts))
     
     print '#'*100
-    print '# method miap hit1 hit5'
+    print '# method miap hit1 hit3'
+    # print '# method miap hit1 hit5'
     print '#'*100
     
     for run_idx in range(nr_of_runs):
@@ -110,10 +112,12 @@ def process(options, collection, annotationName, runfile):
             sorted_labels = [int(x[0] in rel_set) for x in ranklist]
             ap = apscorer.score(sorted_labels)
             hit1 = p1scorer.score(sorted_labels)
-            hit5 = p5scorer.score(sorted_labels) > 0.1
+            hit3 = p3scorer.score(sorted_labels) > 0.1
+            # hit5 = p5scorer.score(sorted_labels) > 0.1
             # print(imset[j], sorted_labels[0:5], ap, hit1, hit5)
             # raw_input()
-            res[j,:] = [ap, hit1, hit5]
+            res[j,:] = [ap, hit1, hit3]
+            # res[j,:] = [ap, hit1, hit5]
         avg_perf = res.mean(axis=0)
         print os.path.split(datafiles[run_idx])[-1], ' '.join(['%.3f' % x for x in avg_perf])
             

@@ -1,4 +1,4 @@
-# ./eval_pickle.sh yfcc2k 
+# ./eval_pickle.sh yfcc2k jingwei
 
 export BASEDIR=/Users/xiaojiew1/Projects # mac
 # export BASEDIR=/home/xiaojie/Projects

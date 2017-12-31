@@ -1,6 +1,6 @@
-from argparse import ArgumentParser
-
 import kdgan
+
+import tensorflow as tf
 
 def hello():
     print('Hello, World!')
