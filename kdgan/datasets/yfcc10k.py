@@ -19,11 +19,11 @@ from nltk.stem import WordNetLemmatizer
 
 lemmatizer = WordNetLemmatizer()
 
-SPACE_PLACEHOLDER = '+'
+SPACE_PLUS = '+'
 FIELD_SEPERATOR = '\t'
 LABEL_SEPERATOR = ','
 
-NUM_FIELD = 6
+EXPECTED_NUM_FIELD = 6
 
 POST_INDEX = 0
 USER_INDEX = 1
@@ -39,6 +39,7 @@ MAX_IMAGE_PER_USER = 100
 MIN_IMAGE_PER_LABEL = 100
 POST_UNIT_SIZE = 5
 TRAIN_RATIO = 0.80
+UNKNOWN_TOKEN = 'unk'
 
 def create_if_nonexist(outdir):
     if not path.exists(outdir):
@@ -49,6 +50,62 @@ def skip_if_exist(filepath):
     if path.isfile(filepath):
         skip = True
     return skip
+
+def check_num_field():
+    fin = open(config.sample_filepath)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        num_field = len(fields)
+        # print(num_field)
+        if num_field != EXPECTED_NUM_FIELD:
+            raise Exception('wrong number of fields')
+    fin.close()
+
+def select_top_label():
+    imagenet_labels = set()
+    label_names = imagenet.create_readable_names_for_imagenet_labels()
+    for label in range(1, 1001):
+        names = label_names[label].split(',')
+        for name in names:
+            name = name.strip().lower()
+            name = name.replace(' ', SPACE_PLUS)
+            word = name.split(SPACE_PLUS)[-1]
+            imagenet_labels.add(name)
+            imagenet_labels.add(word)
+
+    fin = open(config.sample_filepath)
+    label_count = {}
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        labels = fields[LABEL_INDEX]
+
+        labels = labels.split(LABEL_SEPERATOR)
+        for label in labels:
+            if label not in label_count:
+                label_count[label] = 0
+            label_count[label] += 1
+    fin.close()
+
+    invalid_labels = ['bank', 'center', 'engine', 'home', 'jack', 'maria', 'train', ]
+    label_count = sorted(label_count.items(), key=operator.itemgetter(1, 0), reverse=True)
+
+    top_labels, num_label, = set(), 0
+    for label, _ in label_count:
+        if num_label == NUM_TOP_LABEL:
+            break
+        if label in invalid_labels:
+            continue
+        if label not in imagenet_labels:
+            continue
+        top_labels.add(label)
+        num_label += 1
+    utils.save_collection(top_labels, config.label_filepath)
 
 def with_top_label(labels, top_labels):
     old_labels = labels.split(LABEL_SEPERATOR)
@@ -89,61 +146,6 @@ def save_posts(user_posts, infile):
                 image_set.add(image)
                 fout.write('%s\n' % post)
     print('#image={}'.format(len(image_set)))
-
-def check_num_field():
-    fin = open(config.sample_filepath)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        num_field = len(fields)
-        if num_field != NUM_FIELD:
-            raise Exception('wrong number of fields')
-    fin.close()
-
-def select_top_label():
-    valid = set()
-    label_names = imagenet.create_readable_names_for_imagenet_labels()
-    for label in range(1, 1001):
-        names = label_names[label].split(',')
-        for name in names:
-            name = name.strip().lower()
-            name = name.replace(' ', SPACE_PLACEHOLDER)
-            word = name.split(SPACE_PLACEHOLDER)[-1]
-            valid.add(name)
-            valid.add(word)
-
-    fin = open(config.sample_filepath)
-    label_count = {}
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        labels = fields[LABEL_INDEX]
-
-        labels = labels.split(LABEL_SEPERATOR)
-        for label in labels:
-            if label not in label_count:
-                label_count[label] = 0
-            label_count[label] += 1
-    fin.close()
-
-    invalid = ['bank', 'center', 'engine', 'home', 'jack', 'maria', 'train', ]
-    label_count = sorted(label_count.items(), key=operator.itemgetter(1, 0), reverse=True)
-
-    top_labels, num_label, = set(), 0
-    for label, _ in label_count:
-        if num_label == NUM_TOP_LABEL:
-            break
-        if label in invalid:
-            continue
-        if label not in valid:
-            continue
-        top_labels.add(label)
-        num_label += 1
-    utils.save_collection(top_labels, config.label_filepath)
 
 def select_posts():
     top_labels = utils.load_collection(config.label_filepath)
@@ -328,56 +330,78 @@ def select_posts():
             fields[IMAGE_INDEX] = image
             post = FIELD_SEPERATOR.join(fields)
             user_posts[user].append(post)
+
     save_posts(user_posts, config.raw_filepath)
 
+stopwords = set(stopwords.words('english'))    
 def tokenize_dataset():
     stemmer = SnowballStemmer('english')
-    stopwords = set(stopwords.words('english'))
     tokenizer = RegexpTokenizer('[a-z]+')
-    def _in_synsets(token):
+    def _in_wordnet(token):
         if wordnet.synsets(token):
             return True
         else:
             return False
-    def _tokenize(tokens):
-        tokens = [token for token in tokens if _in_synsets(token)]
+    def _stop_stem(tokens):
+        tokens = [token for token in tokens if _in_wordnet(token)]
         tokens = [token for token in tokens if not token in stopwords]
         tokens = [stemmer.stem(token) for token in tokens]
         return tokens
 
     fin = open(config.raw_filepath)
+    fout = open(config.data_filepath, 'w')
     while True:
         line = fin.readline().strip()
         if not line:
             break
         fields = line.split(FIELD_SEPERATOR)
+        post = fields[POST_INDEX]
         text = fields[TEXT_INDEX]
         desc = fields[DESC_INDEX]
+        # print('{0}\n{1}\n{0}'.format('#'*80, post))
+        # print(urllib.parse.unquote(text).replace(SPACE_PLUS, ' '))
+        # print('{0}'.format('#'*80))
+        # print(urllib.parse.unquote(desc).replace(SPACE_PLUS, ' '))
+        # print('{0}'.format('#'*80))
         text = ' '.join([text, desc])
 
         text = urllib.parse.unquote(text)
-        text = text.replace(SPACE_PLACEHOLDER, ' ')
+        text = text.replace(SPACE_PLUS, ' ')
 
         soup = BeautifulSoup(text, 'html.parser')
         children = []
         for child in soup.children:
-            if type(child) != NavigableString:
-                continue
-            children.append(str(child))
+            if type(child) == NavigableString:
+                children.append(str(child))
+            else:
+                children.append(str(child.text))
         text = ' '.join(children)
 
         tokens = word_tokenize(text)
-        tokens = _tokenize(tokens)
+        tokens = _stop_stem(tokens)
         if len(tokens) == 0:
             tokens = tokenizer.tokenize(text)
-            tokens = _tokenize(tokens)
+            tokens = _stop_stem(tokens)
         text = ' '.join(tokens)
-        print(text)
-
+        # print(text)
+        # print('{0}\n{0}'.format('#'*80))
+        labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+        labels = ' '.join(labels)
+        fields = [
+            fields[POST_INDEX],
+            fields[USER_INDEX],
+            fields[IMAGE_INDEX],
+            text,
+            labels,
+        ]
+        fout.write('%s\n' % FIELD_SEPERATOR.join(fields))
+    fout.close()
     fin.close()
 
 def check_dataset(infile):
     top_labels = utils.load_collection(config.label_filepath)
+    label_to_id = utils.load_label_to_id()
+    top_labels = [label_to_id[label] for label in top_labels]
     top_labels = set(top_labels)
     fin = open(infile)
     while True:
@@ -385,14 +409,14 @@ def check_dataset(infile):
         if not line:
             break
         fields = line.strip().split(FIELD_SEPERATOR)
-        labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+        labels = fields[LABEL_INDEX].split()
         for label in labels:
             top_labels.discard(label)
     assert len(top_labels) == 0
 
 def split_dataset():
     user_posts = {}
-    fin = open(config.raw_filepath)
+    fin = open(config.data_filepath)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -420,10 +444,24 @@ def split_dataset():
     check_dataset(config.train_filepath)
     check_dataset(config.valid_filepath)
 
+    vocab = set()
+    for user, posts in train_user_posts.items():
+        for post in posts:
+            fields = post.split(FIELD_SEPERATOR)
+            tokens = fields[TEXT_INDEX].split()
+            for token in tokens:
+                vocab.add(token)
+    vocab = sorted(vocab)
+    if UNKNOWN_TOKEN in vocab:
+        print('please change unknown token')
+        exit()
+    vocab.append(UNKNOWN_TOKEN)
+    utils.save_collection(vocab, config.vocab_filepath)
+
 def count_dataset():
     create_if_nonexist(config.temp_dir)
     user_count = {}
-    fin = open(config.raw_filepath)
+    fin = open(config.data_filepath)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -441,14 +479,14 @@ def count_dataset():
             fout.write('{}\t{}\n'.format(user, count))
 
     label_count = {}
-    fin = open(config.raw_filepath)
+    fin = open(config.data_filepath)
     while True:
         line = fin.readline().strip()
         if not line:
             break
         fields = line.split(FIELD_SEPERATOR)
         user = fields[USER_INDEX]
-        labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+        labels = fields[LABEL_INDEX].split()
         assert len(labels) != 0
         for label in labels:
             if label not in label_count:
@@ -477,9 +515,12 @@ if __name__ == '__main__':
     if not skip_if_exist(config.raw_filepath):
         print('select posts')
         select_posts()
-
-    # if not skip_if_exist(config.train_filepath) or not skip_if_exist(config.valid_filepath):
-    #     print('split dataset')
-    #     split_dataset()
-
-
+    if not skip_if_exist(config.data_filepath):
+        print('tokenize dataset')
+        tokenize_dataset()
+    if (not skip_if_exist(config.train_filepath) or 
+                not skip_if_exist(config.valid_filepath or 
+                not skip_if_exist(config.vocab_filepath))):
+        print('split dataset')
+        split_dataset()
+    count_dataset()
