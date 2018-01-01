@@ -16,13 +16,14 @@ sys.path.insert(0, slim_dir)
 dataset = 'yfcc10k'
 image_dir = path.join(yfcc_dir, 'images')
 init_sample_filepath = path.join(yfcc_dir, 'sample_00')
-last_sample_filepath = path.join(yfcc_dir, 'sample_09')
+sample_filepath = path.join(yfcc_dir, 'sample_09')
 
 yfcc10k_dir = path.join(yfcc_dir, 'yfcc10k')
-data_filepath = path.join(yfcc10k_dir, '%s.data'%dataset)
-train_filepath = path.join(yfcc10k_dir, '%s.train'%dataset)
-valid_filepath = path.join(yfcc10k_dir, '%s.valid'%dataset)
-label_filepath = path.join(yfcc10k_dir, '%s.label'%dataset)
+raw_filepath = path.join(yfcc10k_dir, '%s.raw' % dataset)
+data_filepath = path.join(yfcc10k_dir, '%s.data' % dataset)
+train_filepath = path.join(yfcc10k_dir, '%s.train' % dataset)
+valid_filepath = path.join(yfcc10k_dir, '%s.valid' % dataset)
+label_filepath = path.join(yfcc10k_dir, '%s.label' % dataset)
 
 
 
