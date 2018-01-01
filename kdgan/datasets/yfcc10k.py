@@ -400,8 +400,6 @@ def tokenize_dataset():
 
 def check_dataset(infile):
     top_labels = utils.load_collection(config.label_filepath)
-    label_to_id = utils.load_label_to_id()
-    top_labels = [label_to_id[label] for label in top_labels]
     top_labels = set(top_labels)
     fin = open(infile)
     while True:
@@ -412,6 +410,7 @@ def check_dataset(infile):
         labels = fields[LABEL_INDEX].split()
         for label in labels:
             top_labels.discard(label)
+    # print(path.basename(infile), len(top_labels))
     assert len(top_labels) == 0
 
 def split_dataset():
