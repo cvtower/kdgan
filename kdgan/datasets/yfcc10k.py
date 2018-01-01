@@ -7,15 +7,25 @@ import random
 import shutil
 import urllib
 
-from os import path
+import numpy as np
+import tensorflow as tf
+from tensorflow.contrib import slim
+
 from nltk import word_tokenize
 from nltk.corpus import stopwords, wordnet
-from nltk.stem.snowball import SnowballStemmer
-from nltk.tokenize import RegexpTokenizer
+from os import path
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 from nltk.stem import WordNetLemmatizer
+from nltk.stem.snowball import SnowballStemmer
+from nltk.tokenize import RegexpTokenizer
+
+from PIL import Image
+
+# tf slim
+from datasets import dataset_utils
+from datasets.download_and_convert_flowers import ImageReader
 
 lemmatizer = WordNetLemmatizer()
 
@@ -45,14 +55,14 @@ def create_if_nonexist(outdir):
     if not path.exists(outdir):
         os.makedirs(outdir)
 
-def skip_if_exist(filepath):
+def skip_if_exist(infile):
     skip = False
-    if path.isfile(filepath):
+    if path.isfile(infile):
         skip = True
     return skip
 
 def check_num_field():
-    fin = open(config.sample_filepath)
+    fin = open(config.sample_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -76,7 +86,7 @@ def select_top_label():
             imagenet_labels.add(name)
             imagenet_labels.add(word)
 
-    fin = open(config.sample_filepath)
+    fin = open(config.sample_file)
     label_count = {}
     while True:
         line = fin.readline().strip()
@@ -105,7 +115,8 @@ def select_top_label():
             continue
         top_labels.add(label)
         num_label += 1
-    utils.save_collection(top_labels, config.label_filepath)
+    top_labels = sorted(top_labels)
+    utils.save_collection(top_labels, config.label_file)
 
 def with_top_label(labels, top_labels):
     old_labels = labels.split(LABEL_SEPERATOR)
@@ -148,9 +159,9 @@ def save_posts(user_posts, infile):
     print('#image={}'.format(len(image_set)))
 
 def select_posts():
-    top_labels = utils.load_collection(config.label_filepath)
+    top_labels = utils.load_collection(config.label_file)
     user_posts = {}
-    fin = open(config.sample_filepath)
+    fin = open(config.sample_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -331,7 +342,7 @@ def select_posts():
             post = FIELD_SEPERATOR.join(fields)
             user_posts[user].append(post)
 
-    save_posts(user_posts, config.raw_filepath)
+    save_posts(user_posts, config.raw_file)
 
 stopwords = set(stopwords.words('english'))    
 def tokenize_dataset():
@@ -348,8 +359,8 @@ def tokenize_dataset():
         tokens = [stemmer.stem(token) for token in tokens]
         return tokens
 
-    fin = open(config.raw_filepath)
-    fout = open(config.data_filepath, 'w')
+    fin = open(config.raw_file)
+    fout = open(config.data_file, 'w')
     while True:
         line = fin.readline().strip()
         if not line:
@@ -399,7 +410,7 @@ def tokenize_dataset():
     fin.close()
 
 def check_dataset(infile):
-    top_labels = utils.load_collection(config.label_filepath)
+    top_labels = utils.load_collection(config.label_file)
     top_labels = set(top_labels)
     fin = open(infile)
     while True:
@@ -415,7 +426,7 @@ def check_dataset(infile):
 
 def split_dataset():
     user_posts = {}
-    fin = open(config.data_filepath)
+    fin = open(config.data_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -437,11 +448,11 @@ def split_dataset():
         train_user_posts[user] = posts[:seperator]
         valid_user_posts[user] = posts[seperator:]
 
-    save_posts(train_user_posts, config.train_filepath)
-    save_posts(valid_user_posts, config.valid_filepath)
+    save_posts(train_user_posts, config.train_file)
+    save_posts(valid_user_posts, config.valid_file)
 
-    check_dataset(config.train_filepath)
-    check_dataset(config.valid_filepath)
+    check_dataset(config.train_file)
+    check_dataset(config.valid_file)
 
     vocab = set()
     for user, posts in train_user_posts.items():
@@ -455,12 +466,12 @@ def split_dataset():
         print('please change unknown token')
         exit()
     vocab.append(UNKNOWN_TOKEN)
-    utils.save_collection(vocab, config.vocab_filepath)
+    utils.save_collection(vocab, config.vocab_file)
 
 def count_dataset():
     create_if_nonexist(config.temp_dir)
     user_count = {}
-    fin = open(config.data_filepath)
+    fin = open(config.data_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -478,7 +489,7 @@ def count_dataset():
             fout.write('{}\t{}\n'.format(user, count))
 
     label_count = {}
-    fin = open(config.data_filepath)
+    fin = open(config.data_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -505,29 +516,208 @@ def count_dataset():
             fout.write('{}\t{}\n'.format(label, count))
     print('#label={} #lemm={}'.format(len(labels), len(lemms)))
 
+def get_image_path(image_dir, image_url):
+    fields = image_url.split('/')
+    image_path = path.join(image_dir, fields[-2], fields[-1])
+    return image_path
+
 def collect_image():
-    pass
+    post_image = {}
+    fin = open(config.data_file)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        post = fields[POST_INDEX]
+        image = fields[IMAGE_INDEX]
+        post_image[post] = image
+    fin.close()
+    create_if_nonexist(config.image_data_dir)
+    fin = open(config.sample_file)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        post = fields[POST_INDEX]
+        if post not in post_image:
+            continue
+        image_url = fields[IMAGE_INDEX]
+        src_file = get_image_path(config.image_dir, image_url)
+        image = post_image[post]
+        dst_file = path.join(config.image_data_dir, '%s.jpg' % image)
+        if path.isfile(dst_file):
+            continue
+        shutil.copyfile(src_file, dst_file)
+
+def int64_feature(value):
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=value))
+
+def build_example(user, image, text, label_vec, extension, height, width, image_file):
+    return tf.train.Example(features=tf.train.Features(feature={
+        config.user_key:dataset_utils.bytes_feature(user),
+        config.image_encoded_key:dataset_utils.bytes_feature(image),
+        config.text_key:int64_feature(text),
+        config.label_key:int64_feature(label_vec),
+        config.image_format_key:dataset_utils.bytes_feature(extension),
+        config.image_height_key:int64_feature([height]),
+        config.image_width_key:int64_feature([width]),
+        config.image_file_key:dataset_utils.bytes_feature(image_file),
+    }))
+
+def create_tfrecord(infile):
+    tfrecord_file = '%s.tfrecord' % infile
+    print(tfrecord_file)
+
+    user_list = []
+    image_list = []
+    text_list = []
+    label_list = []
+    fin = open(infile)
+    while True:
+        line = fin.readline()
+        if not line:
+            break
+        fields = line.strip().split(FIELD_SEPERATOR)
+        user = fields[USER_INDEX]
+        image = fields[IMAGE_INDEX]
+        image_file = path.join(config.image_data_dir, '%s.jpg' % image)
+        tokens = fields[TEXT_INDEX].split()
+        labels = fields[LABEL_INDEX].split()
+        user_list.append(user)
+        image_list.append(image_file)
+        text_list.append(tokens)
+        label_list.append(labels)
+    fin.close()
+
+    label_to_id = utils.load_label_to_id()
+    num_label = len(label_to_id)
+    print('#label={}'.format(num_label))
+    token_to_id = utils.load_token_to_id()
+    unknown_id = token_to_id[UNKNOWN_TOKEN]
+    vocab_size = len(token_to_id)
+    print('#vocab={}'.format(vocab_size))
+
+    reader = ImageReader()
+    with tf.Session() as sess:
+        with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
+            for user, image_file, text, labels in zip(user_list, image_list, text_list, label_list):
+                user = bytes(user, encoding='utf-8')
+                
+                image = tf.gfile.FastGFile(image_file, 'rb').read()
+
+                label_ids = [label_to_id[label] for label in labels]
+                label_vec = np.zeros((num_label,), dtype=np.int64)
+                label_vec[label_ids] = 1
+                
+                text = [token_to_id.get(token, unknown_id) for token in text]
+
+                extension = b'jpg'
+                height, width = reader.read_image_dims(sess, image)
+                image_file = bytes(image_file, encoding='utf-8')
+
+                example = build_example(user, image, text, label_vec, extension, height, width, image_file)
+                fout.write(example.SerializeToString())
+
+def check_tfrecord(tfrecord_file, is_training):
+    data_sources = [tfrecord_file]
+
+    id_to_label = utils.load_id_to_label()
+    num_label = len(id_to_label)
+    print('#label={}'.format(num_label))
+    id_to_token = utils.load_id_to_token()
+    token_to_id = utils.load_token_to_id()
+    unknown_id = token_to_id[UNKNOWN_TOKEN]
+    vocab_size = int((len(id_to_token) + len(token_to_id)) / 2)
+    print('#vocab={}'.format(vocab_size))
+
+    reader = tf.TFRecordReader
+    keys_to_features = {
+        config.user_key:tf.FixedLenFeature((), tf.string, default_value=''),
+        config.image_encoded_key:tf.FixedLenFeature((), tf.string, default_value=''),
+        config.text_key:tf.VarLenFeature(dtype=tf.int64),
+        config.label_key:tf.FixedLenFeature([num_label], tf.int64, default_value=tf.zeros([num_label], dtype=tf.int64)),
+        config.image_format_key:tf.FixedLenFeature((), tf.string, default_value='jpg'),
+        config.image_file_key:tf.FixedLenFeature((), tf.string, default_value='')
+    }
+    items_to_handlers = {
+        'user':slim.tfexample_decoder.Tensor(config.user_key),
+        'image':slim.tfexample_decoder.Image(),
+        'text':slim.tfexample_decoder.Tensor(config.text_key, default_value=unknown_id),
+        'label':slim.tfexample_decoder.Tensor(config.label_key),
+        'image_file':slim.tfexample_decoder.Tensor(config.image_file_key),
+    }
+    decoder = slim.tfexample_decoder.TFExampleDecoder(keys_to_features, items_to_handlers)
+    num_samples = np.inf
+    items_to_descriptions = {'user':'', 'image':'', 'text':'', 'label':'', 'image_file':'',}
+    dataset = slim.dataset.Dataset(
+        data_sources=data_sources,
+        reader=reader,
+        decoder=decoder,
+        num_samples=num_samples,
+        items_to_descriptions=items_to_descriptions,
+    )
+    provider = slim.dataset_data_provider.DatasetDataProvider(dataset, shuffle=is_training)
+    user_ts, image_ts, text_ts, label_ts, image_file_ts = provider.get(
+            ['user', 'image', 'text', 'label', 'image_file'])
+    
+    # with tf.Session() as sess:
+    #     with slim.queues.QueueRunners(sess):
+    #         for i in range(2):
+    #             user_np, image_np, text_np, label_np, image_file_np = sess.run(
+    #                     [user_ts, image_ts, text_ts, label_ts, image_file_ts])
+    #             print('{0}\n{0}'.format('#'*80))
+    #             print(user_np)
+    #             Image.fromarray(np.asarray(image_np)).show()
+    #             tokens = [id_to_token[text_np[i]] for i in range(text_np.shape[0])]
+    #             print(tokens)
+    #             label_ids = [i for i, l in enumerate(label_np) if l != 0]
+    #             labels = [id_to_label[label_id] for label_id in label_ids]
+    #             print(labels)
+    #             print(image_file_np)
+    #             print('{0}\n{0}'.format('#'*80))
+
+    batch_size = 32
+    num_step = 100000
+    user_bt, image_bt, text_bt, label_bt, image_file_bt = tf.train.batch(
+            [user_ts, image_ts, text_ts, label_ts, image_file_ts], 
+            batch_size=batch_size, dynamic_pad=True)
+
+    with tf.Session() as sess:
+        with slim.queues.QueueRunners(sess):
+            for i in range(num_step):
+                user_np, image_np, text_np, label_np, image_file_np = sess.run(
+                        [user_bt, image_bt, text_bt, label_bt, image_file_bt])
+                print(user_np.shape, image_np.shape, text_np.shape, label_np.shape, image_file_np.shape)
 
 if __name__ == '__main__':
     create_if_nonexist(config.yfcc10k_dir)
     check_num_field()
-    if not skip_if_exist(config.label_filepath):
+    if not skip_if_exist(config.label_file):
         print('select top labels')
         select_top_label()
-    if not skip_if_exist(config.raw_filepath):
+    if not skip_if_exist(config.raw_file):
         print('select posts')
         select_posts()
-    if not skip_if_exist(config.data_filepath):
+    if not skip_if_exist(config.data_file):
         print('tokenize dataset')
         tokenize_dataset()
         count_dataset()
-    if (not skip_if_exist(config.train_filepath) or 
-                not skip_if_exist(config.valid_filepath or 
-                not skip_if_exist(config.vocab_filepath))):
+    if (not skip_if_exist(config.train_file) or 
+                not skip_if_exist(config.valid_file or 
+                not skip_if_exist(config.vocab_file))):
         print('split dataset')
         split_dataset()
     if path.isdir(config.image_dir):
         print('collect images')
+        # find ImageData/ -type f | wc -l
         collect_image()
-
-
+    # exit()
+    if (not skip_if_exist(config.train_tfrecord or
+                not skip_if_exist(config.valid_tfrecord))):
+        print('create tfrecord')
+        create_tfrecord(config.train_file)
+        create_tfrecord(config.valid_file)
+    check_tfrecord(config.train_tfrecord, True)
+    check_tfrecord(config.valid_tfrecord, False)

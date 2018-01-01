@@ -1,7 +1,6 @@
 from kdgan import config
 
 def save_collection(coll, outfile):
-    coll = sorted(coll)
     with open(outfile, 'w') as fout:
         for elem in coll:
             fout.write('%s\n' % elem)
@@ -18,11 +17,11 @@ def load_sth_to_id(infile):
     return sth_to_id
 
 def load_label_to_id():
-    label_to_id = load_sth_to_id(config.label_filepath)
+    label_to_id = load_sth_to_id(config.label_file)
     return label_to_id
 
-def load_vocab_to_id():
-    vocab_to_id = load_sth_to_id(config.vocab_filepath)
+def load_token_to_id():
+    vocab_to_id = load_sth_to_id(config.vocab_file)
     return vocab_to_id
 
 def load_id_to_sth(infile):
@@ -32,9 +31,9 @@ def load_id_to_sth(infile):
     return id_to_sth
 
 def load_id_to_label():
-    id_to_label = load_id_to_sth(config.label_filepath)
+    id_to_label = load_id_to_sth(config.label_file)
     return id_to_label
 
-def load_id_to_vocab():
-    id_to_vocab = load_id_to_sth(config.vocab_filepath)
+def load_id_to_token():
+    id_to_vocab = load_id_to_sth(config.vocab_file)
     return id_to_vocab

@@ -15,15 +15,25 @@ sys.path.insert(0, slim_dir)
 
 dataset = 'yfcc10k'
 image_dir = path.join(yfcc_dir, 'images')
-sample_filepath = path.join(yfcc_dir, 'sample_09')
+sample_file = path.join(yfcc_dir, 'sample_09')
 
 yfcc10k_dir = path.join(yfcc_dir, 'yfcc10k')
-raw_filepath = path.join(yfcc10k_dir, '%s.raw' % dataset)
-data_filepath = path.join(yfcc10k_dir, '%s.data' % dataset)
-train_filepath = path.join(yfcc10k_dir, '%s.train' % dataset)
-valid_filepath = path.join(yfcc10k_dir, '%s.valid' % dataset)
-label_filepath = path.join(yfcc10k_dir, '%s.label' % dataset)
-vocab_filepath = path.join(yfcc10k_dir, '%s.vocab' % dataset)
+raw_file = path.join(yfcc10k_dir, '%s.raw' % dataset)
+data_file = path.join(yfcc10k_dir, '%s.data' % dataset)
+train_file = path.join(yfcc10k_dir, '%s.train' % dataset)
+valid_file = path.join(yfcc10k_dir, '%s.valid' % dataset)
+label_file = path.join(yfcc10k_dir, '%s.label' % dataset)
+vocab_file = path.join(yfcc10k_dir, '%s.vocab' % dataset)
 image_data_dir = path.join(yfcc10k_dir, 'ImageData')
 
+train_tfrecord = '%s.tfrecord' % train_file
+valid_tfrecord = '%s.tfrecord' % valid_file
 
+user_key = 'user'
+text_key = 'text'
+label_key = 'label'
+image_encoded_key = 'image/encoded'
+image_format_key = 'image/format'
+image_height_key = 'image/height'
+image_width_key = 'image/width'
+image_file_key = 'image/file'

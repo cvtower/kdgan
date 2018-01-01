@@ -15,13 +15,6 @@ from nltk.corpus import wordnet as wn
 from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
 
-################################################################
-#
-# create kdgan data
-#
-################################################################
-
-
 
 TOT_LABEL = 100
 TOT_POST = 10000
@@ -35,82 +28,6 @@ TRAIN_RATIO = 0.80
 UNIT_POST = 5
 
 COPY_IMAGE = True
-
-def get_image_path(image_dir, image_url):
-    fields = image_url.split('/')
-    image_path = path.join(image_dir, fields[-2], fields[-1])
-    return image_path
-
-def create_kdgan_data():
-    label_set = select_labels(config.last_sample_filepath)
-    select_posts(config.last_sample_filepath, label_set)
-    print('#label={}'.format(len(label_set)))
-    split_data(label_set)
-
-    infile = config.data_filepath
-    label_set = set()
-    fin = open(infile)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-        for label in labels:
-            label_set.add(label)
-    fin.close()
-    fout = open(config.label_filepath, 'w')
-    for label in sorted(label_set):
-        fout.write('%s\n' % label)
-    fout.close()
-
-def summarize_data():
-    create_if_nonexist(config.temp_dir)
-    user_count = {}
-    fin = open(config.data_filepath)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        user = fields[USER_INDEX]
-        if user not in user_count:
-            user_count[user] = 0
-        user_count[user] += 1
-    fin.close()
-    sorted_user_count = sorted(user_count.items(), key=operator.itemgetter(0), reverse=True)
-    outfile = path.join(config.temp_dir, 'user_count')
-    with open(outfile, 'w') as fout:
-        for user, count in sorted_user_count:
-            fout.write('{}\t{}\n'.format(user, count))
-
-    label_count = {}
-    fin = open(config.data_filepath)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        user = fields[USER_INDEX]
-        labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-        assert len(labels) != 0
-        for label in labels:
-            if label not in label_count:
-                label_count[label] = 0
-            label_count[label] += 1
-    fin.close()
-    sorted_label_count = sorted(label_count.items(), key=operator.itemgetter(0), reverse=True)
-    outfile = path.join(config.temp_dir, 'label_count')
-    labels, lemms = set(), set()
-    with open(outfile, 'w') as fout:
-        for label, count in sorted_label_count:
-            labels.add(label)
-            lemm = lemmatizer.lemmatize(label)
-            lemms.add(lemm)
-            if lemm != label:
-                print('{} {}'.format(lemm, label))
-            fout.write('{}\t{}\n'.format(label, count))
-    print('#label={} #lemm={}'.format(len(labels), len(lemms)))
 
 ################################################################
 #
