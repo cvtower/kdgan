@@ -15,7 +15,6 @@ sys.path.insert(0, slim_dir)
 
 dataset = 'yfcc10k'
 image_dir = path.join(yfcc_dir, 'images')
-init_sample_filepath = path.join(yfcc_dir, 'sample_00')
 sample_filepath = path.join(yfcc_dir, 'sample_09')
 
 yfcc10k_dir = path.join(yfcc_dir, 'yfcc10k')
@@ -25,6 +24,6 @@ train_filepath = path.join(yfcc10k_dir, '%s.train' % dataset)
 valid_filepath = path.join(yfcc10k_dir, '%s.valid' % dataset)
 label_filepath = path.join(yfcc10k_dir, '%s.label' % dataset)
 vocab_filepath = path.join(yfcc10k_dir, '%s.vocab' % dataset)
-
+image_data_dir = path.join(yfcc10k_dir, 'ImageData')
 
 

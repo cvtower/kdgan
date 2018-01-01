@@ -505,6 +505,9 @@ def count_dataset():
             fout.write('{}\t{}\n'.format(label, count))
     print('#label={} #lemm={}'.format(len(labels), len(lemms)))
 
+def collect_image():
+    pass
+
 if __name__ == '__main__':
     create_if_nonexist(config.yfcc10k_dir)
     check_num_field()
@@ -517,9 +520,14 @@ if __name__ == '__main__':
     if not skip_if_exist(config.data_filepath):
         print('tokenize dataset')
         tokenize_dataset()
+        count_dataset()
     if (not skip_if_exist(config.train_filepath) or 
                 not skip_if_exist(config.valid_filepath or 
                 not skip_if_exist(config.vocab_filepath))):
         print('split dataset')
         split_dataset()
-    count_dataset()
+    if path.isdir(config.image_dir):
+        print('collect images')
+        collect_image()
+
+
