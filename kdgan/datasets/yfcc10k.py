@@ -972,7 +972,7 @@ def survey_annotations(infile):
             break
         fields = line.split(FIELD_SEPERATOR)
         image = fields[IMAGE_INDEX]
-        labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+        labels = fields[LABEL_INDEX].split()
         for label in labels:
             label_set.add(label)
             if label not in label_images:
