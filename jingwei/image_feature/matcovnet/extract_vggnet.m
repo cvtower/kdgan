@@ -1,7 +1,5 @@
 clear
 
-%matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
-
 data_folder = '/home/xiaojie/Projects/data/yfcc100m/survey_data/';
 %ds = 'yfcc8k';
 ds = 'yfcc2k';
@@ -168,7 +166,7 @@ end
 
 %% save data fc7
 
-suffix_name = 'fc7';
+suffix_name = '-fc7';
 if relu
     suffix_name = [suffix_name, 'relu'];
 end

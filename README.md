@@ -4,8 +4,19 @@ pip install -Ue .
 ssh xiaojiew1@10.100.229.246
 ssh xiaojie@10.100.228.181
 
-conda create -n py27 python=2.7 # create virtualenv for baseline
-conda create -n py34 python=3.4 # create virtualenv for kdgan
+conda create -n py27 python=2.7
+conda create -n py34 python=3.4
+
+# jingwei
+cd jingwei/image_feature/matcovnet/
+wget http://lixirong.net/data/csur2016/matconvnet-1.0-beta8.tar.gz
+tar -xzvf matconvnet-1.0-beta8.tar.gz
+wget http://lixirong.net/data/csur2016/matconvnet-models.tar
+.gz
+tar -xzvf matconvnet-models.tar.gz
+matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfcc8k';
+matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfcc2k';
+
 
 # do_tagprop.sh
 matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
