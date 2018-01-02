@@ -19,6 +19,19 @@ matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfc
 zip -r survey_data.zip survey_data -x survey_data/yfcc8k/ImageData/\* survey_data/yfcc2k/ImageData/\*
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 # do_tagprop.sh
 matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
 sudo apt-get install libboost-dev
