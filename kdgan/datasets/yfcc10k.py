@@ -1029,11 +1029,11 @@ if __name__ == '__main__':
         check_tfrecord(config.train_tfrecord, True)
         check_tfrecord(config.valid_tfrecord, False)
     
-    # create survey data
-    # survey_image_data(config.train_file)
-    # survey_image_data(config.valid_file)
-    # survey_text_data(config.train_file)
-    # survey_text_data(config.valid_file)
+    print('create survey data')
+    survey_image_data(config.train_file)
+    survey_image_data(config.valid_file)
+    survey_text_data(config.train_file)
+    survey_text_data(config.valid_file)
     survey_feature_sets(config.train_file)
     survey_feature_sets(config.valid_file)
     survey_annotations(config.train_file)
