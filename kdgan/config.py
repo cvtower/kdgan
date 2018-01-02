@@ -15,6 +15,7 @@ sys.path.insert(0, slim_dir)
 
 dataset = 'yfcc10k'
 image_dir = path.join(yfcc_dir, 'images')
+rawtag_file = path.join(yfcc_dir, 'sample_00')
 sample_file = path.join(yfcc_dir, 'sample_09')
 
 yfcc10k_dir = path.join(yfcc_dir, 'yfcc10k')
