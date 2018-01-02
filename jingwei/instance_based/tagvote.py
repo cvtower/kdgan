@@ -184,9 +184,13 @@ class PqTagVoteTagger (TagVoteTagger):
         return self.searcher.search_knn(content, requested=max(3000, self.k*3))
         
     
-NAME_TO_TAGGER = {'tagvote':TagVoteTagger, 'pretagvote':PreTagVoteTagger, 'preknn':PreKnnTagger, 'pqtagvote':PqTagVoteTagger}        
-   
-        
+NAME_TO_TAGGER = {
+    'tagvote':TagVoteTagger,
+    'pretagvote':PreTagVoteTagger,
+    'preknn':PreKnnTagger,
+    'pqtagvote':PqTagVoteTagger
+}
+
 if __name__ == '__main__':
     feature = 'vgg-verydeep-16-fc7relu'
     tagger = TagVoteTagger('train10k', 'concepts81.txt', feature, 'cosine')
