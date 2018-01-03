@@ -141,6 +141,9 @@ def main(_):
                 best_hit_v = hit_v
                 ckpt_file = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
                 gen_t.saver.save(sess, ckpt_file)
+    hit_file = path.join(config.temp_dir, '{}.hit'.format(flags.model_name))
+    with open(hit_file, 'w') as fout:
+        fout.write(best_hit_v)
 
 if __name__ == '__main__':
     tf.app.run()
