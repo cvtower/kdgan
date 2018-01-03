@@ -6,6 +6,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
+from os import path
 from tensorflow.contrib import slim
 
 from PIL import Image
@@ -131,8 +132,11 @@ def main(_):
                 avg_batch = total_time / (batch_t + 1)
                 avg_epoch = avg_batch * (config.train_data_size / config.train_batch_size)
                 s = '{0} hit={1:.4f} tot={2:.0f}s avg={3:.0f}s'
-                s = s.format(batch_t, hit_v, avg_epoch)
+                s = s.format(batch_t, hit_v, total_time, avg_epoch)
                 print(s)
+
+                ckpt_file = path.join(config.ckpt_dir, 'gen.ckpt')
+                gen_t.saver.save(sess, ckpt_file)
 
 if __name__ == '__main__':
     tf.app.run()

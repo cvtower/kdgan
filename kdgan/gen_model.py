@@ -70,16 +70,22 @@ class GEN():
         for scope in scopes:
             variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
             variables_to_train.extend(variables)
+        self.save_dict = {}
         for variable in variables_to_train:
             num_params = 1
             for dim in variable.shape:
                 num_params *= dim.value
             print('trainable {}\t({} params)'.format(variable.name, num_params))
+            self.save_dict[variable.name] = variable
+        self.saver = tf.train.Saver(self.save_dict)
 
         optimizer = tf.train.GradientDescentOptimizer(learning_rate)
         self.train_op = optimizer.minimize(loss, var_list=variables_to_train, global_step=global_step)
         
         self.init_fn = slim.assign_from_checkpoint_fn(flags.checkpoint_path, variables_to_restore)
+
+
+
 
 
 
