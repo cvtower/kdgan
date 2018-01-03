@@ -28,33 +28,6 @@ num_batch_t = int(flags.num_epoch * config.train_data_size / config.train_batch_
 num_batch_v = int(config.valid_data_size / config.valid_batch_size)
 print('train#batch={} valid#batch={}'.format(num_batch_t, num_batch_v))
 
-id_to_label = utils.load_id_to_label()
-
-def check_tfrecord(bt_list, batch_size):
-    id_to_label = utils.load_id_to_label()
-    id_to_token = utils.load_id_to_token()
-
-    user_bt, image_bt, text_bt, label_bt, image_file_bt = bt_list
-    with tf.Session() as sess:
-        with slim.queues.QueueRunners(sess):
-            for t in range(3):
-                user_np, image_np, text_np, label_np, image_file_np = sess.run(
-                        [user_bt, image_bt, text_bt, label_bt, image_file_bt])
-                # for b in range(batch_size):
-                #     print('{0}\n{0}'.format('#'*80))
-                #     print(user_np[b])
-                #     num_token = text_np[b].shape[0]
-                #     tokens = [id_to_token[text_np[b, i]] for i in range(num_token)]
-                #     print(tokens)
-                #     label_vt = label_np[b,:]
-                #     label_ids = [i for i, l in enumerate(label_vt) if l != 0]
-                #     labels = [id_to_label[label_id] for label_id in label_ids]
-                #     print(labels)
-                #     print(image_file_np[b])
-                #     print('{0}\n{0}'.format('#'*80))
-                #     input()
-                print(user_np.shape, image_np.shape, text_np.shape, label_np.shape, image_file_np.shape)
-
 def evaluate(logits, labels, cutoff, normalize):
     predictions = np.argsort(-logits, axis=1)[:,:cutoff]
     batch_size, _ = labels.shape
@@ -103,47 +76,31 @@ def main(_):
     best_hit_v = -np.inf
     init_op = tf.global_variables_initializer()
     start = time.time()
+    ckpt_file = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
     with tf.Session() as sess:
-        writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
-        sess.run(init_op)
+        # sess.run(init_op)
         gen_t.init_fn(sess)
+        gen_t.saver.restore(sess, ckpt_file)
         with slim.queues.QueueRunners(sess):
-            for batch_t in range(num_batch_t):
-                image_np_t, label_np_t = sess.run([image_bt_t, label_bt_t])
-                feed_dict = {gen_t.image_ph:image_np_t, gen_t.label_ph:label_np_t}
-                _, summary = sess.run([gen_t.train_op, gen_t.summary_op], feed_dict=feed_dict)
-                writer.add_summary(summary, batch_t)
+            hit_v = []
+            image_file_v = set()
+            for batch_v in range(num_batch_v):
+                image_np_v, label_np_v, image_file_np_v = sess.run([image_bt_v, label_bt_v, image_file_bt_v])
+                feed_dict = {gen_v.image_ph:image_np_v}
+                logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
+                for image_file in image_file_np_v:
+                    image_file_v.add(image_file)
+                hit_bt = compute_hit(logit_np_v, label_np_v, flags.cutoff)
+                hit_v.append(hit_bt)
+            hit_v = np.mean(hit_v)
+            print('#image file={}'.format(len(image_file_v)))
 
-                if (batch_t + 1) % int(config.train_data_size / config.train_batch_size) != 0:
-                    continue
-
-                hit_v = []
-                image_file_v = set()
-                for batch_v in range(num_batch_v):
-                    image_np_v, label_np_v, image_file_np_v = sess.run([image_bt_v, label_bt_v, image_file_bt_v])
-                    feed_dict = {gen_v.image_ph:image_np_v}
-                    logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
-                    for image_file in image_file_np_v:
-                        image_file_v.add(image_file)
-                    hit_bt = compute_hit(logit_np_v, label_np_v, flags.cutoff)
-                    hit_v.append(hit_bt)
-                hit_v = np.mean(hit_v)
-
-                total_time = time.time() - start
-                avg_batch = total_time / (batch_t + 1)
-                avg_epoch = avg_batch * (config.train_data_size / config.train_batch_size)
-                s = '{0} hit={1:.4f} tot={2:.0f}s avg={3:.0f}s'
-                s = s.format(batch_t, hit_v, total_time, avg_epoch)
-                print(s)
-
-                if hit_v < best_hit_v:
-                    continue
-                best_hit_v = hit_v
-                ckpt_file = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
-                gen_t.saver.save(sess, ckpt_file)
-    hit_file = path.join(config.temp_dir, '{}.hit'.format(flags.model_name))
-    with open(hit_file, 'w') as fout:
-        fout.write(best_hit_v)
+            total_time = time.time() - start
+            avg_batch = total_time / (batch_t + 1)
+            avg_epoch = avg_batch * (config.train_data_size / config.train_batch_size)
+            s = '{0} hit={1:.4f} tot={2:.0f}s avg={3:.0f}s'
+            s = s.format(batch_t, hit_v, total_time, avg_epoch)
+            print(s)
 
 if __name__ == '__main__':
     tf.app.run()
