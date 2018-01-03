@@ -1,5 +1,5 @@
 
-kdgan_dir=/Users/xiaojiew1/Projects/kdgan/kdgan
+kdgan_dir=/home/xiaojie/Projects/kdgan/kdgan
 pretrained_dir=$kdgan_dir/checkpoints/pretrained
 python main.py \
     --model_name=vgg_16 \
