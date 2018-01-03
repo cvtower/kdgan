@@ -100,6 +100,7 @@ def main(_):
     user_bt_t, image_bt_t, text_bt_t, label_bt_t, image_file_bt_t = bt_list_t
     user_bt_v, image_bt_v, text_bt_v, label_bt_v, image_file_bt_v = bt_list_v
 
+    best_hit_v = -np.inf
     init_op = tf.global_variables_initializer()
     start = time.time()
     with tf.Session() as sess:
@@ -135,6 +136,9 @@ def main(_):
                 s = s.format(batch_t, hit_v, total_time, avg_epoch)
                 print(s)
 
+                if hit_v < best_hit_v:
+                    continue
+                best_hit_v = hit_v
                 ckpt_file = path.join(config.ckpt_dir, 'gen.ckpt')
                 gen_t.saver.save(sess, ckpt_file)
 

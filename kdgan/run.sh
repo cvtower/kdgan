@@ -6,4 +6,5 @@ python main.py \
     --preprocessing_name=vgg_16 \
     --checkpoint_path=$pretrained_dir/vgg_16.ckpt \
     --checkpoint_exclude_scopes=vgg_16/fc8 \
-    --trainable_scopes=vgg_16/fc8
+    --trainable_scopes=vgg_16/fc8 \
+    --num_epoch=1000
