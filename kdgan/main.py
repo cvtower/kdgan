@@ -1,6 +1,8 @@
 from kdgan import config, utils
 from kdgan.gen_model import GEN
 
+import time
+
 import numpy as np
 import tensorflow as tf
 
