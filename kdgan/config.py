@@ -4,9 +4,10 @@ from os import path
 
 home_dir = path.expanduser('~')
 proj_dir = path.join(home_dir, 'Projects')
-root_dir = path.join(proj_dir, 'kdgan')
 data_dir = path.join(proj_dir, 'data')
 yfcc_dir = path.join(data_dir, 'yfcc100m')
+root_dir = path.join(proj_dir, 'kdgan/kdgan')
+logs_dir = path.join(root_dir, 'logs')
 temp_dir = path.join(root_dir, 'temp')
 surv_dir = path.join(yfcc_dir, 'survey_data')
 
@@ -39,11 +40,16 @@ image_height_key = 'image/height'
 image_width_key = 'image/width'
 image_file_key = 'image/file'
 
-num_threads = 4
-num_label = 100
-channels = 3
 unk_token = 'unk'
 pad_token = ' '
+num_threads = 4
+channels = 3
+
+num_label = 100
+train_data_size = 8000
+valid_data_size = 2000
+train_batch_size = 32
+valid_batch_size = 100
 
 
 

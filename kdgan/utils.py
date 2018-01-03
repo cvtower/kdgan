@@ -44,6 +44,12 @@ def load_id_to_token():
     id_to_vocab = load_id_to_sth(config.vocab_file)
     return id_to_vocab
 
+def count_data_size(infile):
+    with open(infile) as fin:
+        data = [line.strip() for line in fin.readlines()]
+    data_size = len(data)
+    return data_size
+
 def decode_tfrecord(tfrecord_file, shuffle=True):
     Tensor = slim.tfexample_decoder.Tensor
     Image = slim.tfexample_decoder.Image
@@ -69,7 +75,6 @@ def decode_tfrecord(tfrecord_file, shuffle=True):
         config.image_file_key:tf.FixedLenFeature((), tf.string,
                 default_value='')
     }
-    print(unk_token_id)
     items_to_handlers = {
         'user':Tensor(config.user_key),
         'image':Image(),
@@ -109,7 +114,6 @@ def generate_batch(model, ts_list, batch_size):
             dynamic_pad=True,
             num_threads=config.num_threads)
     return user_bt, image_bt, text_bt, label_bt, image_file_bt
-
 
 
 

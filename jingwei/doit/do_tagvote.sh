@@ -1,4 +1,4 @@
-# ./do_tagvote.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu
+# ./do_tagvote.sh yfcc8k yfcc2k vgg-verydeep-16-fc7relu
 
 # export BASEDIR=/Users/xiaojiew1/Projects # mac
 export BASEDIR=/home/xiaojie/Projects
@@ -25,7 +25,7 @@ tagger=tagvote
 
 if [ "$feature" = "color64+dsift" ]; then
     distance=l1
-elif [ "$feature" = "vgg-verydeep-16fc7relu" ]; then 
+elif [ "$feature" = "vgg-verydeep-16-fc7relu" ]; then 
     distance=cosine
 else
     echo "unknown feature $feature"
