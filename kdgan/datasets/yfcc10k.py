@@ -687,6 +687,7 @@ def check_tfrecord(tfrecord_file, is_training):
             [user_ts, image_ts, text_ts, label_ts, image_file_ts], 
             batch_size=batch_size, dynamic_pad=True)
 
+    vocab = set()
     with tf.Session() as sess:
         with slim.queues.QueueRunners(sess):
             for i in range(num_step):
@@ -694,7 +695,12 @@ def check_tfrecord(tfrecord_file, is_training):
                         [user_bt, image_bt, text_bt, label_bt, image_file_bt])
                 # print(user_np.shape, image_np.shape, text_np.shape, label_np.shape, image_file_np.shape)
                 for b in range(batch_size):
-                    print(text_np[b,:])
+                    text_vt = text_np[b,:]
+                    for j in range(text_vt.shape[0]):
+                        vocab.add(text_vt[j])
+    vocab = sorted(vocab)
+    print(vocab)
+    input()
 
 def get_dataset(infile):
     datasize = len(open(infile).readlines())
