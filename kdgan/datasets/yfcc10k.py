@@ -682,7 +682,7 @@ def check_tfrecord(tfrecord_file, is_training):
     #             print('{0}\n{0}'.format('#'*80))
 
     batch_size = 32
-    num_step = 100000
+    num_step = 10000
     user_bt, image_bt, text_bt, label_bt, image_file_bt = tf.train.batch(
             [user_ts, image_ts, text_ts, label_ts, image_file_ts], 
             batch_size=batch_size, dynamic_pad=True)
@@ -692,7 +692,9 @@ def check_tfrecord(tfrecord_file, is_training):
             for i in range(num_step):
                 user_np, image_np, text_np, label_np, image_file_np = sess.run(
                         [user_bt, image_bt, text_bt, label_bt, image_file_bt])
-                print(user_np.shape, image_np.shape, text_np.shape, label_np.shape, image_file_np.shape)
+                # print(user_np.shape, image_np.shape, text_np.shape, label_np.shape, image_file_np.shape)
+                for b in range(batch_size):
+                    print(text_np[b,:])
 
 def get_dataset(infile):
     datasize = len(open(infile).readlines())
@@ -1029,8 +1031,9 @@ if __name__ == '__main__':
         print('create tfrecord')
         create_tfrecord(config.train_file)
         create_tfrecord(config.valid_file)
-        check_tfrecord(config.train_tfrecord, True)
-        check_tfrecord(config.valid_tfrecord, False)
+    check_tfrecord(config.train_tfrecord, True)
+    check_tfrecord(config.valid_tfrecord, False)
+    return
     
     print('create survey data')
     survey_image_data(config.train_file)
