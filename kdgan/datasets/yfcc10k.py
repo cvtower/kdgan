@@ -682,7 +682,8 @@ def check_tfrecord(tfrecord_file, is_training):
     #             print('{0}\n{0}'.format('#'*80))
 
     batch_size = 32
-    num_step = 10000
+    # num_step = 10000
+    num_step = 2000
     user_bt, image_bt, text_bt, label_bt, image_file_bt = tf.train.batch(
             [user_ts, image_ts, text_ts, label_ts, image_file_ts], 
             batch_size=batch_size, dynamic_pad=True)
@@ -697,7 +698,9 @@ def check_tfrecord(tfrecord_file, is_training):
                 for b in range(batch_size):
                     text_vt = text_np[b,:]
                     for j in range(text_vt.shape[0]):
-                        vocab.add(text_vt[j])
+                        token = text_vt[j]
+                        vocab.add(token)
+                        input()
     vocab = sorted(vocab)
     print(vocab)
     input()
