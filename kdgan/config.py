@@ -2,7 +2,7 @@ import sys
 
 from os import path
 
-home_dir = '/home/xiaojie'
+home_dir = path.expanduser('~')
 proj_dir = path.join(home_dir, 'Projects')
 data_dir = path.join(proj_dir, 'data')
 yfcc_dir = path.join(data_dir, 'yfcc100m')
