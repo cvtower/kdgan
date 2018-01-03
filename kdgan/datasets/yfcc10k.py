@@ -1033,7 +1033,7 @@ if __name__ == '__main__':
         create_tfrecord(config.valid_file)
     check_tfrecord(config.train_tfrecord, True)
     check_tfrecord(config.valid_tfrecord, False)
-    return
+    exit()
     
     print('create survey data')
     survey_image_data(config.train_file)
