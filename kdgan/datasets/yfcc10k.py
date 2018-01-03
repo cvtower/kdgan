@@ -683,7 +683,7 @@ def check_tfrecord(tfrecord_file, is_training):
 
     batch_size = 32
     # num_step = 10000
-    num_step = 2000
+    num_step = 1000
     user_bt, image_bt, text_bt, label_bt, image_file_bt = tf.train.batch(
             [user_ts, image_ts, text_ts, label_ts, image_file_ts], 
             batch_size=batch_size, dynamic_pad=True)
@@ -694,14 +694,15 @@ def check_tfrecord(tfrecord_file, is_training):
             for i in range(num_step):
                 user_np, image_np, text_np, label_np, image_file_np = sess.run(
                         [user_bt, image_bt, text_bt, label_bt, image_file_bt])
-                # print(user_np.shape, image_np.shape, text_np.shape, label_np.shape, image_file_np.shape)
+                print(user_np.shape, image_np.shape, text_np.shape, label_np.shape, image_file_np.shape)
                 for b in range(batch_size):
                     text_vt = text_np[b,:]
                     # print(text_vt.shape[0])
                     for j in range(text_vt.shape[0]):
                         token = text_vt[j]
-                        print(token)
-                        input()
+                        vocab.add(token)
+                        if token == 0:
+                            break
     vocab = sorted(vocab)
     print(vocab)
     input()
