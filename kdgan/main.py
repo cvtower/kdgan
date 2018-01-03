@@ -139,7 +139,7 @@ def main(_):
                 if hit_v < best_hit_v:
                     continue
                 best_hit_v = hit_v
-                ckpt_file = path.join(config.ckpt_dir, 'gen.ckpt')
+                ckpt_file = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
                 gen_t.saver.save(sess, ckpt_file)
 
 if __name__ == '__main__':
