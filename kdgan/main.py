@@ -71,6 +71,7 @@ def main(_):
     user_bt_t, image_bt_t, text_bt_t, label_bt_t, image_file_bt_t = bt_list_t
     user_bt_v, image_bt_v, text_bt_v, label_bt_v, image_file_bt_v = bt_list_v
 
+    init_op = tf.global_variables_initializer()
     start = time.time()
     with tf.Session() as sess:
         writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
