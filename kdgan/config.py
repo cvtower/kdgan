@@ -38,3 +38,12 @@ image_format_key = 'image/format'
 image_height_key = 'image/height'
 image_width_key = 'image/width'
 image_file_key = 'image/file'
+
+num_threads = 4
+num_label = 100
+channels = 3
+unk_token = 'unk'
+pad_token = ' '
+
+
+

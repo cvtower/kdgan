@@ -49,7 +49,6 @@ MAX_IMAGE_PER_USER = 100
 MIN_IMAGE_PER_LABEL = 100
 POST_UNIT_SIZE = 5
 TRAIN_RATIO = 0.80
-UNKNOWN_TOKEN = 'unk'
 
 def create_if_nonexist(outdir):
     if not path.exists(outdir):
@@ -462,10 +461,14 @@ def split_dataset():
             for token in tokens:
                 vocab.add(token)
     vocab = sorted(vocab)
-    if UNKNOWN_TOKEN in vocab:
-        print('please change unknown token')
+    if config.unk_token in vocab:
+        print('please change unk token')
         exit()
-    vocab.append(UNKNOWN_TOKEN)
+    vocab.insert(0, config.unk_token)
+    if config.pad_token in vocab:
+        print('please change pad token')
+        exit()
+    vocab.insert(0, config.pad_token)
     utils.save_collection(vocab, config.vocab_file)
 
 def count_dataset():
@@ -595,7 +598,7 @@ def create_tfrecord(infile):
     num_label = len(label_to_id)
     print('#label={}'.format(num_label))
     token_to_id = utils.load_token_to_id()
-    unknown_id = token_to_id[UNKNOWN_TOKEN]
+    unk_token_id = token_to_id[config.unk_token]
     vocab_size = len(token_to_id)
     print('#vocab={}'.format(vocab_size))
 
@@ -611,7 +614,7 @@ def create_tfrecord(infile):
                 label_vec = np.zeros((num_label,), dtype=np.int64)
                 label_vec[label_ids] = 1
                 
-                text = [token_to_id.get(token, unknown_id) for token in text]
+                text = [token_to_id.get(token, unk_token_id) for token in text]
 
                 extension = b'jpg'
                 height, width = reader.read_image_dims(sess, image)
@@ -628,7 +631,7 @@ def check_tfrecord(tfrecord_file, is_training):
     print('#label={}'.format(num_label))
     id_to_token = utils.load_id_to_token()
     token_to_id = utils.load_token_to_id()
-    unknown_id = token_to_id[UNKNOWN_TOKEN]
+    unk_token_id = token_to_id[config.unk_token]
     vocab_size = int((len(id_to_token) + len(token_to_id)) / 2)
     print('#vocab={}'.format(vocab_size))
 
@@ -644,7 +647,7 @@ def check_tfrecord(tfrecord_file, is_training):
     items_to_handlers = {
         'user':slim.tfexample_decoder.Tensor(config.user_key),
         'image':slim.tfexample_decoder.Image(),
-        'text':slim.tfexample_decoder.Tensor(config.text_key, default_value=unknown_id),
+        'text':slim.tfexample_decoder.Tensor(config.text_key, default_value=unk_token_id),
         'label':slim.tfexample_decoder.Tensor(config.label_key),
         'image_file':slim.tfexample_decoder.Tensor(config.image_file_key),
     }
