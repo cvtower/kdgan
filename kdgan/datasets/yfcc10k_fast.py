@@ -32,25 +32,37 @@ DESC_INDEX = 4
 LABEL_INDEX = -1
 
 num_classes = 1000
-network_fn = nets_factory.get_network_fn(flags.model_name,
-        num_classes=num_classes)
-image_size = network_fn.default_image_size
+network_fn_t = nets_factory.get_network_fn(flags.model_name,
+        num_classes=num_classes,
+        is_training=True)
+network_fn_v = nets_factory.get_network_fn(flags.model_name,
+        num_classes=num_classes,
+        is_training=False)
+image_size_t = network_fn_t.default_image_size
+image_size_v = network_fn_v.default_image_size
+assert image_size_t==image_size_v
+image_size = int((image_size_t + image_size_v) / 2)
 
 image_ph = tf.placeholder(tf.float32,
         shape=(None, None, config.channels))
-preprocessing = preprocessing_factory.get_preprocessing(flags.preprocessing_name)
-image_ts = tf.expand_dims(preprocessing(image_ph, image_size, image_size),
+preprocessing_t = preprocessing_factory.get_preprocessing(flags.preprocessing_name,
+        is_training=True)
+preprocessing_v = preprocessing_factory.get_preprocessing(flags.preprocessing_name,
+        is_training=False)
+image_ts_t = tf.expand_dims(preprocessing_t(image_ph, image_size, image_size),
         axis=0)
-_, end_points = network_fn(image_ts)
+image_ts_v = tf.expand_dims(preprocessing_v(image_ph, image_size, image_size),
+        axis=0)
+_, end_points_t = network_fn_t(image_ts_t)
 for variable in slim.get_model_variables():
     num_params = 1
     for dim in variable.shape:
         num_params *= dim.value
     print('{} #param={}'.format(variable.name, num_params))
-for key, tensor in end_points.items():
+for key, tensor in end_points_t.items():
     print(key)
-end_point = tf.squeeze(end_points[flags.end_point])
-print(end_point.shape, end_point.dtype)
+end_point_t = tf.squeeze(end_points_t[flags.end_point])
+print(end_point_t.shape, end_point_t.dtype)
 
 if flags.dev:
     exit()
@@ -73,7 +85,7 @@ def build_example(user, image, text, label, file):
         config.file_key:dataset_utils.bytes_feature(file),
     }))
 
-def create_tfrecord(infile):
+def create_tfrecord(infile, is_training=False):
     fields = path.basename(infile).split('.')
     filename = '{}_{}.{}.tfrecord'.format(fields[0], flags.model_name, fields[1])
     tfrecord_dir = path.join(path.dirname(infile), 'Pretrained')
@@ -122,10 +134,11 @@ def create_tfrecord(infile):
                 image_np = np.array(Image.open(file))
                 # print(type(image_np), image_np.shape)
                 feed_dict = {image_ph:image_np}
-                image, = sess.run([end_point], feed_dict)
+                image_t, = sess.run([end_point_t], feed_dict)
                 # print(type(image), image.shape)
-                image = image.tolist()
-                # print(type(image), len(image), image)
+                image_t = image_t.tolist()
+                print(type(image_t), len(image_t), image_t)
+                exit()
 
                 text = [token_to_id.get(token, unk_token_id) for token in text]
 
@@ -143,8 +156,8 @@ def create_tfrecord(infile):
                     print('count={}'.format(count))
 
 def main(_):
-    create_tfrecord(config.train_file)
-    create_tfrecord(config.valid_file)
+    create_tfrecord(config.train_file, is_training=True)
+    # create_tfrecord(config.valid_file, is_training=False)
 
 if __name__ == '__main__':
     tf.app.run()
