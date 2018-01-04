@@ -154,7 +154,7 @@ def create_tfrecord(infile, is_training=False):
                     file = bytes(file, encoding='utf-8')
                     # print(file)
 
-                    example = build_example(user, image, text, label, file)
+                    example = build_example(user, image_t, text, label, file)
                     fout.write(example.SerializeToString())
                     count += 1
                     if (count % 200) == 0:
