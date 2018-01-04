@@ -126,14 +126,12 @@ def create_tfrecord(infile, is_training=False):
     vocab_size = len(token_to_id)
     print('#vocab={}'.format(vocab_size))
 
-    count = 0
     reader = ImageReader()
     with tf.Session() as sess:
         init_fn(sess)
         for epoch in range(num_epoch):
+            count = 0
             tfrecord_file = filepath.format(dataset, flags.model_name, epoch, version)
-            print(tfrecord_file)
-            continue
             with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
                 for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
                     user = bytes(user, encoding='utf-8')
@@ -144,7 +142,9 @@ def create_tfrecord(infile, is_training=False):
                     image_t, = sess.run([end_point_t], feed_dict)
                     # print(type(image), image.shape)
                     image_t = image_t.tolist()
-                    # print(type(image_t), len(image_t), image_t)
+                    print(type(image_t), len(image_t), image_t)
+                    input()
+                    break
 
                     text = [token_to_id.get(token, unk_token_id) for token in text]
 
