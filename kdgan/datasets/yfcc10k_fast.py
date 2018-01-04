@@ -142,10 +142,7 @@ def create_tfrecord(infile, is_training=False):
                     image_t, = sess.run([end_point_t], feed_dict)
                     # print(type(image), image.shape)
                     image_t = image_t.tolist()
-                    print(type(image_t), len(image_t), image_t)
-                    print(file)
-                    input()
-                    break
+                    # print(type(image_t), len(image_t), image_t)
 
                     text = [token_to_id.get(token, unk_token_id) for token in text]
 
@@ -155,6 +152,7 @@ def create_tfrecord(infile, is_training=False):
                     label = label_vec.tolist()
 
                     file = bytes(file, encoding='utf-8')
+                    # print(file)
 
                     example = build_example(user, image, text, label, file)
                     fout.write(example.SerializeToString())
