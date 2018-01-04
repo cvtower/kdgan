@@ -58,8 +58,7 @@ train_batch_size = 32
 valid_batch_size = 100
 
 prerecord_dir = path.join(yfcc10k_dir, 'Pretrained')
-
-
+tfrecord_template = '{0}_{1}_{2:03d}.{3}.tfrecord'
 
 
 

@@ -58,7 +58,7 @@ def count_data_size(infile):
     data_size = len(data)
     return data_size
 
-def decode_tfrecord(tfrecord_file, shuffle=True):
+def decode_tfrecord_bak(tfrecord_file, shuffle=True):
     Tensor = slim.tfexample_decoder.Tensor
     Image = slim.tfexample_decoder.Image
     TFExampleDecoder = slim.tfexample_decoder.TFExampleDecoder
@@ -110,7 +110,7 @@ def decode_tfrecord(tfrecord_file, shuffle=True):
     ts_list = provider.get(['user', 'image', 'text', 'label', 'image_file'])
     return ts_list
 
-def generate_batch(model, ts_list, batch_size):
+def generate_batch_bak(model, ts_list, batch_size):
     get_preprocessing = preprocessing_factory.get_preprocessing
     preprocessing = get_preprocessing(model.preprocessing_name,
             is_training=model.is_training)
@@ -132,6 +132,68 @@ def generate_text_batch(ts_list, batch_size):
             num_threads=config.num_threads)
     return user_bt, text_bt, label_bt, file_bt
 
+def get_data_sources(flags, infile, num_epoch):
+    data_sources = []
+    fields = path.basename(infile).split('.')
+    dataset, version = fields[0], fields[1]
+    filepath = path.join(config.prerecord_dir, config.tfrecord_template)
+    for epoch in range(num_epoch):
+        tfrecord_file = filepath.format(dataset, flags.model_name, epoch, version)
+        data_sources.append(tfrecord_file)
+    return data_sources
+
+def decode_tfrecord(flags, data_sources, shuffle=True):
+    Tensor = slim.tfexample_decoder.Tensor
+    TFExampleDecoder = slim.tfexample_decoder.TFExampleDecoder
+    Dataset = slim.dataset.Dataset
+    DatasetDataProvider = slim.dataset_data_provider.DatasetDataProvider
+
+    num_label = config.num_label
+    token_to_id = load_token_to_id()
+    unk_token_id = token_to_id[config.unk_token]
+    reader = tf.TFRecordReader
+    keys_to_features = {
+        config.user_key:tf.FixedLenFeature((), tf.string),
+        config.image_key:tf.FixedLenFeature([flags.feature_size], tf.float32),
+        config.text_key:tf.VarLenFeature(dtype=tf.int64),
+        config.label_key:tf.FixedLenFeature([num_label], tf.int64),
+        config.file_key:tf.FixedLenFeature((), tf.string)
+    }
+    items_to_handlers = {
+        'user':Tensor(config.user_key),
+        'image':Tensor(config.image_key),
+        'text':Tensor(config.text_key, default_value=unk_token_id),
+        'label':Tensor(config.label_key),
+        'file':Tensor(config.file_key),
+    }
+    decoder = TFExampleDecoder(keys_to_features, items_to_handlers)
+    num_samples = np.inf
+    items_to_descriptions = {
+        'user':'',
+        'image':'',
+        'text':'',
+        'label':'',
+        'file':'',
+    }
+    dataset = Dataset(
+        data_sources=data_sources,
+        reader=reader,
+        decoder=decoder,
+        num_samples=num_samples,
+        items_to_descriptions=items_to_descriptions,
+    )
+    provider = DatasetDataProvider(dataset, shuffle=shuffle)
+    ts_list = provider.get(['user', 'image', 'text', 'label', 'file'])
+    return ts_list
+
+def generate_batch(ts_list, batch_size):
+    user_ts, image_ts, text_ts, label_ts, file_ts = ts_list
+    user_bt, image_bt, text_bt, label_bt, file_bt = tf.train.batch(
+            [user_ts, image_ts, text_ts, label_ts, file_ts], 
+            batch_size=batch_size,
+            dynamic_pad=True,
+            num_threads=config.num_threads)
+    return user_bt, image_bt, text_bt, label_bt, file_bt
 
 
 
