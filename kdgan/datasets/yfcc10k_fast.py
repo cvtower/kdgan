@@ -162,7 +162,7 @@ def create_tfrecord(infile, is_training=False):
 
 def main(_):
     create_tfrecord(config.train_file, is_training=True)
-    # create_tfrecord(config.valid_file, is_training=False)
+    create_tfrecord(config.valid_file, is_training=False)
 
 if __name__ == '__main__':
     tf.app.run()
