@@ -59,7 +59,6 @@ def compute_hit(logits, labels, cutoff):
     return hit
 
 def main(_):
-    global_step = tf.train.create_global_step()
     print('#label={}'.format(config.num_label))
     gen_t = GEN(flags, is_training=True)
     tch_t = TCH(flags, is_training=True)
@@ -75,48 +74,42 @@ def main(_):
     # check_tfrecord(bt_list_t, config.train_batch_size)
     # check_tfrecord(bt_list_v, config.valid_batch_size)
 
-    user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
-    user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
+    user_bt_t, image_bt_t, text_bt_t, label_bt_t, image_file_bt_t = bt_list_t
+    user_bt_v, image_bt_v, text_bt_v, label_bt_v, image_file_bt_v = bt_list_v
 
     best_hit_v = -np.inf
     init_op = tf.global_variables_initializer()
     start = time.time()
-    gen_ckpt_file = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
+    ckpt_file = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
+    print(ckpt_file)
     tch_ckpt_file = path.join(config.ckpt_dir, 'tch.ckpt'.format(flags.model_name))
+    print(tch_ckpt_file)
     with tf.Session() as sess:
         # sess.run(init_op)
         gen_t.init_fn(sess)
-        gen_t.saver.restore(sess, gen_ckpt_file)
-        tch_t.saver.restore(sess, tch_ckpt_file)
+        gen_t.saver.restore(sess, ckpt_file)
+        # tch_t.saver.restore(sess, tch_ckpt_file)
         with slim.queues.QueueRunners(sess):
-            image_hit_v, text_hit_v = [], []
-            file_v = set()
+            hit_v = []
+            image_file_v = set()
             for batch_v in range(num_batch_v):
-                image_np_v, text_np_v, label_np_v, file_np_v = sess.run(
-                        [image_bt_v, text_bt_v, label_bt_v, file_bt_v])
-
-                for file in file_np_v:
-                    file_v.add(file)
+                image_np_v, text_np_v, label_np_v, image_file_np_v = sess.run(
+                        [image_bt_v, text_bt_v, label_bt_v, image_file_bt_v])
+                for image_file in image_file_np_v:
+                    image_file_v.add(image_file)
 
                 feed_dict = {gen_v.image_ph:image_np_v}
                 logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
-                image_hit_bt = compute_hit(logit_np_v, label_np_v, flags.cutoff)
-                image_hit_v.append(image_hit_bt)
+                hit_bt = compute_hit(logit_np_v, label_np_v, flags.cutoff)
+                hit_v.append(hit_bt)
 
-                feed_dict = {tch_v.text_ph:text_np_v}
-                logit_np_v, = sess.run([tch_v.logits], feed_dict=feed_dict)
-                text_hit_bt = compute_hit(logit_np_v, label_np_v, flags.cutoff)
-                text_hit_v.append(text_hit_bt)
-                
-            image_hit_v = np.mean(image_hit_v)
-            text_hit_v = np.mean(text_hit_v)
-
-            print('#file={}'.format(len(file_v)))
+            hit_v = np.mean(hit_v)
+            print('#image file={}'.format(len(image_file_v)))
 
             total_time = time.time() - start
-            print(image_hit_v)
-            print(text_hit_v)
-            print(total_time)
+            s = 'image={0:.4f} time={1:.0f}s'
+            s = s.format(hit_v, total_time)
+            print(s)
 
 if __name__ == '__main__':
     tf.app.run()

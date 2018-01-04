@@ -555,7 +555,8 @@ def collect_image(infile, outdir):
         shutil.copyfile(src_file, dst_file)
 
 def int64_feature(value):
-    return tf.train.Feature(int64_list=tf.train.Int64List(value=value))
+    int64_list = tf.train.Int64List(value=value)
+    return tf.train.Feature(int64_list=int64_list)
 
 def build_example(user, image, text, label_vec, extension, height, width, image_file):
     return tf.train.Example(features=tf.train.Features(feature={

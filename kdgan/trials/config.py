@@ -30,6 +30,7 @@ valid_file = path.join(yfcc10k_dir, '%s.valid' % dataset)
 label_file = path.join(yfcc10k_dir, '%s.label' % dataset)
 vocab_file = path.join(yfcc10k_dir, '%s.vocab' % dataset)
 image_data_dir = path.join(yfcc10k_dir, 'ImageData')
+tfrecord_dir = path.join(yfcc10k_dir, 'Pretrained')
 
 train_tfrecord = '%s.tfrecord' % train_file
 valid_tfrecord = '%s.tfrecord' % valid_file
@@ -51,11 +52,7 @@ num_threads = 4
 channels = 3
 
 num_label = 100
-vocab_size = 7281
 train_data_size = 8000
 valid_data_size = 2000
 train_batch_size = 32
 valid_batch_size = 100
-
-
-

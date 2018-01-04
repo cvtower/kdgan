@@ -28,7 +28,8 @@ class GEN():
         if not is_training:
             return
 
-        global_step = tf.train.create_global_step()
+        # global_step = tf.train.create_global_step()
+        global_step = tf.train.get_global_step()
         decay_steps = int(config.train_data_size / config.train_batch_size * flags.num_epochs_per_decay)
         learning_rate = tf.train.exponential_decay(flags.init_learning_rate,
                 global_step, decay_steps, flags.learning_rate_decay_factor,
@@ -72,6 +73,8 @@ class GEN():
             variables_to_train.extend(variables)
         self.save_dict = {}
         for variable in variables_to_train:
+            if not variable.name.startswith('vgg_16'):
+                continue
             num_params = 1
             for dim in variable.shape:
                 num_params *= dim.value

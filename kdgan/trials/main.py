@@ -1,6 +1,5 @@
 from kdgan import config, utils
 from kdgan.gen_model import GEN
-from kdgan.tch_model import TCH
 
 import time
 
@@ -15,7 +14,6 @@ from PIL import Image
 tf.app.flags.DEFINE_string('model_name', None, '')
 tf.app.flags.DEFINE_string('preprocessing_name', None, '')
 tf.app.flags.DEFINE_float('weight_decay', 0.00004, 'l2 coefficient')
-tf.app.flags.DEFINE_integer('embedding_size', 10, '')
 tf.app.flags.DEFINE_integer('num_epoch', 100, '')
 tf.app.flags.DEFINE_float('init_learning_rate', 0.1, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
@@ -59,14 +57,11 @@ def compute_hit(logits, labels, cutoff):
     return hit
 
 def main(_):
-    global_step = tf.train.create_global_step()
     print('#label={}'.format(config.num_label))
     gen_t = GEN(flags, is_training=True)
-    tch_t = TCH(flags, is_training=True)
     scope = tf.get_variable_scope()
     scope.reuse_variables()
     gen_v = GEN(flags, is_training=False)
-    tch_v = TCH(flags, is_training=False)
 
     ts_list_t = utils.decode_tfrecord(config.train_tfrecord, shuffle=True)
     ts_list_v = utils.decode_tfrecord(config.valid_tfrecord, shuffle=False)
@@ -75,48 +70,37 @@ def main(_):
     # check_tfrecord(bt_list_t, config.train_batch_size)
     # check_tfrecord(bt_list_v, config.valid_batch_size)
 
-    user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
-    user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
+    user_bt_t, image_bt_t, text_bt_t, label_bt_t, image_file_bt_t = bt_list_t
+    user_bt_v, image_bt_v, text_bt_v, label_bt_v, image_file_bt_v = bt_list_v
 
     best_hit_v = -np.inf
     init_op = tf.global_variables_initializer()
     start = time.time()
-    gen_ckpt_file = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
-    tch_ckpt_file = path.join(config.ckpt_dir, 'tch.ckpt'.format(flags.model_name))
+    ckpt_file = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
     with tf.Session() as sess:
         # sess.run(init_op)
         gen_t.init_fn(sess)
-        gen_t.saver.restore(sess, gen_ckpt_file)
-        tch_t.saver.restore(sess, tch_ckpt_file)
+        gen_t.saver.restore(sess, ckpt_file)
         with slim.queues.QueueRunners(sess):
-            image_hit_v, text_hit_v = [], []
-            file_v = set()
+            hit_v = []
+            image_file_v = set()
             for batch_v in range(num_batch_v):
-                image_np_v, text_np_v, label_np_v, file_np_v = sess.run(
-                        [image_bt_v, text_bt_v, label_bt_v, file_bt_v])
-
-                for file in file_np_v:
-                    file_v.add(file)
-
+                image_np_v, label_np_v, image_file_np_v = sess.run([image_bt_v, label_bt_v, image_file_bt_v])
                 feed_dict = {gen_v.image_ph:image_np_v}
                 logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
-                image_hit_bt = compute_hit(logit_np_v, label_np_v, flags.cutoff)
-                image_hit_v.append(image_hit_bt)
-
-                feed_dict = {tch_v.text_ph:text_np_v}
-                logit_np_v, = sess.run([tch_v.logits], feed_dict=feed_dict)
-                text_hit_bt = compute_hit(logit_np_v, label_np_v, flags.cutoff)
-                text_hit_v.append(text_hit_bt)
-                
-            image_hit_v = np.mean(image_hit_v)
-            text_hit_v = np.mean(text_hit_v)
-
-            print('#file={}'.format(len(file_v)))
+                for image_file in image_file_np_v:
+                    image_file_v.add(image_file)
+                hit_bt = compute_hit(logit_np_v, label_np_v, flags.cutoff)
+                hit_v.append(hit_bt)
+            hit_v = np.mean(hit_v)
+            print('#image file={}'.format(len(image_file_v)))
 
             total_time = time.time() - start
-            print(image_hit_v)
-            print(text_hit_v)
-            print(total_time)
+            avg_batch = total_time / (batch_t + 1)
+            avg_epoch = avg_batch * (config.train_data_size / config.train_batch_size)
+            s = '{0} hit={1:.4f} tot={2:.0f}s avg={3:.0f}s'
+            s = s.format(batch_t, hit_v, total_time, avg_epoch)
+            print(s)
 
 if __name__ == '__main__':
     tf.app.run()

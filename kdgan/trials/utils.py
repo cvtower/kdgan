@@ -1,18 +1,10 @@
 from kdgan import config
 
-import os
-
 import numpy as np
 import tensorflow as tf
 
-from os import path
 from preprocessing import preprocessing_factory
 from tensorflow.contrib import slim
-
-
-def create_if_nonexist(outdir):
-    if not path.exists(outdir):
-        os.makedirs(outdir)
 
 def save_collection(coll, outfile):
     with open(outfile, 'w') as fout:
@@ -58,9 +50,8 @@ def count_data_size(infile):
     data_size = len(data)
     return data_size
 
-def decode_tfrecord(tfrecord_file, shuffle=True):
+def decode_tfrecord(flags, tfrecord_file, shuffle=True):
     Tensor = slim.tfexample_decoder.Tensor
-    Image = slim.tfexample_decoder.Image
     TFExampleDecoder = slim.tfexample_decoder.TFExampleDecoder
     Dataset = slim.dataset.Dataset
     DatasetDataProvider = slim.dataset_data_provider.DatasetDataProvider
@@ -71,24 +62,18 @@ def decode_tfrecord(tfrecord_file, shuffle=True):
     unk_token_id = token_to_id[config.unk_token]
     reader = tf.TFRecordReader
     keys_to_features = {
-        config.user_key:tf.FixedLenFeature((), tf.string,
-                default_value=''),
-        config.image_encoded_key:tf.FixedLenFeature((), tf.string,
-                default_value=''),
+        config.user_key:tf.FixedLenFeature((), tf.string),
+        config.image_key:tf.FixedLenFeature([flags.feature_size], tf.float32),
         config.text_key:tf.VarLenFeature(dtype=tf.int64),
-        config.label_key:tf.FixedLenFeature([num_label], tf.int64,
-                default_value=tf.zeros([num_label], dtype=tf.int64)),
-        config.image_format_key:tf.FixedLenFeature((), tf.string,
-                default_value='jpg'),
-        config.image_file_key:tf.FixedLenFeature((), tf.string,
-                default_value='')
+        config.label_key:tf.FixedLenFeature([num_label], tf.int64),
+        config.file_key:tf.FixedLenFeature((), tf.string)
     }
     items_to_handlers = {
         'user':Tensor(config.user_key),
-        'image':Image(),
+        'image':Tensor(config.image_key),
         'text':Tensor(config.text_key, default_value=unk_token_id),
         'label':Tensor(config.label_key),
-        'image_file':Tensor(config.image_file_key),
+        'file':Tensor(config.file_key),
     }
     decoder = TFExampleDecoder(keys_to_features, items_to_handlers)
     num_samples = np.inf
@@ -97,7 +82,7 @@ def decode_tfrecord(tfrecord_file, shuffle=True):
         'image':'',
         'text':'',
         'label':'',
-        'image_file':'',
+        'file':'',
     }
     dataset = Dataset(
         data_sources=data_sources,
@@ -107,31 +92,17 @@ def decode_tfrecord(tfrecord_file, shuffle=True):
         items_to_descriptions=items_to_descriptions,
     )
     provider = DatasetDataProvider(dataset, shuffle=shuffle)
-    ts_list = provider.get(['user', 'image', 'text', 'label', 'image_file'])
+    ts_list = provider.get(['user', 'image', 'text', 'label', 'file'])
     return ts_list
 
-def generate_batch(model, ts_list, batch_size):
-    get_preprocessing = preprocessing_factory.get_preprocessing
-    preprocessing = get_preprocessing(model.preprocessing_name,
-            is_training=model.is_training)
-    user_ts, image_ts, text_ts, label_ts, image_file_ts = ts_list
-    image_ts = preprocessing(image_ts, model.image_size, model.image_size)
-    user_bt, image_bt, text_bt, label_bt, image_file_bt = tf.train.batch(
-            [user_ts, image_ts, text_ts, label_ts, image_file_ts], 
+def generate_batch(ts_list, batch_size):
+    user_ts, image_ts, text_ts, label_ts, file_ts = ts_list
+    user_bt, image_bt, text_bt, label_bt, file_bt = tf.train.batch(
+            [user_ts, image_ts, text_ts, label_ts, file_ts], 
             batch_size=batch_size,
             dynamic_pad=True,
             num_threads=config.num_threads)
-    return user_bt, image_bt, text_bt, label_bt, image_file_bt
-
-def generate_text_batch(ts_list, batch_size):
-    user_ts, _, text_ts, label_ts, file_ts = ts_list
-    user_bt, text_bt, label_bt, file_bt = tf.train.batch(
-            [user_ts, text_ts, label_ts, file_ts], 
-            batch_size=batch_size,
-            dynamic_pad=True,
-            num_threads=config.num_threads)
-    return user_bt, text_bt, label_bt, file_bt
-
+    return user_bt, image_bt, text_bt, label_bt, file_bt
 
 
 
