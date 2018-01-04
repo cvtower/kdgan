@@ -95,6 +95,7 @@ def create_tfrecord(infile, is_training=False):
     fields = path.basename(infile).split('.')
     dataset, version = fields[0], fields[1]
     filename = '{0}_{1}_{2:03d}.{3}.tfrecord'
+    filepath = path.join(config.prerecord_dir, filename)
 
     user_list = []
     file_list = []
