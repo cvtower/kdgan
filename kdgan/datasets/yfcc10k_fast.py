@@ -129,7 +129,7 @@ def create_tfrecord(infile, is_training=False):
     reader = ImageReader()
     with tf.Session() as sess:
         init_fn(sess)
-        for epoch in range(num_epoch)
+        for epoch in range(num_epoch):
             tfrecord_file = filepath.format(dataset, flags.model_name, epoch, version)
             print(tfrecord_file)
             continue
