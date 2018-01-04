@@ -95,7 +95,6 @@ def create_tfrecord(infile, is_training=False):
     fields = path.basename(infile).split('.')
     dataset, version = fields[0], fields[1]
     filename = '{0}_{1}_{2:03d}.{3}.tfrecord'
-    filepath = path.join(config.prerecord_dir, filename)
 
     user_list = []
     file_list = []
@@ -130,35 +129,36 @@ def create_tfrecord(infile, is_training=False):
     reader = ImageReader()
     with tf.Session() as sess:
         init_fn(sess)
-        for epoch in range(num_epoch):
+        for epoch in range(num_epoch)
             tfrecord_file = filepath.format(dataset, flags.model_name, epoch, version)
             print(tfrecord_file)
-            # with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
-            #     for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
-                user = bytes(user, encoding='utf-8')
-                
-                image_np = np.array(Image.open(file))
-                # print(type(image_np), image_np.shape)
-                feed_dict = {image_ph:image_np}
-                image_t, = sess.run([end_point_t], feed_dict)
-                # print(type(image), image.shape)
-                image_t = image_t.tolist()
-                # print(type(image_t), len(image_t), image_t)
+            continue
+            with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
+                for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
+                    user = bytes(user, encoding='utf-8')
+                    
+                    image_np = np.array(Image.open(file))
+                    # print(type(image_np), image_np.shape)
+                    feed_dict = {image_ph:image_np}
+                    image_t, = sess.run([end_point_t], feed_dict)
+                    # print(type(image), image.shape)
+                    image_t = image_t.tolist()
+                    # print(type(image_t), len(image_t), image_t)
 
-                text = [token_to_id.get(token, unk_token_id) for token in text]
+                    text = [token_to_id.get(token, unk_token_id) for token in text]
 
-                label_ids = [label_to_id[label] for label in labels]
-                label_vec = np.zeros((num_label,), dtype=np.int64)
-                label_vec[label_ids] = 1
-                label = label_vec.tolist()
+                    label_ids = [label_to_id[label] for label in labels]
+                    label_vec = np.zeros((num_label,), dtype=np.int64)
+                    label_vec[label_ids] = 1
+                    label = label_vec.tolist()
 
-                file = bytes(file, encoding='utf-8')
+                    file = bytes(file, encoding='utf-8')
 
-                example = build_example(user, image, text, label, file)
-                fout.write(example.SerializeToString())
-                count += 1
-                if (count % 200) == 0:
-                    print('count={}'.format(count))
+                    example = build_example(user, image, text, label, file)
+                    fout.write(example.SerializeToString())
+                    count += 1
+                    if (count % 200) == 0:
+                        print('count={}'.format(count))
 
 def main(_):
     create_tfrecord(config.train_file, is_training=True)
