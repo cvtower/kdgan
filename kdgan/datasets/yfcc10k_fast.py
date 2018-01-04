@@ -85,14 +85,12 @@ def build_example(user, image, text, label, file):
         config.file_key:dataset_utils.bytes_feature(file),
     }))
 
-def create_tfrecord(infile, is_training=False):
-    fields = path.basename(infile).split('.')
-    filename = '{}_{}.{}.tfrecord'.format(fields[0], flags.model_name, fields[1])
-    tfrecord_dir = path.join(path.dirname(infile), 'Pretrained')
-    create_if_nonexist(tfrecord_dir)
-    tfrecord_file = path.join(tfrecord_dir, filename)
-
-    print(tfrecord_file)
+def create_tfrecord():
+    print(config.prerecord_dir)
+    exit()
+    # fields = path.basename(infile).split('.')
+    # filename = '{}_{}.{}.tfrecord'.format(fields[0], flags.model_name, fields[1])
+    # tfrecord_file = path.join(tfrecord_dir, filename)
 
     user_list = []
     file_list = []
@@ -123,41 +121,39 @@ def create_tfrecord(infile, is_training=False):
     vocab_size = len(token_to_id)
     print('#vocab={}'.format(vocab_size))
 
-    count = 0
-    reader = ImageReader()
-    with tf.Session() as sess:
-        init_fn(sess)
-        with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
-            for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
-                user = bytes(user, encoding='utf-8')
+    # count = 0
+    # reader = ImageReader()
+    # with tf.Session() as sess:
+    #     init_fn(sess)
+    #     with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
+    #         for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
+    #             user = bytes(user, encoding='utf-8')
                 
-                image_np = np.array(Image.open(file))
-                # print(type(image_np), image_np.shape)
-                feed_dict = {image_ph:image_np}
-                image_t, = sess.run([end_point_t], feed_dict)
-                # print(type(image), image.shape)
-                image_t = image_t.tolist()
-                print(type(image_t), len(image_t), image_t)
-                exit()
+    #             image_np = np.array(Image.open(file))
+    #             # print(type(image_np), image_np.shape)
+    #             feed_dict = {image_ph:image_np}
+    #             image_t, = sess.run([end_point_t], feed_dict)
+    #             # print(type(image), image.shape)
+    #             image_t = image_t.tolist()
+    #             # print(type(image_t), len(image_t), image_t)
 
-                text = [token_to_id.get(token, unk_token_id) for token in text]
+    #             text = [token_to_id.get(token, unk_token_id) for token in text]
 
-                label_ids = [label_to_id[label] for label in labels]
-                label_vec = np.zeros((num_label,), dtype=np.int64)
-                label_vec[label_ids] = 1
-                label = label_vec.tolist()
+    #             label_ids = [label_to_id[label] for label in labels]
+    #             label_vec = np.zeros((num_label,), dtype=np.int64)
+    #             label_vec[label_ids] = 1
+    #             label = label_vec.tolist()
 
-                file = bytes(file, encoding='utf-8')
+    #             file = bytes(file, encoding='utf-8')
 
-                example = build_example(user, image, text, label, file)
-                fout.write(example.SerializeToString())
-                count += 1
-                if (count % 200) == 0:
-                    print('count={}'.format(count))
+    #             example = build_example(user, image, text, label, file)
+    #             fout.write(example.SerializeToString())
+    #             count += 1
+    #             if (count % 200) == 0:
+    #                 print('count={}'.format(count))
 
 def main(_):
-    create_tfrecord(config.train_file, is_training=True)
-    # create_tfrecord(config.valid_file, is_training=False)
+    create_tfrecord()
 
 if __name__ == '__main__':
     tf.app.run()

@@ -57,5 +57,14 @@ valid_data_size = 2000
 train_batch_size = 32
 valid_batch_size = 100
 
+prerecord_dir = path.join(yfcc10k_dir, 'Pretrained')
+
+
+
+
+
+
+
+
 
 
