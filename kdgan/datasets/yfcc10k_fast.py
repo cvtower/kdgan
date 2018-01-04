@@ -143,6 +143,7 @@ def create_tfrecord(infile, is_training=False):
                     # print(type(image), image.shape)
                     image_t = image_t.tolist()
                     print(type(image_t), len(image_t), image_t)
+                    print(file)
                     input()
                     break
 
