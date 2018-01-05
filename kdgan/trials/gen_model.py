@@ -1,6 +1,7 @@
 from kdgan import config
 
 from nets import nets_factory
+from nets import vgg
 
 import numpy as np
 import tensorflow as tf
@@ -15,12 +16,18 @@ class GEN():
                 shape=(None, flags.feature_size))
         self.label_ph = tf.placeholder(tf.float32,
                 shape=(None, config.num_label))
-        
-        self.logits = slim.fully_connected(self.image_ph, config.num_label,
-                activation_fn=tf.nn.relu,
-                weights_regularizer=slim.l2_regularizer(flags.weight_decay),
-                biases_initializer=tf.zeros_initializer(),
-                scope='generator')
+
+        dropout_keep_prob = 0.5
+        net = self.image_ph
+        net = tf.expand_dims(tf.expand_dims(net, axis=1), axis=1)
+        with slim.arg_scope(vgg.vgg_arg_scope(weight_decay=flags.weight_decay)):
+            net = slim.dropout(net, dropout_keep_prob, is_training=is_training,
+                               scope='dropout7')
+            net = slim.conv2d(net, config.num_label, [1, 1],
+                              activation_fn=None,
+                              normalizer_fn=None,
+                              scope='generator')
+            self.logits = tf.squeeze(net)
 
         if not is_training:
             return
@@ -33,7 +40,11 @@ class GEN():
 
         tf.losses.sigmoid_cross_entropy(self.label_ph, self.logits)
         losses = tf.get_collection(tf.GraphKeys.LOSSES)
+        # for loss in losses:
+        #     print(loss)
         regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
+        # for regularization_loss in regularization_losses:
+        #     print(regularization_loss)
         losses.extend(regularization_losses)
         loss = tf.add_n(losses, name='loss')
         total_loss = tf.losses.get_total_loss(name='total_loss')

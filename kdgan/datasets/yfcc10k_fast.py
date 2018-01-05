@@ -94,8 +94,7 @@ def create_tfrecord(infile, is_training=False):
 
     fields = path.basename(infile).split('.')
     dataset, version = fields[0], fields[1]
-    filename = '{0}_{1}_{2:03d}.{3}.tfrecord'
-    filepath = path.join(config.prerecord_dir, filename)
+    filepath = path.join(config.prerecord_dir, config.tfrecord_template)
 
     user_list = []
     file_list = []
@@ -132,6 +131,8 @@ def create_tfrecord(infile, is_training=False):
         for epoch in range(num_epoch):
             count = 0
             tfrecord_file = filepath.format(dataset, flags.model_name, epoch, version)
+            if path.isfile(tfrecord_file):
+                continue
             with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
                 for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
                     user = bytes(user, encoding='utf-8')
@@ -161,8 +162,8 @@ def create_tfrecord(infile, is_training=False):
                         print('count={}'.format(count))
 
 def main(_):
-    create_tfrecord(config.train_file, is_training=True)
     create_tfrecord(config.valid_file, is_training=False)
+    create_tfrecord(config.train_file, is_training=True)
 
 if __name__ == '__main__':
     tf.app.run()
