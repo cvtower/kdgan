@@ -88,7 +88,7 @@ def build_example(user, image, text, label, file):
 def create_tfrecord(infile, is_training=False):
     create_if_nonexist(config.prerecord_dir)
 
-    num_epoch = 200
+    num_epoch = 500
     if not is_training:
         num_epoch = 1
 
