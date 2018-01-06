@@ -1,26 +1,30 @@
-# ./eval_pickle.sh yfcc2k jingwei
+# ./eval_pickle.sh yfcc2k
 
-export BASEDIR=/Users/xiaojiew1/Projects # mac
-# export BASEDIR=/home/xiaojie/Projects
+# export BASEDIR=/Users/xiaojiew1/Projects # mac
+export BASEDIR=/home/xiaojie/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
 export SURVEY_CODE=$BASEDIR/kdgan/jingwei
-export SURVEY_DB=$BASEDIR/kdgan/logs
-export MATLAB_PATH=/Applications/MATLAB_R2017b.app/bin
+export SURVEY_DB=$BASEDIR/kdgan/results/runs
+# export MATLAB_PATH=/Applications/MATLAB_R2017b.app/bin # mac
+export MATLAB_PATH=/usr/local/bin
 export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
 
 rootpath=$SURVEY_DATA
 codepath=$SURVEY_CODE
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 testCollection method"
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 testCollection"
     exit
 fi
 
 testCollection=$1
-method=$2
-runfile=$rootpath/eval_output/runs_"$method"_"$testCollection".txt
-resfile=$rootpath/eval_output/runs_"$method"_"$testCollection".res
 
+export SURVEY_EVAL=$BASEDIR/kdgan/results/eval
+[ -d $SURVEY_EVAL ] || mkdir $SURVEY_EVAL
+runfile=$SURVEY_EVAL/runs_"$testCollection".txt
+resfile=$SURVEY_EVAL/runs_"$testCollection".res
+
+ls -d "$SURVEY_DB"/* > $runfile
 # if [ -f "$resfile" ]; then
 #     echo "result file exists at $resfile"
 #     exit

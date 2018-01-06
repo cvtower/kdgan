@@ -7,7 +7,7 @@ ssh xiaojie@10.100.228.181
 conda create -n py27 python=2.7
 conda create -n py34 python=3.4
 
-# jingwei
+# jingwei: extract image features by vgg16
 cd jingwei/image_feature/matcovnet/
 wget http://lixirong.net/data/csur2016/matconvnet-1.0-beta8.tar.gz
 tar -xzvf matconvnet-1.0-beta8.tar.gz
@@ -18,11 +18,15 @@ matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfc
 matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfcc8k';
 zip -r survey_data.zip survey_data -x survey_data/yfcc8k/ImageData/\* survey_data/yfcc2k/ImageData/\*
 
+# jingwei: precompute k nearest neighbors
+cd jingwei/util/simpleknn/
+sudo apt-get install libboost-dev
+./build.sh
 
+#
+./do_knntagrel.sh yfcc8k yfcc2k vgg-verydeep-16-fc7relu
 
-
-
-
+/home/xiaojie/Projects/data/yfcc100m/survey_data/yfcc2k/autotagging/yfcc2k/yfcc8k/concepts.txt/preknn/vgg-verydeep-16-fc7relu,cosineknn,5/id.tagvotes.txt
 
 
 
@@ -33,9 +37,6 @@ zip -r survey_data.zip survey_data -x survey_data/yfcc8k/ImageData/\* survey_dat
 
 
 # do_tagprop.sh
-matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
-sudo apt-get install libboost-dev
-./jingwei/util/simpleknn/build.sh
 ./do_getknn.sh yfcc8k yfcc8k vgg-verydeep-16fc7relu 0 1 1
 ./do_getknn.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu 0 1 1
 # simple knn
