@@ -20,13 +20,15 @@ class GEN():
         dropout_keep_prob = 0.5
         net = self.image_ph
         net = tf.expand_dims(tf.expand_dims(net, axis=1), axis=1)
-        with slim.arg_scope(vgg.vgg_arg_scope(weight_decay=flags.weight_decay)):
-            net = slim.dropout(net, dropout_keep_prob, is_training=is_training,
-                               scope='dropout7')
+        with slim.arg_scope(vgg.vgg_arg_scope(
+                weight_decay=flags.weight_decay)):
+            net = slim.dropout(net, dropout_keep_prob, 
+                    is_training=is_training,
+                    scope='dropout7')
             net = slim.conv2d(net, config.num_label, [1, 1],
-                              activation_fn=None,
-                              normalizer_fn=None,
-                              scope='generator')
+                    activation_fn=None,
+                    normalizer_fn=None,
+                    scope='generator')
             self.logits = tf.squeeze(net)
 
         if not is_training:
