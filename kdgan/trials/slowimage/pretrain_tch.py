@@ -108,7 +108,7 @@ def main(_):
                 _, summary = sess.run([tch_t.train_op, tch_t.summary_op], feed_dict=feed_dict)
                 writer.add_summary(summary, batch_t)
 
-                if (batch_t + 1) % int(config.train_data_size / config.train_batch_size) != 0:
+                if (batch_t + 1) %  != 0:
                     continue
 
                 hit_v = []

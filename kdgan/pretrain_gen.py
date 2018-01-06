@@ -26,7 +26,9 @@ flags = tf.app.flags.FLAGS
 
 num_batch_t = int(flags.num_epoch * config.train_data_size / config.train_batch_size)
 num_batch_v = int(config.valid_data_size / config.valid_batch_size)
-print('tn: #batch={}\nvd: #batch={}'.format(num_batch_t, num_batch_v))
+eval_interval = int(config.train_data_size / config.train_batch_size)
+print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d\n' % (
+    num_batch_t, num_batch_v, eval_interval))
 
 def main(_):
   global_step = tf.train.create_global_step()
@@ -64,7 +66,7 @@ def main(_):
         _, summary = sess.run([gen_t.train_op, gen_t.summary_op], feed_dict=feed_dict)
         writer.add_summary(summary, batch_t)
 
-        if (batch_t + 1) % int(config.train_data_size / config.train_batch_size) != 0:
+        if (batch_t + 1) % eval_interval != 0:
             continue
 
         hit_v = []

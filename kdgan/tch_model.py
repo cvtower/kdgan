@@ -28,7 +28,7 @@ class TCH():
     for variable in tf.trainable_variables():
       if not variable.name.startswith(tch_scope):
         continue
-      print('add %s to tch save dict' % variable.name)
+      print('add %s to tch saver' % variable.name)
       save_dict[variable.name] = variable
     self.saver = tf.train.Saver(save_dict)
 
@@ -40,7 +40,7 @@ class TCH():
     
     loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
         labels=self.label_ph, logits=self.logits))
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+    optimizer = tf.train.AdamOptimizer(learning_rate)
     self.train_op = optimizer.minimize(loss, global_step=global_step)
 
     tf.summary.scalar('loss', loss)

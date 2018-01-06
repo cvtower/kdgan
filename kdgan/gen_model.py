@@ -33,7 +33,7 @@ class GEN():
     for variable in tf.trainable_variables():
       if not variable.name.startswith(gen_scope):
         continue
-      print('add %s to gen save dict' % variable.name)
+      print('add %s to gen saver' % variable.name)
       save_dict[variable.name] = variable
     self.saver = tf.train.Saver(save_dict)
 
