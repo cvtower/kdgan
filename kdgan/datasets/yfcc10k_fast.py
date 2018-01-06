@@ -32,7 +32,7 @@ TEXT_INDEX = 3
 DESC_INDEX = 4
 LABEL_INDEX = -1
 
-if flags.model_name == 'vgg_16':
+if (flags.model_name == 'vgg_16') or (flags.model_name == 'vgg_19'):
     num_classes = 1000
 else:
     num_classes = 1001
