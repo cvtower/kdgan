@@ -28,22 +28,6 @@ num_batch_t = int(flags.num_epoch * config.train_data_size / config.train_batch_
 num_batch_v = int(config.valid_data_size / config.valid_batch_size)
 print('tn: #batch={}\nvd: #batch={}'.format(num_batch_t, num_batch_v))
 
-def get_data_sources(is_training=True):
-  for (dirpath, dirnames, filenames) in os.walk(config.prerecord_dir):
-    break
-  marker = 'train'
-  if not is_training:
-    marker = 'valid'
-  data_sources = []
-  for filename in filenames:
-    if filename.find(marker) < 0:
-      continue
-    if filename.find(flags.model_name) < 0:
-      continue
-    filepath = path.join(config.prerecord_dir, filename)
-    data_sources.append(filepath)
-  return data_sources
-
 def main(_):
   global_step = tf.train.create_global_step()
   gen_t = GEN(flags, is_training=True)
@@ -57,8 +41,8 @@ def main(_):
       num_params *= dim.value
     print('{}\t({} params)'.format(variable.name, num_params))
 
-  data_sources_t = get_data_sources(is_training=True)
-  data_sources_v = get_data_sources(is_training=False)
+  data_sources_t = utils.get_data_sources(flags, is_training=True)
+  data_sources_v = utils.get_data_sources(flags, is_training=False)
   print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(data_sources_t), len(data_sources_v)))
   
   ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)

@@ -42,5 +42,18 @@ def main(_):
       num_params *= dim.value
     print('{}\t({} params)'.format(variable.name, num_params))
 
+  data_sources_t = utils.get_data_sources(flags, is_training=True)
+  data_sources_v = utils.get_data_sources(flags, is_training=False)
+  print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(data_sources_t), len(data_sources_v)))
+
+  ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
+  ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
+  bt_list_t = utils.generate_batch(ts_list_t, config.train_batch_size)
+  bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
+  user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
+  user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
+
+
+
 if __name__ == '__main__':
   tf.app.run()

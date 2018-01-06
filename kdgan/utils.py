@@ -123,24 +123,21 @@ def generate_batch_bak(model, ts_list, batch_size):
             num_threads=config.num_threads)
     return user_bt, image_bt, text_bt, label_bt, image_file_bt
 
-def generate_text_batch(ts_list, batch_size):
-    user_ts, _, text_ts, label_ts, file_ts = ts_list
-    user_bt, text_bt, label_bt, file_bt = tf.train.batch(
-            [user_ts, text_ts, label_ts, file_ts], 
-            batch_size=batch_size,
-            dynamic_pad=True,
-            num_threads=config.num_threads)
-    return user_bt, text_bt, label_bt, file_bt
-
-def get_data_sources(flags, infile, num_epoch):
-    data_sources = []
-    fields = path.basename(infile).split('.')
-    dataset, version = fields[0], fields[1]
-    filepath = path.join(config.prerecord_dir, config.tfrecord_template)
-    for epoch in range(num_epoch):
-        tfrecord_file = filepath.format(dataset, flags.model_name, epoch, version)
-        data_sources.append(tfrecord_file)
-    return data_sources
+def get_data_sources(flags, is_training=True):
+  for (dirpath, dirnames, filenames) in os.walk(config.prerecord_dir):
+    break
+  marker = 'train'
+  if not is_training:
+    marker = 'valid'
+  data_sources = []
+  for filename in filenames:
+    if filename.find(marker) < 0:
+      continue
+    if filename.find(flags.model_name) < 0:
+      continue
+    filepath = path.join(config.prerecord_dir, filename)
+    data_sources.append(filepath)
+  return data_sources
 
 def decode_tfrecord(flags, data_sources, shuffle=True):
     Tensor = slim.tfexample_decoder.Tensor
