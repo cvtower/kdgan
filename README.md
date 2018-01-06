@@ -7,6 +7,10 @@ ssh xiaojie@10.100.228.181
 conda create -n py27 python=2.7
 conda create -n py34 python=3.4
 
+# tensorflow tensorboard
+export CUDA_VISIBLE_DEVICES=''
+ssh -NL 6006:localhost:6006 xiaojie@10.100.228.181
+
 # jingwei: extract image features by vgg16
 cd jingwei/image_feature/matcovnet/
 wget http://lixirong.net/data/csur2016/matconvnet-1.0-beta8.tar.gz
