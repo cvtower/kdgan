@@ -1,7 +1,7 @@
 # kdgan
 pip install -Ue .
 
-ssh xiaojiew1@10.100.229.246
+ssh xiaojie@10.100.229.246
 ssh xiaojie@10.100.228.181
 
 conda create -n py27 python=2.7
