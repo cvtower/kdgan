@@ -20,6 +20,7 @@ tf.app.flags.DEFINE_string('model_name', None, '')
 tf.app.flags.DEFINE_string('preprocessing_name', None, '')
 tf.app.flags.DEFINE_string('checkpoint_path', None, '')
 tf.app.flags.DEFINE_string('end_point', None, '')
+tf.app.flags.DEFINE_integer('num_epoch', 250, '')
 
 flags = tf.app.flags.FLAGS
 
@@ -31,7 +32,10 @@ TEXT_INDEX = 3
 DESC_INDEX = 4
 LABEL_INDEX = -1
 
-num_classes = 1000
+if flags.model_name == 'vgg_16':
+    num_classes = 1000
+else:
+    num_classes = 1001
 network_fn_t = nets_factory.get_network_fn(flags.model_name,
         num_classes=num_classes,
         is_training=True)
@@ -59,8 +63,9 @@ for variable in slim.get_model_variables():
     for dim in variable.shape:
         num_params *= dim.value
     print('{} #param={}'.format(variable.name, num_params))
-for key, tensor in end_points_t.items():
-    print(key)
+for name, tensor in end_points_t.items():
+    print(name, tensor.shape)
+
 end_point_t = tf.squeeze(end_points_t[flags.end_point])
 print(end_point_t.shape, end_point_t.dtype)
 
@@ -88,7 +93,7 @@ def build_example(user, image, text, label, file):
 def create_tfrecord(infile, is_training=False):
     create_if_nonexist(config.prerecord_dir)
 
-    num_epoch = 500
+    num_epoch = flags.num_epoch
     if not is_training:
         num_epoch = 1
 
@@ -133,6 +138,8 @@ def create_tfrecord(infile, is_training=False):
             tfrecord_file = filepath.format(dataset, flags.model_name, epoch, version)
             if path.isfile(tfrecord_file):
                 continue
+            # print(tfrecord_file)
+            # exit()
             with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
                 for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
                     user = bytes(user, encoding='utf-8')
@@ -141,9 +148,9 @@ def create_tfrecord(infile, is_training=False):
                     # print(type(image_np), image_np.shape)
                     feed_dict = {image_ph:image_np}
                     image_t, = sess.run([end_point_t], feed_dict)
-                    # print(type(image), image.shape)
                     image_t = image_t.tolist()
-                    # print(type(image_t), len(image_t), image_t)
+                    # print(type(image_t), len(image_t))
+                    # exit()
 
                     text = [token_to_id.get(token, unk_token_id) for token in text]
 

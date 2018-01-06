@@ -108,7 +108,7 @@ def main(_):
     # valid_filename = 'yfcc10k_{}.valid.tfrecord'.format(flags.model_name)
     # valid_tfrecord = path.join(config.tfrecord_dir, valid_filename)
 
-    data_sources_t = utils.get_data_sources(flags, config.train_file, 200)
+    data_sources_t = utils.get_data_sources(flags, config.train_file, 500)
     data_sources_v = utils.get_data_sources(flags, config.valid_file, 1)
     ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
     ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
