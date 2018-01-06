@@ -23,6 +23,7 @@ python yfcc10k_fast.py \
     --checkpoint_path=$pretrained_dir/inception_resnet_v2_2016_08_30.ckpt \
     --end_point=global_pool
 # 1536
+exit
 
 python yfcc10k_fast.py \
     --model_name=vgg_16 \
@@ -30,3 +31,4 @@ python yfcc10k_fast.py \
     --checkpoint_path=$pretrained_dir/vgg_16.ckpt \
     --end_point=vgg_16/fc7
 # 4096
+exit
