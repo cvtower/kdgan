@@ -22,7 +22,7 @@ def process(options, collection, annotationName, runfile):
     ndcg2 = getScorer('NDCG2@20')
     p1scorer = getScorer('P@1')
     p3scorer = getScorer('P@3')
-    # p5scorer = getScorer('P@5')
+    p5scorer = getScorer('P@5')
 
     datafiles = [x.strip() for x in open(runfile).readlines() if x.strip() and not x.strip().startswith('#')]
     nr_of_runs = len(datafiles)
@@ -30,7 +30,7 @@ def process(options, collection, annotationName, runfile):
     concepts = readConcepts(collection, annotationName, rootpath=rootpath)  
     nr_of_concepts = len(concepts)
     
-    printStatus(INFO, 'read annotations from files')
+    # printStatus(INFO, 'read annotations from files')
     
     name2label = [{} for i in range(nr_of_concepts)]
     hit_imgset = [[] for i in range(nr_of_concepts)]
@@ -56,17 +56,17 @@ def process(options, collection, annotationName, runfile):
             hit_imgset[i] = set(map(string.strip, map(str, open(label_file).readlines()))) # set(map(int, open(label_file).readlines()))
         except:
             hit_imgset[i] = set()
-        printStatus(INFO, 'readLabeledImageSet for %s-%s -> %d hits' % (collection, concepts[i], len(hit_imgset[i])))
+        # printStatus(INFO, 'readLabeledImageSet for %s-%s -> %d hits' % (collection, concepts[i], len(hit_imgset[i])))
         
     ap_table = np.zeros((nr_of_runs, nr_of_concepts))
     ap2_table = np.zeros((nr_of_runs, nr_of_concepts))
     ndcg_table = np.zeros((nr_of_runs, nr_of_concepts))
     ndcg2_table = np.zeros((nr_of_runs, nr_of_concepts))
     
-    print '#'*100
-    print '# method miap hit1 hit3'
+    # print '#'*100
     # print '# method miap hit1 hit5'
-    print '#'*100
+    print 'method miap hit1 hit3 hit5'
+    # print '#'*100
     
     for run_idx in range(nr_of_runs):
         data = pickle.load(open(datafiles[run_idx],'rb'))
@@ -102,7 +102,8 @@ def process(options, collection, annotationName, runfile):
             ndcg_table[run_idx, c_idx] = ndcg.score(sorted_labels)
             ndcg2_table[run_idx, c_idx] = ndcg2.score(sorted_labels)
 
-        res = np.zeros((nr_of_images, 3))
+        # res = np.zeros((nr_of_images, 3))
+        res = np.zeros((nr_of_images, 4))
         for j in range(nr_of_images):
             ranklist = zip(range(nr_of_concepts), scores[j,:])
             ranklist.sort(key=lambda v:v[1], reverse=True)
@@ -113,15 +114,15 @@ def process(options, collection, annotationName, runfile):
             ap = apscorer.score(sorted_labels)
             hit1 = p1scorer.score(sorted_labels)
             hit3 = p3scorer.score(sorted_labels) > 0.1
-            # hit5 = p5scorer.score(sorted_labels) > 0.1
+            hit5 = p5scorer.score(sorted_labels) > 0.1
             # print(imset[j], sorted_labels[0:5], ap, hit1, hit5)
             # raw_input()
-            res[j,:] = [ap, hit1, hit3]
             # res[j,:] = [ap, hit1, hit5]
+            res[j,:] = [ap, hit1, hit3, hit5]
         avg_perf = res.mean(axis=0)
         print os.path.split(datafiles[run_idx])[-1], ' '.join(['%.3f' % x for x in avg_perf])
-            
 
+    return
 
     print '#'*100
     print '# untagged-concept', ' '.join([os.path.split(x)[-1] for x in datafiles])

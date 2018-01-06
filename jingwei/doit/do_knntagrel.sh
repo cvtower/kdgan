@@ -1,11 +1,12 @@
-# ./do_knntagrel.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu
+# ./do_knntagrel.sh yfcc8k yfcc2k vgg-verydeep-16-fc7relu
 
-export BASEDIR=/Users/xiaojiew1/Projects # mac
-# export BASEDIR=/home/xiaojie/Projects
+# export BASEDIR=/Users/xiaojiew1/Projects # mac
+export BASEDIR=/home/xiaojie/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
 export SURVEY_CODE=$BASEDIR/kdgan/jingwei
-export SURVEY_DB=$BASEDIR/kdgan/logs
-export MATLAB_PATH=/Applications/MATLAB_R2017b.app/bin
+export SURVEY_DB=$BASEDIR/kdgan/results/runs
+# export MATLAB_PATH=/Applications/MATLAB_R2017b.app/bin # mac
+export MATLAB_PATH=/usr/local/bin
 export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
 
 rootpath=$SURVEY_DATA
@@ -19,19 +20,16 @@ fi
 trainCollection=$1
 testCollection=$2
 feature=$3
-k=1000
 tagger=preknn
 
 if [ "$feature" = "color64+dsift" ]; then
     distance=l1
-elif [ "$feature" = "vgg-verydeep-16fc7relu" ]; then
+elif [ "$feature" = "vgg-verydeep-16-fc7relu" ]; then
     distance=cosine
 else
     echo "unknown feature $feature"
     exit
 fi
-
-
 
 if [ "$testCollection" == "flickr81" ]; then
     testAnnotationName=concepts81.txt
@@ -56,16 +54,20 @@ if [ ! -d "$preknn_dir" ]; then
     ./do_getknn.sh $trainCollection $testCollection $feature 0 1 1
 fi
 
-python $codepath/instance_based/apply_tagger.py $testCollection $trainCollection $annotationName $feature --tagger $tagger --distance $distance --k $k
-tagvotesfile=$rootpath/$testCollection/autotagging/$testCollection/$trainCollection/$annotationName/$tagger/$feature,"$distance"knn,$k/id.tagvotes.txt
+for k in 5 10 50 100 250 500 750 1000
+do
 
-if [ ! -f "$tagvotesfile" ]; then
-    echo "tagvotes file $tagvotesfile does not exist!"
-    exit
-fi
+    python $codepath/instance_based/apply_tagger.py $testCollection $trainCollection $annotationName $feature --tagger $tagger --distance $distance --k $k
+    tagvotesfile=$rootpath/$testCollection/autotagging/$testCollection/$trainCollection/$annotationName/$tagger/$feature,"$distance"knn,$k/id.tagvotes.txt
 
-conceptfile=$rootpath/$testCollection/Annotations/$testAnnotationName
-resultfile=$SURVEY_DB/"$trainCollection"_"$testCollection"_$feature,knn.pkl
+    if [ ! -f "$tagvotesfile" ]; then
+        echo "tagvotes file $tagvotesfile does not exist!"
+        exit
+    fi
 
-python $codepath/postprocess/pickle_tagvotes.py $conceptfile $tagvotesfile $resultfile
+    conceptfile=$rootpath/$testCollection/Annotations/$testAnnotationName
+    resultfile=$SURVEY_DB/"$trainCollection"_"$testCollection"_$feature,knn,$k.pkl
 
+    python $codepath/postprocess/pickle_tagvotes.py $conceptfile $tagvotesfile $resultfile
+
+done
