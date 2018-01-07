@@ -46,27 +46,59 @@ from os import path
 
 
 # [0, 1, 2, 3, 4 ,...]
-x = tf.range(1, 10, name="x")
-x = ['0', '1', '2', '3', '4', '5']
+# x = tf.range(1, 10, name="x")
+# x = ['0', '1', '2', '3', '4', '5']
 
-# A queue that outputs 0,1,2,3,...
-range_q = tf.train.range_input_producer(limit=5, shuffle=False)
-slice_end = range_q.dequeue()
+# # A queue that outputs 0,1,2,3,...
+# range_q = tf.train.range_input_producer(limit=5, shuffle=False)
+# slice_end = range_q.dequeue()
 
-# Slice x to variable length, i.e. [0], [0, 1], [0, 1, 2], ....
-y = tf.slice(x, [0], [slice_end], name="y")
+# # Slice x to variable length, i.e. [0], [0, 1], [0, 1, 2], ....
+# y = tf.slice(x, [0], [slice_end], name="y")
 
-batched_data = tf.train.batch(
-    tensors=[y],
-    batch_size=5,
-    dynamic_pad=True,
-    name="y_batch"
-)
+# batched_data = tf.train.batch(
+#     tensors=[y],
+#     batch_size=5,
+#     dynamic_pad=True,
+#     name="y_batch"
+# )
 
-# Run the graph
-# tf.contrib.learn takes care of starting the queues for us
-res = tf.contrib.learn.run_n({"y": batched_data}, n=1, feed_dict=None)
+# # Run the graph
+# # tf.contrib.learn takes care of starting the queues for us
+# res = tf.contrib.learn.run_n({"y": batched_data}, n=1, feed_dict=None)
 
-# Print the result
-print("Batch shape: {}".format(res[0]["y"].shape))
-print(res[0]["y"])
+# # Print the result
+# print("Batch shape: {}".format(res[0]["y"].shape))
+# print(res[0]["y"])
+
+
+labels = [
+	[0.0, 0.5, 0.0, 0.5],
+	[0.0, 0.5, 0.0, 0.5],
+	[0.0, 0.5, 0.0, 0.5],
+	[0.0, 0.5, 0.0, 0.5],
+]
+
+logits = [
+	[0.1, 0.2, 0.3, 0.4],
+	[0.2, 0.3, 0.4, 0.1],
+	[0.3, 0.4, 0.1, 0.2],
+	[0.4, 0.1, 0.2, 0.3],
+]
+
+# loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels, logits=logits)
+
+loss = tf.losses.sigmoid_cross_entropy(labels, logits)
+
+with tf.Session() as sess:
+	res, = sess.run([loss])
+
+	print(res)
+
+
+
+
+
+
+
+
