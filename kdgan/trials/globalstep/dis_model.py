@@ -59,10 +59,8 @@ class DIS():
     loss = tf.add_n(losses, name='dis_loss')
     # total_loss = tf.losses.get_total_loss(name='total_loss')
     # diff = tf.subtract(loss, total_loss)
-    # optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    # self.train_op = optimizer.minimize(loss, global_step=global_step)
-    optimizer = tf.train.GradientDescentOptimizer(0.001)
-    self.train_op = optimizer.minimize(loss)
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+    self.train_op = optimizer.minimize(loss, global_step=global_step)
 
     # tf.summary.scalar('learning_rate', learning_rate)
     # tf.summary.scalar('loss', loss)

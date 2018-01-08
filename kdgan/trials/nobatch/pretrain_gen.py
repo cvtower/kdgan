@@ -14,7 +14,7 @@ tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_float('init_learning_rate', 0.1, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 10.0, '')
-tf.app.flags.DEFINE_float('image_weight_decay', 0.001, 'l2 coefficient')
+tf.app.flags.DEFINE_float('gen_weight_decay', 0.001, 'l2 coefficient')
 
 tf.app.flags.DEFINE_integer('cutoff', 3, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')

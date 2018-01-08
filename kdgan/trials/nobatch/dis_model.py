@@ -13,13 +13,13 @@ class DIS():
     self.is_training = is_training
 
     self.image_ph = tf.placeholder(tf.float32, shape=(1, flags.feature_size))
-    self.sample_ph = tf.placeholder(tf.int32, shape=(None))
-    self.label_ph = tf.placeholder(tf.float32, shape=(None))
+    self.sample_ph = tf.placeholder(tf.int32, shape=(None,))
+    self.label_ph = tf.placeholder(tf.float32, shape=(None,))
 
     dis_scope = 'discriminator'
     model_scope = nets_factory.arg_scopes_map[flags.model_name]
     with tf.variable_scope(dis_scope) as scope:
-      with slim.arg_scope(model_scope(weight_decay=flags.image_weight_decay)):
+      with slim.arg_scope(model_scope(weight_decay=flags.gen_weight_decay)):
         net = self.image_ph
         net = slim.dropout(net, flags.dropout_keep_prob, 
             is_training=is_training)

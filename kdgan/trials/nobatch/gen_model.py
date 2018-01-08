@@ -18,7 +18,7 @@ class GEN():
     gen_scope = 'generator'
     model_scope = nets_factory.arg_scopes_map[flags.model_name]
     with tf.variable_scope(gen_scope) as scope:
-      with slim.arg_scope(model_scope(weight_decay=flags.image_weight_decay)):
+      with slim.arg_scope(model_scope(weight_decay=flags.gen_weight_decay)):
         net = self.image_ph
         net = slim.dropout(net, flags.dropout_keep_prob, 
             is_training=is_training)
@@ -67,8 +67,8 @@ class GEN():
     self.kd_train_op = kd_optimizer.minimize(kd_loss, global_step=global_step)
 
     # generative adversarial network
-    self.sample_ph = tf.placeholder(tf.int32, shape=(None))
-    self.reward_ph = tf.placeholder(tf.float32, shape=(None))
+    self.sample_ph = tf.placeholder(tf.int32, shape=(None,))
+    self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
     self.logit_smp = tf.log(tf.nn.embedding_lookup(self.logits, self.sample_ph))
     gan_loss = -tf.reduce_mean(self.logit_smp * self.reward_ph)
     gan_optimizer = tf.train.GradientDescentOptimizer(learning_rate)
