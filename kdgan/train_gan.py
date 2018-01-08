@@ -2,6 +2,7 @@ from kdgan import config, metric, utils
 from dis_model import DIS
 from gen_model import GEN
 
+import math
 import os
 import time
 
@@ -31,7 +32,6 @@ tf.app.flags.DEFINE_string('model_name', None, '')
 
 flags = tf.app.flags.FLAGS
 
-config.train_batch_size = 1
 num_batch_t = int(flags.num_epoch * config.train_data_size / config.train_batch_size)
 eval_interval = int(config.train_data_size / config.train_batch_size)
 print('tn:\t#batch=%d\neval:\t#interval=%d' % (num_batch_t, eval_interval))
@@ -45,16 +45,19 @@ dis_v = DIS(flags, is_training=False)
 gen_v = GEN(flags, is_training=False)
 
 def generate_sample(label_dat, label_gen):
-  # print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
-  # print('{0} {1:.2f}'.format(label_gen.shape, label_gen.sum()))
-  num_sample = np.count_nonzero(label_dat)
-  # print('#nonzero={}'.format(num_sample))
-  sample_dat = np.random.choice(config.num_label, num_sample, p=label_dat)
-  label_dat = np.ones((num_sample))
-  sample_gen = np.random.choice(config.num_label, num_sample, p=label_gen)
-  label_gen = np.zeros((num_sample))
-  sample_np = np.concatenate([sample_dat, sample_gen])
-  label_np = np.concatenate([label_dat, label_gen])
+  print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
+  print('{0} {1:.2f}'.format(label_gen.shape, label_gen.sum()))
+
+  sample_np = []
+  for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
+    print(batch, label_d.shape, label_g.shape)
+  # sample_dat = np.random.choice(config.num_label, num_sample, p=label_dat)
+  # label_dat = np.ones((num_sample))
+  # sample_gen = np.random.choice(config.num_label, num_sample, p=label_gen)
+  # label_gen = np.zeros((num_sample))
+  # sample_np = np.concatenate([sample_dat, sample_gen])
+  # label_np = np.concatenate([label_dat, label_gen])
+  exit()
   return sample_np, label_np
 
 def main(_):
@@ -93,27 +96,26 @@ def main(_):
       for epoch in range(flags.num_epoch):
         for dis_epoch in range(flags.num_dis_epoch):
           # print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
-          for batch_d in range(config.train_data_size):
+          num_batch_d = math.ceil(config.train_data_size / config.train_batch_size)
+          for batch_d in range(num_batch_d):
             image_np_d, label_dat_d = sess.run([image_bt_d, label_bt_d])
             # print(image_np_d.shape, label_dat_d.shape)
-            label_dat_d = np.squeeze(label_dat_d)
             feed_dict = {gen_t.image_ph:image_np_d}
             label_gen_d, = sess.run([gen_t.labels], feed_dict=feed_dict)
+            # print(label_gen_d.shape, type(label_gen_d))
             sample_np_d, label_np_d = generate_sample(label_dat_d, label_gen_d)
-            feed_dict = {
-              dis_t.image_ph:image_np_d,
-              dis_t.sample_ph:sample_np_d,
-              dis_t.label_ph:label_np_d,
-            }
-            _, summary = sess.run([dis_t.train_op, dis_t.summary_op], feed_dict=feed_dict)
-            writer.add_summary(summary, batch_d)
+            # feed_dict = {
+            #   dis_t.image_ph:image_np_d,
+            #   dis_t.sample_ph:sample_np_d,
+            #   dis_t.label_ph:label_np_d,
+            # }
+            # _, summary = sess.run([dis_t.train_op, dis_t.summary_op], feed_dict=feed_dict)
+            # writer.add_summary(summary, batch_d)
 
-            if (batch_d + 1) % 4000 != 0:
+            if (batch_d + 1) % 100 != 0:
                 continue
             tot_time = time.time() - start
             print('#%d (%.2fs)' % (batch_d, tot_time))
-          # break
-        # input()
         for gen_epoch in range(flags.num_gen_epoch):
           # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
           for batch_g in range(config.train_data_size):

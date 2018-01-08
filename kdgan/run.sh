@@ -8,9 +8,9 @@ python train_gan.py \
   --feature_size=4096 \
   --text_weight_decay=0.0 \
   --image_weight_decay=0.0 \
-  --num_epoch=100 \
+  --num_epoch=1 \
   --num_dis_epoch=1 \
-  --num_gen_epoch=1
+  --num_gen_epoch=0
 exit
 
 python train_kd.py \
