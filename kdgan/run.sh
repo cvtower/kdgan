@@ -19,7 +19,6 @@ python pretrain_dis.py \
   --model_name=vgg_16 \
   --feature_size=4096 \
   --num_epoch=200
-exit
  # 469s best hit=0.6574
 
 python pretrain_gen.py \
