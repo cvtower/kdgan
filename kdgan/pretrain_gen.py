@@ -11,17 +11,22 @@ from os import path
 from tensorflow.contrib import slim
 
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
-tf.app.flags.DEFINE_float('init_learning_rate', 0.1, '')
+tf.app.flags.DEFINE_float('gen_weight_decay', 0.001, 'l2 coefficient')
+tf.app.flags.DEFINE_float('init_learning_rate', 0.05, '')
+tf.app.flags.DEFINE_float('beta', 0.3, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 10.0, '')
-tf.app.flags.DEFINE_float('gen_weight_decay', 0.001, 'l2 coefficient')
+tf.app.flags.DEFINE_float('temperature', 3.0, '')
+tf.app.flags.DEFINE_float('tch_weight_decay', 0.00001, 'l2 coefficient')
 
 tf.app.flags.DEFINE_integer('cutoff', 3, '')
+tf.app.flags.DEFINE_integer('embedding_size', 10, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_integer('num_epoch', 200, '')
 
+tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
-tf.app.flags.DEFINE_string('gen_model', None, '')
+tf.app.flags.DEFINE_string('tch_model_ckpt', None, '')
 
 flags = tf.app.flags.FLAGS
 
@@ -55,6 +60,10 @@ def main(_):
   user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
 
+  tf.summary.scalar('learning_rate', gen_t.learning_rate)
+  tf.summary.scalar('pre_loss', gen_t.pre_loss)
+  summary_op = tf.summary.merge_all()
+
   start = time.time()
   best_hit_v = -np.inf
   init_op = tf.global_variables_initializer()
@@ -65,7 +74,7 @@ def main(_):
       for batch_t in range(num_batch_t):
         image_np_t, label_np_t = sess.run([image_bt_t, label_bt_t])
         feed_dict = {gen_t.image_ph:image_np_t, gen_t.label_ph:label_np_t}
-        _, summary = sess.run([gen_t.train_op, gen_t.summary_op], feed_dict=feed_dict)
+        _, summary = sess.run([gen_t.train_op, summary_op], feed_dict=feed_dict)
         writer.add_summary(summary, batch_t)
 
         if (batch_t + 1) % eval_interval != 0:
@@ -86,8 +95,7 @@ def main(_):
         if hit_v < best_hit_v:
           continue
         best_hit_v = hit_v
-        ckpt_file = path.join(config.ckpt_dir, '%s.ckpt' % flags.gen_model)
-        gen_t.saver.save(sess, ckpt_file)
+        gen_t.saver.save(sess, flags.gen_model_ckpt)
   print('best hit={0:.4f}'.format(best_hit_v))
 
 if __name__ == '__main__':
