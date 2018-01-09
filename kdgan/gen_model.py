@@ -46,13 +46,11 @@ class GEN():
         staircase=True, name='exponential_decay_learning_rate')
 
     # pretrain generator
-    tf.losses.sigmoid_cross_entropy(self.label_ph, self.logits)
-    losses = tf.get_collection(tf.GraphKeys.LOSSES)
+    losses = []
+    losses.append(tf.losses.sigmoid_cross_entropy(self.label_ph, self.logits))
     regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
     losses.extend(regularization_losses)
     self.pre_loss = tf.add_n(losses, name='pre_loss')
-    # total_loss = tf.losses.get_total_loss(name='total_loss')
-    # diff = tf.subtract(loss, total_loss)
     optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
     self.train_op = optimizer.minimize(self.pre_loss, global_step=global_step)
 
@@ -70,7 +68,8 @@ class GEN():
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
     self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
-    gan_loss = -tf.reduce_mean(self.reward_ph * sample_logits)
+    # gan_loss = -tf.reduce_mean(self.reward_ph * sample_logits)
+    gan_loss = tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)
     gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
     self.gan_train_op = gan_optimizer.minimize(gan_loss, global_step=global_step)
 

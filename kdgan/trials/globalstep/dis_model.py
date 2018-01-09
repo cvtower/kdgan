@@ -64,6 +64,5 @@ class DIS():
 
     # tf.summary.scalar('learning_rate', learning_rate)
     # tf.summary.scalar('loss', loss)
-    # # tf.summary.scalar('diff', diff)
     # self.summary_op = tf.summary.merge_all()
 

@@ -28,6 +28,7 @@ tf.app.flags.DEFINE_integer('num_epoch', 20, '')
 tf.app.flags.DEFINE_integer('num_dis_epoch', 10, '')
 tf.app.flags.DEFINE_integer('num_gen_epoch', 5, '')
 
+tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
 
@@ -112,8 +113,9 @@ def main(_):
   init_op = tf.global_variables_initializer()
   with tf.Session() as sess:
     sess.run(init_op)
-    writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
+    dis_t.saver.restore(sess, flags.dis_model_ckpt)
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
+    writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
       image_hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
       print('init\thit={0:.4f}'.format(image_hit_v))
@@ -156,31 +158,37 @@ def main(_):
             feed_dict = {gen_t.image_ph:image_np_g}
             label_gen_g, = sess.run([gen_t.labels], feed_dict=feed_dict)
             sample_np_g = generate_gen_sample(label_dat_g, label_gen_g)
+            # for sample in sample_np_g:
+            #   print(sample)
             feed_dict = {
               dis_t.image_ph:image_np_g,
               dis_t.sample_ph:sample_np_g,
             }
             reward_np_g, = sess.run([dis_t.rewards], feed_dict=feed_dict)
             # for sample, reward in zip(sample_np_g, reward_np_g):
-            #   print(sample, reward)
+            #   batch = sample[0]
+            #   label = [i for i, l in enumerate(label_dat_g[batch]) if l != 0.0]
+            #   print(sample, reward, label)
+            # print('%.2f %.2f' % (reward_np_g.min(), reward_np_g.max()))
+            # input()
             feed_dict = {
               gen_t.image_ph:image_np_g,
               gen_t.sample_ph:sample_np_g,
               gen_t.reward_ph:reward_np_g,
             }
-            _, summary = sess.run([gen_t.gan_train_op, gen_t.summary_op],
-                feed_dict=feed_dict)
-            if batch_g % 20 == 0:
-              writer.add_summary(summary, batch_g)
+            sess.run([gen_t.gan_train_op], feed_dict=feed_dict)
             if (batch_g + 1) % eval_interval != 0:
               continue
             image_hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
             tot_time = time.time() - start
             print('#%d hit=%.4f (%.0fs)' % (batch_g, image_hit_v, tot_time))
+            if image_hit_v > best_hit_v:
+              best_hit_v = image_hit_v
+              print('best hit=%.4f (%.0fs)' % (image_hit_v, tot_time))
           # break
-        image_hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
-        print('final\thit={0:.4f}'.format(image_hit_v))
-        # break
+
+      print('best\thit={0:.4f}'.format(best_hit_v))
+      # break
 
 if __name__ == '__main__':
   tf.app.run()

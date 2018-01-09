@@ -33,7 +33,17 @@ class DIS():
         self.logits = net
 
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
-    self.rewards = 2 * (tf.sigmoid(sample_logits) - 0.5)
+    # self.rewards = 2 * (tf.sigmoid(sample_logits) - 0.5)
+    # self.rewards = tf.sigmoid(sample_logits)
+
+    reward_logits = self.logits
+    # reward_logits = 2 * (tf.sigmoid(reward_logits) - 0.5)
+    # reward_logits -= tf.reduce_mean(reward_logits, 1, keep_dims=True)
+    # reward_logits -= tf.reduce_mean(reward_logits, 1, keep_dims=True)
+    # reward_logits = 2 * (tf.sigmoid(reward_logits) - 0.5)
+    reward_logits = tf.sigmoid(reward_logits)
+    # reward_logits -= tf.reduce_mean(reward_logits, 1, keep_dims=True)
+    self.rewards = tf.gather_nd(reward_logits, self.sample_ph)
 
     if not is_training:
       return
@@ -60,16 +70,12 @@ class DIS():
     optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
     self.pre_train_op = optimizer.minimize(self.pre_loss, global_step=global_step)
 
-    tf.losses.sigmoid_cross_entropy(self.label_ph, sample_logits)
-    losses = tf.get_collection(tf.GraphKeys.LOSSES)
-    # print('#loss={}'.format(len(losses)))
+    losses = []
+    losses.append(tf.losses.sigmoid_cross_entropy(self.label_ph, sample_logits))
     regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
-    # print('#regularization_loss={}'.format(len(regularization_losses)))
     losses.extend(regularization_losses)
-    loss = tf.add_n(losses, name='dis_loss')
-    # total_loss = tf.losses.get_total_loss(name='total_loss')
-    # diff = tf.subtract(loss, total_loss)
+    self.gan_loss = tf.add_n(losses, name='dis_gan_loss')
     optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
-    self.train_op = optimizer.minimize(loss, global_step=global_step)
+    self.train_op = optimizer.minimize(self.gan_loss, global_step=global_step)
 
 
