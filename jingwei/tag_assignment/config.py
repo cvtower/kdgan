@@ -25,8 +25,8 @@ os.environ['SURVEY_DB'] = logs_dir
 os.environ['MATLAB_PATH'] = matlab_path
 
 dataset = 'yfcc10k'
-yfcc10k_dir = path.join(yfcc_dir, 'yfcc10k')
-data_filepath = path.join(yfcc10k_dir, '%s.data'%dataset)
-train_filepath = path.join(yfcc10k_dir, '%s.train'%dataset)
-valid_filepath = path.join(yfcc10k_dir, '%s.valid'%dataset)
+dataset_dir = path.join(yfcc_dir, 'yfcc10k')
+data_filepath = path.join(dataset_dir, '%s.data'%dataset)
+train_filepath = path.join(dataset_dir, '%s.train'%dataset)
+valid_filepath = path.join(dataset_dir, '%s.valid'%dataset)
 

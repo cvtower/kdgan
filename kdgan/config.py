@@ -17,19 +17,21 @@ logs_dir = path.join(kdgan_dir, 'logs')
 temp_dir = path.join(kdgan_dir, 'temp')
 ckpt_dir = path.join(kdgan_dir, 'checkpoints')
 
-dataset = 'yfcc10k'
 image_dir = path.join(yfcc_dir, 'images')
 rawtag_file = path.join(yfcc_dir, 'sample_00')
 sample_file = path.join(yfcc_dir, 'sample_09')
 
-yfcc10k_dir = path.join(yfcc_dir, 'yfcc10k')
-raw_file = path.join(yfcc10k_dir, '%s.raw' % dataset)
-data_file = path.join(yfcc10k_dir, '%s.data' % dataset)
-train_file = path.join(yfcc10k_dir, '%s.train' % dataset)
-valid_file = path.join(yfcc10k_dir, '%s.valid' % dataset)
-label_file = path.join(yfcc10k_dir, '%s.label' % dataset)
-vocab_file = path.join(yfcc10k_dir, '%s.vocab' % dataset)
-image_data_dir = path.join(yfcc10k_dir, 'ImageData')
+# dataset = 'yfcc10k'
+dataset = 'yfcc20k'
+
+dataset_dir = path.join(yfcc_dir, dataset)
+raw_file = path.join(dataset_dir, '%s.raw' % dataset)
+data_file = path.join(dataset_dir, '%s.data' % dataset)
+train_file = path.join(dataset_dir, '%s.train' % dataset)
+valid_file = path.join(dataset_dir, '%s.valid' % dataset)
+label_file = path.join(dataset_dir, '%s.label' % dataset)
+vocab_file = path.join(dataset_dir, '%s.vocab' % dataset)
+image_data_dir = path.join(dataset_dir, 'ImageData')
 
 train_tfrecord = '%s.tfrecord' % train_file
 valid_tfrecord = '%s.tfrecord' % valid_file
@@ -54,10 +56,10 @@ num_label = 100
 vocab_size = 7281
 train_data_size = 8000
 valid_data_size = 2000
-train_batch_size = 32
-valid_batch_size = 100
+train_batch_size = 50
+valid_batch_size = 500
 
-prerecord_dir = path.join(yfcc10k_dir, 'Pretrained')
+prerecord_dir = path.join(dataset_dir, 'Pretrained')
 tfrecord_template = '{0}_{1}_{2:03d}.{3}.tfrecord'
 
 

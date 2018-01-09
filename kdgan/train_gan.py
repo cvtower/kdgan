@@ -27,6 +27,8 @@ tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_integer('num_epoch', 20, '')
 tf.app.flags.DEFINE_integer('num_dis_epoch', 10, '')
 tf.app.flags.DEFINE_integer('num_gen_epoch', 5, '')
+tf.app.flags.DEFINE_integer('num_negative', 1, '')
+tf.app.flags.DEFINE_integer('num_positive', 1, '')
 
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
@@ -54,12 +56,14 @@ def generate_dis_sample(label_dat, label_gen):
   for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
     num_sample = np.count_nonzero(label_d)
     # print(batch, label_d.shape, label_g.shape, num_sample)
-    sample_d = np.random.choice(config.num_label, num_sample, p=label_d)
+    num_positive = num_sample * flags.num_positive
+    sample_d = np.random.choice(config.num_label, num_positive, p=label_d)
     for sample in sample_d:
       # print(batch, sample, 1.0)
       sample_np.append((batch, sample))
       label_np.append(1.0)
-    sample_g = np.random.choice(config.num_label, num_sample, p=label_g)
+    num_negative = num_sample * flags.num_negative
+    sample_g = np.random.choice(config.num_label, num_negative, p=label_g)
     for sample in sample_g:
       sample_np.append((batch, sample))
       label_np.append(0.0)
@@ -72,7 +76,7 @@ def generate_dis_sample(label_dat, label_gen):
 def generate_gen_sample(label_dat, label_gen):
   sample_np = []
   for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
-    num_sample = np.count_nonzero(label_d) * 2
+    num_sample = np.count_nonzero(label_d) * (flags.num_positive + flags.num_negative)
     # print(num_sample, label_g.sum())
     # if abs(label_g.sum() - 1.0) > 0.001:
     #   print(label_g)
@@ -149,7 +153,7 @@ def main(_):
             # print('#%d hit=%.4f (%.0fs)' % (batch_d, image_hit_v, tot_time))
 
         for gen_epoch in range(flags.num_gen_epoch):
-          # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
+          print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
           num_batch_g = math.ceil(config.train_data_size / config.train_batch_size)
           for _ in range(num_batch_g):
             batch_g += 1

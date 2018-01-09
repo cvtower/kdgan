@@ -14,6 +14,12 @@ def create_if_nonexist(outdir):
     if not path.exists(outdir):
         os.makedirs(outdir)
 
+def skip_if_exist(infile):
+    skip = False
+    if path.isfile(infile):
+        skip = True
+    return skip
+
 def save_collection(coll, outfile):
     with open(outfile, 'w') as fout:
         for elem in coll:

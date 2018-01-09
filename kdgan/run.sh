@@ -10,8 +10,8 @@ python train_gan.py \
   --tch_weight_decay=0.0 \
   --gen_weight_decay=0.0 \
   --num_epoch=100 \
-  --num_dis_epoch=100 \
-  --num_gen_epoch=20
+  --num_dis_epoch=50 \
+  --num_gen_epoch=10
 exit
 
 python pretrain_dis.py \
@@ -19,7 +19,7 @@ python pretrain_dis.py \
   --model_name=vgg_16 \
   --feature_size=4096 \
   --num_epoch=200
- # 469s best hit=0.6574
+# 469s best hit=0.6574
 
 python pretrain_gen.py \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \

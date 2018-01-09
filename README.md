@@ -1,6 +1,8 @@
 # kdgan
 pip install -Ue .
 
+init    hit=0.6504
+
 remote.unimelb.edu.au/student
 ssh xiaojie@10.100.229.246
 ssh xiaojie@10.100.228.181

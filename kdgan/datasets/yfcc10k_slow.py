@@ -1016,7 +1016,7 @@ def survey_annotations(infile):
         fout.close()
 
 if __name__ == '__main__':
-    create_if_nonexist(config.yfcc10k_dir)
+    create_if_nonexist(config.dataset_dir)
     check_num_field()
     if not skip_if_exist(config.label_file):
         print('select top labels')
