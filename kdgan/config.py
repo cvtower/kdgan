@@ -41,11 +41,6 @@ image_key = 'image'
 text_key = 'text'
 label_key = 'label'
 file_key = 'file'
-image_encoded_key = 'image/encoded'
-image_format_key = 'image/format'
-image_height_key = 'image/height'
-image_width_key = 'image/width'
-image_file_key = 'image/file'
 
 unk_token = 'unk'
 pad_token = ' '
@@ -59,8 +54,8 @@ valid_data_size = 2000
 train_batch_size = 50
 valid_batch_size = 500
 
-prerecord_dir = path.join(dataset_dir, 'Pretrained')
-tfrecord_template = '{0}_{1}_{2:03d}.{3}.tfrecord'
+precomputed_dir = path.join(dataset_dir, 'Precomputed')
+tfrecord_tmpl = '{0}_{1}_{2:03d}.{3}.tfrecord'
 
 
 

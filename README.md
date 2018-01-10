@@ -2,6 +2,7 @@
 pip install -Ue .
 
 init    hit=0.6504
+best    hit=0.6613
 
 remote.unimelb.edu.au/student
 ssh xiaojie@10.100.229.246

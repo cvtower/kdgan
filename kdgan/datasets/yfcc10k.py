@@ -1,31 +1,104 @@
-from kdgan import config, utils
-from datasets import imagenet
+################################################################
+#
+# configuration
+#
+################################################################
+
+import sys
+from os import path
+
+home_dir = path.expanduser('~')
+proj_dir = path.join(home_dir, 'Projects')
+data_dir = path.join(proj_dir, 'data')
+yfcc_dir = path.join(data_dir, 'yfcc100m')
+root_dir = path.join(proj_dir, 'kdgan')
+surv_dir = path.join(yfcc_dir, 'survey_data')
+
+slim_dir = path.join(root_dir, 'slim')
+sys.path.insert(0, slim_dir)
+
+kdgan_dir = path.join(root_dir, 'kdgan')
+logs_dir = path.join(kdgan_dir, 'logs')
+temp_dir = path.join(kdgan_dir, 'temp')
+ckpt_dir = path.join(kdgan_dir, 'checkpoints')
+
+image_dir = path.join(yfcc_dir, 'images')
+rawtag_file = path.join(yfcc_dir, 'sample_00')
+sample_file = path.join(yfcc_dir, 'sample_09')
+
+dataset = 'yfcc10k'
+
+dataset_dir = path.join(yfcc_dir, dataset)
+raw_file = path.join(dataset_dir, '%s.raw' % dataset)
+data_file = path.join(dataset_dir, '%s.data' % dataset)
+train_file = path.join(dataset_dir, '%s.train' % dataset)
+valid_file = path.join(dataset_dir, '%s.valid' % dataset)
+label_file = path.join(dataset_dir, '%s.label' % dataset)
+vocab_file = path.join(dataset_dir, '%s.vocab' % dataset)
+image_data_dir = path.join(dataset_dir, 'ImageData')
+
+train_tfrecord = '%s.tfrecord' % train_file
+valid_tfrecord = '%s.tfrecord' % valid_file
+
+user_key = 'user'
+image_key = 'image'
+text_key = 'text'
+label_key = 'label'
+file_key = 'file'
+
+unk_token = 'unk'
+pad_token = ' '
+num_threads = 4
+channels = 3
+
+num_label = 100
+vocab_size = 7281
+train_data_size = 8000
+valid_data_size = 2000
+train_batch_size = 50
+valid_batch_size = 500
+
+precomputed_dir = path.join(dataset_dir, 'Precomputed')
+tfrecord_tmpl = '{0}_{1}_{2:03d}.{3}.tfrecord'
+
+from kdgan import utils
 
 import operator
 import os
 import random
 import shutil
+import string
 import urllib
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.contrib import slim
 
+from datasets import dataset_utils
+from datasets import imagenet
+from nets import nets_factory
 from nltk import word_tokenize
-from nltk.corpus import stopwords, wordnet
+from nltk.corpus import stopwords
+from nltk.corpus import wordnet
 from os import path
+from preprocessing import preprocessing_factory
+from tensorflow.contrib import slim
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString
+from datasets.download_and_convert_flowers import ImageReader
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import SnowballStemmer
 from nltk.tokenize import RegexpTokenizer
 
 from PIL import Image
 
-# tf slim
-from datasets import dataset_utils
-from datasets.download_and_convert_flowers import ImageReader
+tf.app.flags.DEFINE_boolean('dev', False, '')
+tf.app.flags.DEFINE_string('model_name', None, '')
+tf.app.flags.DEFINE_string('preprocessing_name', None, '')
+tf.app.flags.DEFINE_string('checkpoint_path', None, '')
+tf.app.flags.DEFINE_string('end_point', None, '')
+tf.app.flags.DEFINE_integer('num_epoch', 500, '')
+flags = tf.app.flags.FLAGS
 
 lemmatizer = WordNetLemmatizer()
 
@@ -44,48 +117,40 @@ LABEL_INDEX = -1
 
 NUM_TOP_LABEL = 100 # select top 100 labels
 EXPECTED_NUM_POST = 10000
-MIN_IMAGE_PER_USER = 10
-MAX_IMAGE_PER_USER = 100
-MIN_IMAGE_PER_LABEL = 100
-POST_UNIT_SIZE = 5
-TRAIN_RATIO = 0.80
-
-def create_if_nonexist(outdir):
-    if not path.exists(outdir):
-        os.makedirs(outdir)
-
-def skip_if_exist(infile):
-    skip = False
-    if path.isfile(infile):
-        skip = True
-    return skip
+MIN_IMAGE_PER_USER = 20
+MAX_IMAGE_PER_USER = 1000
+MIN_IMAGE_PER_LABEL = 100 - 3
+POST_UNIT_SIZE = 20
+TRAIN_RATIO = 0.95
+SHUFFLE_SEED = 100
 
 def check_num_field():
-    fin = open(config.sample_file)
+    fin = open(sample_file)
     while True:
-        line = fin.readline().strip()
+        line = fin.readline()
         if not line:
+            # print('line=\'{}\' type={}'.format(line, type(line)))
             break
-        fields = line.split(FIELD_SEPERATOR)
+        fields = line.strip().split(FIELD_SEPERATOR)
         num_field = len(fields)
-        # print(num_field)
         if num_field != EXPECTED_NUM_FIELD:
             raise Exception('wrong number of fields')
     fin.close()
 
 def select_top_label():
-    imagenet_labels = set()
+    imagenet_labels = {}
     label_names = imagenet.create_readable_names_for_imagenet_labels()
-    for label in range(1, 1001):
-        names = label_names[label].split(',')
-        for name in names:
-            name = name.strip().lower()
-            name = name.replace(' ', SPACE_PLUS)
-            word = name.split(SPACE_PLUS)[-1]
-            imagenet_labels.add(name)
-            imagenet_labels.add(word)
+    label_names = {k:v.lower() for k, v in label_names.items()}
+    for label_id in range(1, 1001):
+        names = label_names[label_id]
+        for name in names.split(','):
+            name = name.strip()
+            label = name.split()[-1]
+            if label not in imagenet_labels:
+                imagenet_labels[label] = []
+            imagenet_labels[label].append(names)
 
-    fin = open(config.sample_file)
+    fin = open(sample_file)
     label_count = {}
     while True:
         line = fin.readline().strip()
@@ -93,16 +158,22 @@ def select_top_label():
             break
         fields = line.split(FIELD_SEPERATOR)
         labels = fields[LABEL_INDEX]
-
         labels = labels.split(LABEL_SEPERATOR)
         for label in labels:
-            if label not in label_count:
-                label_count[label] = 0
-            label_count[label] += 1
+            label_count[label] = label_count.get(label, 0) + 1
     fin.close()
 
-    invalid_labels = ['bank', 'center', 'engine', 'home', 'jack', 'maria', 'train', ]
-    label_count = sorted(label_count.items(), key=operator.itemgetter(1, 0), reverse=True)
+    invalid_labels = ['bank', 'center', 'home', 'jack', 'maria']
+    invalid_labels.append('apple') # custard apple
+    invalid_labels.append('bar') # horizontal bar, high bar
+    invalid_labels.append('coral') # brain coral
+    invalid_labels.append('dragon') # komodo dragon
+    invalid_labels.append('grand') # grand piano
+    invalid_labels.append('star') # starfish, sea star
+    invalid_labels.append('track') # half track
+    label_count = sorted(label_count.items(),
+            key=operator.itemgetter(1, 0),
+            reverse=True)
 
     top_labels, num_label, = set(), 0
     for label, _ in label_count:
@@ -115,7 +186,16 @@ def select_top_label():
         top_labels.add(label)
         num_label += 1
     top_labels = sorted(top_labels)
-    utils.save_collection(top_labels, config.label_file)
+    for count, label in enumerate(top_labels):
+        names = []
+        for label_id in range(1, 1001):
+            if label in label_names[label_id]:
+                names.append(label_names[label_id])
+        print('#%d label=%s' % (count + 1, label))
+        for names in imagenet_labels[label]:
+            print('\t%s' %(names))
+        # input()
+    utils.save_collection(top_labels, label_file)
 
 def with_top_label(labels, top_labels):
     old_labels = labels.split(LABEL_SEPERATOR)
@@ -137,9 +217,15 @@ def keep_top_label(labels, top_labels):
         new_labels.append(label)
     return new_labels
 
-def count_posts(user_posts):
-    tot_post = 0
+def get_user_count(user_posts):
+    user_count = {}
     for user, posts in user_posts.items():
+        user_count[user] = len(posts)
+    return user_count
+
+def get_post_count(user_posts):
+    tot_post = 0
+    for _, posts in user_posts.items():
         tot_post += len(posts)
     return tot_post
 
@@ -158,9 +244,9 @@ def save_posts(user_posts, infile):
     print('#image={}'.format(len(image_set)))
 
 def select_posts():
-    top_labels = utils.load_collection(config.label_file)
+    top_labels = utils.load_collection(label_file)
     user_posts = {}
-    fin = open(config.sample_file)
+    fin = open(sample_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -169,6 +255,13 @@ def select_posts():
         user, labels = fields[USER_INDEX], fields[LABEL_INDEX]
         image_url = fields[IMAGE_INDEX]
         if not with_top_label(labels, top_labels):
+            continue
+        post = fields[POST_INDEX]
+        if post in ['38660241',
+                '75168733',
+                '72513144',
+                '96116455',
+                '93108491',]:
             continue
         labels = keep_top_label(labels, top_labels)
         fields[LABEL_INDEX] = LABEL_SEPERATOR.join(labels)
@@ -186,6 +279,8 @@ def select_posts():
         if num_post < MIN_IMAGE_PER_USER:
             continue
         user_posts[user] = posts
+    tot_post = get_post_count(user_posts)
+    print('#post=%d' % (tot_post))
 
     label_count = {}
     for user, posts in user_posts.items():
@@ -194,13 +289,13 @@ def select_posts():
             user = fields[USER_INDEX]
             labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
             for label in labels:
-                if label not in label_count:
-                    label_count[label] = 0
-                label_count[label] += 1
+                label_count[label] = label_count.get(label, 0) + 1
+    counts = label_count.values()
+    print('min=%d max=%d' % (min(counts), max(counts)))
 
-    users = sorted(user_posts.keys())
     user_posts_cpy = user_posts
     user_posts = {}
+    users = sorted(user_posts_cpy.keys())
     for user in users:
         posts = user_posts_cpy[user]
         num_post = len(posts)
@@ -235,57 +330,15 @@ def select_posts():
                 labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
                 for label in labels:
                     label_count[label] -= 1
-    tot_post = count_posts(user_posts)
+    tot_post = get_post_count(user_posts)
     dif_post = tot_post - EXPECTED_NUM_POST
     print('{} to be removed'.format(dif_post))
 
-    users = sorted(user_posts.keys())
-    for user in users:
-        keep = False
-        posts = user_posts[user]
-        user_label_count = {}
-        for post in posts:
-            fields = post.split(FIELD_SEPERATOR)
-            labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-            for label in labels:
-                if label not in user_label_count:
-                    user_label_count[label] = 0
-                user_label_count[label] += 1
-        for label, count in user_label_count.items():
-            if (label_count[label] - user_label_count[label]) < MIN_IMAGE_PER_LABEL:
-                keep = True
-                break
-        if not keep:
-            num_post = len(posts)
-            if dif_post - num_post < 0:
-                if num_post - dif_post < MIN_IMAGE_PER_USER:
-                    continue
-                else:
-                    num_post -= dif_post
-                    user_posts[user] = posts[:num_post]
-                    break
-                print('todo')
-                exit()
-            else:
-                for post in posts:
-                    fields = post.split(FIELD_SEPERATOR)
-                    labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-                    for label in labels:
-                        label_count[label] -= 1
-                dif_post -= num_post
-                del user_posts[user]
-    tot_post = count_posts(user_posts)
-    user_count = {}
-    for user, posts in user_posts.items():
-        user_count[user] = len(posts)
-    dif_post = tot_post - EXPECTED_NUM_POST
-    print('{} to be removed'.format(dif_post))
-
-    users = sorted(user_posts.keys())
-    sorted_user_count = sorted(user_count.items(), key=operator.itemgetter(1), reverse=True)
     user_posts_cpy = user_posts
     user_posts = {}
-    for user in users:
+    user_count = get_user_count(user_posts_cpy)
+    user_count = sorted(user_count.items(), key=operator.itemgetter(1), reverse=True)
+    for user, _ in user_count:
         posts = user_posts_cpy[user]
         keep_posts = []
         disc_posts = []
@@ -327,6 +380,8 @@ def select_posts():
                 label_count[label] += 1
         disc_posts = disc_posts[num_rest:]
         user_posts[user] = keep_posts
+    tot_post = get_post_count(user_posts)
+    dif_post = tot_post - EXPECTED_NUM_POST
     print('{} to be removed'.format(dif_post))
 
     user_posts_cpy = user_posts
@@ -341,7 +396,7 @@ def select_posts():
             post = FIELD_SEPERATOR.join(fields)
             user_posts[user].append(post)
 
-    save_posts(user_posts, config.raw_file)
+    save_posts(user_posts, raw_file)
 
 stopwords = set(stopwords.words('english'))    
 def tokenize_dataset():
@@ -349,6 +404,10 @@ def tokenize_dataset():
     tokenizer = RegexpTokenizer('[a-z]+')
     def _in_wordnet(token):
         if wordnet.synsets(token):
+            if any(c not in string.ascii_lowercase + '-' for c in token):
+                return False
+            if len(token) < 3:
+                return False
             return True
         else:
             return False
@@ -358,8 +417,8 @@ def tokenize_dataset():
         tokens = [stemmer.stem(token) for token in tokens]
         return tokens
 
-    fin = open(config.raw_file)
-    fout = open(config.data_file, 'w')
+    fin = open(raw_file)
+    fout = open(data_file, 'w')
     while True:
         line = fin.readline().strip()
         if not line:
@@ -408,73 +467,10 @@ def tokenize_dataset():
     fout.close()
     fin.close()
 
-def check_dataset(infile):
-    top_labels = utils.load_collection(config.label_file)
-    top_labels = set(top_labels)
-    fin = open(infile)
-    while True:
-        line = fin.readline()
-        if not line:
-            break
-        fields = line.strip().split(FIELD_SEPERATOR)
-        labels = fields[LABEL_INDEX].split()
-        for label in labels:
-            top_labels.discard(label)
-    # print(path.basename(infile), len(top_labels))
-    assert len(top_labels) == 0
-
-def split_dataset():
-    user_posts = {}
-    fin = open(config.data_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        user = fields[USER_INDEX]
-        if user not in user_posts:
-            user_posts[user] = []
-        user_posts[user].append(line)
-    fin.close()
-    train_user_posts = {}
-    valid_user_posts = {}
-    for user, posts in user_posts.items():
-        num_post = len(posts)
-        if (num_post % POST_UNIT_SIZE) == 0:
-            seperator = int(num_post * TRAIN_RATIO)
-        else:
-            seperator = int(num_post * TRAIN_RATIO) + 1
-        train_user_posts[user] = posts[:seperator]
-        valid_user_posts[user] = posts[seperator:]
-
-    save_posts(train_user_posts, config.train_file)
-    save_posts(valid_user_posts, config.valid_file)
-
-    check_dataset(config.train_file)
-    check_dataset(config.valid_file)
-
-    vocab = set()
-    for user, posts in train_user_posts.items():
-        for post in posts:
-            fields = post.split(FIELD_SEPERATOR)
-            tokens = fields[TEXT_INDEX].split()
-            for token in tokens:
-                vocab.add(token)
-    vocab = sorted(vocab)
-    if config.unk_token in vocab:
-        print('please change unk token')
-        exit()
-    vocab.insert(0, config.unk_token)
-    if config.pad_token in vocab:
-        print('please change pad token')
-        exit()
-    vocab.insert(0, config.pad_token)
-    utils.save_collection(vocab, config.vocab_file)
-
 def count_dataset():
-    create_if_nonexist(config.temp_dir)
+    utils.create_if_nonexist(temp_dir)
     user_count = {}
-    fin = open(config.data_file)
+    fin = open(data_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -486,13 +482,13 @@ def count_dataset():
         user_count[user] += 1
     fin.close()
     sorted_user_count = sorted(user_count.items(), key=operator.itemgetter(0), reverse=True)
-    outfile = path.join(config.temp_dir, 'user_count')
+    outfile = path.join(temp_dir, 'user_count')
     with open(outfile, 'w') as fout:
         for user, count in sorted_user_count:
             fout.write('{}\t{}\n'.format(user, count))
 
     label_count = {}
-    fin = open(config.data_file)
+    fin = open(data_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -507,7 +503,7 @@ def count_dataset():
             label_count[label] += 1
     fin.close()
     sorted_label_count = sorted(label_count.items(), key=operator.itemgetter(0), reverse=True)
-    outfile = path.join(config.temp_dir, 'label_count')
+    outfile = path.join(temp_dir, 'label_count')
     labels, lemms = set(), set()
     with open(outfile, 'w') as fout:
         for label, count in sorted_label_count:
@@ -518,6 +514,72 @@ def count_dataset():
                 print('{}->{}'.format(lemm, label))
             fout.write('{}\t{}\n'.format(label, count))
     print('#label={} #lemm={}'.format(len(labels), len(lemms)))
+
+def check_dataset(infile):
+    top_labels = utils.load_collection(label_file)
+    top_labels = set(top_labels)
+    fin = open(infile)
+    while True:
+        line = fin.readline()
+        if not line:
+            break
+        fields = line.strip().split(FIELD_SEPERATOR)
+        labels = fields[LABEL_INDEX].split()
+        for label in labels:
+            top_labels.discard(label)
+    print(path.basename(infile), len(top_labels))
+    assert len(top_labels) == 0
+
+def split_dataset():
+    user_posts = {}
+    fin = open(data_file)
+    while True:
+        line = fin.readline().strip()
+        if not line:
+            break
+        fields = line.split(FIELD_SEPERATOR)
+        user = fields[USER_INDEX]
+        if user not in user_posts:
+            user_posts[user] = []
+        user_posts[user].append(line)
+    fin.close()
+    train_user_posts = {}
+    valid_user_posts = {}
+    random.seed(SHUFFLE_SEED)
+    for user, posts in user_posts.items():
+        num_post = len(posts)
+        seed = random.random()
+        random.shuffle(posts, lambda:seed)
+        if (num_post % POST_UNIT_SIZE) == 0:
+            seperator = int(num_post * TRAIN_RATIO)
+        else:
+            seperator = int(num_post * TRAIN_RATIO) + 1
+        train_user_posts[user] = posts[:seperator]
+        valid_user_posts[user] = posts[seperator:]
+
+    save_posts(train_user_posts, train_file)
+    save_posts(valid_user_posts, valid_file)
+
+    check_dataset(train_file)
+    check_dataset(valid_file)
+
+    vocab = set()
+    for user, posts in train_user_posts.items():
+        for post in posts:
+            fields = post.split(FIELD_SEPERATOR)
+            tokens = fields[TEXT_INDEX].split()
+            for token in tokens:
+                vocab.add(token)
+    vocab = sorted(vocab)
+    if unk_token in vocab:
+        print('please change unk token')
+        exit()
+    vocab.insert(0, unk_token)
+    if pad_token in vocab:
+        print('please change pad token')
+        exit()
+    vocab.insert(0, pad_token)
+    utils.save_collection(vocab, vocab_file)
 
 def get_image_path(image_dir, image_url):
     fields = image_url.split('/')
@@ -536,8 +598,8 @@ def collect_image(infile, outdir):
         image = fields[IMAGE_INDEX]
         post_image[post] = image
     fin.close()
-    create_if_nonexist(outdir)
-    fin = open(config.sample_file)
+    utils.create_if_nonexist(outdir)
+    fin = open(sample_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -547,166 +609,18 @@ def collect_image(infile, outdir):
         if post not in post_image:
             continue
         image_url = fields[IMAGE_INDEX]
-        src_file = get_image_path(config.image_dir, image_url)
+        src_file = get_image_path(image_dir, image_url)
         image = post_image[post]
         dst_file = path.join(outdir, '%s.jpg' % image)
         if path.isfile(dst_file):
             continue
         shutil.copyfile(src_file, dst_file)
 
-def int64_feature(value):
-    int64_list = tf.train.Int64List(value=value)
-    return tf.train.Feature(int64_list=int64_list)
-
-def build_example(user, image, text, label_vec, extension, height, width, image_file):
-    return tf.train.Example(features=tf.train.Features(feature={
-        config.user_key:dataset_utils.bytes_feature(user),
-        config.image_encoded_key:dataset_utils.bytes_feature(image),
-        config.text_key:int64_feature(text),
-        config.label_key:int64_feature(label_vec),
-        config.image_format_key:dataset_utils.bytes_feature(extension),
-        config.image_height_key:int64_feature([height]),
-        config.image_width_key:int64_feature([width]),
-        config.image_file_key:dataset_utils.bytes_feature(image_file),
-    }))
-
-def create_tfrecord(infile):
-    tfrecord_file = '%s.tfrecord' % infile
-    print(tfrecord_file)
-
-    user_list = []
-    image_list = []
-    text_list = []
-    label_list = []
-    fin = open(infile)
-    while True:
-        line = fin.readline()
-        if not line:
-            break
-        fields = line.strip().split(FIELD_SEPERATOR)
-        user = fields[USER_INDEX]
-        image = fields[IMAGE_INDEX]
-        image_file = path.join(config.image_data_dir, '%s.jpg' % image)
-        tokens = fields[TEXT_INDEX].split()
-        labels = fields[LABEL_INDEX].split()
-        user_list.append(user)
-        image_list.append(image_file)
-        text_list.append(tokens)
-        label_list.append(labels)
-    fin.close()
-
-    label_to_id = utils.load_label_to_id()
-    num_label = len(label_to_id)
-    print('#label={}'.format(num_label))
-    token_to_id = utils.load_token_to_id()
-    unk_token_id = token_to_id[config.unk_token]
-    vocab_size = len(token_to_id)
-    print('#vocab={}'.format(vocab_size))
-
-    reader = ImageReader()
-    with tf.Session() as sess:
-        with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
-            for user, image_file, text, labels in zip(user_list, image_list, text_list, label_list):
-                user = bytes(user, encoding='utf-8')
-                
-                image = tf.gfile.FastGFile(image_file, 'rb').read()
-
-                label_ids = [label_to_id[label] for label in labels]
-                label_vec = np.zeros((num_label,), dtype=np.int64)
-                label_vec[label_ids] = 1
-                
-                text = [token_to_id.get(token, unk_token_id) for token in text]
-
-                extension = b'jpg'
-                height, width = reader.read_image_dims(sess, image)
-                image_file = bytes(image_file, encoding='utf-8')
-
-                example = build_example(user, image, text, label_vec, extension, height, width, image_file)
-                fout.write(example.SerializeToString())
-
-def check_tfrecord(tfrecord_file, is_training):
-    data_sources = [tfrecord_file]
-
-    id_to_label = utils.load_id_to_label()
-    num_label = len(id_to_label)
-    print('#label={}'.format(num_label))
-    id_to_token = utils.load_id_to_token()
-    token_to_id = utils.load_token_to_id()
-    unk_token_id = token_to_id[config.unk_token]
-    vocab_size = int((len(id_to_token) + len(token_to_id)) / 2)
-    print('#vocab={}'.format(vocab_size))
-
-    reader = tf.TFRecordReader
-    keys_to_features = {
-        config.user_key:tf.FixedLenFeature((), tf.string, default_value=''),
-        config.image_encoded_key:tf.FixedLenFeature((), tf.string, default_value=''),
-        config.text_key:tf.VarLenFeature(dtype=tf.int64),
-        config.label_key:tf.FixedLenFeature([num_label], tf.int64, default_value=tf.zeros([num_label], dtype=tf.int64)),
-        config.image_format_key:tf.FixedLenFeature((), tf.string, default_value='jpg'),
-        config.image_file_key:tf.FixedLenFeature((), tf.string, default_value='')
-    }
-    items_to_handlers = {
-        'user':slim.tfexample_decoder.Tensor(config.user_key),
-        'image':slim.tfexample_decoder.Image(),
-        'text':slim.tfexample_decoder.Tensor(config.text_key, default_value=unk_token_id),
-        'label':slim.tfexample_decoder.Tensor(config.label_key),
-        'image_file':slim.tfexample_decoder.Tensor(config.image_file_key),
-    }
-    decoder = slim.tfexample_decoder.TFExampleDecoder(keys_to_features, items_to_handlers)
-    num_samples = np.inf
-    items_to_descriptions = {'user':'', 'image':'', 'text':'', 'label':'', 'image_file':'',}
-    dataset = slim.dataset.Dataset(
-        data_sources=data_sources,
-        reader=reader,
-        decoder=decoder,
-        num_samples=num_samples,
-        items_to_descriptions=items_to_descriptions,
-    )
-    provider = slim.dataset_data_provider.DatasetDataProvider(dataset, shuffle=is_training)
-    user_ts, image_ts, text_ts, label_ts, image_file_ts = provider.get(
-            ['user', 'image', 'text', 'label', 'image_file'])
-    
-    # with tf.Session() as sess:
-    #     with slim.queues.QueueRunners(sess):
-    #         for i in range(2):
-    #             user_np, image_np, text_np, label_np, image_file_np = sess.run(
-    #                     [user_ts, image_ts, text_ts, label_ts, image_file_ts])
-    #             print('{0}\n{0}'.format('#'*80))
-    #             print(user_np)
-    #             Image.fromarray(np.asarray(image_np)).show()
-    #             tokens = [id_to_token[text_np[i]] for i in range(text_np.shape[0])]
-    #             print(tokens)
-    #             label_ids = [i for i, l in enumerate(label_np) if l != 0]
-    #             labels = [id_to_label[label_id] for label_id in label_ids]
-    #             print(labels)
-    #             print(image_file_np)
-    #             print('{0}\n{0}'.format('#'*80))
-
-    batch_size = 32
-    # num_step = 10000
-    num_step = 1000
-    user_bt, image_bt, text_bt, label_bt, image_file_bt = tf.train.batch(
-            [user_ts, image_ts, text_ts, label_ts, image_file_ts], 
-            batch_size=batch_size, dynamic_pad=True)
-
-    vocab = set()
-    with tf.Session() as sess:
-        with slim.queues.QueueRunners(sess):
-            for i in range(num_step):
-                user_np, image_np, text_np, label_np, image_file_np = sess.run(
-                        [user_bt, image_bt, text_bt, label_bt, image_file_bt])
-                print(user_np.shape, image_np.shape, text_np.shape, label_np.shape, image_file_np.shape)
-                for b in range(batch_size):
-                    text_vt = text_np[b,:]
-                    # print(text_vt.shape[0])
-                    for j in range(text_vt.shape[0]):
-                        token = text_vt[j]
-                        vocab.add(token)
-                        if token == 0:
-                            break
-    vocab = sorted(vocab)
-    print(vocab)
-    input()
+################################################################
+#
+# create survey data
+#
+################################################################
 
 def get_dataset(infile):
     datasize = len(open(infile).readlines())
@@ -715,8 +629,8 @@ def get_dataset(infile):
 
 def survey_image_data(infile):
     dataset = get_dataset(infile)
-    image_data = path.join(config.surv_dir, dataset, 'ImageData')
-    create_if_nonexist(image_data)
+    image_data = path.join(surv_dir, dataset, 'ImageData')
+    utils.create_if_nonexist(image_data)
     fout = open(path.join(image_data, '%s.txt' % dataset), 'w')
     fin = open(infile)
     while True:
@@ -745,8 +659,8 @@ def survey_text_data(infile):
         return label_i, label_j
 
     dataset = get_dataset(infile)
-    text_data = path.join(config.surv_dir, dataset, 'TextData')
-    create_if_nonexist(text_data)
+    text_data = path.join(surv_dir, dataset, 'TextData')
+    utils.create_if_nonexist(text_data)
 
     post_image = {}
     fin = open(infile)
@@ -762,7 +676,7 @@ def survey_text_data(infile):
 
     rawtags_file = path.join(text_data, 'id.userid.rawtags.txt')
     fout = open(rawtags_file, 'w')
-    fin = open(config.rawtag_file)
+    fin = open(rawtag_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -784,6 +698,8 @@ def survey_text_data(infile):
                 if not c.isalnum():
                     continue
                 new_label += c
+            if len(new_label) == 0:
+                continue
             new_labels.append(new_label)
         labels = ' '.join(new_labels)
         fout.write('{}\t{}\t{}\n'.format(image, user, labels))
@@ -955,8 +871,8 @@ def survey_text_data(infile):
 
 def survey_feature_sets(infile):
     dataset = get_dataset(infile)
-    image_sets = path.join(config.surv_dir, dataset, 'ImageSets')
-    create_if_nonexist(image_sets)
+    image_sets = path.join(surv_dir, dataset, 'ImageSets')
+    utils.create_if_nonexist(image_sets)
 
     fout = open(path.join(image_sets, '%s.txt' % dataset), 'w')
     fin = open(infile)
@@ -975,8 +891,8 @@ def survey_feature_sets(infile):
 
 def survey_annotations(infile):
     dataset = get_dataset(infile)
-    annotations = path.join(config.surv_dir, dataset, 'Annotations')
-    create_if_nonexist(annotations)
+    annotations = path.join(surv_dir, dataset, 'Annotations')
+    utils.create_if_nonexist(annotations)
     concepts = 'concepts.txt'
     
     label_set = set()
@@ -1003,7 +919,7 @@ def survey_annotations(infile):
     fout.close()
 
     concepts_dir = path.join(annotations, 'Image', concepts)
-    create_if_nonexist(concepts_dir)
+    utils.create_if_nonexist(concepts_dir)
     image_list = sorted(image_set)
     for label in label_set:
         label_filepath = path.join(concepts_dir, '%s.txt' % label)
@@ -1015,44 +931,187 @@ def survey_annotations(infile):
             fout.write('{} {}\n'.format(image, assessment))
         fout.close()
 
-if __name__ == '__main__':
-    create_if_nonexist(config.dataset_dir)
+def create_survey_data():
+    survey_image_data(train_file)
+    survey_image_data(valid_file)
+    survey_text_data(train_file)
+    survey_text_data(valid_file)
+    survey_feature_sets(train_file)
+    survey_feature_sets(valid_file)
+    survey_annotations(train_file)
+    survey_annotations(valid_file)
+
+################################################################
+#
+# use pretrained model
+#
+################################################################
+
+num_classes = 1000
+if flags.model_name not in ['vgg_16', 'vgg_19']:
+    num_classes = 1001
+print('#class=%d' % (num_classes))
+network_fn_t = nets_factory.get_network_fn(flags.model_name,
+        num_classes=num_classes,
+        is_training=True)
+network_fn_v = nets_factory.get_network_fn(flags.model_name,
+        num_classes=num_classes,
+        is_training=False)
+image_size_t = network_fn_t.default_image_size
+image_size_v = network_fn_v.default_image_size
+assert image_size_t==image_size_v
+image_size = int((image_size_t + image_size_v) / 2)
+print('image size=%d' % (image_size))
+image_ph = tf.placeholder(tf.float32, shape=(None, None, channels))
+preprocessing_t = preprocessing_factory.get_preprocessing(flags.preprocessing_name,
+        is_training=True)
+preprocessing_v = preprocessing_factory.get_preprocessing(flags.preprocessing_name,
+        is_training=False)
+image_ts_t = tf.expand_dims(preprocessing_t(image_ph, image_size, image_size),
+        axis=0)
+image_ts_v = tf.expand_dims(preprocessing_v(image_ph, image_size, image_size),
+        axis=0)
+_, end_points_t = network_fn_t(image_ts_t)
+scope = tf.get_variable_scope()
+scope.reuse_variables()
+_, end_points_v = network_fn_v(image_ts_v)
+end_point_t = tf.squeeze(end_points_t[flags.end_point])
+print('tn', end_point_t.shape, end_point_t.dtype)
+end_point_v = tf.squeeze(end_points_v[flags.end_point])
+print('vd', end_point_v.shape, end_point_v.dtype)
+
+# print('trainable parameters')
+# for variable in slim.get_model_variables():
+#     num_params = 1
+#     for dim in variable.shape:
+#         num_params *= dim.value
+#     print('\t', variable.name, '\t', num_params)
+# print('end points')
+# for name, tensor in end_points_t.items():
+#     print('\t', name, '\t', tensor.shape)
+
+if flags.dev:
+    exit()
+
+variables_to_restore = slim.get_variables_to_restore()
+init_fn = slim.assign_from_checkpoint_fn(flags.checkpoint_path, variables_to_restore)
+
+def build_example(user, image, text, label, file):
+    return tf.train.Example(features=tf.train.Features(feature={
+        user_key:dataset_utils.bytes_feature(user),
+        image_key:dataset_utils.float_feature(image),
+        text_key:dataset_utils.int64_feature(text),
+        label_key:dataset_utils.int64_feature(label),
+        file_key:dataset_utils.bytes_feature(file),
+    }))
+
+def create_tfrecord(infile, end_point, is_training=False):
+    utils.create_if_nonexist(precomputed_dir)
+
+    num_epoch = flags.num_epoch
+    if not is_training:
+        num_epoch = 1
+
+    fields = path.basename(infile).split('.')
+    dataset, version = fields[0], fields[1]
+    filepath = path.join(precomputed_dir, tfrecord_tmpl)
+
+    user_list = []
+    file_list = []
+    text_list = []
+    label_list = []
+    fin = open(infile)
+    while True:
+        line = fin.readline()
+        if not line:
+            break
+        fields = line.strip().split(FIELD_SEPERATOR)
+        user = fields[USER_INDEX]
+        image = fields[IMAGE_INDEX]
+        file = path.join(image_data_dir, '%s.jpg' % image)
+        tokens = fields[TEXT_INDEX].split()
+        labels = fields[LABEL_INDEX].split()
+        user_list.append(user)
+        file_list.append(file)
+        text_list.append(tokens)
+        label_list.append(labels)
+    fin.close()
+
+    label_to_id = utils.load_sth_to_id(label_file)
+    num_label = len(label_to_id)
+    print('#label={}'.format(num_label))
+    token_to_id = utils.load_sth_to_id(vocab_file)
+    unk_token_id = token_to_id[unk_token]
+    vocab_size = len(token_to_id)
+    print('#vocab={}'.format(vocab_size))
+
+    reader = ImageReader()
+    with tf.Session() as sess:
+        init_fn(sess)
+        for epoch in range(num_epoch):
+            count = 0
+            tfrecord_file = filepath.format(dataset, flags.model_name, epoch, version)
+            if path.isfile(tfrecord_file):
+                continue
+            # print(tfrecord_file)
+            # exit()
+            with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
+                for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
+                    user = bytes(user, encoding='utf-8')
+                    
+                    image_np = np.array(Image.open(file))
+                    # print(type(image_np), image_np.shape)
+                    feed_dict = {image_ph:image_np}
+                    image_t, = sess.run([end_point], feed_dict)
+                    image_t = image_t.tolist()
+                    # print(type(image_t), len(image_t))
+                    # exit()
+
+                    text = [token_to_id.get(token, unk_token_id) for token in text]
+
+                    label_ids = [label_to_id[label] for label in labels]
+                    label_vec = np.zeros((num_label,), dtype=np.int64)
+                    label_vec[label_ids] = 1
+                    label = label_vec.tolist()
+
+                    file = bytes(file, encoding='utf-8')
+                    # print(file)
+
+                    example = build_example(user, image_t, text, label, file)
+                    fout.write(example.SerializeToString())
+                    count += 1
+                    if (count % 500) == 0:
+                        print('count={}'.format(count))
+
+def main(_):
     check_num_field()
-    if not skip_if_exist(config.label_file):
+    utils.create_if_nonexist(dataset_dir)
+    if not utils.skip_if_exist(label_file):
         print('select top labels')
         select_top_label()
-    if not skip_if_exist(config.raw_file):
+    if not utils.skip_if_exist(raw_file):
         print('select posts')
         select_posts()
-    if not skip_if_exist(config.data_file):
+    if not utils.skip_if_exist(data_file):
         print('tokenize dataset')
         tokenize_dataset()
         count_dataset()
-    if (not skip_if_exist(config.train_file) or 
-                not skip_if_exist(config.valid_file or 
-                not skip_if_exist(config.vocab_file))):
+    if (not utils.skip_if_exist(train_file) or 
+            not utils.skip_if_exist(valid_file or 
+            not utils.skip_if_exist(vocab_file))):
+    # if True:
         print('split dataset')
         split_dataset()
-    if path.isdir(config.image_dir):
+
+    # if path.isdir(image_dir):
+    if False:
         print('collect images')
         # find ImageData/ -type f | wc -l
-        collect_image(config.data_file, config.image_data_dir)
-    # exit()
-    # if (not skip_if_exist(config.train_tfrecord or
-    #             not skip_if_exist(config.valid_tfrecord))):
-    #     print('create tfrecord')
-    #     create_tfrecord(config.train_file)
-    #     create_tfrecord(config.valid_file)
-    # check_tfrecord(config.train_tfrecord, True)
-    # check_tfrecord(config.valid_tfrecord, False)
-    exit()
-    
-    print('create survey data')
-    survey_image_data(config.train_file)
-    survey_image_data(config.valid_file)
-    survey_text_data(config.train_file)
-    survey_text_data(config.valid_file)
-    survey_feature_sets(config.train_file)
-    survey_feature_sets(config.valid_file)
-    survey_annotations(config.train_file)
-    survey_annotations(config.valid_file)
+        collect_image(data_file, image_data_dir)
+    # create_survey_data()
+
+    create_tfrecord(valid_file, end_point_v, is_training=False)
+    create_tfrecord(train_file, end_point_t, is_training=True)
+
+if __name__ == '__main__':
+  tf.app.run()
