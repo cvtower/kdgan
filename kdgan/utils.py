@@ -65,7 +65,7 @@ def count_data_size(infile):
     return data_size
 
 def get_data_sources(flags, is_training=True, single_source=False):
-  for (dirpath, dirnames, filenames) in os.walk(config.prerecord_dir):
+  for (dirpath, dirnames, filenames) in os.walk(config.precomputed_dir):
     break
   marker = 'train'
   if not is_training:
@@ -78,7 +78,7 @@ def get_data_sources(flags, is_training=True, single_source=False):
       continue
     if single_source and (filename.find('000') < 0):
       continue
-    filepath = path.join(config.prerecord_dir, filename)
+    filepath = path.join(config.precomputed_dir, filename)
     data_sources.append(filepath)
   return data_sources
 
