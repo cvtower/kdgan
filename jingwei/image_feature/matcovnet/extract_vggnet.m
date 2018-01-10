@@ -16,19 +16,7 @@ ds = 'yfcc19k';
 %ds = 'imagenet166';
 relu = 1;                                 % Do relu after fc7
 
-% Job splittingcurl \
--XGET 'http://localhost:9200/products/product/_search' \
--H 'Content-Type: application/json' \
--d '
-{
-  "query":{
-    "match":{
-      "default_product_short_name" : "黑面膜"
-    }
-  },
-  "size":50
-}
-' | json_pp > temp/results.json
+% Job splitting
 this_part = 1;                            % Part to be processed. One could get this from command line or environment.
 parts = 1;                                % Total parts.
 %%%gpuDevice(this_part);                     % Use this GPU id
