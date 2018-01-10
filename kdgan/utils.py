@@ -159,7 +159,7 @@ def get_train_data_size(dataset):
   train_data_size = train_data_sizes[dataset]
   return train_data_size
 
-def get_valid_data_size():
+def get_valid_data_size(dataset):
   valid_data_sizes = {
     'yfcc10k':500,
     'yfcc20k':1000,
