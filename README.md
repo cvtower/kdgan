@@ -22,8 +22,8 @@ tar -xzvf matconvnet-1.0-beta8.tar.gz
 wget http://lixirong.net/data/csur2016/matconvnet-models.tar
 .gz
 tar -xzvf matconvnet-models.tar.gz
-matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfcc2k';
-matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfcc8k';
+matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfcc0k';
+matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfcc19k';
 zip -r survey_data.zip survey_data -x survey_data/yfcc8k/ImageData/\* survey_data/yfcc2k/ImageData/\*
 
 # jingwei: precompute k nearest neighbors

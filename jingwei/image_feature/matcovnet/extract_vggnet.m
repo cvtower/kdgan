@@ -1,8 +1,8 @@
 clear
 
 data_folder = '/home/xiaojie/Projects/data/yfcc100m/survey_data/';
-ds = 'yfcc0k';
-%ds = 'yfcc1k';
+%ds = 'yfcc0k';
+ds = 'yfcc1k';
 %ds = 'yfcc9k';
 %ds = 'yfcc19k';
 
