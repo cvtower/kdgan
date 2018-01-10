@@ -11,58 +11,64 @@ from tensorflow.contrib import slim
 
 
 def create_if_nonexist(outdir):
-    if not path.exists(outdir):
-        os.makedirs(outdir)
+  if not path.exists(outdir):
+    os.makedirs(outdir)
 
 def skip_if_exist(infile):
-    skip = False
-    if path.isfile(infile):
-        skip = True
-    return skip
+  skip = False
+  if path.isfile(infile):
+    skip = True
+  return skip
 
 def save_collection(coll, outfile):
-    with open(outfile, 'w') as fout:
-        for elem in coll:
-            fout.write('%s\n' % elem)
+  with open(outfile, 'w') as fout:
+    for elem in coll:
+      fout.write('%s\n' % elem)
 
 def load_collection(infile):
-    with open(infile) as fin:
-        coll = [elem.strip() for elem in fin.readlines()]
-    return coll
+  with open(infile) as fin:
+    coll = [elem.strip() for elem in fin.readlines()]
+  return coll
 
 def load_sth_to_id(infile):
-    with open(infile) as fin:
-        sth_list = [sth.strip() for sth in fin.readlines()]
-    sth_to_id = dict(zip(sth_list, range(len(sth_list))))
-    return sth_to_id
+  with open(infile) as fin:
+    sth_list = [sth.strip() for sth in fin.readlines()]
+  sth_to_id = dict(zip(sth_list, range(len(sth_list))))
+  return sth_to_id
 
-def load_label_to_id():
-    label_to_id = load_sth_to_id(config.label_file)
-    return label_to_id
+def load_label_to_id(dataset):
+  label_file = get_label_file()
+  label_to_id = load_sth_to_id(label_file)
+  return label_to_id
 
-def load_token_to_id():
-    vocab_to_id = load_sth_to_id(config.vocab_file)
-    return vocab_to_id
+def load_token_to_id(dataset):
+  vocab_file = get_vocab_file(dataset)
+  vocab_to_id = load_sth_to_id(vocab_file)
+  return vocab_to_id
 
 def load_id_to_sth(infile):
-    with open(infile) as fin:
-        sth_list = [sth.strip() for sth in fin.readlines()]
-    id_to_sth = dict(zip(range(len(sth_list)), sth_list))
-    return id_to_sth
+  with open(infile) as fin:
+    sth_list = [sth.strip() for sth in fin.readlines()]
+  id_to_sth = dict(zip(range(len(sth_list)), sth_list))
+  return id_to_sth
 
 def load_id_to_label():
-    id_to_label = load_id_to_sth(config.label_file)
-    return id_to_label
+  label_file = get_label_file()
+  label_to_id = load_sth_to_id(label_file)
+  id_to_label = load_id_to_sth(label_file)
+  return id_to_label
 
 def load_id_to_token():
-    id_to_vocab = load_id_to_sth(config.vocab_file)
-    return id_to_vocab
+  vocab_file = get_vocab_file(dataset)
+  vocab_to_id = load_sth_to_id(vocab_file)
+  id_to_vocab = load_id_to_sth(vocab_file)
+  return id_to_vocab
 
 def count_data_size(infile):
-    with open(infile) as fin:
-        data = [line.strip() for line in fin.readlines()]
-    data_size = len(data)
-    return data_size
+  with open(infile) as fin:
+    data = [line.strip() for line in fin.readlines()]
+  data_size = len(data)
+  return data_size
 
 def get_data_sources(flags, is_training=True, single_source=False):
   precomputed_dir = get_precomputed_dir(flags.dataset)
@@ -90,7 +96,7 @@ def decode_tfrecord(flags, data_sources, shuffle=True):
     DatasetDataProvider = slim.dataset_data_provider.DatasetDataProvider
 
     num_label = config.num_label
-    token_to_id = load_token_to_id()
+    token_to_id = load_token_to_id(flags.dataset)
     unk_token_id = token_to_id[config.unk_token]
     reader = tf.TFRecordReader
     keys_to_features = {
@@ -168,13 +174,24 @@ def get_valid_data_size(dataset):
   valid_data_size = valid_data_sizes[dataset]
   return valid_data_size
 
-def get_precomputed_dir(dataset):
+def get_dataset_dir(dataset):
   dataset_dir = path.join(config.yfcc_dir, dataset)
+  return dataset_dir
+
+def get_precomputed_dir(dataset):
+  dataset_dir = get_dataset_dir(dataset)
   precomputed_dir = path.join(dataset_dir, 'Precomputed')
   return precomputed_dir
 
+def get_vocab_file(dataset):
+  dataset_dir = get_dataset_dir(dataset)
+  vocab_file = path.join(dataset_dir, '%s.vocab' % dataset)
+  return vocab_file
 
-
+def get_label_file(dataset):
+  dataset_dir = get_dataset_dir(dataset)
+  label_file = path.join(dataset_dir, '%s.label' % dataset)
+  return label_file
 
 
 
