@@ -65,7 +65,8 @@ def count_data_size(infile):
     return data_size
 
 def get_data_sources(flags, is_training=True, single_source=False):
-  for (dirpath, dirnames, filenames) in os.walk(config.precomputed_dir):
+  precomputed_dir = get_precomputed_dir(dataset)
+  for (dirpath, dirnames, filenames) in os.walk(precomputed_dir):
     break
   marker = 'train'
   if not is_training:
@@ -78,7 +79,7 @@ def get_data_sources(flags, is_training=True, single_source=False):
       continue
     if single_source and (filename.find('000') < 0):
       continue
-    filepath = path.join(config.precomputed_dir, filename)
+    filepath = path.join(precomputed_dir, filename)
     data_sources.append(filepath)
   return data_sources
 
@@ -167,6 +168,10 @@ def get_valid_data_size(dataset):
   valid_data_size = valid_data_sizes[dataset]
   return valid_data_size
 
+def get_precomputed_dir(dataset):
+  dataset_dir = path.join(config.yfcc_dir, dataset)
+  precomputed_dir = path.join(dataset_dir, 'Precomputed')
+  return precomputed_dir
 
 
 
