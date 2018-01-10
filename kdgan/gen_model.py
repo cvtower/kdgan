@@ -1,4 +1,4 @@
-from kdgan import config
+from kdgan import config, utils
 
 from nets import nets_factory
 from nets import vgg
