@@ -55,7 +55,7 @@ class TCH():
     losses.extend(regularization_losses)
     total_loss = tf.add_n(losses, name='total_loss')
 
-    optimizer = tf.train.AdamOptimizer(learning_rate)
+    optimizer = tf.train.AdamOptimizer(self.learning_rate)
     self.train_op = optimizer.minimize(total_loss, global_step=global_step)
 
     tf.summary.scalar('total_loss', total_loss)
