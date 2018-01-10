@@ -24,15 +24,18 @@ tf.app.flags.DEFINE_integer('embedding_size', 10, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_integer('num_epoch', 200, '')
 
+tf.app.flags.DEFINE_string('dataset', None, '')
 tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
 tf.app.flags.DEFINE_string('tch_model_ckpt', None, '')
 
 flags = tf.app.flags.FLAGS
 
-num_batch_t = int(flags.num_epoch * config.train_data_size / config.train_batch_size)
-num_batch_v = int(config.valid_data_size / config.valid_batch_size)
-eval_interval = int(config.train_data_size / config.train_batch_size)
+train_data_size = utils.get_train_data_size(flags.dataset)
+valid_data_size = utils.get_valid_data_size(flags.dataset)
+num_batch_t = int(flags.num_epoch * train_data_size / config.train_batch_size)
+num_batch_v = int(valid_data_size / config.valid_batch_size)
+eval_interval = int(train_data_size / config.train_batch_size)
 print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (
     num_batch_t, num_batch_v, eval_interval))
 

@@ -37,8 +37,9 @@ tf.app.flags.DEFINE_string('model_name', None, '')
 flags = tf.app.flags.FLAGS
 flags.num_epochs_per_decay *= flags.num_dis_epoch
 
-num_batch_t = int(flags.num_epoch * config.train_data_size / config.train_batch_size)
-eval_interval = int(config.train_data_size / config.train_batch_size)
+train_data_size = utils.get_train_data_size(flags.dataset)
+num_batch_t = int(flags.num_epoch * train_data_size / config.train_batch_size)
+eval_interval = int(train_data_size / config.train_batch_size)
 print('tn:\t#batch=%d\neval:\t#interval=%d' % (num_batch_t, eval_interval))
 
 global_step = tf.train.create_global_step()
@@ -128,7 +129,7 @@ def main(_):
       for epoch in range(flags.num_epoch):
         for dis_epoch in range(flags.num_dis_epoch):
           print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
-          num_batch_d = math.ceil(config.train_data_size / config.train_batch_size)
+          num_batch_d = math.ceil(train_data_size / config.train_batch_size)
           for _ in range(num_batch_d):
             batch_d += 1
             image_np_d, label_dat_d = sess.run([image_bt_d, label_bt_d])
@@ -154,7 +155,7 @@ def main(_):
 
         for gen_epoch in range(flags.num_gen_epoch):
           print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
-          num_batch_g = math.ceil(config.train_data_size / config.train_batch_size)
+          num_batch_g = math.ceil(train_data_size / config.train_batch_size)
           for _ in range(num_batch_g):
             batch_g += 1
             image_np_g, label_dat_g = sess.run([image_bt_g, label_bt_g])

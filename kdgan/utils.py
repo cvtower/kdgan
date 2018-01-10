@@ -64,71 +64,6 @@ def count_data_size(infile):
     data_size = len(data)
     return data_size
 
-def decode_tfrecord_bak(tfrecord_file, shuffle=True):
-    Tensor = slim.tfexample_decoder.Tensor
-    Image = slim.tfexample_decoder.Image
-    TFExampleDecoder = slim.tfexample_decoder.TFExampleDecoder
-    Dataset = slim.dataset.Dataset
-    DatasetDataProvider = slim.dataset_data_provider.DatasetDataProvider
-
-    data_sources = [tfrecord_file]
-    num_label = config.num_label
-    token_to_id = load_token_to_id()
-    unk_token_id = token_to_id[config.unk_token]
-    reader = tf.TFRecordReader
-    keys_to_features = {
-        config.user_key:tf.FixedLenFeature((), tf.string,
-                default_value=''),
-        config.image_encoded_key:tf.FixedLenFeature((), tf.string,
-                default_value=''),
-        config.text_key:tf.VarLenFeature(dtype=tf.int64),
-        config.label_key:tf.FixedLenFeature([num_label], tf.int64,
-                default_value=tf.zeros([num_label], dtype=tf.int64)),
-        config.image_format_key:tf.FixedLenFeature((), tf.string,
-                default_value='jpg'),
-        config.image_file_key:tf.FixedLenFeature((), tf.string,
-                default_value='')
-    }
-    items_to_handlers = {
-        'user':Tensor(config.user_key),
-        'image':Image(),
-        'text':Tensor(config.text_key, default_value=unk_token_id),
-        'label':Tensor(config.label_key),
-        'image_file':Tensor(config.image_file_key),
-    }
-    decoder = TFExampleDecoder(keys_to_features, items_to_handlers)
-    num_samples = np.inf
-    items_to_descriptions = {
-        'user':'',
-        'image':'',
-        'text':'',
-        'label':'',
-        'image_file':'',
-    }
-    dataset = Dataset(
-        data_sources=data_sources,
-        reader=reader,
-        decoder=decoder,
-        num_samples=num_samples,
-        items_to_descriptions=items_to_descriptions,
-    )
-    provider = DatasetDataProvider(dataset, shuffle=shuffle)
-    ts_list = provider.get(['user', 'image', 'text', 'label', 'image_file'])
-    return ts_list
-
-def generate_batch_bak(model, ts_list, batch_size):
-    get_preprocessing = preprocessing_factory.get_preprocessing
-    preprocessing = get_preprocessing(model.preprocessing_name,
-            is_training=model.is_training)
-    user_ts, image_ts, text_ts, label_ts, image_file_ts = ts_list
-    image_ts = preprocessing(image_ts, model.image_size, model.image_size)
-    user_bt, image_bt, text_bt, label_bt, image_file_bt = tf.train.batch(
-            [user_ts, image_ts, text_ts, label_ts, image_file_ts], 
-            batch_size=batch_size,
-            dynamic_pad=True,
-            num_threads=config.num_threads)
-    return user_bt, image_bt, text_bt, label_bt, image_file_bt
-
 def get_data_sources(flags, is_training=True, single_source=False):
   for (dirpath, dirnames, filenames) in os.walk(config.prerecord_dir):
     break
@@ -215,6 +150,22 @@ def evaluate(flags, sess, gen_v, bt_list_v):
     image_hit_v.append(image_hit_bt)
   image_hit_v = np.mean(image_hit_v)
   return image_hit_v
+
+def get_train_data_size(dataset):
+  train_data_sizes = {
+    'yfcc10k':9500,
+    'yfcc20k':19000,
+  }
+  train_data_size = train_data_sizes[dataset]
+  return train_data_size
+
+def get_valid_data_size():
+  valid_data_sizes = {
+    'yfcc10k':500,
+    'yfcc20k':1000,
+  }
+  valid_data_size = valid_data_sizes[dataset]
+  return valid_data_size
 
 
 

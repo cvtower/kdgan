@@ -34,11 +34,12 @@ class GEN():
         if not is_training:
             return
 
-        global_step = tf.train.create_global_step()
-        decay_steps = int(config.train_data_size / config.train_batch_size * flags.num_epochs_per_decay)
-        learning_rate = tf.train.exponential_decay(flags.init_learning_rate,
-                global_step, decay_steps, flags.learning_rate_decay_factor,
-                staircase=True, name='exponential_decay_learning_rate')
+        train_data_size = utils.get_train_data_size(flags.dataset)
+        global_step = tf.train.get_global_step()
+        decay_steps = int(train_data_size / config.train_batch_size * flags.num_epochs_per_decay)
+        self.learning_rate = tf.train.exponential_decay(flags.init_learning_rate,
+            global_step, decay_steps, flags.learning_rate_decay_factor,
+            staircase=True, name='exponential_decay_learning_rate')
 
         tf.losses.sigmoid_cross_entropy(self.label_ph, self.logits)
         losses = tf.get_collection(tf.GraphKeys.LOSSES)

@@ -2,6 +2,14 @@ kdgan_dir=$HOME/Projects/kdgan/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 pretrained_dir=$checkpoint_dir/pretrained
 
+python pretrain_dis.py \
+  --dataset=yfcc10k
+  --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
+  --feature_size=4096 \
+  --model_name=vgg_16 \
+  --num_epoch=200
+# 469s best hit=0.6574
+
 python train_gan.py \
   --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
@@ -13,13 +21,6 @@ python train_gan.py \
   --num_dis_epoch=50 \
   --num_gen_epoch=10
 exit
-
-python pretrain_dis.py \
-  --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
-  --model_name=vgg_16 \
-  --feature_size=4096 \
-  --num_epoch=200
-# 469s best hit=0.6574
 
 python pretrain_gen.py \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
