@@ -1,8 +1,10 @@
 clear
 
 data_folder = '/home/xiaojie/Projects/data/yfcc100m/survey_data/';
-ds = 'yfcc8k';
-%ds = 'yfcc2k';
+ds = 'yfcc0k';
+%ds = 'yfcc1k';
+%ds = 'yfcc9k';
+%ds = 'yfcc19k';
 
 %data_folder = '/fishtank/urix/survey/';   % corresponds to SURVEY_DATA
 %ds = 'train10k';                          % dataset to be processed
