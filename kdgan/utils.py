@@ -65,7 +65,7 @@ def count_data_size(infile):
     return data_size
 
 def get_data_sources(flags, is_training=True, single_source=False):
-  precomputed_dir = get_precomputed_dir(dataset)
+  precomputed_dir = get_precomputed_dir(flags.dataset)
   for (dirpath, dirnames, filenames) in os.walk(precomputed_dir):
     break
   marker = 'train'
