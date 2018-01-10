@@ -1,4 +1,4 @@
-from kdgan import config
+from kdgan import config, utils
 
 import numpy as np
 import tensorflow as tf
