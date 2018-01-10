@@ -3,7 +3,7 @@ checkpoint_dir=$kdgan_dir/checkpoints
 pretrained_dir=$checkpoint_dir/pretrained
 
 python pretrain_dis.py \
-  --dataset=yfcc10k
+  --dataset=yfcc10k \
   --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
   --feature_size=4096 \
   --model_name=vgg_16 \
