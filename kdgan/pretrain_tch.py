@@ -21,6 +21,7 @@ tf.app.flags.DEFINE_integer('embedding_size', 10, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_integer('num_epoch', 200, '')
 
+tf.app.flags.DEFINE_string('dataset', None, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
 tf.app.flags.DEFINE_string('tch_model', None, '')
 
