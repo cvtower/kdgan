@@ -3,8 +3,8 @@ clear
 data_folder = '/home/xiaojie/Projects/data/yfcc100m/survey_data/';
 %ds = 'yfcc0k';
 %ds = 'yfcc1k';
-ds = 'yfcc9k';
-%ds = 'yfcc19k';
+%ds = 'yfcc9k';
+ds = 'yfcc19k';
 
 %data_folder = '/fishtank/urix/survey/';   % corresponds to SURVEY_DATA
 %ds = 'train10k';                          % dataset to be processed
@@ -16,7 +16,19 @@ ds = 'yfcc9k';
 %ds = 'imagenet166';
 relu = 1;                                 % Do relu after fc7
 
-% Job splitting
+% Job splittingcurl \
+-XGET 'http://localhost:9200/products/product/_search' \
+-H 'Content-Type: application/json' \
+-d '
+{
+  "query":{
+    "match":{
+      "default_product_short_name" : "黑面膜"
+    }
+  },
+  "size":50
+}
+' | json_pp > temp/results.json
 this_part = 1;                            % Part to be processed. One could get this from command line or environment.
 parts = 1;                                % Total parts.
 %%%gpuDevice(this_part);                     % Use this GPU id
