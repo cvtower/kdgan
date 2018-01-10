@@ -13,12 +13,13 @@ class TCH():
     self.label_ph = tf.placeholder(tf.float32, shape=(None, config.num_label))
 
     tch_scope = 'teacher'
-    # initializer = tf.random_uniform([config.vocab_size, flags.embedding_size], -0.1, 0.1)
+    get_vocab_size = utils.get_vocab_size(flags.dataset)
+    # initializer = tf.random_uniform([vocab_size, flags.embedding_size], -0.1, 0.1)
     with tf.variable_scope(tch_scope) as scope:
       with slim.arg_scope([slim.fully_connected],
           weights_regularizer=slim.l2_regularizer(flags.tch_weight_decay)):
         word_embedding = slim.variable('word_embedding',
-            shape=[config.vocab_size, flags.embedding_size],
+            shape=[vocab_size, flags.embedding_size],
             # regularizer=slim.l2_regularizer(flags.tch_weight_decay),
             initializer=tf.random_uniform_initializer(-0.1, 0.1))
         # word_embedding = tf.get_variable('word_embedding', initializer=initializer)

@@ -174,6 +174,14 @@ def get_valid_data_size(dataset):
   valid_data_size = valid_data_sizes[dataset]
   return valid_data_size
 
+def get_vocab_size(dataset):
+  vocab_sizes = {
+    'yfcc10k':6936,
+    'yfcc20k':8756,
+  }
+  vocab_size = vocab_sizes[dataset]
+  return vocab_size
+
 def get_dataset_dir(dataset):
   dataset_dir = path.join(config.yfcc_dir, dataset)
   return dataset_dir
