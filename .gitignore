@@ -6,7 +6,7 @@ data/
 logs/
 temp/
 checkpoints/
-results/
+results/runs/
 
 cnn_models/
 matconvnet-1.0-beta8/
