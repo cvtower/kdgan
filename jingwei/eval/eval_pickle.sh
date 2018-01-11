@@ -1,4 +1,4 @@
-# ./eval_pickle.sh yfcc2k
+# ./eval_pickle.sh yfcc0k
 
 # export BASEDIR=/Users/xiaojiew1/Projects # mac
 export BASEDIR=/home/xiaojie/Projects
@@ -42,7 +42,9 @@ elif [ "$testCollection" == "mirflickr08" ]; then
     annotationName=conceptsmir14.txt
 elif [ "$testCollection" == "flickr55" -o "$testCollection" == "flickr51" ]; then
     annotationName=concepts51ms.txt
-elif [ "$testCollection" == "yfcc2k" ]; then
+elif [ "$testCollection" == "yfcc0k" ]; then
+    annotationName=concepts.txt
+elif [ "$testCollection" == "yfcc1k" ]; then
     annotationName=concepts.txt
 else
     echo "unknown testCollection $testCollection"

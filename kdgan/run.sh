@@ -2,6 +2,15 @@ kdgan_dir=$HOME/Projects/kdgan/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 pretrained_dir=$checkpoint_dir/pretrained
 
+python pretrain_gen.py \
+  --dataset=yfcc10k \
+  --feature_size=4096 \
+  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
+  --model_name=vgg_16 \
+  --num_epoch=1000
+exit
+# 283s best hit=0.7687
+
 python pretrain_tch.py \
   --dataset=yfcc10k \
   --tch_model=tch \
@@ -19,15 +28,6 @@ python pretrain_dis.py \
   --num_epoch=200
 # 282s best hit=0.7747
 exit
-
-python pretrain_gen.py \
-  --dataset=yfcc10k \
-  --feature_size=4096 \
-  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
-  --model_name=vgg_16 \
-  --num_epoch=200
-exit
-# 283s best hit=0.7687
 
 python train_gan.py \
   --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
@@ -49,4 +49,13 @@ python train_kd.py \
   --beta=0.00001 \
   --temperature=10.0 \
   --num_epoch=200
+exit
+
+python pretrain_gen.py \
+  --dataset=yfcc10k \
+  --feature_size=1536 \
+  --gen_model_ckpt=$checkpoint_dir/gen_inception_resnet_v2.ckpt \
+  --model_name=inception_resnet_v2 \
+  --dropout_keep_prob=0.8 \
+  --num_epoch=1000
 exit

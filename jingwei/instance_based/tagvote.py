@@ -109,9 +109,12 @@ class PreTagVoteTagger (TagVoteTagger):
         testCollection,testid = context.split(',')
         knnfile = os.path.join(self.rootpath, testCollection, 'SimilarityIndex', testCollection, self.knndir, testid[-2:], '%s.txt' % testid)
         knn = readRankingResults(knnfile)
+        # print(len(knn))
         knn = knn[:self.k]
+        # print(len(knn))
         if self.noise > 1e-3:
             n = int(len(knn) * self.noise)
+            print(n)
             hits = random.sample(xrange(len(knn)), n)
             random_set = random.sample(self.imset, n)
             for i in range(n):

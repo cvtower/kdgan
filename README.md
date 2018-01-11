@@ -22,33 +22,24 @@ tar -xzvf matconvnet-1.0-beta8.tar.gz
 wget http://lixirong.net/data/csur2016/matconvnet-models.tar
 .gz
 tar -xzvf matconvnet-models.tar.gz
-matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfcc0k';
-matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');" # ds = 'yfcc19k';
-zip -r survey_data.zip survey_data -x survey_data/yfcc8k/ImageData/\* survey_data/yfcc2k/ImageData/\*
-
+matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
 # jingwei: precompute k nearest neighbors
+conda install libgcc # ubuntu
+brew install boost --c++11 # mac
 cd jingwei/util/simpleknn/
 sudo apt-get install libboost-dev
 ./build.sh
-
-#
-./do_knntagrel.sh yfcc8k yfcc2k vgg-verydeep-16-fc7relu
-
-/home/xiaojie/Projects/data/yfcc100m/survey_data/yfcc2k/autotagging/yfcc2k/yfcc8k/concepts.txt/preknn/vgg-verydeep-16-fc7relu,cosineknn,5/id.tagvotes.txt
-
-
-
-
-
-
-
-
-
-# do_tagprop.sh
-./do_getknn.sh yfcc8k yfcc8k vgg-verydeep-16fc7relu 0 1 1
-./do_getknn.sh yfcc8k yfcc2k vgg-verydeep-16fc7relu 0 1 1
-# simple knn
-conda install libgcc # ubuntu
-brew install boost --c++11 # mac
-./fasttext supervised -input yfcc10k/yfcc10k.train -output yfcc10k/model_yfcc10k -lr 1.0 -epoch 100
-./fasttext test yfcc10k/model_yfcc10k.bin yfcc10k/yfcc10k.valid 5
+# jingwei: knn
+./do_knntagrel.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
+# jingwei: tagprop
+import nltk & nltk.download('wordnet')
+./do_getknn.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu 0 1 1
+./do_getknn.sh yfcc9k yfcc9k vgg-verydeep-16-fc7relu 0 1 1
+wget http://lear.inrialpes.fr/people/guillaumin/code/TagProp_0.2.tar.gz
+./do_tagprop.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
+patch TagProp/sigmoids.m < sigmoids.m.patch
+patch TagProp/tagprop_learn.m < tagprop_learn.m.patch
+patch TagProp/tagprop_predict.m < tagprop_predict.m.patch
+cd TagProp & matlab -nodesktop -nosplash -r "mex tagpropCmt.c; exit"
+# jingwei: evaluation
+./eval_pickle.sh yfcc0k

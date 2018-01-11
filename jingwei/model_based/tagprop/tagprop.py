@@ -66,7 +66,8 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
 
     # do we need to perform learning?
     train_model_file = os.path.join(rootpath, trainCollection, 'TagProp-models', '%s,%s,%s,%d'%(feature,nnName,variant,k), 'model.mat')
-    if os.path.exists(train_model_file) and not forcetrainmodel:
+    # if os.path.exists(train_model_file) and not forcetrainmodel:
+    if False:
         printStatus(INFO, "model for %s available at %s" % (trainCollection, train_model_file))
     else:
         printStatus(INFO, "starting learning model for %s" % (trainCollection))
@@ -111,12 +112,12 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
 
         script += """
                 save('%s', 'm', '-v7.3');
-                exit;
         """ % train_model_file
 
-        call_matlab(script)
+        # call_matlab(script)
 
-    # return
+    # print(script)
+    # exit()
 
     # we perform prediction
     printStatus(INFO, "starting prediction")
@@ -125,7 +126,7 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
         printStatus(INFO, "Matlab test neighbors file not found at %s Did you run prepare_tagprop_data.py?" % (test_neighs_file))
         sys.exit(1)
 
-    script = """
+    script += """
             tagprop_path = '%s/model_based/tagprop/TagProp/';
             addpath(tagprop_path);
             load('%s');
@@ -148,11 +149,11 @@ def process(options, testCollection, trainCollection, annotationName, feature, o
             save('%s', '-v7.3');
             exit;
     """ % resultfile_tagprop
-    # print(script)
-    # exit()
 
-    # makedirsforfile(resultfile_tagprop)
-    # call_matlab(script)
+    # print(script)
+    makedirsforfile(resultfile_tagprop)
+    call_matlab(script)
+    # exit()
 
     # save results in pkl format
     printStatus(INFO, "Dump results in pkl format at %s" % resultfile)

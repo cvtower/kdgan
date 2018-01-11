@@ -73,6 +73,8 @@ def process(options, testCollection, trainCollection, trainAnnotationName, featu
             scores = [models[c].predict(_vec) for c in range(nr_of_concepts)]
 
         tagvotes = sorted(zip(concepts, scores), key=lambda v:v[1], reverse=True)
+        print('xiaojie', len(tagvotes))
+        exit()
         if topk>0:
             tagvotes = tagvotes[:topk]
         newline = '%s %s\n' % (_id, " ".join(["%s %s" % (tag, niceNumber(vote,6)) for (tag,vote) in tagvotes]))

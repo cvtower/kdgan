@@ -1,12 +1,12 @@
-# ./do_knntagrel.sh yfcc8k yfcc2k vgg-verydeep-16-fc7relu
+# ./do_knntagrel.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
 
 # export BASEDIR=/Users/xiaojiew1/Projects # mac
 export BASEDIR=/home/xiaojie/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
 export SURVEY_CODE=$BASEDIR/kdgan/jingwei
 export SURVEY_DB=$BASEDIR/kdgan/results/runs
-# export MATLAB_PATH=/Applications/MATLAB_R2017b.app/bin # mac
-export MATLAB_PATH=/usr/local/bin
+# export MATLAB_PATH=/Applications/MATLAB_R2017b.app # mac
+export MATLAB_PATH=/usr/local
 export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
 
 rootpath=$SURVEY_DATA
@@ -37,7 +37,9 @@ elif [ "$testCollection" == "flickr51" ]; then
     testAnnotationName=concepts51ms.txt
 elif [ "$testCollection" == "mirflickr08" ]; then
     testAnnotationName=conceptsmir14.txt
-elif [ "$testCollection" == "yfcc2k" ]; then
+elif [ "$testCollection" == "yfcc0k" ]; then
+    testAnnotationName=concepts.txt
+elif [ "$testCollection" == "yfcc1k" ]; then
     testAnnotationName=concepts.txt
 else
     echo "unknown testCollection $testCollection"
@@ -54,12 +56,14 @@ if [ ! -d "$preknn_dir" ]; then
     ./do_getknn.sh $trainCollection $testCollection $feature 0 1 1
 fi
 
-for k in 5 10 50 100 250 500 750 1000
+for k in 200 400 600 800 1000
 do
-
-    python $codepath/instance_based/apply_tagger.py $testCollection $trainCollection $annotationName $feature --tagger $tagger --distance $distance --k $k
+    python $codepath/instance_based/apply_tagger.py \
+        $testCollection $trainCollection $annotationName $feature \
+        --tagger $tagger \
+        --distance $distance \
+        --k $k
     tagvotesfile=$rootpath/$testCollection/autotagging/$testCollection/$trainCollection/$annotationName/$tagger/$feature,"$distance"knn,$k/id.tagvotes.txt
-
     if [ ! -f "$tagvotesfile" ]; then
         echo "tagvotes file $tagvotesfile does not exist!"
         exit
@@ -67,7 +71,6 @@ do
 
     conceptfile=$rootpath/$testCollection/Annotations/$testAnnotationName
     resultfile=$SURVEY_DB/"$trainCollection"_"$testCollection"_$feature,knn,$k.pkl
-
-    python $codepath/postprocess/pickle_tagvotes.py $conceptfile $tagvotesfile $resultfile
-
+    python $codepath/postprocess/pickle_tagvotes.py \
+        $conceptfile $tagvotesfile $resultfile
 done
