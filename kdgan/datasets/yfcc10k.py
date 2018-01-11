@@ -1062,10 +1062,11 @@ def create_tfrecord(infile, end_point, is_training=False):
                     image_np = np.array(Image.open(file))
                     # print(type(image_np), image_np.shape)
                     feed_dict = {image_ph:image_np}
-                    image_t, = sess.run([end_point], feed_dict)
-                    image_t = image_t.tolist()
-                    # print(type(image_t), len(image_t))
-                    # exit()
+                    image, = sess.run([end_point], feed_dict)
+                    image = image.tolist()
+                    # print(image)
+                    # print(type(image), len(image))
+                    # input()
 
                     text = [token_to_id.get(token, unk_token_id) for token in text]
 
@@ -1077,7 +1078,7 @@ def create_tfrecord(infile, end_point, is_training=False):
                     file = bytes(file, encoding='utf-8')
                     # print(file)
 
-                    example = build_example(user, image_t, text, label, file)
+                    example = build_example(user, image, text, label, file)
                     fout.write(example.SerializeToString())
                     count += 1
                     if (count % 500) == 0:
