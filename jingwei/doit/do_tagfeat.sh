@@ -92,12 +92,10 @@ if [ $do_training == 1 ]; then
   do
     python $codepath/model_based/negative_bagging.py \
         $trainCollection $bagfile $feature $modelName
-    continue
 
     python $codepath/model_based/svms/find_ab.py \
         $trainCollection $modelAnnotationName $trainAnnotationName $feature \
         --model $modelName
-    exit
   done
 fi
 
@@ -119,17 +117,18 @@ fi
 
 for topk in 20 40 60 80 100
 do
-  for modelName in fastlinear fik
+  for modelName in fastlinear fik50
   do
     python $codepath/model_based/svms/applyConcepts_s.py \
         $testCollection $trainCollection $modelAnnotationName $feature $modelName \
-        --prob_output 1
+        --prob_output 1 \
+        --topk $topk
 
-    tagvotesfile=$rootpath/$testCollection/autotagging/$testCollection/$trainCollection/$modelAnnotationName/$feature,$modelName,prob/id.tagvotes.txt
+    tagvotesfile=$rootpath/$testCollection/autotagging/$testCollection/$trainCollection/$modelAnnotationName/$feature,$modelName,$topk,prob/id.tagvotes.txt
     conceptfile=$rootpath/$testCollection/Annotations/$testAnnotationName
-    resfile=$SURVEY_DB/"$trainCollection"_"$testCollection"_$vis_feature,tagfeat.pkl
-
+    resfile=$SURVEY_DB/"$trainCollection"_"$testCollection"_$vis_feature,tagfeat,$modelName,$topk.pkl
     python $codepath/postprocess/pickle_tagvotes.py \
         $conceptfile $tagvotesfile $resfile
   done
+  # exit
 done

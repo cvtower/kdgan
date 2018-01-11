@@ -43,3 +43,5 @@ patch TagProp/tagprop_predict.m < tagprop_predict.m.patch
 cd TagProp & matlab -nodesktop -nosplash -r "mex tagpropCmt.c; exit"
 # jingwei: evaluation
 ./eval_pickle.sh yfcc0k
+
+

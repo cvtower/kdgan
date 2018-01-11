@@ -17,6 +17,10 @@ def process(options, trainCollection, modelAnnotationName, trainAnnotationName, 
     rootpath = options.rootpath
     modelName = options.model
 
+    # see negative_bagging.py assert(modelName in ['fik', 'fastlinear'])
+    if modelName == 'fik':
+        modelName = 'fik50'
+
     if 'fastlinear' == modelName:
         from fastlinear.fastlinear import fastlinear_load_model as load_model
         from fastlinear.fastlinear import fastlinear_save_model as save_model
@@ -32,6 +36,7 @@ def process(options, trainCollection, modelAnnotationName, trainAnnotationName, 
 
     for concept in concepts:
         modelfile = os.path.join(rootpath, trainCollection, 'Models', modelAnnotationName, feature, modelName, '%s.model' % concept)
+        # print(modelfile)
         model = load_model(modelfile)
         (A0, B0) = model.get_probAB()
         if abs(A0) > 1e-8 and not options.overwrite:
