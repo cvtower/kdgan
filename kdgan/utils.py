@@ -223,5 +223,44 @@ def configure_learning_rate(flags, global_step, scope_name):
     raise ValueError('bad learning rate decay type', flags.learning_rate_decay_type)
   return learning_rate
 
+def generate_dis_sample(flags, label_dat, label_gen):
+  # print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
+  # print('{0} {1:.2f}'.format(label_gen.shape, label_gen.sum()))
+  sample_np, label_np = [], []
+  for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
+    num_sample = np.count_nonzero(label_d)
+    # print(batch, label_d.shape, label_g.shape, num_sample)
+    num_positive = num_sample * flags.num_positive
+    sample_d = np.random.choice(config.num_label, num_positive, p=label_d)
+    for sample in sample_d:
+      # print(batch, sample, 1.0)
+      sample_np.append((batch, sample))
+      label_np.append(1.0)
+    num_negative = num_sample * flags.num_negative
+    sample_g = np.random.choice(config.num_label, num_negative, p=label_g)
+    for sample in sample_g:
+      sample_np.append((batch, sample))
+      label_np.append(0.0)
+  sample_np = np.asarray(sample_np)
+  label_np = np.asarray(label_np)
+  # for sample, label in zip(sample_np, label_np):
+  #   print(sample, label)
+  return sample_np, label_np
 
-
+def generate_gen_sample(label_dat, label_gen):
+  sample_np = []
+  for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
+    num_sample = np.count_nonzero(label_d)
+    num_sample *= (flags.num_positive + flags.num_negative)
+    # print(num_sample, label_g.sum())
+    # if abs(label_g.sum() - 1.0) > 0.001:
+    #   print(label_g)
+    #   exit()
+    sample_g = np.random.choice(config.num_label, num_sample, p=label_g)
+    for sample in sample_g:
+      # if (sample < 0) or (sample > config.num_label - 1):
+      #   print(sample_g)
+      #   exit()
+      sample_np.append((batch, sample))
+  sample_np = np.asarray(sample_np)
+  return sample_np

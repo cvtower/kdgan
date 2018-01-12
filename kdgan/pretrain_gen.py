@@ -112,7 +112,7 @@ def main(_):
           continue
         best_hit_v = hit_v
         gen_t.saver.save(sess, flags.gen_model_ckpt)
-  print('best hit={0:.4f}'.format(best_hit_v))
+  print('best hit=%.4f' % (best_hit_v))
 
 if __name__ == '__main__':
   tf.app.run()
