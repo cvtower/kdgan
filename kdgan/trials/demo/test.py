@@ -82,7 +82,7 @@
 import tensorflow as tf
 
 def main():
-  global_step_ts = tf.Variable(0, trainable=False)
+  
   starter_learning_rate = 0.1
   end_learning_rate = 0.01
   decay_steps = 10
