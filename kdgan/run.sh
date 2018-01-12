@@ -9,7 +9,7 @@ python pretrain_dis.py \
   --feature_size=4096 \
   --learning_rate=0.05 \
   --num_epoch=200
-# 
+# 373s best hit=0.7690
 exit
 
 python pretrain_gen.py \
