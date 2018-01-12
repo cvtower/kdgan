@@ -15,15 +15,13 @@ class DIS():
 
     # None = batch_size
     self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size))
-    # None = batch_size
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, config.num_label))
 
     # None = batch_size * sample_size
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
-    # None = batch_size * sample_size
     self.dis_label_ph = tf.placeholder(tf.float32, shape=(None,))
 
-    dis_scope = 'discriminator'
+    dis_scope = 'dis'
     model_scope = nets_factory.arg_scopes_map[flags.model_name]
     with tf.variable_scope(dis_scope) as scope:
       with slim.arg_scope(model_scope(weight_decay=flags.dis_weight_decay)):
@@ -51,14 +49,14 @@ class DIS():
     for variable in tf.trainable_variables():
       if not variable.name.startswith(dis_scope):
         continue
-      print('%66s added to DIS saver' % variable.name)
+      print('%-50s added to DIS saver' % variable.name)
       save_dict[variable.name] = variable
     self.saver = tf.train.Saver(save_dict)
 
     global_step = tf.Variable(0, trainable=False)
-    self.learning_rate = configure_learning_rate(flags, global_step, dis_scope)
+    self.learning_rate = utils.configure_learning_rate(flags, global_step, dis_scope)
 
-    # pre-train
+    # pre train
     pre_losses = []
     pre_losses.append(tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits))
     pre_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
@@ -66,7 +64,7 @@ class DIS():
     pre_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
     self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
-    # gan-train
+    # gan train
     gan_losses = []
     gan_losses.append(tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits))
     gan_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))

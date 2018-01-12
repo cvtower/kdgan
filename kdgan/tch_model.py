@@ -10,9 +10,9 @@ class TCH():
     self.is_training = is_training
 
     self.text_ph = tf.placeholder(tf.int64, shape=(None, None))
-    self.label_ph = tf.placeholder(tf.float32, shape=(None, config.num_label))
+    self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, config.num_label))
 
-    tch_scope = 'teacher'
+    tch_scope = 'tch'
     vocab_size = utils.get_vocab_size(flags.dataset)
     # initializer = tf.random_uniform([vocab_size, flags.embedding_size], -0.1, 0.1)
     with tf.variable_scope(tch_scope) as scope:
@@ -37,27 +37,17 @@ class TCH():
     for variable in tf.trainable_variables():
       if not variable.name.startswith(tch_scope):
         continue
-      print('%s added to TCH saver' % variable.name)
+      print('%-50s added to TCH saver' % variable.name)
       save_dict[variable.name] = variable
     self.saver = tf.train.Saver(save_dict)
 
-    train_data_size = utils.get_train_data_size(flags.dataset)
-    global_step = tf.train.get_global_step()
-    decay_steps = int(train_data_size / config.train_batch_size * flags.num_epochs_per_decay)
-    self.learning_rate = tf.train.exponential_decay(flags.init_learning_rate,
-        global_step, decay_steps, flags.learning_rate_decay_factor,
-        staircase=True, name='exponential_decay_learning_rate')
+    global_step = tf.Variable(0, trainable=False)
+    self.learning_rate = utils.configure_learning_rate(flags, global_step, tch_scope)
 
-    loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
-        labels=self.label_ph, logits=self.logits))
-    losses = [loss]
-    regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
-    losses.extend(regularization_losses)
-    total_loss = tf.add_n(losses, name='total_loss')
-
-    optimizer = tf.train.AdamOptimizer(self.learning_rate)
-    self.train_op = optimizer.minimize(total_loss, global_step=global_step)
-
-    tf.summary.scalar('total_loss', total_loss)
-    self.summary_op = tf.summary.merge_all()
-
+    # pre train
+    pre_losses = []
+    pre_losses.append(tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits))
+    pre_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+    self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % tch_scope)
+    pre_optimizer = tf.train.AdamOptimizer(self.learning_rate)
+    self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
