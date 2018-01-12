@@ -12,7 +12,7 @@ python train_gan.py \
   --gen_weight_decay=0.0 \
   --learning_rate=0.05 \
   --num_epoch=100 \
-  --num_dis_epoch=100 \
+  --num_dis_epoch=20 \
   --num_gen_epoch=10
 exit
 
