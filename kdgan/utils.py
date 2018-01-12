@@ -142,7 +142,8 @@ def generate_batch(ts_list, batch_size):
   return user_bt, image_bt, text_bt, label_bt, file_bt
 
 def evaluate(flags, sess, gen_v, bt_list_v):
-  num_batch_v = int(config.valid_data_size / config.valid_batch_size)
+  valid_data_size = utils.get_valid_data_size(flags.dataset)
+  num_batch_v = int(valid_data_size / config.valid_batch_size)
   # print('vd:\t#batch=%d\n' % num_batch_v)
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
   image_hit_v = []
