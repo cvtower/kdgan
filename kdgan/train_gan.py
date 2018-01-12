@@ -101,8 +101,8 @@ def main(_):
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
-      image_hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
-      print('init\thit={0:.4f}'.format(image_hit_v))
+      hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+      print('init\thit={0:.4f}'.format(hit_v))
 
       batch_d, batch_g = -1, -1
       for epoch in range(flags.num_epoch):
@@ -112,25 +112,17 @@ def main(_):
           for _ in range(num_batch_d):
             batch_d += 1
             image_np_d, label_dat_d = sess.run([image_bt_d, label_bt_d])
-            # print(image_np_d.shape, label_dat_d.shape)
             feed_dict = {gen_t.image_ph:image_np_d}
             label_gen_d, = sess.run([gen_t.labels], feed_dict=feed_dict)
-            # print(label_gen_d.shape, type(label_gen_d))
-            sample_np_d, label_np_d = generate_dis_sample(label_dat_d, label_gen_d)
+            sample_np_d, label_np_d = utils.generate_dis_sample(label_dat_d, label_gen_d)
             feed_dict = {
               dis_t.image_ph:image_np_d,
               dis_t.sample_ph:sample_np_d,
               dis_t.label_ph:label_np_d,
             }
-            sess.run(dis_t.train_op, feed_dict=feed_dict)
-            # _, summary = sess.run([dis_t.train_op, dis_t.summary_op], feed_dict=feed_dict)
-            # writer.add_summary(summary, batch_d)
-
-            # if (batch_d + 1) % eval_interval != 0:
-            #   continue
-            # image_hit_v = utils.evaluate(flags, sess, dis_v, bt_list_v)
-            # tot_time = time.time() - start
-            # print('#%d hit=%.4f (%.0fs)' % (batch_d, image_hit_v, tot_time))
+            _, summary_d = sess.run([dis_t.gan_update, dis_summary_op], 
+                feed_dict=feed_dict)
+            writer.add_summary(summary_d, batch_d)
 
         for gen_epoch in range(flags.num_gen_epoch):
           print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
@@ -138,37 +130,30 @@ def main(_):
           for _ in range(num_batch_g):
             batch_g += 1
             image_np_g, label_dat_g = sess.run([image_bt_g, label_bt_g])
-            # print(image_np_g.shape, label_dat_g.shape)
             feed_dict = {gen_t.image_ph:image_np_g}
             label_gen_g, = sess.run([gen_t.labels], feed_dict=feed_dict)
             sample_np_g = generate_gen_sample(label_dat_g, label_gen_g)
-            # for sample in sample_np_g:
-            #   print(sample)
             feed_dict = {
               dis_t.image_ph:image_np_g,
               dis_t.sample_ph:sample_np_g,
             }
             reward_np_g, = sess.run([dis_t.rewards], feed_dict=feed_dict)
-            # for sample, reward in zip(sample_np_g, reward_np_g):
-            #   batch = sample[0]
-            #   label = [i for i, l in enumerate(label_dat_g[batch]) if l != 0.0]
-            #   print(sample, reward, label)
-            # print('%.2f %.2f' % (reward_np_g.min(), reward_np_g.max()))
-            # input()
             feed_dict = {
               gen_t.image_ph:image_np_g,
               gen_t.sample_ph:sample_np_g,
               gen_t.reward_ph:reward_np_g,
             }
-            sess.run([gen_t.gan_train_op], feed_dict=feed_dict)
+            _, summary_g = sess.run([gen_t.gan_update, gen_summary_op], 
+                feed_dict=feed_dict)
+            writer.add_summary(summary_g, batch_g)
             if (batch_g + 1) % eval_interval != 0:
               continue
-            image_hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+            hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
             tot_time = time.time() - start
-            print('#%d hit=%.4f (%.0fs)' % (batch_g, image_hit_v, tot_time))
-            if image_hit_v > best_hit_v:
-              best_hit_v = image_hit_v
-              print('best hit=%.4f (%.0fs)' % (image_hit_v, tot_time))
+            print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
+            if hit_v > best_hit_v:
+              best_hit_v = hit_v
+              print('best hit=%.4f' % (best_hit_v))
           # break
   print('best hit=%.4f' % (best_hit_v))
 
