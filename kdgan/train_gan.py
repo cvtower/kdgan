@@ -73,7 +73,7 @@ def main(_):
   ])
   gen_summary_op = tf.summary.merge([
     tf.summary.scalar(gen_t.learning_rate.name, gen_t.learning_rate),
-    tf.summary.scalar(gen_t.pre_loss.name, gen_t.pre_loss),
+    tf.summary.scalar(gen_t.gan_loss.name, gen_t.gan_loss),
   ])
   print(type(dis_summary_op), type(gen_summary_op))
   init_op = tf.global_variables_initializer()
@@ -145,18 +145,17 @@ def main(_):
               gen_t.sample_ph:sample_np_g,
               gen_t.reward_ph:reward_np_g,
             }
-            # _, summary_g = sess.run([gen_t.gan_update, gen_summary_op], 
-            #     feed_dict=feed_dict)
-            # writer.add_summary(summary_g, batch_g)
-            # if (batch_g + 1) % eval_interval != 0:
-            #   continue
-            # hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
-            # tot_time = time.time() - start
-            # print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
-            # if hit_v > best_hit_v:
-            #   best_hit_v = hit_v
-            #   print('best hit=%.4f' % (best_hit_v))
-          # break
+            _, summary_g = sess.run([gen_t.gan_update, gen_summary_op], 
+                feed_dict=feed_dict)
+            writer.add_summary(summary_g, batch_g)
+            if (batch_g + 1) % eval_interval != 0:
+              continue
+            hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+            tot_time = time.time() - start
+            print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
+            if hit_v > best_hit_v:
+              best_hit_v = hit_v
+              print('best hit=%.4f' % (best_hit_v))
   print('best hit=%.4f' % (best_hit_v))
 
 if __name__ == '__main__':
