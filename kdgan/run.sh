@@ -10,9 +10,9 @@ python train_gan.py \
   --feature_size=4096 \
   --dis_weight_decay=0.0 \
   --gen_weight_decay=0.0 \
-  --num_epoch=100 \
+  --num_epoch=1 \
   --num_dis_epoch=50 \
-  --num_gen_epoch=10
+  --num_gen_epoch=0
 exit
 
 python pretrain_dis.py \
