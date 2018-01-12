@@ -49,6 +49,7 @@ tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
 flags = tf.app.flags.FLAGS
 
+train_data_size = utils.get_train_data_size(flags.dataset)
 eval_interval = int(train_data_size / config.train_batch_size)
 print('eval:\t#interval=%d' % (eval_interval))
 
