@@ -248,7 +248,7 @@ def generate_dis_sample(flags, label_dat, label_gen):
   #   print(sample, label)
   return sample_np, label_np
 
-def generate_gen_sample(label_dat, label_gen):
+def generate_gen_sample(flags, label_dat, label_gen):
   sample_np = []
   for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
     num_sample = np.count_nonzero(label_d)
