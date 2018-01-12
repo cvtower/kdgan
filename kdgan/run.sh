@@ -11,8 +11,8 @@ python train_gan.py \
   --dis_weight_decay=0.0 \
   --gen_weight_decay=0.0 \
   --num_epoch=100 \
-  --num_dis_epoch=50 \
-  --num_gen_epoch=50
+  --num_dis_epoch=100 \
+  --num_gen_epoch=10
 exit
 
 python pretrain_dis.py \
