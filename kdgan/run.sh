@@ -5,11 +5,11 @@ pretrained_dir=$checkpoint_dir/pretrained
 python pretrain_dis.py \
   --dataset=yfcc10k \
   --model_name=vgg_16 \
-  --gen_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
+  --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
   --feature_size=4096 \
   --learning_rate=0.05 \
   --num_epoch=200
-# 366s best hit=0.7787
+# 
 exit
 
 python pretrain_gen.py \
@@ -19,7 +19,7 @@ python pretrain_gen.py \
   --feature_size=4096 \
   --learning_rate=0.05 \
   --num_epoch=200
-# 366s best hit=0.7787
+# 386s best hit=0.7707
 exit
 
 python pretrain_tch.py \
