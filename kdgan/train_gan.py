@@ -114,7 +114,8 @@ def main(_):
             image_np_d, label_dat_d = sess.run([image_bt_d, label_bt_d])
             feed_dict = {gen_t.image_ph:image_np_d}
             label_gen_d, = sess.run([gen_t.labels], feed_dict=feed_dict)
-            sample_np_d, label_np_d = utils.generate_dis_sample(label_dat_d, label_gen_d)
+            sample_np_d, label_np_d = utils.generate_dis_sample(
+                flags, label_dat_d, label_gen_d)
             feed_dict = {
               dis_t.image_ph:image_np_d,
               dis_t.sample_ph:sample_np_d,
@@ -132,7 +133,8 @@ def main(_):
             image_np_g, label_dat_g = sess.run([image_bt_g, label_bt_g])
             feed_dict = {gen_t.image_ph:image_np_g}
             label_gen_g, = sess.run([gen_t.labels], feed_dict=feed_dict)
-            sample_np_g = generate_gen_sample(label_dat_g, label_gen_g)
+            sample_np_g = utils.generate_gen_sample(
+                flags, label_dat_g, label_gen_g)
             feed_dict = {
               dis_t.image_ph:image_np_g,
               dis_t.sample_ph:sample_np_g,
