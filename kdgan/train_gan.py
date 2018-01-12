@@ -119,7 +119,7 @@ def main(_):
             feed_dict = {
               dis_t.image_ph:image_np_d,
               dis_t.sample_ph:sample_np_d,
-              dis_t.label_ph:label_np_d,
+              dis_t.dis_label_ph:label_np_d,
             }
             _, summary_d = sess.run([dis_t.gan_update, dis_summary_op], 
                 feed_dict=feed_dict)
