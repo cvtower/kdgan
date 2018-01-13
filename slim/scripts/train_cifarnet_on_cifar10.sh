@@ -26,6 +26,7 @@ set -e
 
 model_name=cifarnet
 model_name=inception_v1
+image_size=32
 
 # Where the checkpoint and logs will be saved to.
 TRAIN_DIR=$HOME/Projects/kdgan/kdgan/slimmodels/${model_name}
@@ -46,7 +47,7 @@ python train_image_classifier.py \
   --dataset_dir=${DATASET_DIR} \
   --model_name=${model_name} \
   --preprocessing_name=${model_name} \
-  --max_number_of_steps=100000 \
+  --max_number_of_steps=10000 \
   --batch_size=128 \
   --save_interval_secs=120 \
   --save_summaries_secs=120 \
@@ -55,7 +56,8 @@ python train_image_classifier.py \
   --learning_rate=0.1 \
   --learning_rate_decay_factor=0.1 \
   --num_epochs_per_decay=200 \
-  --weight_decay=0.004
+  --weight_decay=0.004 \
+  --train_image_size=$image_size
 
 # Run evaluation.
 python eval_image_classifier.py \
@@ -64,4 +66,5 @@ python eval_image_classifier.py \
   --dataset_name=cifar10 \
   --dataset_split_name=test \
   --dataset_dir=${DATASET_DIR} \
-  --model_name=${model_name}
+  --model_name=${model_name} \
+  --eval_image_size=$image_size
