@@ -2,6 +2,16 @@ kdgan_dir=$HOME/Projects/kdgan/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 pretrained_dir=$checkpoint_dir/pretrained
 
+python pretrain_gen.py \
+  --dataset=yfcc10k \
+  --model_name=vgg_16 \
+  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
+  --feature_size=4096 \
+  --learning_rate=0.05 \
+  --num_epoch=200
+# 386s best hit=0.7707
+exit
+
 python train_kdgan.py \
   --dataset=yfcc10k \
   --model_name=vgg_16 \
@@ -18,6 +28,7 @@ python train_kdgan.py \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10
+# 12517s best hit=0.7973
 exit
 
 python train_kd.py \
@@ -39,16 +50,6 @@ python pretrain_dis.py \
   --learning_rate=0.05 \
   --num_epoch=200
 # 373s best hit=0.7690
-exit
-
-python pretrain_gen.py \
-  --dataset=yfcc10k \
-  --model_name=vgg_16 \
-  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
-  --feature_size=4096 \
-  --learning_rate=0.05 \
-  --num_epoch=200
-# 386s best hit=0.7707
 exit
 
 python pretrain_tch.py \
@@ -73,7 +74,6 @@ python train_gan.py \
   --num_epoch=100 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10
-# init hit=0.7707
 # best hit=0.7817
 exit
 

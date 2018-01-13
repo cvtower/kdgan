@@ -68,7 +68,19 @@ python train_image_classifier.py \
   --dataset_dir=$HOME/Projects/data/mnist \
   --model_name=lenet
 
+python eval_image_classifier.py \
+  --alsologtostderr \
+  --checkpoint_path=$HOME/Projects/kdgan/kdgan/slimmodels \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --dataset_name=mnist \
+  --dataset_split_name=test \
+  --model_name=lenet
 
+http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html#43494641522d3130
+https://github.com/BIGBALLON/cifar-10-cnn
+https://github.com/tensorflow/models/tree/master/tutorials/image/cifar10
+https://github.com/shmsw25/cifar10-classification
+https://github.com/ethereon/caffe-tensorflow
 
 
 
