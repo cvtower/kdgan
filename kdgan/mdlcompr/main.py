@@ -5,13 +5,10 @@ import time
 import tensorflow as tf
 
 from datasets import dataset_factory
-from datasets import download_and_convert_mnist
 from nets import nets_factory
 from preprocessing import preprocessing_factory
 from tensorflow.contrib import slim
 
-# dataset
-tf.app.flags.DEFINE_string('dataset_dir', None, '')
 # optimization
 tf.app.flags.DEFINE_float('weight_decay', 0.00004, 'l2 coefficient')
 tf.app.flags.DEFINE_float('adam_beta1', 0.9, '')
@@ -40,10 +37,6 @@ num_preprocessing_threads = 4
 tn_split_name = 'train'
 
 def main(_):
-  if not flags.dataset_dir:
-    raise ValueError('no --dataset_dir')
-  download_and_convert_mnist.run(flags.dataset_dir)
-  
   tn_dataset = dataset_factory.get_dataset(
       dataset_name,
       tn_split_name,

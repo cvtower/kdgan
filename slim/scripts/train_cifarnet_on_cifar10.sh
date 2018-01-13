@@ -24,8 +24,11 @@
 # ./scripts/train_cifarnet_on_cifar10.sh
 set -e
 
+model_name=cifarnet
+model_name=inception_v1
+
 # Where the checkpoint and logs will be saved to.
-TRAIN_DIR=$HOME/Projects/kdgan/kdgan/slimmodels/cifarnet
+TRAIN_DIR=$HOME/Projects/kdgan/kdgan/slimmodels/${model_name}
 
 # Where the dataset is saved to.
 DATASET_DIR=$HOME/Projects/data/cifar10
@@ -41,8 +44,8 @@ python train_image_classifier.py \
   --dataset_name=cifar10 \
   --dataset_split_name=train \
   --dataset_dir=${DATASET_DIR} \
-  --model_name=cifarnet \
-  --preprocessing_name=cifarnet \
+  --model_name=${model_name} \
+  --preprocessing_name=${model_name} \
   --max_number_of_steps=100000 \
   --batch_size=128 \
   --save_interval_secs=120 \
@@ -61,4 +64,4 @@ python eval_image_classifier.py \
   --dataset_name=cifar10 \
   --dataset_split_name=test \
   --dataset_dir=${DATASET_DIR} \
-  --model_name=cifarnet
+  --model_name=${model_name}
