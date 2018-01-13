@@ -1,8 +1,7 @@
-from kdgan import config, utils
+from kdgan import config
+from kdgan import utils
 
-import numpy as np
 import tensorflow as tf
-
 from tensorflow.contrib import slim
 
 class TCH():

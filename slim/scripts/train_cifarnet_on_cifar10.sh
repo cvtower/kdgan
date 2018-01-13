@@ -25,10 +25,10 @@
 set -e
 
 # Where the checkpoint and logs will be saved to.
-TRAIN_DIR=/tmp/cifarnet-model
+TRAIN_DIR=$HOME/Projects/kdgan/kdgan/slimmodels
 
 # Where the dataset is saved to.
-DATASET_DIR=/tmp/cifar10
+DATASET_DIR=$HOME/Projects/data/cifar10
 
 # Download the dataset
 python download_and_convert_data.py \
