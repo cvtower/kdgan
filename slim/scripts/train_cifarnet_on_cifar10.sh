@@ -25,7 +25,7 @@
 set -e
 
 # Where the checkpoint and logs will be saved to.
-TRAIN_DIR=$HOME/Projects/kdgan/kdgan/slimmodels
+TRAIN_DIR=$HOME/Projects/kdgan/kdgan/slimmodels/cifarnet
 
 # Where the dataset is saved to.
 DATASET_DIR=$HOME/Projects/data/cifar10
