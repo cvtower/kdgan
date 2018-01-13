@@ -25,7 +25,7 @@
 set -e
 
 model_name=cifarnet
-model_name=inception_v1
+model_name=vgg_a
 image_size=32
 
 # Where the checkpoint and logs will be saved to.
