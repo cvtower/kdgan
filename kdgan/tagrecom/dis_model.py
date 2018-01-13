@@ -54,8 +54,13 @@ class DIS():
     self.saver = tf.train.Saver(save_dict)
 
     global_step = tf.Variable(0, trainable=False)
-    self.learning_rate = utils.configure_learning_rate(flags, global_step, dis_scope)
-
+    train_data_size = get_train_data_size(flags.dataset)
+    self.learning_rate = utils.configure_learning_rate(
+        flags,
+        global_step,
+        train_data_size,
+        dis_scope)
+    
     # pre train
     pre_losses = []
     pre_losses.append(tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits))

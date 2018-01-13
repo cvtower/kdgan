@@ -200,8 +200,7 @@ def get_label_file(dataset):
   label_file = path.join(dataset_dir, '%s.label' % dataset)
   return label_file
 
-def configure_learning_rate(flags, global_step, scope_name):
-  train_data_size = get_train_data_size(flags.dataset)
+def configure_learning_rate(flags, global_step, train_data_size, scope_name):
   decay_steps = int(train_data_size / flags.batch_size * flags.num_epochs_per_decay)
   if flags.learning_rate_decay_type == 'exponential':
     name = '%s_exponential_decay_learning_rate' % scope_name
@@ -221,8 +220,27 @@ def configure_learning_rate(flags, global_step, scope_name):
         cycle=False,
         name=name)
   else:
-    raise ValueError('bad learning rate decay type', flags.learning_rate_decay_type)
+    raise ValueError('bad learning rate decay type %s', flags.learning_rate_decay_type)
   return learning_rate
+
+def configure_optimizer(flags, learning_rate):
+  if flags.optimizer == 'adam':
+    optimizer = tf.train.AdamOptimizer(
+        learning_rate,
+        beta1=flags.adam_beta1,
+        beta2=flags.adam_beta2,
+        epsilon=flags.opt_epsilon)
+  elif flags.optimizer == 'rmsprop':
+    optimizer = tf.train.RMSPropOptimizer(
+        learning_rate,
+        decay=flags.rmsprop_decay,
+        momentum=flags.rmsprop_momentum,
+        epsilon=flags.opt_epsilon)
+  elif FLAGS.optimizer == 'sgd':
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+  else:
+    raise ValueError('bad optimizer %s', flags.optimizer)
+  return optimizer
 
 def gan_dis_sample(flags, label_dat, label_gen):
   # print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
