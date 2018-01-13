@@ -13,6 +13,7 @@ conda create -n py34 python=3.4
 
 # tensorflow tensorboard
 export CUDA_VISIBLE_DEVICES=''
+ssh -NL 6006:localhost:6006 xiaojie@10.100.229.246
 ssh -NL 6006:localhost:6006 xiaojie@10.100.228.181
 
 # jingwei: extract image features by vgg16

@@ -44,7 +44,7 @@ scope.reuse_variables()
 dis_v = DIS(flags, is_training=False)
 gen_v = GEN(flags, is_training=False)
 
-def generate_sample(label_dat, label_gen):
+def generate_label(label_dat, label_gen):
   # print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
   # print('{0} {1:.2f}'.format(label_gen.shape, label_gen.sum()))
   num_sample = np.count_nonzero(label_dat)
@@ -99,7 +99,7 @@ def main(_):
             label_dat_d = np.squeeze(label_dat_d)
             feed_dict = {gen_t.image_ph:image_np_d}
             label_gen_d, = sess.run([gen_t.labels], feed_dict=feed_dict)
-            sample_np_d, label_np_d = generate_sample(label_dat_d, label_gen_d)
+            sample_np_d, label_np_d = generate_label(label_dat_d, label_gen_d)
             feed_dict = {
               dis_t.image_ph:image_np_d,
               dis_t.sample_ph:sample_np_d,

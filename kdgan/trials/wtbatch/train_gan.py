@@ -50,7 +50,7 @@ scope.reuse_variables()
 dis_v = DIS(flags, is_training=False)
 gen_v = GEN(flags, is_training=False)
 
-def generate_dis_sample(label_dat, label_gen):
+def gan_dis_sample(label_dat, label_gen):
   # print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
   # print('{0} {1:.2f}'.format(label_gen.shape, label_gen.sum()))
   sample_np, label_np = [], []
@@ -74,7 +74,7 @@ def generate_dis_sample(label_dat, label_gen):
   #   print(sample, label)
   return sample_np, label_np
 
-def generate_gen_sample(label_dat, label_gen):
+def generate_label(label_dat, label_gen):
   sample_np = []
   for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
     num_sample = np.count_nonzero(label_d) * (flags.num_positive + flags.num_negative)
@@ -137,7 +137,7 @@ def main(_):
             feed_dict = {gen_t.image_ph:image_np_d}
             label_gen_d, = sess.run([gen_t.labels], feed_dict=feed_dict)
             # print(label_gen_d.shape, type(label_gen_d))
-            sample_np_d, label_np_d = generate_dis_sample(label_dat_d, label_gen_d)
+            sample_np_d, label_np_d = gan_dis_sample(label_dat_d, label_gen_d)
             feed_dict = {
               dis_t.image_ph:image_np_d,
               dis_t.sample_ph:sample_np_d,
@@ -162,7 +162,7 @@ def main(_):
             # print(image_np_g.shape, label_dat_g.shape)
             feed_dict = {gen_t.image_ph:image_np_g}
             label_gen_g, = sess.run([gen_t.labels], feed_dict=feed_dict)
-            sample_np_g = generate_gen_sample(label_dat_g, label_gen_g)
+            sample_np_g = generate_label(label_dat_g, label_gen_g)
             # for sample in sample_np_g:
             #   print(sample)
             feed_dict = {

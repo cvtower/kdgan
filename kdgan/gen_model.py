@@ -57,19 +57,38 @@ class GEN():
     self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
     # kd train
-    hard_loss = tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits)
-    soft_loss = tf.nn.l2_loss(tf.nn.softmax(self.logits) - 
-        tf.nn.softmax(self.soft_label_ph / flags.temperature) )
-    self.kd_loss = (1.0 - flags.kd_lamda) * hard_loss + flags.kd_lamda * soft_loss
+    kd_losses = self.get_kd_losses(flags)
+    self.kd_loss = tf.add_n(kd_losses, name='%s_kd_loss' % gen_scope)
     kd_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
     self.kd_update = kd_optimizer.minimize(self.kd_loss, global_step=global_step)
 
     # gan train
-    sample_logits = tf.gather_nd(self.logits, self.sample_ph)
-    # gan_loss = -tf.reduce_mean(self.reward_ph * sample_logits)
-    self.gan_loss = tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)
+    gan_losses = self.get_gan_losses(flags)
+    gan_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+    self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % gen_scope)
     gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
     self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=global_step)
 
+    # kdgan train
+    kdgan_losses = self.get_kd_losses(flags) + self.get_gan_losses(flags)
+    self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % gen_scope)
+    kdgan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+    self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
 
+  def get_kd_losses(self, flags):
+    hard_loss = flags.kd_lamda * tf.losses.sigmoid_cross_entropy(
+        self.hard_label_ph, self.logits)
+
+    smooth_labels = tf.nn.softmax(self.soft_label_ph / flags.temperature)
+    soft_loss = (1.0 - flags.kd_lamda) * tf.nn.l2_loss(
+        tf.nn.softmax(self.logits) - smooth_labels)
+
+    kd_losses = [hard_loss, soft_loss]
+    return kd_losses
+
+  def get_gan_losses(self, flags):
+    sample_logits = tf.gather_nd(self.logits, self.sample_ph)
+    # gan_loss = -tf.reduce_mean(self.reward_ph * sample_logits)
+    gan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
+    return gan_losses
 

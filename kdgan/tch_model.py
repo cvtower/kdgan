@@ -9,8 +9,13 @@ class TCH():
   def __init__(self, flags, is_training=True):
     self.is_training = is_training
 
+    # None = batch_size
     self.text_ph = tf.placeholder(tf.int64, shape=(None, None))
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, config.num_label))
+
+    # None = batch_size * sample_size
+    self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
+    self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
 
     tch_scope = 'tch'
     vocab_size = utils.get_vocab_size(flags.dataset)
@@ -51,3 +56,12 @@ class TCH():
     self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % tch_scope)
     pre_optimizer = tf.train.AdamOptimizer(self.learning_rate)
     self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
+
+    # kdgan train
+    sample_logits = tf.gather_nd(self.logits, self.sample_ph)
+    kdgan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
+    self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % tch_scope)
+    kdgan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+    self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
+
+

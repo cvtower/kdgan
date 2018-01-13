@@ -8,7 +8,7 @@
         # print(np.argsort(-label_dat)[:10])
         # print(np.argsort(-label_gen)[:10])
 
-        sample_np_t, label_np_t = generate_sample(label_dat, label_gen)
+        sample_np_t, label_np_t = generate_label(label_dat, label_gen)
         # for sample, label in zip(sample_np_t, label_np_t):
         #   print(sample, label)
 

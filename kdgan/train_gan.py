@@ -3,7 +3,6 @@ from kdgan import metric
 from kdgan import utils
 from dis_model import DIS
 from gen_model import GEN
-from tch_model import TCH
 
 import math
 import os
@@ -102,7 +101,7 @@ def main(_):
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
       hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
-      print('init\thit={0:.4f}'.format(hit_v))
+      print('init hit=%.4f' % (hit_v))
 
       batch_d, batch_g = -1, -1
       for epoch in range(flags.num_epoch):
@@ -114,7 +113,7 @@ def main(_):
             image_np_d, label_dat_d = sess.run([image_bt_d, label_bt_d])
             feed_dict = {gen_t.image_ph:image_np_d}
             label_gen_d, = sess.run([gen_t.labels], feed_dict=feed_dict)
-            sample_np_d, label_np_d = utils.generate_dis_sample(
+            sample_np_d, label_np_d = utils.gan_dis_sample(
                 flags, label_dat_d, label_gen_d)
             feed_dict = {
               dis_t.image_ph:image_np_d,
@@ -133,7 +132,7 @@ def main(_):
             image_np_g, label_dat_g = sess.run([image_bt_g, label_bt_g])
             feed_dict = {gen_t.image_ph:image_np_g}
             label_gen_g, = sess.run([gen_t.labels], feed_dict=feed_dict)
-            sample_np_g = utils.generate_gen_sample(
+            sample_np_g = utils.generate_label(
                 flags, label_dat_g, label_gen_g)
             feed_dict = {
               dis_t.image_ph:image_np_g,
@@ -148,14 +147,16 @@ def main(_):
             _, summary_g = sess.run([gen_t.gan_update, gen_summary_op], 
                 feed_dict=feed_dict)
             writer.add_summary(summary_g, batch_g)
+            
             if (batch_g + 1) % eval_interval != 0:
               continue
             hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
             tot_time = time.time() - start
             print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
-            if hit_v > best_hit_v:
-              best_hit_v = hit_v
-              print('best hit=%.4f' % (best_hit_v))
+            if hit_v <= best_hit_v:
+              continue
+            best_hit_v = hit_v
+            print('best hit=%.4f' % (best_hit_v))
   print('best hit=%.4f' % (best_hit_v))
 
 if __name__ == '__main__':

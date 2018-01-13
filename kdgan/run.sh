@@ -2,18 +2,33 @@ kdgan_dir=$HOME/Projects/kdgan/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 pretrained_dir=$checkpoint_dir/pretrained
 
-python train_gan.py \
+python train_kdgan.py \
   --dataset=yfcc10k \
   --model_name=vgg_16 \
   --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
+  --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
   --feature_size=4096 \
+  --kd_lamda=0.9999 \
+  --temperature=10.0 \
   --dis_weight_decay=0.0 \
   --gen_weight_decay=0.0 \
-  --learning_rate=0.05 \
-  --num_epoch=100 \
-  --num_dis_epoch=20 \
-  --num_gen_epoch=10
+  --tch_weight_decay=0.0 \
+  --num_epoch=1 \
+  --num_dis_epoch=0 \
+  --num_gen_epoch=0 \
+  --num_tch_epoch=100
+exit
+
+python train_kd.py \
+  --dataset=yfcc10k \
+  --model_name=vgg_16 \
+  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
+  --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
+  --feature_size=4096 \
+  --kd_lamda=0.9999 \
+  --temperature=10.0 \
+  --num_epoch=200
 exit
 
 python pretrain_dis.py \
@@ -46,20 +61,19 @@ python pretrain_tch.py \
 # 0232s best hit=0.9657
 exit
 
-python train_kdgan.py \
+python train_gan.py \
   --dataset=yfcc10k \
   --model_name=vgg_16 \
   --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
-  --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
   --feature_size=4096 \
-  --kd_lamda=0.00001 \
-  --temperature=10.0 \
   --dis_weight_decay=0.0 \
   --gen_weight_decay=0.0 \
-  --tch_weight_decay=0.0 \
+  --learning_rate=0.05 \
   --num_epoch=100 \
-  --num_dis_epoch=1 \
-  --num_gen_epoch=1 \
-  --num_tch_epoch=1
+  --num_dis_epoch=20 \
+  --num_gen_epoch=10
+# init hit=0.7707
+# best hit=0.7817
 exit
+

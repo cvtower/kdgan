@@ -25,7 +25,7 @@ dst_precomputed_dir=$dst_data_dir/Precomputed
 
 model_name=vgg_16
 scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
-for i in $(seq -w 000 499)
+for i in $(seq -w 000 199)
 do
   filename=${dataset}_${model_name}_${i}.train.tfrecord
   if [ -f ${dst_precomputed_dir}/$filename ]
@@ -35,14 +35,14 @@ do
   scp ${src_precomputed_dir}/$filename ${dst_precomputed_dir}
 done
 
-model_name=inception_resnet_v2
-scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
-for i in $(seq -w 000 49)
-do
-  filename=${dataset}_${model_name}_${i}.train.tfrecord
-  if [ -f ${dst_precomputed_dir}/$filename ]
-  then
-    continue
-  fi
-  scp ${src_precomputed_dir}/$filename ${dst_precomputed_dir}
-done
+# model_name=inception_resnet_v2
+# scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
+# for i in $(seq -w 000 49)
+# do
+#   filename=${dataset}_${model_name}_${i}.train.tfrecord
+#   if [ -f ${dst_precomputed_dir}/$filename ]
+#   then
+#     continue
+#   fi
+#   scp ${src_precomputed_dir}/$filename ${dst_precomputed_dir}
+# done
