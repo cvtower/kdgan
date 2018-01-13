@@ -26,6 +26,7 @@ set -e
 
 model_name=cifarnet
 model_name=nasnet_cifar
+preprocessing_name=inception
 image_size=32
 
 # Where the checkpoint and logs will be saved to.
@@ -46,7 +47,7 @@ python train_image_classifier.py \
   --dataset_split_name=train \
   --dataset_dir=${DATASET_DIR} \
   --model_name=${model_name} \
-  --preprocessing_name=${model_name} \
+  --preprocessing_name=${preprocessing_name} \
   --max_number_of_steps=10000 \
   --batch_size=128 \
   --save_interval_secs=120 \
