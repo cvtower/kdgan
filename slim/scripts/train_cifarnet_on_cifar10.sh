@@ -68,4 +68,5 @@ python eval_image_classifier.py \
   --dataset_split_name=test \
   --dataset_dir=${DATASET_DIR} \
   --model_name=${model_name} \
+  --preprocessing_name=${preprocessing_name} \
   --eval_image_size=$image_size
