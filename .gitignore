@@ -6,6 +6,7 @@ data/
 logs/
 temp/
 checkpoints/
+slimmodels/
 results/runs/
 
 cnn_models/

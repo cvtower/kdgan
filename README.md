@@ -13,8 +13,14 @@ conda create -n py34 python=3.4
 
 # tensorflow tensorboard
 export CUDA_VISIBLE_DEVICES=''
-ssh -NL 6006:localhost:6006 xiaojie@10.100.229.246
-ssh -NL 6006:localhost:6006 xiaojie@10.100.228.181
+ssh -NL 6006:localhost:6006 xiaojie@10.100.229.246 # cpu
+ssh -NL 6006:localhost:6006 xiaojie@10.100.228.181 # gpu
+
+################################################################
+#
+# baseline
+#
+################################################################
 
 # jingwei: extract image features by vgg16
 cd jingwei/image_feature/matcovnet/
@@ -44,5 +50,29 @@ patch TagProp/tagprop_predict.m < tagprop_predict.m.patch
 cd TagProp & matlab -nodesktop -nosplash -r "mex tagpropCmt.c; exit"
 # jingwei: evaluation
 ./eval_pickle.sh yfcc0k
+
+################################################################
+#
+# model compression
+#
+################################################################
+
+python download_and_convert_data.py \
+  --dataset_name=mnist \
+  --dataset_dir=$HOME/Projects/data/mnist
+
+python train_image_classifier.py \
+  --train_dir=$HOME/Projects/kdgan/kdgan/slimmodels \
+  --dataset_name=mnist \
+  --dataset_split_name=train \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --model_name=lenet
+
+
+
+
+
+
+
 
 
