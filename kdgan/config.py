@@ -31,9 +31,12 @@ pad_token = ' '
 channels = 3
 num_label = 100
 num_threads = 4
+num_preprocessing_threads = 4
 
 train_batch_size = 32
 valid_batch_size = 100
+
+
 
 
 

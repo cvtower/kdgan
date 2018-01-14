@@ -74,6 +74,7 @@ python eval_image_classifier.py \
   --model_name=lenet
 
 http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html#43494641522d3130
+https://github.com/tensorflow/models/tree/master/official/resnet
 https://github.com/BIGBALLON/cifar-10-cnn
 https://github.com/tensorflow/models/tree/master/tutorials/image/cifar10
 https://github.com/shmsw25/cifar10-classification
