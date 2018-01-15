@@ -29,7 +29,7 @@ def generate_batch(flags, dataset, is_training=True):
     shuffle = False
     ## cause not to traverse valid data
     num_readers = 1
-  print('#dataset=%d #batch=%d shuffle=%s' % (dataset.num_samples, batch_size, shuffle))
+  print('#dataset=%d #batch=%03d shuffle=%s' % (dataset.num_samples, batch_size, shuffle))
 
   preprocessing = preprocessing_factory.get_preprocessing(flags.preprocessing_name,
       is_training=is_training)

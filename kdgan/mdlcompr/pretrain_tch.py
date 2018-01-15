@@ -15,6 +15,7 @@ tf.app.flags.DEFINE_string('dataset_dir', None, '')
 tf.app.flags.DEFINE_integer('image_size', 28, '')
 tf.app.flags.DEFINE_integer('channels', 1, '')
 # model
+tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('save_path', None, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
