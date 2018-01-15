@@ -81,7 +81,7 @@ def main(_):
       tn_image_np, tn_label_np = sess.run([tn_image_bt, tn_label_bt])
       # print('tn image shape={} dtype={}'.format(tn_image_np.shape, tn_image_np.dtype))
       # print('tn label shape={} dtype={}'.format(tn_label_np.shape, tn_label_np.dtype))
-      feed_dict = {tn_tch.image_ph:tn_image_np, tn_tch.hard_label_ph:tn_label_np}
+      feed_dict = {tn_gen.image_ph:tn_image_np, tn_gen.hard_label_ph:tn_label_np}
       _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
 
@@ -100,8 +100,8 @@ def main(_):
       if acc_v < best_acc_v:
         continue
       best_acc_v = acc_v
-      global_step, = sess.run([tn_tch.global_step])
-      tn_tch.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
+      global_step, = sess.run([tn_gen.global_step])
+      tn_gen.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
   print('best acc=%.4f' % (best_acc_v))
 
 if __name__ == '__main__':
