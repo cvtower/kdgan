@@ -48,7 +48,7 @@ class GEN():
         self.learning_rate = utils.get_lr(flags, self.global_step, dataset.num_samples, gen_scope)
 
         encoded_labels = slim.one_hot_encoding(self.hard_label_ph, dataset.num_classes)
-        tf.losses.sigmoid_cross_entropy(encoded_labels, self.logits)
+        tf.losses.softmax_cross_entropy(encoded_labels, self.logits)
         pre_losses = []
         for loss in tf.get_collection(tf.GraphKeys.LOSSES):
           if not loss.name.startswith(gen_scope):
