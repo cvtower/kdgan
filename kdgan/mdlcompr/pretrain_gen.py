@@ -6,6 +6,7 @@ import data_utils
 
 from os import path
 from tensorflow.contrib import slim
+import shutil
 import time
 import numpy as np
 import tensorflow as tf
@@ -54,6 +55,7 @@ summary_op = tf.summary.merge_all()
 init_op = tf.global_variables_initializer()
 
 def main(_):
+  shutil.rmtree(flags.checkpoint_dir)
   gen_ckpt = tf.train.latest_checkpoint(flags.checkpoint_dir)
   # print('gen ckpt=%s' % (gen_ckpt))
   if gen_ckpt != None:

@@ -319,3 +319,14 @@ def get_session(sess):
   while type(session).__name__ != 'Session':
     session = session._sess
   return session
+
+def get_latest_ckpt(checkpoint_dir):
+  ckpt_file = tf.train.latest_checkpoint(checkpoint_dir)
+  if ckpt_file == None:
+    print('%s does not have any checkpoint' % (path.basename(checkpoint_dir)))
+    exit()
+  return ckpt_file
+
+
+
+
