@@ -15,15 +15,16 @@ class GEN():
     self.hard_label_ph = tf.placeholder(tf.int32, shape=(None,))
 
     self.gen_scope = gen_scope = 'gen'
+    hidden_size = 512
     with tf.variable_scope(gen_scope) as scope:
       with slim.arg_scope(self.gen_arg_scope(weight_decay=flags.weight_decay)):
         net = slim.flatten(self.image_ph)
-        net = slim.fully_connected(net, 800, scope='fc1')
+        net = slim.fully_connected(net, hidden_size, scope='fc1')
         
         net = slim.dropout(net, flags.dropout_keep_prob,
             is_training=is_training,
             scope='dropout1')
-        net = slim.fully_connected(net, 800, scope='fc2')
+        net = slim.fully_connected(net, hidden_size, scope='fc2')
 
         net = slim.dropout(net, flags.dropout_keep_prob,
             is_training=is_training,
