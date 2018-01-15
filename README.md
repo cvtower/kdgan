@@ -73,6 +73,7 @@ python eval_image_classifier.py \
   --dataset_split_name=test \
   --model_name=lenet
 
+# cifar 10
 http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html#43494641522d3130
 https://github.com/tensorflow/models/tree/master/official/resnet
 https://github.com/BIGBALLON/cifar-10-cnn
@@ -80,17 +81,9 @@ https://github.com/tensorflow/models/tree/master/tutorials/image/cifar10
 https://github.com/shmsw25/cifar10-classification
 https://github.com/ethereon/caffe-tensorflow
 
-#zero=980
-#one=1135
-#two=1032
-#three=1010
-#four=982
-#five=892
-#size=958
-#seven=1028
-#eight=974
-#nine=1009
-
+# mnist
+https://github.com/clintonreece/keras-cloud-ml-engine
+https://github.com/keras-team/keras/tree/master/examples
 
 
 

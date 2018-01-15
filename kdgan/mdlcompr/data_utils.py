@@ -41,7 +41,8 @@ def generate_batch(flags, dataset, is_training=True):
       shuffle=shuffle)
 
   [image_ts, label_ts] = provider.get(['image', 'label'])
-  image_ts = preprocessing(image_ts, flags.image_size, flags.image_size)
+  # image_ts = preprocessing(image_ts, flags.image_size, flags.image_size)
+  image_ts = tf.div(image_ts, 255.0)
   image_bt, label_bt = tf.train.batch(
       [image_ts, label_ts],
       num_threads=config.num_preprocessing_threads,
