@@ -80,6 +80,16 @@ https://github.com/tensorflow/models/tree/master/tutorials/image/cifar10
 https://github.com/shmsw25/cifar10-classification
 https://github.com/ethereon/caffe-tensorflow
 
+#zero=980
+#one=1135
+#two=1032
+#three=1010
+#four=982
+#five=892
+#size=958
+#seven=1028
+#eight=974
+#nine=1009
 
 
 

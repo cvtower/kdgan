@@ -61,6 +61,7 @@ def _add_to_tfrecord(data_filepath, label_filepath, num_images, tfrecord_writer)
   images = _extract_images(data_filepath, num_images)
   labels = _extract_labels(label_filepath, num_images)
 
+  label_cn = {}
   shape = (_IMAGE_SIZE, _IMAGE_SIZE, _NUM_CHANNELS)
   with tf.Graph().as_default():
     image = tf.placeholder(dtype=tf.uint8, shape=shape)
@@ -76,7 +77,10 @@ def _add_to_tfrecord(data_filepath, label_filepath, num_images, tfrecord_writer)
         example = dataset_utils.image_to_tfexample(
             png_string, 'png'.encode(), _IMAGE_SIZE, _IMAGE_SIZE, labels[j])
         tfrecord_writer.write(example.SerializeToString())
-
+        label_cn[labels[j]] = label_cn.get(labels[j], 0) + 1
+  print('\nds=%s' % (path.basename(data_filepath)))
+  for i in range(len(_CLASS_NAMES)):
+    print('\t#%s=%d' % (_CLASS_NAMES[i], label_cn[i]))
 
 def _get_output_filename(dataset_dir, split_name):
   filename = 'mnist_%s.tfrecord' % (split_name)

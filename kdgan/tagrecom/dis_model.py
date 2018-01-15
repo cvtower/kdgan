@@ -55,7 +55,7 @@ class DIS():
 
     global_step = tf.Variable(0, trainable=False)
     train_data_size = get_train_data_size(flags.dataset)
-    self.learning_rate = utils.configure_learning_rate(
+    self.learning_rate = utils.get_lr(
         flags,
         global_step,
         train_data_size,

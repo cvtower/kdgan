@@ -200,7 +200,7 @@ def get_label_file(dataset):
   label_file = path.join(dataset_dir, '%s.label' % dataset)
   return label_file
 
-def configure_learning_rate(flags, global_step, train_data_size, scope_name):
+def get_lr(flags, global_step, train_data_size, scope_name):
   decay_steps = int(train_data_size / flags.batch_size * flags.num_epochs_per_decay)
   if flags.learning_rate_decay_type == 'exponential':
     name = '%s_exponential_decay_learning_rate' % scope_name
@@ -208,13 +208,13 @@ def configure_learning_rate(flags, global_step, train_data_size, scope_name):
         global_step, decay_steps, flags.learning_rate_decay_factor,
         staircase=True,
         name=name)
-  elif FLAGS.learning_rate_decay_type == 'fixed':
+  elif flags.learning_rate_decay_type == 'fixed':
     name = '%s_fixed_learning_rate' % scope_name
-    learning_rate = tf.constant(FLAGS.learning_rate,
+    learning_rate = tf.constant(flags.learning_rate,
         name=name)
-  elif FLAGS.learning_rate_decay_type == 'polynomial':
+  elif flags.learning_rate_decay_type == 'polynomial':
     name = '%s_polynomial_decay_learning_rate' % scope_name
-    learning_rate = tf.train.polynomial_decay(FLAGS.learning_rate,
+    learning_rate = tf.train.polynomial_decay(flags.learning_rate,
         global_step, decay_steps, flags.end_learning_rate,
         power=1.0,
         cycle=False,
@@ -223,7 +223,7 @@ def configure_learning_rate(flags, global_step, train_data_size, scope_name):
     raise ValueError('bad learning rate decay type %s', flags.learning_rate_decay_type)
   return learning_rate
 
-def configure_optimizer(flags, learning_rate):
+def get_opt(flags, learning_rate):
   if flags.optimizer == 'adam':
     optimizer = tf.train.AdamOptimizer(
         learning_rate,
@@ -236,7 +236,7 @@ def configure_optimizer(flags, learning_rate):
         decay=flags.rmsprop_decay,
         momentum=flags.rmsprop_momentum,
         epsilon=flags.opt_epsilon)
-  elif FLAGS.optimizer == 'sgd':
+  elif flags.optimizer == 'sgd':
     optimizer = tf.train.GradientDescentOptimizer(learning_rate)
   else:
     raise ValueError('bad optimizer %s', flags.optimizer)
