@@ -313,3 +313,9 @@ def generate_label(flags, label_dat, label_gen):
       sample_np.append((batch, sample))
   sample_np = np.asarray(sample_np)
   return sample_np
+
+def get_session(sess):
+  session = sess
+  while type(session).__name__ != 'Session':
+    session = session._sess
+  return session

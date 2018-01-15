@@ -16,6 +16,7 @@ tf.app.flags.DEFINE_integer('image_size', 28, '')
 tf.app.flags.DEFINE_integer('channels', 1, '')
 # model
 tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
+tf.app.flags.DEFINE_string('save_path', None, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
 tf.app.flags.DEFINE_string('preprocessing_name', None, '')
 # optimization
@@ -57,6 +58,7 @@ def main(_):
   if tch_ckpt != None:
     print('todo init from tch ckpt')
     exit()
+  utils.create_if_nonexist(flags.checkpoint_dir)
 
   for variable in tf.trainable_variables():
     num_params = 1
@@ -99,7 +101,7 @@ def main(_):
         continue
       best_acc_v = acc_v
       global_step, = sess.run([tn_tch.global_step])
-      tn_tch.saver.save(sess, flags.tch_model_ckpt, global_step=global_step)
+      tn_tch.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
   print('best acc=%.4f' % (best_acc_v))
 
 if __name__ == '__main__':
