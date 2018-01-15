@@ -94,7 +94,6 @@ def main(_):
         predictions, = sess.run([vd_tch.predictions], feed_dict=feed_dict)
         acc_v.append(metric.compute_acc(predictions, vd_label_np))
       acc_v = np.mean(acc_v)
-      
       tot_time = time.time() - start
       print('#%08d hit=%.4f %06ds' % (tn_batch, acc_v, int(tot_time)))
 

@@ -48,8 +48,61 @@ scope = tf.get_variable_scope()
 scope.reuse_variables()
 vd_gen = GEN(flags, vd_dataset, is_training=False)
 
+tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate)
+tf.summary.scalar(tn_gen.pre_loss.name, tn_gen.pre_loss)
+summary_op = tf.summary.merge_all()
+init_op = tf.global_variables_initializer()
+
 def main(_):
-  pass
+  gen_ckpt = tf.train.latest_checkpoint(flags.checkpoint_dir)
+  # print('gen ckpt=%s' % (gen_ckpt))
+  if gen_ckpt != None:
+    print('todo init from gen ckpt')
+    exit()
+  utils.create_if_nonexist(flags.checkpoint_dir)
+
+  for variable in tf.trainable_variables():
+    num_params = 1
+    for dim in variable.shape:
+      num_params *= dim.value
+    print('%-50s (%d params)' % (variable.name, num_params))
+
+  tn_num_batch = int(flags.num_epoch * tn_dataset.num_samples / flags.batch_size)
+  vd_num_batch = int(vd_dataset.num_samples / config.valid_batch_size)
+  print('tn #batch=%d vd #batch=%d' % (tn_num_batch, vd_num_batch))
+  eval_interval = int(tn_dataset.num_samples / flags.batch_size)
+  print('ev #interval=%d' % (eval_interval))
+  start = time.time()
+  best_acc_v = -np.inf
+  with tf.train.MonitoredTrainingSession() as sess:
+    sess.run(init_op)
+    writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
+    for tn_batch in range(tn_num_batch):
+      tn_image_np, tn_label_np = sess.run([tn_image_bt, tn_label_bt])
+      # print('tn image shape={} dtype={}'.format(tn_image_np.shape, tn_image_np.dtype))
+      # print('tn label shape={} dtype={}'.format(tn_label_np.shape, tn_label_np.dtype))
+      feed_dict = {tn_tch.image_ph:tn_image_np, tn_tch.hard_label_ph:tn_label_np}
+      _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
+      writer.add_summary(summary, tn_batch)
+
+      if (tn_batch + 1) % eval_interval != 0:
+        continue
+      acc_v = []
+      for vd_batch in range(vd_num_batch):
+        vd_image_np, vd_label_np = sess.run([vd_image_bt, vd_label_bt])
+        feed_dict = {vd_gen.image_ph:vd_image_np}
+        predictions, = sess.run([vd_gen.predictions], feed_dict=feed_dict)
+        acc_v.append(metric.compute_acc(predictions, vd_label_np))
+      acc_v = np.mean(acc_v)
+      tot_time = time.time() - start
+      print('#%08d hit=%.4f %06ds' % (tn_batch, acc_v, int(tot_time)))
+
+      if acc_v < best_acc_v:
+        continue
+      best_acc_v = acc_v
+      global_step, = sess.run([tn_tch.global_step])
+      tn_tch.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
+  print('best acc=%.4f' % (best_acc_v))
 
 if __name__ == '__main__':
   tf.app.run()
