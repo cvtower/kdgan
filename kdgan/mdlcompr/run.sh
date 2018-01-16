@@ -10,6 +10,7 @@ python pretrain_gen.py \
   --preprocessing_name='lenet' \
   --dropout_keep_prob=1.00 \
   --weight_decay=0.0000 \
+  --clip_norm=1.0 \
   --batch_size=128 \
   --num_epoch=200
 # 161s best acc=0.9862 # no dropout no l2
