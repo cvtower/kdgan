@@ -17,7 +17,7 @@ tf.app.flags.DEFINE_integer('channels', 1, '')
 tf.app.flags.DEFINE_integer('image_size', 28, '')
 tf.app.flags.DEFINE_integer('num_label', 10, '')
 # model
-tf.app.flags.DEFINE_float('gen_keep_prob', 0.95, '')
+tf.app.flags.DEFINE_float('gen_keep_prob', 0.88, '')
 tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('save_path', None, '')
 tf.app.flags.DEFINE_string('model_name', None, '')

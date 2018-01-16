@@ -17,12 +17,11 @@ class TCH():
     self.tch_scope = tch_scope = 'tch'
     with tf.variable_scope(tch_scope) as scope:
       network_fn = nets_factory.get_network_fn(flags.model_name,
-          dropout_keep_prob=flags.tch_keep_prob,
           num_classes=flags.num_label,
           weight_decay=flags.weight_decay,
           is_training=is_training)
       assert flags.image_size==network_fn.default_image_size
-      self.logits, end_points = network_fn(self.image_ph)
+      self.logits, _ = network_fn(self.image_ph, dropout_keep_prob=flags.tch_keep_prob)
 
       if not is_training:
         self.predictions = tf.argmax(self.logits, axis=1)
