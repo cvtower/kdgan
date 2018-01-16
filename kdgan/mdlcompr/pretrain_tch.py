@@ -6,7 +6,6 @@ import data_utils
 
 from os import path
 from tensorflow.contrib import slim
-from tensorflow.examples.tutorials.mnist import input_data
 import time
 import numpy as np
 import tensorflow as tf
@@ -45,7 +44,7 @@ flags = tf.app.flags.FLAGS
 # tn_image_bt, tn_label_bt = data_utils.generate_batch(flags, tn_dataset, is_training=True)
 # vd_image_bt, vd_label_bt = data_utils.generate_batch(flags, vd_dataset, is_training=False)
 
-mnist = input_data.read_data_sets(flags.dataset_dir,
+mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=False,
     validation_size=0,
     reshape=False)
