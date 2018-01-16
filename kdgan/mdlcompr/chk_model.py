@@ -48,6 +48,9 @@ scope.reuse_variables()
 vd_gen = GEN(flags, vd_dataset, is_training=False)
 vd_tch = TCH(flags, vd_dataset, is_training=False)
 
+tn_image_bt, tn_label_bt = data_utils.generate_batch(flags, tn_dataset, is_training=True)
+vd_image_bt, vd_label_bt = data_utils.generate_batch(flags, vd_dataset, is_training=False)
+
 def count_param(scope_name):
   tot_param = 0
   for variable in tf.trainable_variables():
@@ -62,8 +65,55 @@ def count_param(scope_name):
   print('%s #param=%d' % (scope_name, tot_param))
 
 def main(_):
-  count_param(tn_gen.gen_scope)
-  count_param(tn_tch.tch_scope)
+  # count_param(tn_gen.gen_scope)
+  # count_param(tn_tch.tch_scope)
+
+  # def parser(record):
+  #   keys_to_features = {
+  #     'image/encoded': tf.FixedLenFeature((), tf.string, default_value=''),
+  #     'image/format': tf.FixedLenFeature((), tf.string, default_value='raw'),
+  #     'image/class/label': tf.FixedLenFeature([1], tf.int64, default_value=tf.zeros([1], dtype=tf.int64)),
+  #   }
+  #   parsed = tf.parse_single_example(record, keys_to_features)
+  #   return parsed['image/encoded'], parsed['image/class/label']
+  # vd_label_cn = {}
+  # valid_data_size = 10000
+  # num_batch = int(valid_data_size / config.valid_batch_size)
+  # valid_filepath = path.join(flags.dataset_dir, 'mnist_valid.tfrecord' )
+  # dataset = tf.data.TFRecordDataset([valid_filepath])
+  # dataset = dataset.map(parser)
+  # dataset = dataset.batch(config.valid_batch_size)
+  # iterator = dataset.make_one_shot_iterator()
+  # image_bt, label_bt = iterator.get_next()
+  # with tf.train.MonitoredTrainingSession() as sess:
+  #   while not sess.should_stop():
+  #     image_np, label_np = sess.run([image_bt, label_bt])
+  #     for label in label_np:
+  #       label = int(label)
+  #       vd_label_cn[label] = vd_label_cn.get(label, 0) + 1
+  #     print(image_np)
+  #     exit()
+  # for label in range(10):
+  #   print('%d vd=%d' % (label, vd_label_cn.get(label, 0)))
+
+  valid_data_size = vd_dataset.num_samples
+  num_batch = int(valid_data_size / config.valid_batch_size)
+  with tf.train.MonitoredTrainingSession() as sess:
+    tn_label_cn, vd_label_cn = {}, {}
+    for i in range(num_batch):
+      tn_image_np, tn_label_np = sess.run([tn_image_bt, tn_label_bt])
+      vd_image_np, vd_label_np = sess.run([vd_image_bt, vd_label_bt])
+      # for tn_label in np.argmax(tn_label_np, axis=1):
+      #   tn_label_cn[tn_label] = tn_label_cn.get(tn_label, 0) + 1
+      # for vd_label in np.argmax(vd_label_np, axis=1):
+      #   vd_label_cn[vd_label] = vd_label_cn.get(vd_label, 0) + 1
+      for vd_image in vd_image_np:
+        print(vd_image.shape)
+        print(vd_image.flatten())
+        break
+      exit()
+  # for label in range(10):
+  #   print('%d tn=%d vd=%d' % (label, tn_label_cn[label], vd_label_cn[label]))
 
 if __name__ == '__main__':
   tf.app.run()
