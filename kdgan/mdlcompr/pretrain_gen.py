@@ -41,27 +41,6 @@ tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
-mnist = data_utils.read_data_sets(flags.dataset_dir,
-    one_hot=False,
-    validation_size=0,
-    reshape=True)
-print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
-tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
-vd_num_batch = int(mnist.train.num_examples / config.valid_batch_size)
-print('tn #batch=%d vd #batch=%d' % (tn_num_batch, vd_num_batch))
-eval_interval = int(mnist.train.num_examples / flags.batch_size)
-print('ev #interval=%d' % (eval_interval))
-
-tn_gen = GEN(flags, mnist.train, is_training=True)
-scope = tf.get_variable_scope()
-scope.reuse_variables()
-vd_gen = GEN(flags, mnist.test, is_training=False)
-
-tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate)
-tf.summary.scalar(tn_gen.pre_loss.name, tn_gen.pre_loss)
-summary_op = tf.summary.merge_all()
-init_op = tf.global_variables_initializer()
-
 def main(_):
   utils.delete_if_exist(flags.checkpoint_dir)
   gen_ckpt = tf.train.latest_checkpoint(flags.checkpoint_dir)
@@ -70,6 +49,24 @@ def main(_):
     print('todo init from gen ckpt')
     exit()
   utils.create_if_nonexist(flags.checkpoint_dir)
+
+  mnist = input_data.read_data_sets(flags.dataset_dir, one_hot=False, validation_size=0)
+  print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
+  tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
+  vd_num_batch = int(mnist.train.num_examples / config.valid_batch_size)
+  print('tn #batch=%d vd #batch=%d' % (tn_num_batch, vd_num_batch))
+  eval_interval = int(mnist.train.num_examples / flags.batch_size)
+  print('ev #interval=%d' % (eval_interval))
+
+  tn_gen = GEN(flags, mnist.train, is_training=True)
+  scope = tf.get_variable_scope()
+  scope.reuse_variables()
+  vd_gen = GEN(flags, mnist.test, is_training=False)
+
+  tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate)
+  tf.summary.scalar(tn_gen.pre_loss.name, tn_gen.pre_loss)
+  summary_op = tf.summary.merge_all()
+  init_op = tf.global_variables_initializer()
 
   best_acc_v = -np.inf
   start = time.time()
