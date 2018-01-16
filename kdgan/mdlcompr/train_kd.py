@@ -62,14 +62,22 @@ vd_gen = GEN(flags, mnist.test, is_training=False)
 vd_tch = TCH(flags, mnist.test, is_training=False)
 
 def main(_):
-  gen_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
-  tch_ckpt = utils.get_latest_ckpt(flags.tch_checkpoint_dir)
+  gen_model_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
+  tch_model_ckpt = utils.get_latest_ckpt(flags.tch_checkpoint_dir)
 
   for variable in tf.trainable_variables():
     num_params = 1
     for dim in variable.shape:
       num_params *= dim.value
-    # print('%-50s (%d params)' % (variable.name, num_params))
+    print('%-50s (%d params)' % (variable.name, num_params))
+
+  best_hit_v = -np.inf
+  start = time.time()
+  with tf.train.MonitoredTrainingSession() as sess:
+    writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
+    sess.run(init_op)
+    tn_gen.saver.restore(sess, gen_model_ckpt)
+    tn_tch.saver.restore(sess, tch_model_ckpt)
 
 if __name__ == '__main__':
     tf.app.run()
