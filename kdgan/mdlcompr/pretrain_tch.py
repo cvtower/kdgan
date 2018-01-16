@@ -20,7 +20,7 @@ tf.app.flags.DEFINE_integer('num_label', 10, '')
 tf.app.flags.DEFINE_float('tch_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('save_path', None, '')
-tf.app.flags.DEFINE_string('model_name', None, '')
+tf.app.flags.DEFINE_string('tch_model_name', None, '')
 tf.app.flags.DEFINE_string('preprocessing_name', None, '')
 # optimization
 tf.app.flags.DEFINE_float('weight_decay', 0.00004, 'l2 coefficient')

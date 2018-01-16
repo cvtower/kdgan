@@ -16,7 +16,7 @@ class TCH():
 
     self.tch_scope = tch_scope = 'tch'
     with tf.variable_scope(tch_scope) as scope:
-      network_fn = nets_factory.get_network_fn(flags.model_name,
+      network_fn = nets_factory.get_network_fn(flags.tch_model_name,
           num_classes=flags.num_label,
           weight_decay=flags.weight_decay,
           is_training=is_training)
