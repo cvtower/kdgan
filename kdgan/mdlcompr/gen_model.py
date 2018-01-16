@@ -71,7 +71,7 @@ class GEN():
         [slim.fully_connected],
         weights_regularizer=slim.l2_regularizer(weight_decay),
         # weights_initializer=tf.truncated_normal_initializer(stddev=0.1),
-        weights_initializer=tf.keras.initializers.glorot_uniform(),
+        weights_initializer=tf.contrib.layers.xavier_initializer(),
         biases_initializer=tf.zeros_initializer(),
         activation_fn=tf.nn.relu) as sc:
       return sc
