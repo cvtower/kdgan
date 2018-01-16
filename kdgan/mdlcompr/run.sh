@@ -10,7 +10,7 @@ python pretrain_gen.py \
   --dropout_keep_prob=0.20 \
   --weight_decay=0.01 \
   --batch_size=128 \
-  --num_epoch=200
+  --num_epoch=20
 exit
 
 python train_kd.py \
