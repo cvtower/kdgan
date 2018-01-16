@@ -17,7 +17,7 @@ tf.app.flags.DEFINE_integer('channels', 1, '')
 tf.app.flags.DEFINE_integer('image_size', 28, '')
 tf.app.flags.DEFINE_integer('num_label', 10, '')
 # model
-tf.app.flags.DEFINE_float('gen_keep_prob', 0.95, '')
+tf.app.flags.DEFINE_float('gen_keep_prob', 0.88, '')
 tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('save_path', None, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
@@ -92,7 +92,7 @@ def main(_):
         continue
       best_acc_v = acc_v
       global_step, = sess.run([tn_gen.global_step])
-      print('best acc=%.4f step=%d' % (best_acc_v, global_step))
+      print('#%08d acc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_gen.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
   print('best acc=%.4f' % (best_acc_v))
 
