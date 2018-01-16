@@ -100,12 +100,13 @@ def main(_):
       predictions, = sess.run([vd_tch.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
       tot_time = time.time() - start
-      print('#%08d hit=%.4f %06ds' % (tn_batch, acc_v, int(tot_time)))
+      # print('#%08d hit=%.4f %06ds' % (tn_batch, acc_v, int(tot_time)))
 
       if acc_v < best_acc_v:
         continue
       best_acc_v = acc_v
       global_step, = sess.run([tn_tch.global_step])
+      print('best acc=%.4f step=%d' % (best_acc_v, global_step))
       tn_tch.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
   print('best acc=%.4f' % (best_acc_v))
 
