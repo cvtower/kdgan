@@ -14,22 +14,25 @@ import tensorflow as tf
 
 # dataset
 tf.app.flags.DEFINE_string('dataset_dir', None, '')
-tf.app.flags.DEFINE_integer('image_size', 28, '')
 tf.app.flags.DEFINE_integer('channels', 1, '')
+tf.app.flags.DEFINE_integer('image_size', 28, '')
+tf.app.flags.DEFINE_integer('num_label', 10, '')
 # model
-tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
+tf.app.flags.DEFINE_float('gen_keep_prob', 0.95, '')
+tf.app.flags.DEFINE_float('tch_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_string('gen_checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('tch_checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('tch_model_name', None, '')
 tf.app.flags.DEFINE_string('preprocessing_name', None, '')
 # optimization
 tf.app.flags.DEFINE_float('weight_decay', 0.00004, 'l2 coefficient')
+tf.app.flags.DEFINE_float('clip_norm', 10.0, '')
 tf.app.flags.DEFINE_float('adam_beta1', 0.9, '')
 tf.app.flags.DEFINE_float('adam_beta2', 0.999, '')
-tf.app.flags.DEFINE_float('rmsprop_momentum', 0.9, '')
+tf.app.flags.DEFINE_float('rmsprop_momentum', 0.0, '')
 tf.app.flags.DEFINE_float('rmsprop_decay', 0.9, '')
-tf.app.flags.DEFINE_float('opt_epsilon', 1.0, '')
-tf.app.flags.DEFINE_integer('batch_size', 32, '')
+tf.app.flags.DEFINE_float('opt_epsilon', 1e-6, '')
+tf.app.flags.DEFINE_integer('batch_size', 128, '')
 tf.app.flags.DEFINE_integer('num_epoch', 200, '')
 tf.app.flags.DEFINE_string('optimizer', 'rmsprop', 'adam|sgd')
 # learning rate
