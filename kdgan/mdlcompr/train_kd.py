@@ -62,18 +62,14 @@ vd_gen = GEN(flags, mnist.test, is_training=False)
 vd_tch = TCH(flags, mnist.test, is_training=False)
 
 def main(_):
-  # print('gen_checkpoint_dir=%s' % (flags.gen_checkpoint_dir))
-  # print('tch_checkpoint_dir=%s' % (flags.tch_checkpoint_dir))
   gen_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
-  # print('gen_ckpt=%s' % (gen_ckpt))
   tch_ckpt = utils.get_latest_ckpt(flags.tch_checkpoint_dir)
-  # print('tch_ckpt=%s' % (tch_ckpt))
 
   for variable in tf.trainable_variables():
     num_params = 1
     for dim in variable.shape:
       num_params *= dim.value
-    print('%-50s (%d params)' % (variable.name, num_params))
+    # print('%-50s (%d params)' % (variable.name, num_params))
 
 if __name__ == '__main__':
     tf.app.run()
