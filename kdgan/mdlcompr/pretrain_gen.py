@@ -41,7 +41,10 @@ tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
-mnist = input_data.read_data_sets(flags.dataset_dir, one_hot=False, validation_size=0)
+mnist = input_data.read_data_sets(flags.dataset_dir,
+    one_hot=False,
+    validation_size=0,
+    reshape=True)
 print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
 tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
 vd_num_batch = int(mnist.train.num_examples / config.valid_batch_size)
