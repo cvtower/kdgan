@@ -47,12 +47,19 @@ flags = tf.app.flags.FLAGS
 mnist = input_data.read_data_sets(flags.dataset_dir,
     one_hot=False,
     validation_size=0,
-    reshape=True)
+    reshape=False)
 print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
 tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
 print('tn #batch=%d' % (tn_num_batch))
 eval_interval = int(mnist.train.num_examples / flags.batch_size)
 print('ev #interval=%d' % (eval_interval))
+
+tn_gen = GEN(flags, mnist.train, is_training=True)
+tn_tch = TCH(flags, mnist.train, is_training=True)
+scope = tf.get_variable_scope()
+scope.reuse_variables()
+vd_gen = GEN(flags, mnist.test, is_training=False)
+vd_tch = TCH(flags, mnist.test, is_training=False)
 
 def main(_):
   # print('gen_checkpoint_dir=%s' % (flags.gen_checkpoint_dir))
@@ -61,6 +68,12 @@ def main(_):
   print('gen_ckpt=%s' % (gen_ckpt))
   tch_ckpt = utils.get_latest_ckpt(flags.tch_checkpoint_dir)
   print('tch_ckpt=%s' % (tch_ckpt))
+
+  for variable in tf.trainable_variables():
+    num_params = 1
+    for dim in variable.shape:
+      num_params *= dim.value
+    print('%-50s (%d params)' % (variable.name, num_params))
 
 if __name__ == '__main__':
     tf.app.run()
