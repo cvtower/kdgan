@@ -7,7 +7,7 @@ python pretrain_gen.py \
   --save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
   --dataset_dir=$HOME/Projects/data/mnist \
   --preprocessing_name='lenet' \
-  --dropout_keep_prob=0.20 \
+  --dropout_keep_prob=0.80 \
   --weight_decay=0.01 \
   --batch_size=128 \
   --num_epoch=200
