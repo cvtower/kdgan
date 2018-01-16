@@ -87,11 +87,15 @@ class GEN():
       
       # self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
 
-      pre_grads_and_vars = pre_optimizer.compute_gradients(self.pre_loss, var_list)
-      pre_capped_grads_and_vars = [(gv[0], gv[1]) for gv in pre_grads_and_vars]
-      self.pre_update = pre_optimizer.apply_gradients(pre_capped_grads_and_vars, global_step=self.global_step)
+      ## no clipping
+      # pre_grads_and_vars = pre_optimizer.compute_gradients(self.pre_loss, var_list)
+      # pre_capped_grads_and_vars = [(gv[0], gv[1]) for gv in pre_grads_and_vars]
+      # self.pre_update = pre_optimizer.apply_gradients(pre_capped_grads_and_vars, global_step=self.global_step)
 
-
+      ## global clipping
+      pre_grads, pre_vars = zip(*pre_optimizer.compute_gradients(self.pre_loss, var_list))
+      pre_grads, _ = tf.clip_by_global_norm(pre_grads, flags.clip_norm)
+      self.pre_update = pre_optimizer.apply_gradients(zip(pre_grads, pre_vars))
 
 
 
