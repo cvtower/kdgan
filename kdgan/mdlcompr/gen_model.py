@@ -55,12 +55,13 @@ class GEN():
         self.predictions = tf.argmax(self.logits, axis=1)
         return
 
-      save_dict = {}
+      save_dict, var_list = {}
       for variable in tf.trainable_variables():
         if not variable.name.startswith(gen_scope):
           continue
         print('%-50s added to GEN saver' % variable.name)
         save_dict[variable.name] = variable
+        var_list.append(variable)
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = tf.Variable(0, trainable=False)
@@ -83,8 +84,12 @@ class GEN():
       print('#loss=%d' % (len(pre_losses)))
       self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % gen_scope)
       pre_optimizer = utils.get_opt(flags, self.learning_rate)
-      self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
+      
+      # self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
 
+      pre_grads_and_vars = pre_optimizer.compute_gradients(self.pre_loss, var_list)
+      pre_capped_grads_and_vars = [(gv[0], gv[1]) for gv in pre_grads_and_vars]
+      self.pre_update = pre_optimizer.apply_gradients(pre_capped_grads_and_vars)
 
 
 
