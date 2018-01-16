@@ -15,10 +15,6 @@ python pretrain_gen.py \
   --save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
   --dataset_dir=$HOME/Projects/data/mnist \
   --preprocessing_name='lenet' \
-  --dropout_keep_prob=1.00 \
-  --weight_decay=0.0000 \
-  --clip_norm=1.0 \
-  --batch_size=128 \
   --num_epoch=200
 # target acc=0.9854
 # 161s best acc=0.9862 # no dropout no l2
@@ -32,6 +28,7 @@ python pretrain_tch.py \
   --dataset_dir=$HOME/Projects/data/mnist \
   --model_name=lenet \
   --preprocessing_name='lenet'
+  --num_epoch=200
 exit
 
 
