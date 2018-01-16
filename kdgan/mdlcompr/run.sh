@@ -9,10 +9,10 @@ python pretrain_gen.py \
   --dataset_dir=$HOME/Projects/data/mnist \
   --preprocessing_name='lenet' \
   --dropout_keep_prob=1.00 \
-  --weight_decay=0.00004 \
+  --weight_decay=0.0000 \
   --batch_size=128 \
   --num_epoch=200
-# 175s best acc=0.9868
+# 175s best acc=0.9873
 exit
 
 python train_kd.py \
