@@ -67,6 +67,7 @@ summary_op = tf.summary.merge_all()
 init_op = tf.global_variables_initializer()
 
 def main(_):
+  utils.delete_if_exist(flags.checkpoint_dir)
   tch_ckpt = tf.train.latest_checkpoint(flags.checkpoint_dir)
   # print('tch ckpt=%s' % (tch_ckpt))
   if tch_ckpt != None:
