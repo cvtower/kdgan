@@ -89,7 +89,7 @@ class GEN():
 
       pre_grads_and_vars = pre_optimizer.compute_gradients(self.pre_loss, var_list)
       pre_capped_grads_and_vars = [(gv[0], gv[1]) for gv in pre_grads_and_vars]
-      self.pre_update = pre_optimizer.apply_gradients(pre_capped_grads_and_vars)
+      self.pre_update = pre_optimizer.apply_gradients(pre_capped_grads_and_vars, global_step=self.global_step)
 
 
 
