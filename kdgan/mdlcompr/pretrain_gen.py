@@ -75,7 +75,6 @@ def main(_):
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
-
       feed_dict = {tn_gen.image_ph:tn_image_np, tn_gen.hard_label_ph:tn_label_np}
       _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
@@ -83,8 +82,6 @@ def main(_):
       if (tn_batch + 1) % eval_interval != 0:
         continue
       vd_image_np, vd_label_np = mnist.test.images, mnist.test.labels
-
-      acc_v = []
       feed_dict = {vd_gen.image_ph:vd_image_np}
       predictions, = sess.run([vd_gen.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
@@ -95,7 +92,7 @@ def main(_):
         continue
       best_acc_v = acc_v
       global_step, = sess.run([tn_gen.global_step])
-      # tn_gen.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
+      tn_gen.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
   print('best acc=%.4f' % (best_acc_v))
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ import data_utils
 
 from os import path
 from tensorflow.contrib import slim
+from tensorflow.examples.tutorials.mnist import input_data
 import time
 import numpy as np
 import tensorflow as tf
@@ -14,6 +15,7 @@ import tensorflow as tf
 tf.app.flags.DEFINE_string('dataset_dir', None, '')
 tf.app.flags.DEFINE_integer('image_size', 28, '')
 tf.app.flags.DEFINE_integer('channels', 1, '')
+tf.app.flags.DEFINE_integer('num_label', 10, '')
 # model
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
@@ -38,15 +40,26 @@ tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
-tn_dataset = data_utils.get_dataset(flags, is_training=True)
-vd_dataset = data_utils.get_dataset(flags, is_training=False)
-tn_image_bt, tn_label_bt = data_utils.generate_batch(flags, tn_dataset, is_training=True)
-vd_image_bt, vd_label_bt = data_utils.generate_batch(flags, vd_dataset, is_training=False)
+# tn_dataset = data_utils.get_dataset(flags, is_training=True)
+# vd_dataset = data_utils.get_dataset(flags, is_training=False)
+# tn_image_bt, tn_label_bt = data_utils.generate_batch(flags, tn_dataset, is_training=True)
+# vd_image_bt, vd_label_bt = data_utils.generate_batch(flags, vd_dataset, is_training=False)
 
-tn_tch = TCH(flags, tn_dataset, is_training=True)
+mnist = input_data.read_data_sets(flags.dataset_dir,
+    one_hot=False,
+    validation_size=0,
+    reshape=False)
+print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
+tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
+vd_num_batch = int(mnist.train.num_examples / config.valid_batch_size)
+print('tn #batch=%d vd #batch=%d' % (tn_num_batch, vd_num_batch))
+eval_interval = int(mnist.train.num_examples / flags.batch_size)
+print('ev #interval=%d' % (eval_interval))
+
+tn_tch = TCH(flags, mnist.train, is_training=True)
 scope = tf.get_variable_scope()
 scope.reuse_variables()
-vd_tch = TCH(flags, vd_dataset, is_training=False)
+vd_tch = TCH(flags, mnist.test, is_training=False)
 
 tf.summary.scalar(tn_tch.learning_rate.name, tn_tch.learning_rate)
 tf.summary.scalar(tn_tch.pre_loss.name, tn_tch.pre_loss)
@@ -67,18 +80,13 @@ def main(_):
       num_params *= dim.value
     print('%-50s (%d params)' % (variable.name, num_params))
 
-  tn_num_batch = int(flags.num_epoch * tn_dataset.num_samples / flags.batch_size)
-  vd_num_batch = int(vd_dataset.num_samples / config.valid_batch_size)
-  print('tn #batch=%d vd #batch=%d' % (tn_num_batch, vd_num_batch))
-  eval_interval = int(tn_dataset.num_samples / flags.batch_size)
-  print('ev #interval=%d' % (eval_interval))
-  start = time.time()
   best_acc_v = -np.inf
+  start = time.time()
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     for tn_batch in range(tn_num_batch):
-      tn_image_np, tn_label_np = sess.run([tn_image_bt, tn_label_bt])
+      tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
       # print('tn image shape={} dtype={}'.format(tn_image_np.shape, tn_image_np.dtype))
       # print('tn label shape={} dtype={}'.format(tn_label_np.shape, tn_label_np.dtype))
       feed_dict = {tn_tch.image_ph:tn_image_np, tn_tch.hard_label_ph:tn_label_np}
@@ -87,13 +95,10 @@ def main(_):
 
       if (tn_batch + 1) % eval_interval != 0:
         continue
-      acc_v = []
-      for vd_batch in range(vd_num_batch):
-        vd_image_np, vd_label_np = sess.run([vd_image_bt, vd_label_bt])
-        feed_dict = {vd_tch.image_ph:vd_image_np}
-        predictions, = sess.run([vd_tch.predictions], feed_dict=feed_dict)
-        acc_v.append(metric.compute_acc(predictions, vd_label_np))
-      acc_v = np.mean(acc_v)
+      vd_image_np, vd_label_np = mnist.test.images, mnist.test.labels
+      feed_dict = {vd_tch.image_ph:vd_image_np}
+      predictions, = sess.run([vd_tch.predictions], feed_dict=feed_dict)
+      acc_v = metric.compute_acc(predictions, vd_label_np)
       tot_time = time.time() - start
       print('#%08d hit=%.4f %06ds' % (tn_batch, acc_v, int(tot_time)))
 
