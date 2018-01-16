@@ -61,6 +61,11 @@ scope.reuse_variables()
 vd_gen = GEN(flags, mnist.test, is_training=False)
 vd_tch = TCH(flags, mnist.test, is_training=False)
 
+tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate)
+tf.summary.scalar(tn_gen.pre_loss.name, tn_gen.pre_loss)
+summary_op = tf.summary.merge_all()
+init_op = tf.global_variables_initializer()
+
 def main(_):
   gen_model_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
   tch_model_ckpt = utils.get_latest_ckpt(flags.tch_checkpoint_dir)
