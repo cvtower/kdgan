@@ -6,6 +6,7 @@ from tch_model import TCH
 
 from os import path
 from tensorflow.contrib import slim
+from tensorflow.examples.tutorials.mnist import input_data
 import math
 import os
 import time
@@ -43,10 +44,23 @@ tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
+mnist = input_data.read_data_sets(flags.dataset_dir,
+    one_hot=False,
+    validation_size=0,
+    reshape=True)
+print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
+tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
+print('tn #batch=%d' % (tn_num_batch))
+eval_interval = int(mnist.train.num_examples / flags.batch_size)
+print('ev #interval=%d' % (eval_interval))
+
 def main(_):
+  # print('gen_checkpoint_dir=%s' % (flags.gen_checkpoint_dir))
+  # print('tch_checkpoint_dir=%s' % (flags.tch_checkpoint_dir))
   gen_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
+  print('gen_ckpt=%s' % (gen_ckpt))
   tch_ckpt = utils.get_latest_ckpt(flags.tch_checkpoint_dir)
-  
+  print('tch_ckpt=%s' % (tch_ckpt))
 
 if __name__ == '__main__':
     tf.app.run()

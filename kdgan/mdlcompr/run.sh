@@ -1,6 +1,7 @@
 kdgan_dir=$HOME/Projects/kdgan/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
+
 python train_kd.py \
   --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
   --tch_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
@@ -16,9 +17,9 @@ python pretrain_gen.py \
   --dataset_dir=$HOME/Projects/data/mnist \
   --preprocessing_name='lenet' \
   --num_epoch=200
-# target acc=0.9854
-# 161s best acc=0.9862 # no dropout no l2
-# 175s best acc=0.9873 # 
+# target=0.9854
+# bstacc=0.9862 # no dropout no l2
+# bstacc=0.9873 # 
 exit
 
 
@@ -29,6 +30,8 @@ python pretrain_tch.py \
   --model_name=lenet \
   --preprocessing_name='lenet'
   --num_epoch=200
+# target=0.9932
+# bstacc=0.9951
 exit
 
 

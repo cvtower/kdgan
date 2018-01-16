@@ -110,7 +110,7 @@ def main(_):
       global_step, = sess.run([tn_tch.global_step])
       print('#%08d acc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_tch.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
-  print('best acc=%.4f' % (best_acc_v))
+  print('bstacc=%.4f' % (best_acc_v))
 
 if __name__ == '__main__':
   tf.app.run()

@@ -1,10 +1,16 @@
 server=xiaojie@10.100.228.181
-yfcc_dir=Projects/data/yfcc100m
 
+################################################################
+#
+# download tagrecom data
+#
+################################################################
+
+yfcc_dir=Projects/data/yfcc100m
 survey_data=survey_data.zip
 src_yfcc_dir=/home/xiaojie/$yfcc_dir
 dst_yfcc_dir=$HOME/$yfcc_dir
-[ -f $dst_yfcc_dir/$survey_data ] || scp $server:$src_yfcc_dir/$survey_data $dst_yfcc_dir
+# [ -f $dst_yfcc_dir/$survey_data ] || scp $server:$src_yfcc_dir/$survey_data $dst_yfcc_dir
 
 dataset=yfcc10k
 
@@ -23,15 +29,46 @@ src_precomputed_dir=$src_data_dir/Precomputed
 dst_precomputed_dir=$dst_data_dir/Precomputed
 [ -d ${dst_precomputed_dir} ] || mkdir ${dst_precomputed_dir}
 
-model_name=vgg_16
-scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
-for i in $(seq -w 000 199)
-do
-  filename=${dataset}_${model_name}_${i}.train.tfrecord
-  if [ -f ${dst_precomputed_dir}/$filename ]
-  then
-    continue
-  fi
-  scp ${src_precomputed_dir}/$filename ${dst_precomputed_dir}
-done
+# model_name=vgg_16
+# scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
+# for i in $(seq -w 000 199)
+# do
+#   filename=${dataset}_${model_name}_${i}.train.tfrecord
+#   if [ -f ${dst_precomputed_dir}/$filename ]
+#   then
+#     continue
+#   fi
+#   scp ${src_precomputed_dir}/$filename ${dst_precomputed_dir}
+# done
+
+
+################################################################
+#
+# download mdlcompr data
+#
+################################################################
+
+model_name=mdlcompr_mnist_gen
+model_name=mdlcompr_mnist_tch
+src_home_dir=$server:/home/xiaojie
+dst_home_dir=$HOME
+relative_dir=Projects/kdgan/kdgan/checkpoints/$model_name
+src_mdlcompr_mnist_dir=$src_home_dir/$relative_dir
+dst_mdlcompr_mnist_dir=$dst_home_dir/$relative_dir
+[ -d ${dst_mdlcompr_mnist_dir} ] || mkdir ${dst_mdlcompr_mnist_dir}
+scp $src_mdlcompr_mnist_dir/* $dst_mdlcompr_mnist_dir
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
