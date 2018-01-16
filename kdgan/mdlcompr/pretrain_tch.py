@@ -107,7 +107,7 @@ def main(_):
         continue
       best_acc_v = acc_v
       global_step, = sess.run([tn_tch.global_step])
-      print('best acc=%.4f step=%d' % (best_acc_v, global_step))
+      print('#%08d acc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_tch.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
   print('best acc=%.4f' % (best_acc_v))
 
