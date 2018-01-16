@@ -37,13 +37,13 @@ class GEN():
 
       fc1 = tf.add(tf.matmul(self.image_ph, fc1_weights), fc1_biases)
       fc1 = tf.nn.relu(fc1)
-      fc1 = tf.layers.dropout(fc1,
+      fc1 = tf.contrib.layers.dropout(fc1,
           keep_prob=flags.dropout_keep_prob,
           is_training=is_training)
 
       fc2 = tf.add(tf.matmul(fc1, fc2_weights), fc2_biases)
       fc2 = tf.nn.relu(fc2)
-      fc2 = tf.layers.dropout(fc2,
+      fc2 = tf.contrib.layers.dropout(fc2,
           keep_prob=flags.dropout_keep_prob,
           is_training=is_training)
 
