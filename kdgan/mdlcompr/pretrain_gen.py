@@ -34,6 +34,7 @@ tf.app.flags.DEFINE_integer('batch_size', 128, '')
 tf.app.flags.DEFINE_integer('num_epoch', 200, '')
 tf.app.flags.DEFINE_string('optimizer', 'rmsprop', 'adam|sgd')
 # learning rate
+tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
 tf.app.flags.DEFINE_float('min_learning_rate', 0.0001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
