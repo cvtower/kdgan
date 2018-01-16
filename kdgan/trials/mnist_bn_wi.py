@@ -11,7 +11,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 from tensorflow.contrib.layers.python.layers import batch_norm as batch_norm
 
 SOURCE_URL = 'http://yann.lecun.com/exdb/mnist/'
-DATA_DIRECTORY = "data"
+DATA_DIRECTORY = "/home/xiaojie/Projects/data/mnist/"
 LOGS_DIRECTORY = "logs/train"
 
 # train params
@@ -146,7 +146,7 @@ def main():
     batch_normalization = options.batch_normalization
 
     # Import data
-    mnist = input_data.read_data_sets('data/', one_hot=True)
+    mnist = input_data.read_data_sets(DATA_DIRECTORY, one_hot=True)
     print(mnist.test.images.shape)
     # exit()
 

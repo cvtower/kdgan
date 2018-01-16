@@ -10,69 +10,96 @@ class GEN():
     self.is_training = is_training
     
     # None = batch_size
-    self.image_ph = tf.placeholder(tf.float32,
-        shape=(None, flags.image_size, flags.image_size, flags.channels))
+    num_feature = flags.image_size * flags.image_size * flags.channels
+    self.image_ph = tf.placeholder(tf.float32, shape=(None, num_feature))
     self.hard_label_ph = tf.placeholder(tf.int32, shape=(None,))
 
     self.gen_scope = gen_scope = 'gen'
-    hidden_size = 512
-    with tf.variable_scope(gen_scope) as scope:
-      with slim.arg_scope(self.gen_arg_scope(weight_decay=flags.weight_decay)):
-        net = slim.flatten(self.image_ph)
-        net = slim.fully_connected(net, hidden_size, scope='fc1')
-        
-        net = slim.dropout(net, flags.dropout_keep_prob,
-            is_training=is_training,
-            scope='dropout1')
-        net = slim.fully_connected(net, hidden_size, scope='fc2')
+    hidden_size = 800
+    with tf.variable_scope(gen_scope):
+      with tf.variable_scope('fc1'):
+        fc1_weights = tf.get_variable('weights', [num_feature, hidden_size],
+            initializer=tf.contrib.layers.xavier_initializer())
+        fc1_biases = tf.get_variable('biases', [hidden_size],
+            initializer=tf.zeros_initializer())
 
-        net = slim.dropout(net, flags.dropout_keep_prob,
-            is_training=is_training,
-            scope='dropout2')
-        self.logits = slim.fully_connected(net, dataset.num_classes, 
-            activation_fn=None, scope='fc3')
+      with tf.variable_scope('fc2'):
+        fc2_weights = tf.get_variable('weights', [hidden_size, hidden_size],
+            initializer=tf.contrib.layers.xavier_initializer())
+        fc2_biases = tf.get_variable('biases', [hidden_size],
+            initializer=tf.zeros_initializer())
 
-        if not is_training:
-          self.predictions = tf.argmax(self.logits, axis=1)
-          return
+      with tf.variable_scope('fc3'):
+        fc3_weights = tf.get_variable('weights',[hidden_size, flags.num_label],
+            initializer=tf.contrib.layers.xavier_initializer())
+        fc3_biases = tf.get_variable('biases', [flags.num_label],
+            initializer=tf.zeros_initializer())
 
-        save_dict = {}
-        for variable in tf.trainable_variables():
-          if not variable.name.startswith(gen_scope):
-            continue
-          print('%-50s added to GEN saver' % variable.name)
-          save_dict[variable.name] = variable
-        self.saver = tf.train.Saver(save_dict)
+      fc1 = tf.add(tf.matmul(self.image_ph, fc1_weights), fc1_biases)
+      fc1 = tf.nn.relu(fc1)
+      fc1 = tf.layers.dropout(fc1,
+          keep_prob=flags.dropout_keep_prob,
+          is_training=is_training)
 
-        self.global_step = tf.Variable(0, trainable=False)
-        self.learning_rate = utils.get_lr(flags, self.global_step, dataset.num_samples, gen_scope)
+      fc2 = tf.add(tf.matmul(fc1, fc2_weights), fc2_biases)
+      fc2 = tf.nn.relu(fc2)
+      fc2 = tf.layers.dropout(fc2,
+          keep_prob=flags.dropout_keep_prob,
+          is_training=is_training)
 
-        encoded_labels = slim.one_hot_encoding(self.hard_label_ph, dataset.num_classes)
-        tf.losses.softmax_cross_entropy(encoded_labels, self.logits)
-        pre_losses = []
-        for loss in tf.get_collection(tf.GraphKeys.LOSSES):
-          if not loss.name.startswith(gen_scope):
-            continue
-          print('%-50s added to GEN loss' % loss.name)
-          pre_losses.append(loss)
-        print('#loss=%d' % (len(pre_losses)))
-        for regularization_loss in tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES):
-          if not regularization_loss.name.startswith(gen_scope):
-            continue
-          print('%-50s added to GEN loss' % regularization_loss.name)
-          pre_losses.append(regularization_loss)
-        print('#loss=%d' % (len(pre_losses)))
-        self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % gen_scope)
-        pre_optimizer = utils.get_opt(flags, self.learning_rate)
-        self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
+      self.logits = tf.matmul(fc2, fc3_weights) + fc3_biases
 
-  def gen_arg_scope(self, weight_decay=0.0):
-    with slim.arg_scope(
-        [slim.fully_connected],
-        weights_regularizer=slim.l2_regularizer(weight_decay),
-        # weights_initializer=tf.truncated_normal_initializer(stddev=0.1),
-        weights_initializer=tf.contrib.layers.xavier_initializer(),
-        biases_initializer=tf.zeros_initializer(),
-        activation_fn=tf.nn.relu) as sc:
-      return sc
+      if not is_training:
+        self.predictions = tf.argmax(self.logits, axis=1)
+        return
+
+      save_dict = {}
+      for variable in tf.trainable_variables():
+        if not variable.name.startswith(gen_scope):
+          continue
+        print('%-50s added to GEN saver' % variable.name)
+        save_dict[variable.name] = variable
+      self.saver = tf.train.Saver(save_dict)
+
+      self.global_step = tf.Variable(0, trainable=False)
+      self.learning_rate = utils.get_lr(flags, self.global_step, dataset.num_examples, gen_scope)
+
+      encoded_labels = slim.one_hot_encoding(self.hard_label_ph, flags.num_label)
+      tf.losses.softmax_cross_entropy(encoded_labels, self.logits)
+      pre_losses = []
+      for loss in tf.get_collection(tf.GraphKeys.LOSSES):
+        if not loss.name.startswith(gen_scope):
+          continue
+        print('%-50s added to GEN loss' % loss.name)
+        pre_losses.append(loss)
+      print('#loss=%d' % (len(pre_losses)))
+      for regularization_loss in tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES):
+        if not regularization_loss.name.startswith(gen_scope):
+          continue
+        print('%-50s added to GEN loss' % regularization_loss.name)
+        pre_losses.append(regularization_loss)
+      print('#loss=%d' % (len(pre_losses)))
+      self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % gen_scope)
+      pre_optimizer = utils.get_opt(flags, self.learning_rate)
+      self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

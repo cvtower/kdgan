@@ -1,12 +1,17 @@
 from kdgan import config
 from kdgan import metric
 
-import os
-import numpy as np
-import tensorflow as tf
 from os import path
 from preprocessing import preprocessing_factory
 from tensorflow.contrib import slim
+import os
+import shutil
+import numpy as np
+import tensorflow as tf
+
+def delete_if_exist(indir):
+  if path.exists(indir):
+    shutil.rmtree(indir)
 
 def create_if_nonexist(outdir):
   if not path.exists(outdir):
