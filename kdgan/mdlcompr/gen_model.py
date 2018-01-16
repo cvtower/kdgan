@@ -19,33 +19,35 @@ class GEN():
     with tf.variable_scope(gen_scope):
       with tf.variable_scope('fc1'):
         fc1_weights = tf.get_variable('weights', [num_feature, hidden_size],
+            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
             initializer=tf.contrib.layers.xavier_initializer())
         fc1_biases = tf.get_variable('biases', [hidden_size],
+            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
             initializer=tf.zeros_initializer())
 
       with tf.variable_scope('fc2'):
         fc2_weights = tf.get_variable('weights', [hidden_size, hidden_size],
+            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
             initializer=tf.contrib.layers.xavier_initializer())
         fc2_biases = tf.get_variable('biases', [hidden_size],
+            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
             initializer=tf.zeros_initializer())
 
       with tf.variable_scope('fc3'):
         fc3_weights = tf.get_variable('weights',[hidden_size, flags.num_label],
+            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
             initializer=tf.contrib.layers.xavier_initializer())
         fc3_biases = tf.get_variable('biases', [flags.num_label],
+            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
             initializer=tf.zeros_initializer())
 
       fc1 = tf.add(tf.matmul(self.image_ph, fc1_weights), fc1_biases)
       fc1 = tf.nn.relu(fc1)
-      fc1 = tf.contrib.layers.dropout(fc1,
-          keep_prob=flags.dropout_keep_prob,
-          is_training=is_training)
+      fc1 = tf.contrib.layers.dropout(fc1, keep_prob=flags.dropout_keep_prob, is_training=is_training)
 
       fc2 = tf.add(tf.matmul(fc1, fc2_weights), fc2_biases)
       fc2 = tf.nn.relu(fc2)
-      fc2 = tf.contrib.layers.dropout(fc2,
-          keep_prob=flags.dropout_keep_prob,
-          is_training=is_training)
+      fc2 = tf.contrib.layers.dropout(fc2, keep_prob=flags.dropout_keep_prob, is_training=is_training)
 
       self.logits = tf.matmul(fc2, fc3_weights) + fc3_biases
 
