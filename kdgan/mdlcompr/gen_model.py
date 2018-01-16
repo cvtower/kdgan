@@ -11,9 +11,7 @@ class GEN():
     
     # None = batch_size
     num_feature = flags.image_size * flags.image_size * flags.channels
-    # self.image_ph = tf.placeholder(tf.float32, shape=(None, num_feature))
-    self.image_ph = tf.placeholder(tf.float32,
-        shape=(None, flags.image_size, flags.image_size, flags.channels))
+    self.image_ph = tf.placeholder(tf.float32, shape=(None, num_feature))
     self.hard_label_ph = tf.placeholder(tf.int32, shape=(None,))
 
     self.gen_scope = gen_scope = 'gen'
@@ -43,8 +41,7 @@ class GEN():
             regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
             initializer=tf.zeros_initializer())
 
-      net = tf.reshape(self.image_ph, [batch_size, -1])
-      net = tf.add(tf.matmul(net, fc1_weights), fc1_biases)
+      net = tf.add(tf.matmul(self.image_ph, fc1_weights), fc1_biases)
       net = tf.nn.relu(net)
       net = tf.contrib.layers.dropout(net, keep_prob=flags.gen_keep_prob, is_training=is_training)
 
