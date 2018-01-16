@@ -55,7 +55,7 @@ class GEN():
         self.predictions = tf.argmax(self.logits, axis=1)
         return
 
-      save_dict, var_list = {}
+      save_dict, var_list = {}, []
       for variable in tf.trainable_variables():
         if not variable.name.startswith(gen_scope):
           continue
