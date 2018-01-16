@@ -12,7 +12,8 @@ python pretrain_gen.py \
   --weight_decay=0.0000 \
   --batch_size=128 \
   --num_epoch=200
-# 175s best acc=0.9873
+# 161s best acc=0.9862 # no dropout no l2
+# 175s best acc=0.9873 # 
 exit
 
 python train_kd.py \
