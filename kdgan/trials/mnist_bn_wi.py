@@ -178,6 +178,8 @@ def main():
             train_op_final = tf.group(*train_ops)
         else:
             train_op_final = train_step
+    else:
+        train_op_final = train_step
 
     # Get accuracy of model
     with tf.name_scope("ACC"):
