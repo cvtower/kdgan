@@ -13,6 +13,8 @@ export CUDA_VISIBLE_DEVICES=''
 ssh -NL 6006:localhost:6006 xiaojie@10.100.229.246 # cpu
 ssh -NL 6006:localhost:6006 xiaojie@10.100.228.181 # gpu
 
+python mnist_bn_wi.py --weight-init xavier --bias-init zero --batch-norm True
+
 ################################################################
 #
 # baseline
@@ -84,8 +86,5 @@ https://github.com/ethereon/caffe-tensorflow
 # mnist
 https://github.com/clintonreece/keras-cloud-ml-engine
 https://github.com/keras-team/keras/tree/master/examples
-
-
-
 
 

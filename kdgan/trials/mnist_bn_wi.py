@@ -15,7 +15,7 @@ DATA_DIRECTORY = "data"
 LOGS_DIRECTORY = "logs/train"
 
 # train params
-training_epochs = 15
+training_epochs = 1
 batch_size = 100
 display_step = 50
 
@@ -147,6 +147,8 @@ def main():
 
     # Import data
     mnist = input_data.read_data_sets('data/', one_hot=True)
+    print(mnist.test.images.shape)
+    # exit()
 
     # Boolean for MODE of train or test
     is_training = tf.placeholder(tf.bool, name='MODE')
