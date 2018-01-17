@@ -36,6 +36,7 @@ def compute_rec(logits, labels, cutoff):
     return rec
 
 def compute_acc(predictions, labels):
+    labels = np.argmax(labels, axis=1)
     acc = np.average(predictions == labels)
     return acc
 
