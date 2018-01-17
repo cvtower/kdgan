@@ -47,7 +47,7 @@ flags = tf.app.flags.FLAGS
 # vd_image_bt, vd_label_bt = data_utils.generate_batch(flags, vd_dataset, is_training=False)
 
 mnist = input_data.read_data_sets(flags.dataset_dir,
-    one_hot=False,
+    one_hot=True,
     validation_size=0,
     reshape=False)
 print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))

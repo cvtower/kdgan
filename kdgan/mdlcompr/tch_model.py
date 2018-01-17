@@ -12,7 +12,7 @@ class TCH():
     # None = batch_size
     self.image_ph = tf.placeholder(tf.float32,
         shape=(None, flags.image_size, flags.image_size, flags.channels))
-    self.hard_label_ph = tf.placeholder(tf.int32, shape=(None,))
+    self.hard_label_ph = tf.placeholder(tf.int32, shape=(None, flags.num_label))
 
     self.tch_scope = tch_scope = 'tch'
     with tf.variable_scope(tch_scope) as scope:
@@ -38,8 +38,7 @@ class TCH():
       self.global_step = tf.Variable(0, trainable=False)
       self.learning_rate = utils.get_lr(flags, self.global_step, dataset.num_examples, tch_scope)
 
-      encoded_labels = slim.one_hot_encoding(self.hard_label_ph, flags.num_label)
-      tf.losses.sigmoid_cross_entropy(encoded_labels, self.logits)
+      tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits)
       pre_losses = []
       for loss in tf.get_collection(tf.GraphKeys.LOSSES):
         if not loss.name.startswith(tch_scope):
