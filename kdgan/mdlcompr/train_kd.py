@@ -56,34 +56,36 @@ print('tn #batch=%d' % (tn_num_batch))
 eval_interval = int(mnist.train.num_examples / flags.batch_size)
 print('ev #interval=%d' % (eval_interval))
 
-tn_gen = GEN(flags, mnist.train, is_training=True)
-tn_tch = TCH(flags, mnist.train, is_training=True)
 
-kd_scope = 'kd'
-with tf.variable_scope(kd_scope):
-  gen_logits = tf.scalar_mul(1.0 / flags.temperature, tn_gen.logits)
-  tch_logits = tf.scalar_mul(1.0 / flags.temperature, tn_tch.logits)
-  hard_loss = tf.losses.softmax_cross_entropy(tn_gen.hard_label_ph, gen_logits)
-  soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
-  kd_loss = (flags.kd_lamda * hard_loss + (1 - flags.kd_lamda) * soft_loss) / flags.batch_size
-  kd_loss = tf.identity(kd_loss, name='kd_loss')
-
-  global_step = tf.Variable(0, trainable=False)
-  learning_rate = utils.get_lr(flags, global_step, mnist.train.num_examples, kd_scope)
-  kd_optimizer = utils.get_opt(flags, learning_rate)
-  kd_update = kd_optimizer.minimize(kd_loss, global_step=global_step)
-
-tf.summary.scalar(learning_rate.name, learning_rate)
-tf.summary.scalar(kd_loss.name, kd_loss)
-summary_op = tf.summary.merge_all()
-init_op = tf.global_variables_initializer()
-
-scope = tf.get_variable_scope()
-scope.reuse_variables()
-vd_gen = GEN(flags, mnist.test, is_training=False)
-vd_tch = TCH(flags, mnist.test, is_training=False)
 
 def main(_):
+  tn_gen = GEN(flags, mnist.train, is_training=True)
+  tn_tch = TCH(flags, mnist.train, is_training=True)
+
+  kd_scope = 'kd'
+  with tf.variable_scope(kd_scope):
+    gen_logits = tf.scalar_mul(1.0 / flags.temperature, tn_gen.logits)
+    tch_logits = tf.scalar_mul(1.0 / flags.temperature, tn_tch.logits)
+    hard_loss = tf.losses.softmax_cross_entropy(tn_gen.hard_label_ph, gen_logits)
+    soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
+    kd_loss = (flags.kd_lamda * hard_loss + (1 - flags.kd_lamda) * soft_loss) / flags.batch_size
+    kd_loss = tf.identity(kd_loss, name='kd_loss')
+
+    global_step = tf.Variable(0, trainable=False)
+    learning_rate = utils.get_lr(flags, global_step, mnist.train.num_examples, kd_scope)
+    kd_optimizer = utils.get_opt(flags, learning_rate)
+    kd_update = kd_optimizer.minimize(kd_loss, global_step=global_step)
+
+  tf.summary.scalar(learning_rate.name, learning_rate)
+  tf.summary.scalar(kd_loss.name, kd_loss)
+  summary_op = tf.summary.merge_all()
+  init_op = tf.global_variables_initializer()
+
+  scope = tf.get_variable_scope()
+  scope.reuse_variables()
+  vd_gen = GEN(flags, mnist.test, is_training=False)
+  vd_tch = TCH(flags, mnist.test, is_training=False)
+
   gen_model_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
   tch_model_ckpt = utils.get_latest_ckpt(flags.tch_checkpoint_dir)
 
@@ -93,7 +95,7 @@ def main(_):
       num_params *= dim.value
     print('%-50s (%d params)' % (variable.name, num_params))
 
-  best_hit_v = -np.inf
+  bst_gen_acc = -np.inf
   start = time.time()
   with tf.train.MonitoredTrainingSession() as sess:
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
@@ -120,13 +122,13 @@ def main(_):
       tot_time = time.time() - start
       print('#%08d gen_acc=%.4f time=%.0fs' % (tn_batch, gen_acc, tot_time))
 
-      if acc_v < best_acc_v:
+      if gen_acc <= bst_gen_acc:
         continue
-      best_acc_v = acc_v
-      global_step, = sess.run([tn_gen.global_step])
-      print('#%08d gen_acc=%.4f time=%.0fs' % (global_step, best_acc_v, tot_time))
+      bst_gen_acc = gen_acc
+      global_step, = sess.run([global_step])
+      print('#%08d gen_acc=%.4f time=%.0fs' % (global_step, bst_gen_acc, tot_time))
       # tn_gen.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
-  print('bstacc=%.4f' % (best_acc_v))
+  print('bstacc=%.4f' % (bst_gen_acc))
 
 if __name__ == '__main__':
     tf.app.run()
