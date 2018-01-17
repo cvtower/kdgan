@@ -79,31 +79,58 @@
 # 	res, = sess.run([loss])
 # 	print(res)
 
+# import tensorflow as tf
+
+# def main():
+  
+#   starter_learning_rate = 0.1
+#   end_learning_rate = 0.01
+#   decay_steps = 10
+#   learning_rate_ts = tf.train.polynomial_decay(
+#       starter_learning_rate, global_step_ts, decay_steps, end_learning_rate,
+#       power=0.5)
+#   optimizer = tf.train.GradientDescentOptimizer(learning_rate_ts)
+#   loss_ts = tf.Variable(0.0)
+#   train_op = optimizer.minimize(loss_ts, global_step=global_step_ts)
+#   num_batch = 16
+#   init_op = tf.global_variables_initializer()
+#   with tf.Session() as sess:
+#     sess.run(init_op)
+#     for batch in range(num_batch):
+#       result = sess.run([global_step_ts, learning_rate_ts])
+#       global_step, learning_rate = result
+#       print('batch %02d: %d %f' % (batch, global_step, learning_rate))
+#       sess.run(train_op)
+
+# if __name__ == '__main__':
+# 	main()
+
+import numpy as np
 import tensorflow as tf
 
-def main():
-  
-  starter_learning_rate = 0.1
-  end_learning_rate = 0.01
-  decay_steps = 10
-  learning_rate_ts = tf.train.polynomial_decay(
-      starter_learning_rate, global_step_ts, decay_steps, end_learning_rate,
-      power=0.5)
-  optimizer = tf.train.GradientDescentOptimizer(learning_rate_ts)
-  loss_ts = tf.Variable(0.0)
-  train_op = optimizer.minimize(loss_ts, global_step=global_step_ts)
-  num_batch = 16
-  init_op = tf.global_variables_initializer()
-  with tf.Session() as sess:
-    sess.run(init_op)
-    for batch in range(num_batch):
-      result = sess.run([global_step_ts, learning_rate_ts])
-      global_step, learning_rate = result
-      print('batch %02d: %d %f' % (batch, global_step, learning_rate))
-      sess.run(train_op)
+image_np = [
+  [[[1], [2]], [[3], [4]]],
+  [[[3], [4]], [[5], [6]]],
+  [[[5], [6]], [[7], [8]]],
+  [[[7], [8]], [[9], [0]]],
+]
+image_np = [
+  [[[6], [1]], [[3], [0]]],
+  [[[2], [8]], [[6], [5]]],
+  [[[9], [7]], [[7], [8]]],
+  [[[5], [3]], [[5], [1]]],
+]
+image_np = np.asarray(image_np, dtype=np.float32)
+print(image_np.shape)
 
-if __name__ == '__main__':
-	main()
+num_feature = image_np.shape[1]*image_np.shape[2]*image_np.shape[3]
+image_ts = tf.reshape(image_np, [-1, num_feature])
+with tf.Session() as sess:
+  print(sess.run(image_ts))
+
+
+
+
 
 
 

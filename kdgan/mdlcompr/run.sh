@@ -19,7 +19,7 @@ python pretrain_gen.py \
   --num_epoch=200
 # target=0.9854
 # bstacc=0.9862 # no dropout no l2
-# bstacc=0.9873 # 
+# bstacc=0.9884 # wt dropout wt l2
 exit
 
 

@@ -14,7 +14,8 @@ class GEN():
     # self.image_ph = tf.placeholder(tf.float32, shape=(None, num_feature))
     self.image_ph = tf.placeholder(tf.float32,
         shape=(None, flags.image_size, flags.image_size, flags.channels))
-    self.hard_label_ph = tf.placeholder(tf.int32, shape=(None,))
+    self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
+    self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
     self.gen_scope = gen_scope = 'gen'
     hidden_size = 800
@@ -70,8 +71,7 @@ class GEN():
       self.global_step = tf.Variable(0, trainable=False)
       self.learning_rate = utils.get_lr(flags, self.global_step, dataset.num_examples, gen_scope)
 
-      encoded_labels = slim.one_hot_encoding(self.hard_label_ph, flags.num_label)
-      tf.losses.softmax_cross_entropy(encoded_labels, self.logits)
+      tf.losses.softmax_cross_entropy(self.hard_label_ph, self.logits)
       pre_losses = []
       for loss in tf.get_collection(tf.GraphKeys.LOSSES):
         if not loss.name.startswith(gen_scope):

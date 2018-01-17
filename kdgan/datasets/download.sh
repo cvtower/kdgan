@@ -55,7 +55,8 @@ dst_home_dir=$HOME
 relative_dir=Projects/kdgan/kdgan/checkpoints/$model_name
 src_mdlcompr_mnist_dir=$src_home_dir/$relative_dir
 dst_mdlcompr_mnist_dir=$dst_home_dir/$relative_dir
-[ -d ${dst_mdlcompr_mnist_dir} ] || mkdir ${dst_mdlcompr_mnist_dir}
+rm -rf ${dst_mdlcompr_mnist_dir}
+mkdir ${dst_mdlcompr_mnist_dir}
 scp $src_mdlcompr_mnist_dir/* $dst_mdlcompr_mnist_dir
 
 
