@@ -21,6 +21,8 @@ tf.app.flags.DEFINE_integer('num_label', 10, '')
 # model
 tf.app.flags.DEFINE_float('gen_keep_prob', 0.95, '')
 tf.app.flags.DEFINE_float('tch_keep_prob', 0.5, '')
+tf.app.flags.DEFINE_float('kd_lamda', 0.3, '')
+tf.app.flags.DEFINE_float('temperature', 3.0, '')
 tf.app.flags.DEFINE_string('gen_checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('tch_checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('tch_model_name', None, '')
@@ -56,15 +58,30 @@ print('ev #interval=%d' % (eval_interval))
 
 tn_gen = GEN(flags, mnist.train, is_training=True)
 tn_tch = TCH(flags, mnist.train, is_training=True)
+
+kd_scope = 'kd'
+with tf.variable_scope(kd_scope):
+  gen_logits = tf.scalar_mul(1.0 / flags.temperature, tn_gen.logits)
+  tch_logits = tf.scalar_mul(1.0 / flags.temperature, tn_tch.logits)
+  hard_loss = tf.losses.softmax_cross_entropy(tn_gen.hard_label_ph, gen_logits)
+  soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
+  kd_loss = (flags.kd_lamda * hard_loss + (1 - flags.kd_lamda) * soft_loss) / flags.batch_size
+  kd_loss = tf.identity(kd_loss, name='kd_loss')
+
+  global_step = tf.Variable(0, trainable=False)
+  learning_rate = utils.get_lr(flags, global_step, mnist.train.num_examples, kd_scope)
+  kd_optimizer = utils.get_opt(flags, learning_rate)
+  kd_update = kd_optimizer.minimize(kd_loss, global_step=global_step)
+
+tf.summary.scalar(learning_rate.name, learning_rate)
+tf.summary.scalar(kd_loss.name, kd_loss)
+summary_op = tf.summary.merge_all()
+init_op = tf.global_variables_initializer()
+
 scope = tf.get_variable_scope()
 scope.reuse_variables()
 vd_gen = GEN(flags, mnist.test, is_training=False)
 vd_tch = TCH(flags, mnist.test, is_training=False)
-
-tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate)
-tf.summary.scalar(tn_gen.pre_loss.name, tn_gen.pre_loss)
-summary_op = tf.summary.merge_all()
-init_op = tf.global_variables_initializer()
 
 def main(_):
   gen_model_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
@@ -86,7 +103,30 @@ def main(_):
     gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
     tch_acc = metric.eval_mdlcompr(sess, vd_tch, mnist)
     tot_time = time.time() - start
-    print('init gen_acc=%.4f tch_acc=%.4f time=%.2fs' % (gen_acc, tch_acc, tot_time))
+    print('init gen_acc=%.4f tch_acc=%.4f time=%.0fs' % (gen_acc, tch_acc, tot_time))
+    for tn_batch in range(tn_num_batch):
+      tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
+      feed_dict = {
+        tn_gen.image_ph:tn_image_np,
+        tn_gen.hard_label_ph:tn_label_np,
+        tn_tch.image_ph:tn_image_np,
+      }
+      _, summary = sess.run([kd_loss, summary_op], feed_dict=feed_dict)
+      writer.add_summary(summary, tn_batch)
+
+      if (tn_batch + 1) % eval_interval != 0:
+        continue
+      gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
+      tot_time = time.time() - start
+      print('#%08d gen_acc=%.4f time=%.0fs' % (tn_batch, gen_acc, tot_time))
+
+      if acc_v < best_acc_v:
+        continue
+      best_acc_v = acc_v
+      global_step, = sess.run([tn_gen.global_step])
+      print('#%08d gen_acc=%.4f time=%.0fs' % (global_step, best_acc_v, tot_time))
+      # tn_gen.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
+  print('bstacc=%.4f' % (best_acc_v))
 
 if __name__ == '__main__':
     tf.app.run()

@@ -48,8 +48,8 @@ dst_precomputed_dir=$dst_data_dir/Precomputed
 #
 ################################################################
 
-model_name=mdlcompr_mnist_gen
-# model_name=mdlcompr_mnist_tch
+# model_name=mdlcompr_mnist_gen
+model_name=mdlcompr_mnist_tch
 src_home_dir=$server:/home/xiaojie
 dst_home_dir=$HOME
 relative_dir=Projects/kdgan/kdgan/checkpoints/$model_name
