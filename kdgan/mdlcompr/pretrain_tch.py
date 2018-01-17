@@ -98,7 +98,6 @@ def main(_):
       if (tn_batch + 1) % eval_interval != 0:
         continue
       vd_image_np, vd_label_np = mnist.test.images, mnist.test.labels
-      print(vd_label_np.shape)
       feed_dict = {vd_tch.image_ph:vd_image_np}
       predictions, = sess.run([vd_tch.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
