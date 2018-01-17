@@ -27,7 +27,7 @@ python pretrain_tch.py \
   --checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
   --save_path=$checkpoint_dir/mdlcompr_mnist_tch/model \
   --dataset_dir=$HOME/Projects/data/mnist \
-  --model_name=lenet \
+  --tch_model_name=lenet \
   --preprocessing_name='lenet'
   --num_epoch=200
 # target=0.9932
