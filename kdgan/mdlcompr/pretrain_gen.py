@@ -42,7 +42,7 @@ tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|pol
 flags = tf.app.flags.FLAGS
 
 mnist = input_data.read_data_sets(flags.dataset_dir,
-    one_hot=False,
+    one_hot=True,
     validation_size=0,
     reshape=False)
 print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
