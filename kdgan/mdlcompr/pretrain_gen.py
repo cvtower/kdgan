@@ -44,7 +44,7 @@ flags = tf.app.flags.FLAGS
 mnist = input_data.read_data_sets(flags.dataset_dir,
     one_hot=False,
     validation_size=0,
-    reshape=True)
+    reshape=False)
 print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
 tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
 vd_num_batch = int(mnist.train.num_examples / config.valid_batch_size)

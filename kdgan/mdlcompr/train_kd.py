@@ -47,7 +47,7 @@ flags = tf.app.flags.FLAGS
 mnist = input_data.read_data_sets(flags.dataset_dir,
     one_hot=False,
     validation_size=0,
-    reshape=False)
+    reshape=True)
 print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
 tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
 print('tn #batch=%d' % (tn_num_batch))
@@ -83,6 +83,8 @@ def main(_):
     sess.run(init_op)
     tn_gen.saver.restore(sess, gen_model_ckpt)
     tn_tch.saver.restore(sess, tch_model_ckpt)
+    metric.eval_mdlcompr(sess, vd_gen, mnist)
+    metric.eval_mdlcompr(sess, vd_tch, mnist, reshap=True)
 
 if __name__ == '__main__':
     tf.app.run()

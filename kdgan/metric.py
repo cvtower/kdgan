@@ -39,6 +39,13 @@ def compute_acc(predictions, labels):
     acc = np.average(predictions == labels)
     return acc
 
+def eval_mdlcompr(sess, vd_gen, mnist):
+  vd_image_np, vd_label_np = mnist.test.images, mnist.test.labels
+  feed_dict = {vd_gen.image_ph:vd_image_np}
+  predictions, = sess.run([vd_gen.predictions], feed_dict=feed_dict)
+  acc_v = compute_acc(predictions, vd_label_np)
+  return acc_v
+
 def main():
     logits = np.log([
         [0.1, 0.2, 0.3, 0.4], [0.1, 0.2, 0.3, 0.4],
