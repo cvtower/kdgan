@@ -228,19 +228,19 @@ def get_lr(flags, global_step, train_data_size, scope_name):
     raise ValueError('bad learning rate decay type %s', flags.learning_rate_decay_type)
   return learning_rate
 
-def get_opt(flags, learning_rate):
+def get_opt(flags, learning_rate, opt_epsilon=1e-08):
   if flags.optimizer == 'adam':
     optimizer = tf.train.AdamOptimizer(
         learning_rate,
-        # epsilon=flags.opt_epsilon,
         beta1=flags.adam_beta1,
-        beta2=flags.adam_beta2)
+        beta2=flags.adam_beta2,
+        epsilon=opt_epsilon)
   elif flags.optimizer == 'rmsprop':
     optimizer = tf.train.RMSPropOptimizer(
         learning_rate,
-        # epsilon=flags.opt_epsilon,
         decay=flags.rmsprop_decay,
-        momentum=flags.rmsprop_momentum)
+        momentum=flags.rmsprop_momentum,
+        epsilon=opt_epsilon)
   elif flags.optimizer == 'sgd':
     optimizer = tf.train.GradientDescentOptimizer(learning_rate)
   else:
