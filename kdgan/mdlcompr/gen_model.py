@@ -15,6 +15,10 @@ class GEN():
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
     self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
+    # None = batch_size * sample_size
+    self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
+    self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
+
     hidden_size = 800
     self.gen_scope = gen_scope = 'gen'
     with tf.variable_scope(gen_scope):
@@ -40,6 +44,7 @@ class GEN():
       self.global_step = tf.Variable(0, trainable=False)
       self.learning_rate = utils.get_lr(flags, self.global_step, dataset.num_examples, gen_scope)
 
+      # pre train
       pre_losses = self.get_pre_losses()
       self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % gen_scope)
       pre_optimizer = utils.get_opt(flags, self.learning_rate)
@@ -48,12 +53,18 @@ class GEN():
       # pre_grads_and_vars = pre_optimizer.compute_gradients(self.pre_loss, var_list)
       # pre_capped_grads_and_vars = [(gv[0], gv[1]) for gv in pre_grads_and_vars]
       # self.pre_update = pre_optimizer.apply_gradients(pre_capped_grads_and_vars, global_step=self.global_step)
-
       ## global clipping
       # pre_grads, pre_vars = zip(*pre_optimizer.compute_gradients(self.pre_loss, var_list))
       # pre_grads, _ = tf.clip_by_global_norm(pre_grads, flags.clip_norm)
       # self.pre_update = pre_optimizer.apply_gradients(zip(pre_grads, pre_vars), global_step=self.global_step)
-  
+
+      # gan train
+      gan_losses = self.get_gan_losses(flags)
+      self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % gen_scope)
+      gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=self.global_step)
+
+
   def get_regularization_losses(self):
     regularization_losses = []
     for regularization_loss in tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES):
@@ -69,7 +80,12 @@ class GEN():
     print('#pre_losses=%d' % (len(pre_losses)))
     return pre_losses
 
-
+  def get_gan_losses(self, flags):
+    sample_logits = tf.gather_nd(self.logits, self.sample_ph)
+    # gan_loss = -tf.reduce_mean(self.reward_ph * sample_logits)
+    gan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
+    gan_losses.extend(self.get_regularization_losses())
+    return gan_losses
 
 
 

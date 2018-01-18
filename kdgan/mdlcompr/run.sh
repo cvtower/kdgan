@@ -1,7 +1,15 @@
 kdgan_dir=$HOME/Projects/kdgan/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
-for tch_keep_prob in 0.1 0.3 0.5 0.7 0.9
+
+python train_gan.py \
+  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
+  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
+  --dataset_dir=$HOME/Projects/data/mnist
+exit
+
+
+for tch_keep_prob in 0.5 0.7 0.9
 do
   for tch_weight_decay in 0.01 0.001 0.0001 0.00001
   do
@@ -16,7 +24,6 @@ do
     # exit
   done
 done
-
 
 
 python pretrain_gen.py \

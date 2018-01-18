@@ -232,15 +232,15 @@ def get_opt(flags, learning_rate):
   if flags.optimizer == 'adam':
     optimizer = tf.train.AdamOptimizer(
         learning_rate,
+        # epsilon=flags.opt_epsilon,
         beta1=flags.adam_beta1,
-        beta2=flags.adam_beta2,
-        epsilon=flags.opt_epsilon)
+        beta2=flags.adam_beta2)
   elif flags.optimizer == 'rmsprop':
     optimizer = tf.train.RMSPropOptimizer(
         learning_rate,
+        # epsilon=flags.opt_epsilon,
         decay=flags.rmsprop_decay,
-        momentum=flags.rmsprop_momentum,
-        epsilon=flags.opt_epsilon)
+        momentum=flags.rmsprop_momentum)
   elif flags.optimizer == 'sgd':
     optimizer = tf.train.GradientDescentOptimizer(learning_rate)
   else:
