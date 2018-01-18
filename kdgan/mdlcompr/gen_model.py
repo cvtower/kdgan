@@ -15,43 +15,11 @@ class GEN():
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
     self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
-    self.gen_scope = gen_scope = 'gen'
     hidden_size = 800
+    self.gen_scope = gen_scope = 'gen'
     with tf.variable_scope(gen_scope):
-      with tf.variable_scope('fc1'):
-        fc1_weights = tf.get_variable('weights', [num_feature, hidden_size],
-            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
-            initializer=tf.contrib.layers.xavier_initializer())
-        fc1_biases = tf.get_variable('biases', [hidden_size],
-            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
-            initializer=tf.zeros_initializer())
-
-      with tf.variable_scope('fc2'):
-        fc2_weights = tf.get_variable('weights', [hidden_size, hidden_size],
-            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
-            initializer=tf.contrib.layers.xavier_initializer())
-        fc2_biases = tf.get_variable('biases', [hidden_size],
-            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
-            initializer=tf.zeros_initializer())
-
-      with tf.variable_scope('fc3'):
-        fc3_weights = tf.get_variable('weights',[hidden_size, flags.num_label],
-            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
-            initializer=tf.contrib.layers.xavier_initializer())
-        fc3_biases = tf.get_variable('biases', [flags.num_label],
-            regularizer=tf.contrib.layers.l2_regularizer(flags.weight_decay),
-            initializer=tf.zeros_initializer())
-
-      net = self.image_ph
-      net = tf.add(tf.matmul(net, fc1_weights), fc1_biases)
-      net = tf.nn.relu(net)
-      net = tf.contrib.layers.dropout(net, keep_prob=flags.gen_keep_prob, is_training=is_training)
-
-      net = tf.add(tf.matmul(net, fc2_weights), fc2_biases)
-      net = tf.nn.relu(net)
-      net = tf.contrib.layers.dropout(net, keep_prob=flags.gen_keep_prob, is_training=is_training)
-
-      self.logits = tf.matmul(net, fc3_weights) + fc3_biases
+      self.logits = utils.build_mlp_logits(flags, self.image_ph,
+        hidden_size=hidden_size, is_training=is_training)
 
       if not is_training:
         self.predictions = tf.argmax(self.logits, axis=1)
