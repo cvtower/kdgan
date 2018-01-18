@@ -15,14 +15,14 @@ DATA_DIRECTORY = "/home/xiaojie/Projects/data/mnist/"
 LOGS_DIRECTORY = "logs/train"
 
 # train params
-training_epochs = 1
+training_epochs = 100
 batch_size = 100
 display_step = 50
 
 # network params
 n_input = 784
-n_hidden_1 = 256
-n_hidden_2 = 256
+n_hidden_1 = 800
+n_hidden_2 = 800
 n_classes = 10
 
 # Store layers weight & bias
