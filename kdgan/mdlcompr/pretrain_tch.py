@@ -74,11 +74,11 @@ def main(_):
     exit()
   utils.create_if_nonexist(flags.checkpoint_dir)
 
-  for variable in tf.trainable_variables():
-    num_params = 1
-    for dim in variable.shape:
-      num_params *= dim.value
-    print('%-50s (%d params)' % (variable.name, num_params))
+  # for variable in tf.trainable_variables():
+  #   num_params = 1
+  #   for dim in variable.shape:
+  #     num_params *= dim.value
+  #   print('%-50s (%d params)' % (variable.name, num_params))
 
   best_acc_v = -np.inf
   start = time.time()
