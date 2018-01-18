@@ -28,6 +28,8 @@ class GEN():
         weight_decay=flags.gen_weight_decay,
         is_training=is_training)
 
+      self.labels = tf.nn.softmax(self.logits)
+      
       if not is_training:
         self.predictions = tf.argmax(self.logits, axis=1)
         return

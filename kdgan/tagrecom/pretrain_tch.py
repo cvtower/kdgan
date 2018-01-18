@@ -11,6 +11,7 @@ from os import path
 from tensorflow.contrib import slim
 
 tf.app.flags.DEFINE_string('dataset', None, '')
+tf.app.flags.DEFINE_integer('num_label', 100, '')
 # evaluation
 tf.app.flags.DEFINE_integer('cutoff', 3, '')
 # image model

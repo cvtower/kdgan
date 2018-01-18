@@ -2,6 +2,16 @@ kdgan_dir=$HOME/Projects/kdgan/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
 
+python train_gan.py \
+  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
+  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --num_epoch=100 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=5
+exit
+
+
 for tch_keep_prob in 0.95 0.90 0.85 0.80 0.75
 do
   for tch_weight_decay in 0.0001 0.00005 0.00001
@@ -17,13 +27,6 @@ do
     # bstacc=0.9951
   done
 done
-exit
-
-
-python train_gan.py \
-  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
-  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
-  --dataset_dir=$HOME/Projects/data/mnist
 exit
 
 

@@ -28,8 +28,8 @@ file_key = 'file'
 unk_token = 'unk'
 pad_token = ' '
 
-channels = 3
-num_label = 100
+# channels = 3
+# num_label = 100
 num_readers = 4
 num_preprocessing_threads = 4
 

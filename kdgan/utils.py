@@ -255,13 +255,13 @@ def gan_dis_sample(flags, label_dat, label_gen):
     num_sample = np.count_nonzero(label_d)
     # print(batch, label_d.shape, label_g.shape, num_sample)
     num_positive = num_sample * flags.num_positive
-    sample_d = np.random.choice(config.num_label, num_positive, p=label_d)
+    sample_d = np.random.choice(flags.num_label, num_positive, p=label_d)
     for sample in sample_d:
       # print(batch, sample, 1.0)
       sample_np.append((batch, sample))
       label_np.append(1.0)
     num_negative = num_sample * flags.num_negative
-    sample_g = np.random.choice(config.num_label, num_negative, p=label_g)
+    sample_g = np.random.choice(flags.num_label, num_negative, p=label_g)
     for sample in sample_g:
       sample_np.append((batch, sample))
       label_np.append(0.0)
@@ -310,9 +310,9 @@ def generate_label(flags, label_dat, label_gen):
     # if abs(label_g.sum() - 1.0) > 0.001:
     #   print(label_g)
     #   exit()
-    sample_g = np.random.choice(config.num_label, num_sample, p=label_g)
+    sample_g = np.random.choice(flags.num_label, num_sample, p=label_g)
     for sample in sample_g:
-      # if (sample < 0) or (sample > config.num_label - 1):
+      # if (sample < 0) or (sample > flags.num_label - 1):
       #   print(sample_g)
       #   exit()
       sample_np.append((batch, sample))
