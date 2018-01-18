@@ -21,7 +21,7 @@ tf.app.flags.DEFINE_float('tch_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('save_path', None, '')
 # optimization
-tf.app.flags.DEFINE_float('weight_decay', 0.00004, 'l2 coefficient')
+tf.app.flags.DEFINE_float('tch_weight_decay', 0.00004, 'l2 coefficient')
 tf.app.flags.DEFINE_float('clip_norm', 10.0, '')
 tf.app.flags.DEFINE_float('adam_beta1', 0.9, '')
 tf.app.flags.DEFINE_float('adam_beta2', 0.999, '')
