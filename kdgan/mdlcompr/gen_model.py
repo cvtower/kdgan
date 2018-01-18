@@ -37,23 +37,9 @@ class GEN():
       self.global_step = tf.Variable(0, trainable=False)
       self.learning_rate = utils.get_lr(flags, self.global_step, dataset.num_examples, gen_scope)
 
-      tf.losses.softmax_cross_entropy(self.hard_label_ph, self.logits)
-      pre_losses = []
-      for loss in tf.get_collection(tf.GraphKeys.LOSSES):
-        if not loss.name.startswith(gen_scope):
-          continue
-        print('%-50s added to GEN loss' % loss.name)
-        pre_losses.append(loss)
-      print('#loss=%d' % (len(pre_losses)))
-      for regularization_loss in tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES):
-        if not regularization_loss.name.startswith(gen_scope):
-          continue
-        print('%-50s added to GEN loss' % regularization_loss.name)
-        pre_losses.append(regularization_loss)
-      print('#loss=%d' % (len(pre_losses)))
+      pre_losses = self.get_pre_losses()
       self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % gen_scope)
       pre_optimizer = utils.get_opt(flags, self.learning_rate)
-
       ## no clipping
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
       # pre_grads_and_vars = pre_optimizer.compute_gradients(self.pre_loss, var_list)
@@ -64,7 +50,21 @@ class GEN():
       # pre_grads, pre_vars = zip(*pre_optimizer.compute_gradients(self.pre_loss, var_list))
       # pre_grads, _ = tf.clip_by_global_norm(pre_grads, flags.clip_norm)
       # self.pre_update = pre_optimizer.apply_gradients(zip(pre_grads, pre_vars), global_step=self.global_step)
+  
+  def get_regularization_losses(self):
+    regularization_losses = []
+    for regularization_loss in tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES):
+      if not regularization_loss.name.startswith(self.gen_scope):
+        continue
+      regularization_losses.append(regularization_loss)
+    return regularization_losses
 
+  def get_pre_losses(self):
+    pre_losses = [tf.losses.softmax_cross_entropy(self.hard_label_ph, self.logits)]
+    print('#pre_losses=%d' % (len(pre_losses)))
+    pre_losses.extend(self.get_regularization_losses())
+    print('#pre_losses=%d' % (len(pre_losses)))
+    return pre_losses
 
 
 
