@@ -4,7 +4,7 @@ checkpoint_dir=$kdgan_dir/checkpoints
 
 for tch_keep_prob in 0.95 0.90 0.85 0.80 0.75
 do
-  for tch_weight_decay in 0.01 0.001 0.0001 0.00001
+  for tch_weight_decay in 0.0001 0.00005 0.00001
   do
     python pretrain_tch.py \
       --checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
