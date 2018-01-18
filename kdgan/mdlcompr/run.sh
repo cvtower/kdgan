@@ -11,6 +11,7 @@ do
       --save_path=$checkpoint_dir/mdlcompr_mnist_tch/model \
       --dataset_dir=$HOME/Projects/data/mnist \
       --tch_keep_prob=$tch_keep_prob \
+      --tch_weight_decay=$tch_weight_decay \
       --num_epoch=200
     # target=0.9932
     # bstacc=0.9951
