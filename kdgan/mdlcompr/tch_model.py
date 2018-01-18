@@ -41,7 +41,7 @@ class TCH():
 
       pre_losses = self.get_pre_losses()
       self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % tch_scope)
-      pre_optimizer = utils.get_opt(flags, self.learning_rate)
+      pre_optimizer = utils.get_opt(flags, self.learning_rate, opt_epsilon=flags.tch_opt_epsilon)
       ## no clipping
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
       # pre_grads_and_vars = pre_optimizer.compute_gradients(self.pre_loss, var_list)
