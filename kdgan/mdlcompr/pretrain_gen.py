@@ -20,8 +20,6 @@ tf.app.flags.DEFINE_integer('num_label', 10, '')
 tf.app.flags.DEFINE_float('gen_keep_prob', 0.88, '')
 tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('save_path', None, '')
-tf.app.flags.DEFINE_string('model_name', None, '')
-tf.app.flags.DEFINE_string('preprocessing_name', None, '')
 # optimization
 tf.app.flags.DEFINE_float('gen_weight_decay', 0.00004, 'l2 coefficient')
 tf.app.flags.DEFINE_float('clip_norm', 10.0, '')

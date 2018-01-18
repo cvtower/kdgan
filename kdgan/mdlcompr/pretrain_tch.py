@@ -20,8 +20,6 @@ tf.app.flags.DEFINE_integer('num_label', 10, '')
 tf.app.flags.DEFINE_float('tch_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('save_path', None, '')
-tf.app.flags.DEFINE_string('tch_model_name', None, '')
-tf.app.flags.DEFINE_string('preprocessing_name', None, '')
 # optimization
 tf.app.flags.DEFINE_float('weight_decay', 0.00004, 'l2 coefficient')
 tf.app.flags.DEFINE_float('clip_norm', 10.0, '')
@@ -49,7 +47,7 @@ flags = tf.app.flags.FLAGS
 mnist = input_data.read_data_sets(flags.dataset_dir,
     one_hot=True,
     validation_size=0,
-    reshape=False)
+    reshape=True)
 print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
 tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
 vd_num_batch = int(mnist.train.num_examples / config.valid_batch_size)

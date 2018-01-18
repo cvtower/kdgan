@@ -18,7 +18,10 @@ class TCH():
     self.tch_scope = tch_scope = 'tch'
     with tf.variable_scope(tch_scope):
       self.logits = utils.build_mlp_logits(flags, self.image_ph,
-        hidden_size=hidden_size, is_training=is_training)
+        hidden_size=hidden_size,
+        keep_prob=flags.tch_keep_prob,
+        weight_decay=flags.tch_weight_decay,
+        is_training=is_training)
 
       if not is_training:
         self.predictions = tf.argmax(self.logits, axis=1)
@@ -28,7 +31,7 @@ class TCH():
       for variable in tf.trainable_variables():
         if not variable.name.startswith(tch_scope):
           continue
-        print('%-50s added to GEN saver' % variable.name)
+        print('%-50s added to TCH saver' % variable.name)
         save_dict[variable.name] = variable
         var_list.append(variable)
       self.saver = tf.train.Saver(save_dict)
