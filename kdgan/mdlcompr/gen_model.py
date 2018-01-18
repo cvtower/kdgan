@@ -19,7 +19,10 @@ class GEN():
     self.gen_scope = gen_scope = 'gen'
     with tf.variable_scope(gen_scope):
       self.logits = utils.build_mlp_logits(flags, self.image_ph,
-        hidden_size=hidden_size, is_training=is_training)
+        hidden_size=hidden_size,
+        keep_prob=flags.gen_keep_prob,
+        weight_decay=flags.gen_weight_decay,
+        is_training=is_training)
 
       if not is_training:
         self.predictions = tf.argmax(self.logits, axis=1)
