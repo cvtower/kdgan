@@ -211,7 +211,6 @@ def get_lr(flags, global_step, train_data_size, scope_name):
     name = '%s_exponential_decay_learning_rate' % scope_name
     learning_rate = tf.train.exponential_decay(flags.learning_rate,
         global_step, decay_steps, flags.learning_rate_decay_factor,
-        end_learning_rate=flags.end_learning_rate,
         staircase=True,
         name=name)
   elif flags.learning_rate_decay_type == 'fixed':
