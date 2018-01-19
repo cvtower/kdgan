@@ -87,4 +87,5 @@ https://github.com/ethereon/caffe-tensorflow
 https://github.com/clintonreece/keras-cloud-ml-engine
 https://github.com/keras-team/keras/tree/master/examples
 
-
+https://github.com/hwalsuklee/how-far-can-we-go-with-MNIST
+http://www.pythonexample.com/user/vamsiramakrishnan

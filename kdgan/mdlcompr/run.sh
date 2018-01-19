@@ -2,6 +2,15 @@ kdgan_dir=$HOME/Projects/kdgan/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
 
+python pretrain_dev.py \
+  --checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
+  --save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --num_epoch=200
+# target=0.9930
+exit
+
+
 python train_gan.py \
   --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
   --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
