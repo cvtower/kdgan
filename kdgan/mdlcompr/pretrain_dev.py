@@ -30,14 +30,14 @@ tf.app.flags.DEFINE_float('adam_beta2', 0.999, '')
 tf.app.flags.DEFINE_float('rmsprop_momentum', 0.0, '')
 tf.app.flags.DEFINE_float('rmsprop_decay', 0.9, '')
 tf.app.flags.DEFINE_integer('batch_size', 128, '')
-tf.app.flags.DEFINE_integer('num_epoch', 200, '')
-tf.app.flags.DEFINE_string('optimizer', 'rmsprop', 'adam|sgd')
+tf.app.flags.DEFINE_integer('num_epoch', 50, '')
+tf.app.flags.DEFINE_string('optimizer', 'sgd', 'adam|rmsprop|sgd')
 # learning rate
-tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
-tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
-tf.app.flags.DEFINE_float('min_learning_rate', 0.0001, '')
+tf.app.flags.DEFINE_float('learning_rate', 1e-3, '')
+tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.98, '')
+tf.app.flags.DEFINE_float('min_learning_rate', 1e-5, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'polynomial', 'fixed|exponential')
 flags = tf.app.flags.FLAGS
 
 tf.set_random_seed(777)
@@ -106,13 +106,13 @@ def main(_):
       predictions, = sess.run([vd_gen.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
       tot_time = time.time() - start
-      print('#%08d hit=%.4f %06ds' % (tn_batch, acc_v, int(tot_time)))
+      print('#%08d curacc=%.4f %06ds' % (tn_batch, acc_v, int(tot_time)))
 
       if acc_v < best_acc_v:
         continue
       best_acc_v = acc_v
       global_step, = sess.run([tn_gen.global_step])
-      print('#%08d acc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
+      print('#%08d curbst=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_gen.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
   print('bstacc=%.4f' % (best_acc_v))
 
