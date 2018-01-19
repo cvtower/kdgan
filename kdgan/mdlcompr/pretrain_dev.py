@@ -69,33 +69,32 @@ def main(_):
 
   datagen = data_utils.Generator(flags.augmentation_type, mnist)
 
-  best_acc_v = -np.inf
+  best_acc_v, best_epoch = -np.inf, -1
   start = time.time()
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
-    tn_batch = -1
     for tn_epoch in range(flags.num_epoch):
       for tn_image_np, tn_label_np in datagen.generate(batch_size=flags.batch_size):
-        tn_batch += 1
         feed_dict = {tn_gen.image_ph:tn_image_np, tn_gen.hard_label_ph:tn_label_np}
         _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
-        writer.add_summary(summary, tn_batch)
+        global_step, = sess.run([tn_gen.global_step])
+        writer.add_summary(summary, global_step)
 
       vd_image_np, vd_label_np = mnist.test.images, mnist.test.labels
       feed_dict = {vd_gen.image_ph:vd_image_np}
       predictions, = sess.run([vd_gen.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
       tot_time = time.time() - start
-      print('#%08d curacc=%.4f %.0fs' % (tn_epoch, acc_v, tot_time))
+      print('#%08d curacc=%.4f %.0fs' % (global_step, acc_v, tot_time))
 
       if acc_v < best_acc_v:
         continue
       best_acc_v = acc_v
-      global_step, = sess.run([tn_gen.global_step])
+      best_epoch = tn_epoch
       print('#%08d CURBST=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_gen.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
-  print('bstacc=%.4f' % (best_acc_v))
+  print('bstacc=%.4f epoch=%03d' % (best_acc_v, best_epoch))
 
 if __name__ == '__main__':
   tf.app.run()
