@@ -9,7 +9,6 @@ from tensorflow.contrib import slim
 from tensorflow.examples.tutorials.mnist import input_data
 import math
 import os
-import sys
 import time
 import numpy as np
 import tensorflow as tf
@@ -48,11 +47,11 @@ tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
 tf.app.flags.DEFINE_string('optimizer', 'adam', 'adam|rmsprop|sgd')
 # learning rate
-tf.app.flags.DEFINE_float('learning_rate', 0.0001, '')
+tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
-tf.app.flags.DEFINE_float('min_learning_rate', 0.0001, '')
+tf.app.flags.DEFINE_float('end_learning_rate', 0.0001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'fixed', 'exponential|polynomial')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
 mnist = input_data.read_data_sets(flags.dataset_dir,
@@ -106,7 +105,6 @@ def main(_):
     print('init gen_acc=%.4f time=%.0fs' % (gen_acc, tot_time))
     batch_d, batch_g = -1, -1
     for epoch in range(flags.num_epoch):
-      sys.stdout.flush()
       for dis_epoch in range(flags.num_dis_epoch):
         print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
         num_batch_d = math.ceil(mnist.train.num_examples / flags.batch_size)
@@ -115,7 +113,7 @@ def main(_):
           image_np_d, label_dat_d = mnist.train.next_batch(flags.batch_size)
           feed_dict = {tn_gen.image_ph:image_np_d}
           label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
-          # print('label_dat_d={} label_gen_d={}'.format(label_dat_d.shape, label_gen_d.shape))
+      rint('label_dat_d={} label_gen_d={}'.format(label_dat_d.shape, label_gen_d.shape))
           sample_np_d, label_np_d = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
           feed_dict = {
             tn_dis.image_ph:image_np_d,
@@ -150,7 +148,7 @@ def main(_):
           if (batch_g + 1) % eval_interval != 0:
             continue
           gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
-          
+
           if gen_acc < bst_gen_acc:
             continue
           bst_gen_acc = gen_acc
