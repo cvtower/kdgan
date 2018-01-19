@@ -33,11 +33,11 @@ tf.app.flags.DEFINE_integer('batch_size', 128, '')
 tf.app.flags.DEFINE_integer('num_epoch', 50, '')
 tf.app.flags.DEFINE_string('optimizer', 'sgd', 'adam|rmsprop|sgd')
 # learning rate
-tf.app.flags.DEFINE_float('learning_rate', 1e-3, '')
-tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.98, '')
+tf.app.flags.DEFINE_float('learning_rate', 1e-2, '')
+tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 1e-5, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'polynomial', 'fixed|exponential')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
 tf.set_random_seed(777)
