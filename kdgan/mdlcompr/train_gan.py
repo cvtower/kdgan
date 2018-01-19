@@ -48,11 +48,11 @@ tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
 tf.app.flags.DEFINE_string('optimizer', 'adam', 'adam|rmsprop|sgd')
 # learning rate
-tf.app.flags.DEFINE_float('learning_rate', 0.0001, '')
+tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
 tf.app.flags.DEFINE_float('min_learning_rate', 0.0001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'fixed', 'exponential|polynomial')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
 mnist = input_data.read_data_sets(flags.dataset_dir,
@@ -149,13 +149,15 @@ def main(_):
           
           if (batch_g + 1) % eval_interval != 0:
             continue
+          tot_time = time.time() - start
           gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
+          print('#%08d acc=%.4f %.0fs' % (batch_g, gen_acc, tot_time))
           
           if gen_acc < bst_gen_acc:
             continue
           bst_gen_acc = gen_acc
           global_step, = sess.run([tn_gen.global_step])
-          print('#%08d acc=%.4f %.0fs' % (global_step, bst_gen_acc, tot_time))
+          print('#%08d bstacc=%.4f %.0fs' % (global_step, bst_gen_acc, tot_time))
   print('bstacc=%.4f' % (bst_gen_acc))
 
 if __name__ == '__main__':

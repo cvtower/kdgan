@@ -29,6 +29,7 @@ class DIS():
       
       sample_logits = tf.gather_nd(self.logits, self.sample_ph)
       reward_logits = self.logits
+      # reward_logits = 2 * (tf.sigmoid(reward_logits) - 0.5)
       reward_logits = tf.sigmoid(reward_logits)
       self.rewards = tf.gather_nd(reward_logits, self.sample_ph)
 
