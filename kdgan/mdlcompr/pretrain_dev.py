@@ -74,8 +74,10 @@ def main(_):
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
+    tn_batch = -1
     for tn_epoch in range(flags.num_epoch):
       for tn_image_np, tn_label_np in datagen.generate(batch_size=flags.batch_size):
+        tn_batch += 1
         feed_dict = {tn_gen.image_ph:tn_image_np, tn_gen.hard_label_ph:tn_label_np}
         _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
         writer.add_summary(summary, tn_batch)
@@ -85,7 +87,7 @@ def main(_):
       predictions, = sess.run([vd_gen.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
       tot_time = time.time() - start
-      print('#%08d curacc=%.4f %.0fs' % (tn_batch, acc_v, tot_time))
+      print('#%08d curacc=%.4f %.0fs' % (tn_epoch, acc_v, tot_time))
 
       if acc_v < best_acc_v:
         continue
