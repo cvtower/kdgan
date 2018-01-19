@@ -70,6 +70,7 @@ def main(_):
   datagen = data_utils.Generator(flags.augmentation_type, mnist)
 
   best_acc_v, best_epoch = -np.inf, -1
+  no_impr_patience = init_patience = 10
   start = time.time()
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -89,6 +90,10 @@ def main(_):
       print('#%08d curacc=%.4f %.0fs' % (global_step, acc_v, tot_time))
 
       if acc_v < best_acc_v:
+        no_impr_patience -= 1
+        if no_impr_patience == 0:
+          no_impr_patience = init_patience
+          _ = sess.run([tn_gen.lr_update])
         continue
       best_acc_v = acc_v
       best_epoch = tn_epoch
