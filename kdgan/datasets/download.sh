@@ -48,17 +48,26 @@ dst_precomputed_dir=$dst_data_dir/Precomputed
 #
 ################################################################
 
-model_name=mdlcompr_mnist_gen
-# model_name=mdlcompr_mnist_tch
-src_home_dir=$server:/home/xiaojie
-dst_home_dir=$HOME
-relative_dir=Projects/kdgan/kdgan/checkpoints/$model_name
-src_mdlcompr_mnist_dir=$src_home_dir/$relative_dir
-dst_mdlcompr_mnist_dir=$dst_home_dir/$relative_dir
-rm -rf ${dst_mdlcompr_mnist_dir}
-mkdir ${dst_mdlcompr_mnist_dir}
-scp $src_mdlcompr_mnist_dir/* $dst_mdlcompr_mnist_dir
+download_mdlcompr()
+{
+  model_name=$1
+  echo "downloading $model_name"
+  src_home_dir=$server:/home/xiaojie
+  dst_home_dir=$HOME
+  relative_dir=Projects/kdgan/kdgan/checkpoints/$model_name
+  src_mdlcompr_mnist_dir=$src_home_dir/$relative_dir
+  dst_mdlcompr_mnist_dir=$dst_home_dir/$relative_dir
+  rm -rf ${dst_mdlcompr_mnist_dir}
+  mkdir ${dst_mdlcompr_mnist_dir}
+  scp $src_mdlcompr_mnist_dir/* $dst_mdlcompr_mnist_dir
+}
 
+model_name=mdlcompr_mnist_dis
+download_mdlcompr ${model_name}
+model_name=mdlcompr_mnist_gen
+download_mdlcompr ${model_name}
+model_name=mdlcompr_mnist_tch
+download_mdlcompr ${model_name}
 
 
 

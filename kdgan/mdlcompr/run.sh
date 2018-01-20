@@ -2,6 +2,16 @@ kdgan_dir=$HOME/Projects/kdgan/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
 
+python train_gan.py \
+  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
+  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --num_epoch=100 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=10
+exit
+
+
 python pretrain_dis.py \
   --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
   --dis_save_path=$checkpoint_dir/mdlcompr_mnist_dis/model \
@@ -21,16 +31,6 @@ python pretrain_gen.py \
 # target=0.9854
 # bstacc=0.9862 # no dropout no l2
 # bstacc=0.9884 # wt dropout wt l2
-exit
-
-
-python train_gan.py \
-  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
-  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --num_epoch=100 \
-  --num_dis_epoch=20 \
-  --num_gen_epoch=10
 exit
 
 

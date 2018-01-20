@@ -82,7 +82,7 @@ vd_dis = DIS(flags, mnist.test, is_training=False)
 vd_gen = GEN(flags, mnist.test, is_training=False)
 
 def main(_):
-  # dis_model_ckpt = utils.get_latest_ckpt(flags.dis_checkpoint_dir)
+  dis_model_ckpt = utils.get_latest_ckpt(flags.dis_checkpoint_dir)
   gen_model_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
 
   # for variable in tf.trainable_variables():
@@ -96,13 +96,13 @@ def main(_):
   with tf.train.MonitoredTrainingSession() as sess:
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     sess.run(init_op)
-    # tn_dis.saver.restore(sess, dis_model_ckpt)
+    tn_dis.saver.restore(sess, dis_model_ckpt)
     tn_gen.saver.restore(sess, gen_model_ckpt)
-    # dis_acc = metric.eval_mdlcompr(sess, vd_dis, mnist)
+    dis_acc = metric.eval_mdlcompr(sess, vd_dis, mnist)
     gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
+    print('init dis_acc=%.4f' % (dis_acc))
+    print('init gen_acc=%.4f' % (gen_acc))
     tot_time = time.time() - start
-    # print('init dis_acc=%.4f gen_acc=%.4f time=%.0fs' % (dis_acc, gen_acc, tot_time))
-    print('init gen_acc=%.4f time=%.0fs' % (gen_acc, tot_time))
     batch_d, batch_g = -1, -1
     for epoch in range(flags.num_epoch):
       for dis_epoch in range(flags.num_dis_epoch):
@@ -113,7 +113,7 @@ def main(_):
           image_np_d, label_dat_d = mnist.train.next_batch(flags.batch_size)
           feed_dict = {tn_gen.image_ph:image_np_d}
           label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
-      rint('label_dat_d={} label_gen_d={}'.format(label_dat_d.shape, label_gen_d.shape))
+          # print('label_dat_d={} label_gen_d={}'.format(label_dat_d.shape, label_gen_d.shape))
           sample_np_d, label_np_d = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
           feed_dict = {
             tn_dis.image_ph:image_np_d,
