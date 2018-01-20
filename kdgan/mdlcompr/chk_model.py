@@ -112,6 +112,9 @@ flags = tf.app.flags.FLAGS
 def main(_):
   mnist = data_utils.read_data_sets(flags.dataset_dir, one_hot=True, validation_size=0)
   print(mnist.train.images.shape, mnist.train.labels.shape)
+  train_images = np.tile(mnist.train.images, (flags.num_epoch, 1))
+  train_labels = np.tile(mnist.train.labels, (flags.num_epoch, 1))
+  print(train_images.shape, train_labels.shape)
 
 if __name__ == '__main__':
   tf.app.run()
