@@ -47,11 +47,11 @@ tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
 tf.app.flags.DEFINE_string('optimizer', 'adam', 'adam|rmsprop|sgd')
 # learning rate
-tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
+tf.app.flags.DEFINE_float('learning_rate', 0.001, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 0.0001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'fixed', 'exponential|polynomial')
 flags = tf.app.flags.FLAGS
 
 mnist = input_data.read_data_sets(flags.dataset_dir,
