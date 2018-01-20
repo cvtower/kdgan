@@ -49,6 +49,7 @@ class GEN():
           dataset.num_examples,
           flags.gen_learning_rate,
           flags.gen_learning_rate_decay_factor,
+          flags.gen_num_epochs_per_decay,
           gen_scope)
       # self.learning_rate = tf.Variable(flags.learning_rate, trainable=False)
       # self.lr_update = tf.assign(self.learning_rate, self.learning_rate * flags.learning_rate_decay_factor)

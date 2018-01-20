@@ -52,6 +52,7 @@ class DIS():
           dataset.num_examples,
           flags.dis_learning_rate,
           flags.dis_learning_rate_decay_factor,
+          flags.dis_num_epochs_per_decay,
           dis_scope)
       # self.learning_rate = tf.Variable(flags.learning_rate, trainable=False)
       # self.lr_update = tf.assign(self.learning_rate, self.learning_rate * flags.learning_rate_decay_factor)

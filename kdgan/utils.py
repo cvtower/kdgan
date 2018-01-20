@@ -206,8 +206,8 @@ def get_label_file(dataset):
   return label_file
 
 def get_lr(flags, global_step, train_data_size, 
-    learning_rate, learning_rate_decay_factor, scope_name):
-  decay_steps = int(train_data_size / flags.batch_size * flags.num_epochs_per_decay)
+    learning_rate, learning_rate_decay_factor, num_epochs_per_decay, scope_name):
+  decay_steps = int(train_data_size / flags.batch_size * num_epochs_per_decay)
   if flags.learning_rate_decay_type == 'exponential':
     name = '%s_exponential_decay_learning_rate' % scope_name
     learning_rate = tf.train.exponential_decay(learning_rate,
