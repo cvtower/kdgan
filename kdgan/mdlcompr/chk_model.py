@@ -44,6 +44,7 @@ def main(_):
   train_images = np.tile(mnist.train.images, (flags.num_epoch, 1))
   train_labels = np.tile(mnist.train.labels, (flags.num_epoch, 1))
   print(train_images.shape, train_labels.shape)
+  time.sleep(10)
 
 if __name__ == '__main__':
   tf.app.run()
