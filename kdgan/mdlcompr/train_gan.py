@@ -51,7 +51,7 @@ tf.app.flags.DEFINE_float('learning_rate', 1e-3, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 0.0001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 20.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'fixed', 'exponential|polynomial')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'exponential|fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
 mnist = input_data.read_data_sets(flags.dataset_dir,
