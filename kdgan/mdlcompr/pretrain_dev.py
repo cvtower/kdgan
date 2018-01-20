@@ -89,7 +89,7 @@ def main(_):
       tot_time = time.time() - start
       print('#%08d curacc=%.4f %.0fs' % (global_step, acc_v, tot_time))
 
-      if acc_v < best_acc_v:
+      if acc_v <= best_acc_v:
         no_impr_patience -= 1
         if no_impr_patience == 0:
           no_impr_patience = init_patience
