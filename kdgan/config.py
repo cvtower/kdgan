@@ -12,6 +12,7 @@ logs_dir = path.join(kdgan_dir, 'logs')
 temp_dir = path.join(kdgan_dir, 'temp')
 ckpt_dir = path.join(kdgan_dir, 'checkpoints')
 image_dir = path.join(yfcc_dir, 'images')
+mnist_dir = path.join(data_dir, 'mnist')
 
 slim_dir = path.join(root_dir, 'slim')
 sys.path.insert(0, slim_dir)
