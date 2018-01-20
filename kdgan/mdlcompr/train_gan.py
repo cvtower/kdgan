@@ -156,7 +156,7 @@ def main(_):
             no_impr_patience -= 1
             if no_impr_patience == 0:
               no_impr_patience = init_patience
-              sess.run([tn_dis.lr_update, tn_gen.lr_update])
+              # sess.run([tn_dis.lr_update, tn_gen.lr_update])
             continue
           bst_gen_acc = gen_acc
           global_step, = sess.run([tn_gen.global_step])
