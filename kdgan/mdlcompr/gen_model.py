@@ -44,7 +44,12 @@ class GEN():
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = tf.Variable(0, trainable=False)
-      self.learning_rate = utils.get_lr(flags, self.global_step, dataset.num_examples, gen_scope)
+      self.learning_rate = utils.get_lr(flags,
+          self.global_step,
+          dataset.num_examples,
+          flags.gen_learning_rate,
+          flags.gen_learning_rate_decay_factor,
+          gen_scope)
       # self.learning_rate = tf.Variable(flags.learning_rate, trainable=False)
       # self.lr_update = tf.assign(self.learning_rate, self.learning_rate * flags.learning_rate_decay_factor)
 

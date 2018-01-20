@@ -205,21 +205,22 @@ def get_label_file(dataset):
   label_file = path.join(dataset_dir, '%s.label' % dataset)
   return label_file
 
-def get_lr(flags, global_step, train_data_size, scope_name):
+def get_lr(flags, global_step, train_data_size, 
+    learning_rate, learning_rate_decay_factor, scope_name):
   decay_steps = int(train_data_size / flags.batch_size * flags.num_epochs_per_decay)
   if flags.learning_rate_decay_type == 'exponential':
     name = '%s_exponential_decay_learning_rate' % scope_name
-    learning_rate = tf.train.exponential_decay(flags.learning_rate,
-        global_step, decay_steps, flags.learning_rate_decay_factor,
+    learning_rate = tf.train.exponential_decay(learning_rate,
+        global_step, decay_steps, learning_rate_decay_factor,
         staircase=True,
         name=name)
   elif flags.learning_rate_decay_type == 'fixed':
     name = '%s_fixed_learning_rate' % scope_name
-    learning_rate = tf.constant(flags.learning_rate,
+    learning_rate = tf.constant(learning_rate,
         name=name)
   elif flags.learning_rate_decay_type == 'polynomial':
     name = '%s_polynomial_decay_learning_rate' % scope_name
-    learning_rate = tf.train.polynomial_decay(flags.learning_rate,
+    learning_rate = tf.train.polynomial_decay(learning_rate,
         global_step, decay_steps, flags.end_learning_rate,
         power=1.0,
         cycle=False,
