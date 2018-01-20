@@ -16,6 +16,9 @@ python pretrain_dis.py \
   --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
   --dis_save_path=$checkpoint_dir/mdlcompr_mnist_dis/model \
   --dataset_dir=$HOME/Projects/data/mnist \
+  --optimizer=sgd \
+  --learning_rate=0.001 \
+  --learning_rate_decay_type=fixed \
   --num_epoch=200
 # target=0.9854
 # bstacc=0.9862 # no dropout no l2
@@ -27,6 +30,9 @@ python pretrain_gen.py \
   --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
   --gen_save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
   --dataset_dir=$HOME/Projects/data/mnist \
+  --optimizer=sgd \
+  --learning_rate=0.001 \
+  --learning_rate_decay_type=fixed \
   --num_epoch=200
 # target=0.9854
 # bstacc=0.9862 # no dropout no l2
