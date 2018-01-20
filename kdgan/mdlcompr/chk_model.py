@@ -38,6 +38,16 @@ tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
+def main(_):
+  mnist = data_utils.read_data_sets(flags.dataset_dir, one_hot=True, validation_size=0)
+  print(mnist.train.images.shape, mnist.train.labels.shape)
+  train_images = np.tile(mnist.train.images, (flags.num_epoch, 1))
+  train_labels = np.tile(mnist.train.labels, (flags.num_epoch, 1))
+  print(train_images.shape, train_labels.shape)
+
+if __name__ == '__main__':
+  tf.app.run()
+
 # tn_dataset = data_utils.get_dataset(flags, is_training=True)
 # vd_dataset = data_utils.get_dataset(flags, is_training=False)
 # tn_gen = GEN(flags, tn_dataset, is_training=True)
@@ -109,12 +119,3 @@ flags = tf.app.flags.FLAGS
   # for label in range(10):
   #   print('%d tn=%d vd=%d' % (label, tn_label_cn[label], vd_label_cn[label]))
 
-def main(_):
-  mnist = data_utils.read_data_sets(flags.dataset_dir, one_hot=True, validation_size=0)
-  print(mnist.train.images.shape, mnist.train.labels.shape)
-  train_images = np.tile(mnist.train.images, (flags.num_epoch, 1))
-  train_labels = np.tile(mnist.train.labels, (flags.num_epoch, 1))
-  print(train_images.shape, train_labels.shape)
-
-if __name__ == '__main__':
-  tf.app.run()
