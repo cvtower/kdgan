@@ -8,6 +8,7 @@ python train_gan.py \
   --dataset_dir=$HOME/Projects/data/mnist \
   --num_epoch=100 \
   --num_dis_epoch=20 \
+  --optimizer=sgd \
   --num_gen_epoch=10
 exit
 
