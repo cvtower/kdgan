@@ -18,8 +18,8 @@ tf.app.flags.DEFINE_integer('channels', 1, '')
 tf.app.flags.DEFINE_integer('num_label', 10, '')
 # model
 tf.app.flags.DEFINE_float('tch_keep_prob', 0.50, '')
-tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
-tf.app.flags.DEFINE_string('save_path', None, '')
+tf.app.flags.DEFINE_string('tch_checkpoint_dir', None, '')
+tf.app.flags.DEFINE_string('tch_save_path', None, '')
 # optimization
 tf.app.flags.DEFINE_float('tch_weight_decay', 0.00004, 'l2 coefficient')
 tf.app.flags.DEFINE_float('tch_opt_epsilon', 1e-6, '')
@@ -67,13 +67,13 @@ init_op = tf.global_variables_initializer()
 
 def main(_):
   print('tch_keep_prob=%.2f tch_weight_decay=%.6f' % (flags.tch_keep_prob, flags.tch_weight_decay))
-  utils.delete_if_exist(flags.checkpoint_dir)
-  tch_ckpt = tf.train.latest_checkpoint(flags.checkpoint_dir)
+  utils.delete_if_exist(flags.tch_checkpoint_dir)
+  tch_ckpt = tf.train.latest_checkpoint(flags.tch_checkpoint_dir)
   # print('tch ckpt=%s' % (tch_ckpt))
   if tch_ckpt != None:
     print('todo init from tch ckpt')
     exit()
-  utils.create_if_nonexist(flags.checkpoint_dir)
+  utils.create_if_nonexist(flags.tch_checkpoint_dir)
 
   # for variable in tf.trainable_variables():
   #   num_params = 1
@@ -108,7 +108,7 @@ def main(_):
       best_acc_v = acc_v
       global_step, = sess.run([tn_tch.global_step])
       # print('#%08d acc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
-      tn_tch.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
+      tn_tch.saver.save(utils.get_session(sess), flags.tch_save_path, global_step=global_step)
   print('bstacc=%.4f' % (best_acc_v))
 
 if __name__ == '__main__':

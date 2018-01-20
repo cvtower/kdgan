@@ -53,29 +53,30 @@ def main(_):
   mnist_filename = 'mnist.h5'
   # np.save(path.join(config.temp_dir, image_filename), train_images)
   # np.save(path.join(config.temp_dir, label_filename), train_labels)
-  start_time = time.time()
-  mnist = input_data.read_data_sets(flags.dataset_dir, one_hot=True, validation_size=0)
-  datagen = data_utils.Generator(flags.augmentation_type, mnist)
-  train_images = np.zeros((mnist.train.num_examples * flags.num_epoch, 28*28), dtype=np.float32)
-  train_labels = np.zeros((mnist.train.num_examples * flags.num_epoch, 10), dtype=np.float32)
-  start_index = 0
-  for tn_epoch in range(flags.num_epoch):
-    print('tn_epoch=%d' % (tn_epoch))
-    for tn_image_np, tn_label_np in datagen.generate(batch_size=flags.batch_size):
-      end_index = start_index + tn_image_np.shape[0]
-      train_images[start_index:end_index] = tn_image_np
-      train_labels[start_index:end_index] = tn_label_np
-      start_index = end_index
-  print(train_images.shape, train_labels.shape)
-  end_time = time.time()
-  print('time=%.2f' % (end_time - start_time))
-  start_time = time.time()
-  hf = h5py.File(path.join(config.temp_dir, mnist_filename), 'w')
-  hf.create_dataset('images', data=train_images)
-  hf.create_dataset('labels', data=train_labels)
-  hf.close()
-  end_time = time.time()
-  print('time=%.2f' % (end_time - start_time))
+
+  # start_time = time.time()
+  # mnist = input_data.read_data_sets(flags.dataset_dir, one_hot=True, validation_size=0)
+  # datagen = data_utils.Generator(flags.augmentation_type, mnist)
+  # train_images = np.zeros((mnist.train.num_examples * flags.num_epoch, 28*28), dtype=np.float32)
+  # train_labels = np.zeros((mnist.train.num_examples * flags.num_epoch, 10), dtype=np.float32)
+  # start_index = 0
+  # for tn_epoch in range(flags.num_epoch):
+  #   print('tn_epoch=%d' % (tn_epoch))
+  #   for tn_image_np, tn_label_np in datagen.generate(batch_size=flags.batch_size):
+  #     end_index = start_index + tn_image_np.shape[0]
+  #     train_images[start_index:end_index] = tn_image_np
+  #     train_labels[start_index:end_index] = tn_label_np
+  #     start_index = end_index
+  # print(train_images.shape, train_labels.shape)
+  # end_time = time.time()
+  # print('time=%.2f' % (end_time - start_time))
+  # start_time = time.time()
+  # hf = h5py.File(path.join(config.temp_dir, mnist_filename), 'w')
+  # hf.create_dataset('images', data=train_images)
+  # hf.create_dataset('labels', data=train_labels)
+  # hf.close()
+  # end_time = time.time()
+  # print('time=%.2f' % (end_time - start_time))
 
   # start_time = time.time()
   # train_images = np.load(path.join(config.temp_dir, image_filename))
@@ -89,6 +90,20 @@ def main(_):
   #   label_batch = train_labels[start_index:end_index,:]
   # end_time = time.time()
   # print('time=%.2f' % (end_time - start_time))
+
+  start_time = time.time()
+  hf = h5py.File(path.join(config.temp_dir, mnist_filename), 'r')
+  train_images = hf.get('images')
+  train_labels = hf.get('labels')
+  print(train_images.shape, train_labels.shape)
+  num_batch = int(train_images.shape[0] / flags.batch_size)
+  for batch in range(num_batch):
+    start_index = batch * flags.batch_size
+    end_index = (batch + 1) * flags.batch_size
+    image_batch = train_images[start_index:end_index,:]
+    label_batch = train_labels[start_index:end_index,:]
+  end_time = time.time()
+  print('time=%.2f' % (end_time - start_time))
 
   # start_time = time.time()
   # mnist = input_data.read_data_sets(flags.dataset_dir, one_hot=True, validation_size=0)

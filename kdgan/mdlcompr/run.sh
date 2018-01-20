@@ -2,9 +2,9 @@ kdgan_dir=$HOME/Projects/kdgan/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
 
-python pretrain_gen.py \
-  --checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
-  --save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
+python pretrain_dis.py \
+  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
+  --dis_save_path=$checkpoint_dir/mdlcompr_mnist_dis/model \
   --dataset_dir=$HOME/Projects/data/mnist \
   --num_epoch=200
 # target=0.9854
@@ -13,12 +13,14 @@ python pretrain_gen.py \
 exit
 
 
-python pretrain_dev.py \
-  --checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
-  --save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
+python pretrain_gen.py \
+  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
+  --gen_save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
   --dataset_dir=$HOME/Projects/data/mnist \
   --num_epoch=200
-# target=0.9930
+# target=0.9854
+# bstacc=0.9862 # no dropout no l2
+# bstacc=0.9884 # wt dropout wt l2
 exit
 
 
@@ -37,8 +39,8 @@ do
   for tch_weight_decay in 0.0001 0.00005 0.00001
   do
     python pretrain_tch.py \
-      --checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
-      --save_path=$checkpoint_dir/mdlcompr_mnist_tch/model \
+      --tch_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
+      --tch_save_path=$checkpoint_dir/mdlcompr_mnist_tch/model \
       --dataset_dir=$HOME/Projects/data/mnist \
       --tch_keep_prob=$tch_keep_prob \
       --tch_weight_decay=$tch_weight_decay \
