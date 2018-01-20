@@ -47,8 +47,8 @@ tf.app.flags.DEFINE_integer('num_negative', 10, '')
 tf.app.flags.DEFINE_integer('num_positive', 10, '')
 tf.app.flags.DEFINE_string('optimizer', 'adam', 'adam|rmsprop|sgd')
 # learning rate
-tf.app.flags.DEFINE_float('learning_rate', 0.001, '')
-tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.94, '')
+tf.app.flags.DEFINE_float('learning_rate', 1e-3, '')
+tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.85, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 0.0001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'fixed', 'exponential|polynomial')
@@ -104,6 +104,7 @@ def main(_):
     print('init gen_acc=%.4f' % (gen_acc))
     tot_time = time.time() - start
     batch_d, batch_g = -1, -1
+    no_impr_patience = init_patience = flags.num_gen_epoch
     for epoch in range(flags.num_epoch):
       for dis_epoch in range(flags.num_dis_epoch):
         print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
@@ -152,6 +153,10 @@ def main(_):
           print('#%08d acc=%.4f %.0fs' % (batch_g, gen_acc, tot_time))
 
           if gen_acc < bst_gen_acc:
+            no_impr_patience -= 1
+            if no_impr_patience == 0:
+              no_impr_patience = init_patience
+              sess.run([tn_dis.lr_update, tn_gen.lr_update])
             continue
           bst_gen_acc = gen_acc
           global_step, = sess.run([tn_gen.global_step])
