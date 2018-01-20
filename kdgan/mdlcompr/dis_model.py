@@ -62,7 +62,8 @@ class DIS():
       gan_losses.append(tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits))
       # gan_losses.extend(self.get_regularization_losses())
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % dis_scope)
-      gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      # gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      gan_optimizer = utils.get_opt(flags, self.learning_rate, opt_epsilon=flags.dis_opt_epsilon)
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=self.global_step)
 
   def get_regularization_losses(self):

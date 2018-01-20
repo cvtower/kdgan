@@ -65,7 +65,8 @@ class GEN():
       # gan train
       gan_losses = self.get_gan_losses(flags)
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % gen_scope)
-      gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      # gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      gan_optimizer = utils.get_opt(flags, self.learning_rate, opt_epsilon=flags.gen_opt_epsilon)
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=self.global_step)
 
 
