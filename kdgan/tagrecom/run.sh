@@ -10,7 +10,7 @@ python pretrain_gen.py \
   --gen_figure_data=$figure_data_dir/gen_vgg_16.csv \
   --feature_size=4096 \
   --learning_rate=0.05 \
-  --num_epoch=100
+  --num_epoch=200
 # 386s best hit=0.7707
 exit
 
