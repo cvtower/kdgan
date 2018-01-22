@@ -47,10 +47,11 @@ tf.app.flags.DEFINE_integer('num_tch_epoch', 5, '')
 # kdgan
 tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
+tf.app.flags.DEFINE_string('gan_figure_data', None, '')
 flags = tf.app.flags.FLAGS
 
 train_data_size = utils.get_train_data_size(flags.dataset)
-eval_interval = int(train_data_size / config.train_batch_size)
+eval_interval = int(train_data_size / flags.batch_size)
 print('eval:\t#interval=%d' % (eval_interval))
 
 dis_t = DIS(flags, is_training=True)
@@ -83,17 +84,18 @@ def main(_):
   print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(data_sources_t), len(data_sources_v)))
   
   ts_list_d = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-  bt_list_d = utils.generate_batch(ts_list_d, config.train_batch_size)
+  bt_list_d = utils.generate_batch(ts_list_d, flags.batch_size)
   user_bt_d, image_bt_d, text_bt_d, label_bt_d, file_bt_d = bt_list_d
 
   ts_list_g = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-  bt_list_g = utils.generate_batch(ts_list_g, config.train_batch_size)
+  bt_list_g = utils.generate_batch(ts_list_g, flags.batch_size)
   user_bt_g, image_bt_g, text_bt_g, label_bt_g, file_bt_g = bt_list_g
 
   ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
   bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
 
   best_hit_v = -np.inf
+  figure_data = []
   start = time.time()
   with tf.Session() as sess:
     sess.run(init_op)
@@ -108,7 +110,7 @@ def main(_):
       for epoch in range(flags.num_epoch):
         for dis_epoch in range(flags.num_dis_epoch):
           print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
-          num_batch_d = math.ceil(train_data_size / config.train_batch_size)
+          num_batch_d = math.ceil(train_data_size / flags.batch_size)
           for _ in range(num_batch_d):
             batch_d += 1
             image_np_d, label_dat_d = sess.run([image_bt_d, label_bt_d])
@@ -127,7 +129,7 @@ def main(_):
 
         for gen_epoch in range(flags.num_gen_epoch):
           print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
-          num_batch_g = math.ceil(train_data_size / config.train_batch_size)
+          num_batch_g = math.ceil(train_data_size / flags.batch_size)
           for _ in range(num_batch_g):
             batch_g += 1
             image_np_g, label_dat_g = sess.run([image_bt_g, label_bt_g])
@@ -149,16 +151,29 @@ def main(_):
                 feed_dict=feed_dict)
             writer.add_summary(summary_g, batch_g)
             
-            if (batch_g + 1) % eval_interval != 0:
-              continue
-            hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
-            tot_time = time.time() - start
-            print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
-            if hit_v <= best_hit_v:
-              continue
-            best_hit_v = hit_v
-            print('best hit=%.4f' % (best_hit_v))
-  print('best hit=%.4f' % (best_hit_v))
+            # if (batch_g + 1) % eval_interval != 0:
+            #   continue
+            # hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+            # tot_time = time.time() - start
+            # print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
+            # if hit_v <= best_hit_v:
+            #   continue
+            # best_hit_v = hit_v
+            # print('best hit=%.4f' % (best_hit_v))
+        hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+        tot_time = time.time() - start
+        print('#%03d curbst=%.4f %.0fs' % (epoch, hit_v, tot_time))
+        figure_data.append((epoch, hit_v))
+        if hit_v <= best_hit_v:
+          continue
+        best_hit_v = hit_v
+  print('bsthit=%.4f' % (best_hit_v))
+
+  utils.create_if_nonexist(os.path.dirname(flags.gan_figure_data))
+  fout = open(flags.gan_figure_data, 'w')
+  for epoch, hit_v in figure_data:
+    fout.write('%d\t%.4f\n' % (epoch, hit_v))
+  fout.close()
 
 if __name__ == '__main__':
   tf.app.run()
