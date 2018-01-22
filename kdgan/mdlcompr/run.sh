@@ -6,7 +6,7 @@ python train_gan.py \
   --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
   --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
   --dataset_dir=$HOME/Projects/data/mnist \
-  --num_epoch=200 \
+  --num_epoch=400 \
   --num_dis_epoch=20 \
   --optimizer=sgd \
   --num_gen_epoch=10
