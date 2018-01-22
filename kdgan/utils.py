@@ -169,11 +169,11 @@ def evaluate_text(flags, sess, tch_v, bt_list_v):
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
   text_hit_v = []
   for batch_v in range(num_batch_v):
-    image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
-    feed_dict = {tch_v.image_ph:image_np_v}
+    text_np_v, label_np_v = sess.run([text_bt_v, label_bt_v])
+    feed_dict = {tch_v.text_ph:text_np_v}
     
-    image_logit_v, = sess.run([tch_v.logits], feed_dict=feed_dict)
-    text_hit_bt = metric.compute_hit(image_logit_v, label_np_v, flags.cutoff)
+    text_logit_v, = sess.run([tch_v.logits], feed_dict=feed_dict)
+    text_hit_bt = metric.compute_hit(text_logit_v, label_np_v, flags.cutoff)
     text_hit_v.append(text_hit_bt)
   text_hit_v = np.mean(text_hit_v)
   return text_hit_v
