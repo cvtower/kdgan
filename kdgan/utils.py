@@ -98,7 +98,7 @@ def decode_tfrecord(flags, data_sources, shuffle=True):
   Dataset = slim.dataset.Dataset
   DatasetDataProvider = slim.dataset_data_provider.DatasetDataProvider
 
-  num_label = config.num_label
+  num_label = flags.num_label
   token_to_id = load_token_to_id(flags.dataset)
   unk_token_id = token_to_id[config.unk_token]
   reader = tf.TFRecordReader

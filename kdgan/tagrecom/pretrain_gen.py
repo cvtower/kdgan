@@ -31,8 +31,9 @@ tf.app.flags.DEFINE_float('num_epochs_per_decay', 10.0, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 # dis model
 tf.app.flags.DEFINE_float('dis_weight_decay', 0.0, 'l2 coefficient')
-tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
 tf.app.flags.DEFINE_integer('num_dis_epoch', 10, '')
+tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
+tf.app.flags.DEFINE_string('gen_figure_data', None, '')
 # gen model
 tf.app.flags.DEFINE_float('kd_lamda', 0.3, '')
 tf.app.flags.DEFINE_float('gen_weight_decay', 0.001, 'l2 coefficient')
@@ -48,9 +49,9 @@ flags = tf.app.flags.FLAGS
 
 train_data_size = utils.get_train_data_size(flags.dataset)
 valid_data_size = utils.get_valid_data_size(flags.dataset)
-num_batch_t = int(flags.num_epoch * train_data_size / config.train_batch_size)
+num_batch_t = int(flags.num_epoch * train_data_size / flags.batch_size)
 num_batch_v = int(valid_data_size / config.valid_batch_size)
-eval_interval = int(train_data_size / config.train_batch_size)
+eval_interval = int(train_data_size / flags.batch_size)
 print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (
     num_batch_t, num_batch_v, eval_interval))
 
@@ -77,13 +78,14 @@ def main(_):
   
   ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
   ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
-  bt_list_t = utils.generate_batch(ts_list_t, config.train_batch_size)
+  bt_list_t = utils.generate_batch(ts_list_t, flags.batch_size)
   bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
   user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
 
-  start = time.time()
+  figure_data = []
   best_hit_v = -np.inf
+  start = time.time()
   with tf.Session() as sess:
     sess.run(init_op)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
@@ -94,8 +96,19 @@ def main(_):
         _, summary = sess.run([gen_t.pre_update, summary_op], feed_dict=feed_dict)
         writer.add_summary(summary, batch_t)
 
-        if (batch_t + 1) % eval_interval != 0:
-            continue
+        batch = batch_t + 1
+        remain = (batch * flags.batch_size) % train_data_size
+        epoch = (batch * flags.batch_size) // train_data_size
+        if remain == 0:
+          pass
+          # print('%d\t%d\t%d' % (epoch, batch, remain))
+        elif (train_data_size - remain) < flags.batch_size:
+          epoch = epoch + 1
+          # print('%d\t%d\t%d' % (epoch, batch, remain))
+        else:
+          continue
+        # if (batch_t + 1) % eval_interval != 0:
+        #     continue
 
         hit_v = []
         for batch_v in range(num_batch_v):
@@ -106,14 +119,21 @@ def main(_):
           hit_v.append(hit_bt)
         hit_v = np.mean(hit_v)
 
-        tot_time = time.time() - start
-        print('#%08d hit=%.4f %06ds' % (batch_t, hit_v, int(tot_time)))
+        figure_data.append((epoch, hit_v, batch_t))
 
         if hit_v < best_hit_v:
           continue
+        tot_time = time.time() - start
         best_hit_v = hit_v
+        print('#%03d curbst=%.4f time=%.0fs' % (epoch, hit_v, tot_time))
         gen_t.saver.save(sess, flags.gen_model_ckpt)
-  print('best hit=%.4f' % (best_hit_v))
+  print('bsthit=%.4f' % (best_hit_v))
+
+  utils.create_if_nonexist(os.path.dirname(flags.gen_figure_data))
+  fout = open(flags.gen_figure_data, 'w')
+  for epoch, hit_v, batch_t in figure_data:
+    fout.write('%d\t%.4f\t%d\n' % (epoch, hit_v, batch_t))
+  fout.close()
 
 if __name__ == '__main__':
   tf.app.run()

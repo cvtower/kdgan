@@ -14,8 +14,8 @@ class GEN():
     
     # None = batch_size
     self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size))
-    self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, config.num_label))
-    self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, config.num_label))
+    self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
+    self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
     # None = batch_size * sample_size
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
@@ -28,7 +28,7 @@ class GEN():
         net = self.image_ph
         net = slim.dropout(net, flags.dropout_keep_prob, 
             is_training=is_training)
-        net = slim.fully_connected(net, config.num_label,
+        net = slim.fully_connected(net, flags.num_label,
             activation_fn=None)
         self.logits = net
 
@@ -46,11 +46,14 @@ class GEN():
     self.saver = tf.train.Saver(save_dict)
 
     global_step = tf.Variable(0, trainable=False)
-    train_data_size = get_train_data_size(flags.dataset)
+    train_data_size = utils.get_train_data_size(flags.dataset)
     self.learning_rate = utils.get_lr(
         flags,
         global_step,
         train_data_size,
+        flags.learning_rate,
+        flags.learning_rate_decay_factor,
+        flags.num_epochs_per_decay,
         gen_scope)
 
     # pre train

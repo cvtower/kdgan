@@ -8,6 +8,7 @@ temp/
 checkpoints/
 slimmodels/
 results/runs/
+figure_data/
 
 cnn_models/
 matconvnet-1.0-beta8/
