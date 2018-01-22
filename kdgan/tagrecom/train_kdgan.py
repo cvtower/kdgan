@@ -150,6 +150,7 @@ def main(_):
         for tch_epoch in range(flags.num_tch_epoch):
           print('epoch %03d tch_epoch %03d' % (epoch, tch_epoch))
           for _ in range(num_batch_per_epoch):
+            continue
             batch_t += 1
             image_t, text_t, label_dat_t = sess.run([image_bt_t, text_bt_t, label_bt_t])
 
