@@ -115,8 +115,10 @@ def main(_):
     tch_t.saver.restore(sess, flags.tch_model_ckpt)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
-      hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
-      print('init hit=%.4f' % (hit_v))
+      gen_hit = utils.evaluate(flags, sess, gen_v, bt_list_v)
+      tch_hit = utils.evaluate(flags, sess, tch_v, bt_list_v)
+      print('hit gen=%.4f tch=%.4f' % (gen_hit, tch_hit))
+      exit()
 
       batch_d, batch_g, batch_t = -1, -1, -1
       for epoch in range(flags.num_epoch):
@@ -202,26 +204,26 @@ def main(_):
 
             # if (batch_g + 1) % eval_interval != 0:
             #     continue
-            # hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+            # gen_hit = utils.evaluate(flags, sess, gen_v, bt_list_v)
             # tot_time = time.time() - start
-            # print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
-            # if hit_v <= best_hit_v:
+            # print('#%08d hit=%.4f %06ds' % (batch_g, gen_hit, int(tot_time)))
+            # if gen_hit <= best_hit_v:
             #   continue
-            # best_hit_v = hit_v
+            # best_hit_v = gen_hit
             # print('best hit=%.4f' % (best_hit_v))
-        hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+        gen_hit = utils.evaluate(flags, sess, gen_v, bt_list_v)
         tot_time = time.time() - start
-        print('#%03d curhit=%.4f %.0fs' % (epoch, hit_v, tot_time))
-        figure_data.append((epoch, hit_v))
-        if hit_v <= best_hit_v:
+        print('#%03d curhit=%.4f %.0fs' % (epoch, gen_hit, tot_time))
+        figure_data.append((epoch, gen_hit))
+        if gen_hit <= best_hit_v:
           continue
-        best_hit_v = hit_v
+        best_hit_v = gen_hit
   print('best hit=%.4f' % (best_hit_v))
 
   utils.create_if_nonexist(os.path.dirname(flags.kdgan_figure_data))
   fout = open(flags.kdgan_figure_data, 'w')
-  for epoch, hit_v in figure_data:
-    fout.write('%d\t%.4f\n' % (epoch, hit_v))
+  for epoch, gen_hit in figure_data:
+    fout.write('%d\t%.4f\n' % (epoch, gen_hit))
   fout.close()
 
 if __name__ == '__main__':
