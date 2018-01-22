@@ -94,8 +94,8 @@ def main(_):
   ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
   bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
 
-  best_hit_v = -np.inf
   figure_data = []
+  best_hit_v = -np.inf
   start = time.time()
   with tf.Session() as sess:
     sess.run(init_op)

@@ -48,6 +48,7 @@ tf.app.flags.DEFINE_integer('num_tch_epoch', 5, '')
 # kdgan
 tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
+tf.app.flags.DEFINE_string('kdgan_figure_data', None, '')
 flags = tf.app.flags.FLAGS
 
 train_data_size = utils.get_train_data_size(flags.dataset)
@@ -104,6 +105,7 @@ def main(_):
   ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
   bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
   
+  figure_data = []
   best_hit_v = -np.inf
   start = time.time()
   with tf.Session() as sess:
@@ -198,17 +200,29 @@ def main(_):
                 feed_dict=feed_dict)
             writer.add_summary(summary_g, batch_g)
 
-            if (batch_g + 1) % eval_interval != 0:
-                continue
-            hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
-            tot_time = time.time() - start
-            print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
-            if hit_v <= best_hit_v:
-              continue
-            best_hit_v = hit_v
-            print('best hit=%.4f' % (best_hit_v))
+            # if (batch_g + 1) % eval_interval != 0:
+            #     continue
+            # hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+            # tot_time = time.time() - start
+            # print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
+            # if hit_v <= best_hit_v:
+            #   continue
+            # best_hit_v = hit_v
+            # print('best hit=%.4f' % (best_hit_v))
+        hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+        tot_time = time.time() - start
+        print('#%03d curhit=%.4f %.0fs' % (epoch, hit_v, tot_time))
+        figure_data.append((epoch, hit_v))
+        if hit_v <= best_hit_v:
+          continue
+        best_hit_v = hit_v
   print('best hit=%.4f' % (best_hit_v))
 
+  utils.create_if_nonexist(os.path.dirname(flags.kdgan_figure_data))
+  fout = open(flags.kdgan_figure_data, 'w')
+  for epoch, hit_v in figure_data:
+    fout.write('%d\t%.4f\n' % (epoch, hit_v))
+  fout.close()
 
 if __name__ == '__main__':
   tf.app.run()
