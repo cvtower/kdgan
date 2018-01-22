@@ -10,7 +10,7 @@ class TCH():
 
     # None = batch_size
     self.text_ph = tf.placeholder(tf.int64, shape=(None, None))
-    self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, config.num_label))
+    self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
     # None = batch_size * sample_size
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
@@ -29,7 +29,7 @@ class TCH():
         # word_embedding = tf.get_variable('word_embedding', initializer=initializer)
         text_embedding = tf.nn.embedding_lookup(word_embedding, self.text_ph)
         text_embedding = tf.reduce_mean(text_embedding, axis=-2)
-        self.logits = slim.fully_connected(text_embedding, config.num_label,
+        self.logits = slim.fully_connected(text_embedding, flags.num_label,
                   activation_fn=None)
 
     self.labels = tf.nn.softmax(self.logits)
@@ -46,11 +46,14 @@ class TCH():
     self.saver = tf.train.Saver(save_dict)
 
     global_step = tf.Variable(0, trainable=False)
-    train_data_size = get_train_data_size(flags.dataset)
+    train_data_size = utils.get_train_data_size(flags.dataset)
     self.learning_rate = utils.get_lr(
         flags,
         global_step,
         train_data_size,
+        flags.learning_rate,
+        flags.learning_rate_decay_factor,
+        flags.num_epochs_per_decay,
         tch_scope)
 
     # pre train

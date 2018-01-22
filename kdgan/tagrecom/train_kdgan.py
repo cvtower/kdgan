@@ -52,9 +52,9 @@ tf.app.flags.DEFINE_string('kdgan_figure_data', None, '')
 flags = tf.app.flags.FLAGS
 
 train_data_size = utils.get_train_data_size(flags.dataset)
-eval_interval = int(train_data_size / config.train_batch_size)
+eval_interval = int(train_data_size / flags.batch_size)
 print('eval:\t#interval=%d' % (eval_interval))
-num_batch_per_epoch = math.ceil(train_data_size / config.train_batch_size)
+num_batch_per_epoch = math.ceil(train_data_size / flags.batch_size)
 
 dis_t = DIS(flags, is_training=True)
 gen_t = GEN(flags, is_training=True)
@@ -91,15 +91,15 @@ def main(_):
   print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(data_sources_t), len(data_sources_v)))
   
   ts_list_d = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-  bt_list_d = utils.generate_batch(ts_list_d, config.train_batch_size)
+  bt_list_d = utils.generate_batch(ts_list_d, flags.batch_size)
   user_bt_d, image_bt_d, text_bt_d, label_bt_d, file_bt_d = bt_list_d
 
   ts_list_g = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-  bt_list_g = utils.generate_batch(ts_list_g, config.train_batch_size)
+  bt_list_g = utils.generate_batch(ts_list_g, flags.batch_size)
   user_bt_g, image_bt_g, text_bt_g, label_bt_g, file_bt_g = bt_list_g
 
   ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-  bt_list_t = utils.generate_batch(ts_list_t, config.train_batch_size)
+  bt_list_t = utils.generate_batch(ts_list_t, flags.batch_size)
   user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
 
   ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)

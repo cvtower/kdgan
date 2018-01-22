@@ -46,9 +46,9 @@ flags = tf.app.flags.FLAGS
 
 train_data_size = utils.get_train_data_size(flags.dataset)
 valid_data_size = utils.get_valid_data_size(flags.dataset)
-num_batch_t = int(flags.num_epoch * train_data_size / config.train_batch_size)
+num_batch_t = int(flags.num_epoch * train_data_size / flags.batch_size)
 num_batch_v = int(valid_data_size / config.valid_batch_size)
-eval_interval = int(train_data_size / config.train_batch_size)
+eval_interval = int(train_data_size / flags.batch_size)
 print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (
     num_batch_t, num_batch_v, eval_interval))
 
@@ -75,7 +75,7 @@ def main(_):
 
   ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
   ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
-  bt_list_t = utils.generate_batch(ts_list_t, config.train_batch_size)
+  bt_list_t = utils.generate_batch(ts_list_t, flags.batch_size)
   bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
   user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
