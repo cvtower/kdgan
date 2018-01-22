@@ -118,7 +118,6 @@ def main(_):
       gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
       tch_hit = utils.evaluate_text(flags, sess, tch_v, bt_list_v)
       print('hit gen=%.4f tch=%.4f' % (gen_hit, tch_hit))
-      exit()
 
       batch_d, batch_g, batch_t = -1, -1, -1
       for epoch in range(flags.num_epoch):
@@ -212,9 +211,11 @@ def main(_):
             # best_hit_v = gen_hit
             # print('best hit=%.4f' % (best_hit_v))
         gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
+        tch_hit = utils.evaluate_text(flags, sess, tch_v, bt_list_v)
+
         tot_time = time.time() - start
-        print('#%03d curhit=%.4f %.0fs' % (epoch, gen_hit, tot_time))
-        figure_data.append((epoch, gen_hit))
+        print('#%03d curgen=%.4f curtch=%.4f %.0fs' % (epoch, gen_hit, tch_hit, tot_time))
+        figure_data.append((epoch, gen_hit, tch_hit))
         if gen_hit <= best_hit_v:
           continue
         best_hit_v = gen_hit
@@ -222,8 +223,8 @@ def main(_):
 
   utils.create_if_nonexist(os.path.dirname(flags.kdgan_figure_data))
   fout = open(flags.kdgan_figure_data, 'w')
-  for epoch, gen_hit in figure_data:
-    fout.write('%d\t%.4f\n' % (epoch, gen_hit))
+  for epoch, gen_hit, tch_hit in figure_data:
+    fout.write('%d\t%.4f\t%.4f\n' % (epoch, gen_hit, tch_hit))
   fout.close()
 
 if __name__ == '__main__':
