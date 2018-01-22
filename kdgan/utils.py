@@ -146,7 +146,7 @@ def generate_batch(ts_list, batch_size):
       num_threads=config.num_threads)
   return user_bt, image_bt, text_bt, label_bt, file_bt
 
-def evaluate(flags, sess, gen_v, bt_list_v):
+def evaluate_image(flags, sess, gen_v, bt_list_v):
   valid_data_size = get_valid_data_size(flags.dataset)
   num_batch_v = int(valid_data_size / config.valid_batch_size)
   # print('vd:\t#batch=%d\n' % num_batch_v)
@@ -161,6 +161,22 @@ def evaluate(flags, sess, gen_v, bt_list_v):
     image_hit_v.append(image_hit_bt)
   image_hit_v = np.mean(image_hit_v)
   return image_hit_v
+
+def evaluate_text(flags, sess, tch_v, bt_list_v):
+  valid_data_size = get_valid_data_size(flags.dataset)
+  num_batch_v = int(valid_data_size / config.valid_batch_size)
+  # print('vd:\t#batch=%d\n' % num_batch_v)
+  user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
+  text_hit_v = []
+  for batch_v in range(num_batch_v):
+    image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
+    feed_dict = {tch_v.image_ph:image_np_v}
+    
+    image_logit_v, = sess.run([tch_v.logits], feed_dict=feed_dict)
+    text_hit_bt = metric.compute_hit(image_logit_v, label_np_v, flags.cutoff)
+    text_hit_v.append(text_hit_bt)
+  text_hit_v = np.mean(text_hit_v)
+  return text_hit_v
 
 def get_train_data_size(dataset):
   train_data_sizes = {

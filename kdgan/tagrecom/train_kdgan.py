@@ -115,8 +115,8 @@ def main(_):
     tch_t.saver.restore(sess, flags.tch_model_ckpt)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
-      gen_hit = utils.evaluate(flags, sess, gen_v, bt_list_v)
-      tch_hit = utils.evaluate(flags, sess, tch_v, bt_list_v)
+      gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
+      tch_hit = utils.evaluate_text(flags, sess, tch_v, bt_list_v)
       print('hit gen=%.4f tch=%.4f' % (gen_hit, tch_hit))
       exit()
 
@@ -204,14 +204,14 @@ def main(_):
 
             # if (batch_g + 1) % eval_interval != 0:
             #     continue
-            # gen_hit = utils.evaluate(flags, sess, gen_v, bt_list_v)
+            # gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
             # tot_time = time.time() - start
             # print('#%08d hit=%.4f %06ds' % (batch_g, gen_hit, int(tot_time)))
             # if gen_hit <= best_hit_v:
             #   continue
             # best_hit_v = gen_hit
             # print('best hit=%.4f' % (best_hit_v))
-        gen_hit = utils.evaluate(flags, sess, gen_v, bt_list_v)
+        gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
         tot_time = time.time() - start
         print('#%03d curhit=%.4f %.0fs' % (epoch, gen_hit, tot_time))
         figure_data.append((epoch, gen_hit))
