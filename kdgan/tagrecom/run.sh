@@ -13,9 +13,9 @@ python train_gan.py \
   --dis_weight_decay=0.0 \
   --gen_weight_decay=0.0 \
   --learning_rate=0.05 \
-  --num_epoch=2 \
-  --num_dis_epoch=2 \
-  --num_gen_epoch=1
+  --num_epoch=200 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=10
 # best hit=0.7817
 exit
 
