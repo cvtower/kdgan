@@ -282,17 +282,17 @@ def kdgan_dis_sample(flags, label_dat, label_gen, label_tch):
     # print('%s sum=%.2f' % (label_g.shape, label_g.sum()))
     # print('%s sum=%.2f' % (label_t.shape, label_t.sum()))
     num_positive = num_sample * flags.num_positive
-    sample_d = np.random.choice(config.num_label, num_positive, p=label_d)
+    sample_d = np.random.choice(flags.num_label, num_positive, p=label_d)
     for sample in sample_d:
       sample_np.append((batch, sample))
       label_np.append(1.0)
 
     num_negative = num_sample * flags.num_negative
-    sample_g = np.random.choice(config.num_label, num_negative, p=label_g)
+    sample_g = np.random.choice(flags.num_label, num_negative, p=label_g)
     for sample in sample_g:
       sample_np.append((batch, sample))
       label_np.append(0.0)
-    sample_t = np.random.choice(config.num_label, num_negative, p=label_t)
+    sample_t = np.random.choice(flags.num_label, num_negative, p=label_t)
     for sample in sample_t:
       sample_np.append((batch, sample))
       label_np.append(0.0)
