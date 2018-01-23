@@ -29,6 +29,7 @@ src_precomputed_dir=$src_data_dir/Precomputed
 dst_precomputed_dir=$dst_data_dir/Precomputed
 [ -d ${dst_precomputed_dir} ] || mkdir ${dst_precomputed_dir}
 
+<<<<<<< Updated upstream
 # model_name=vgg_16
 # scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
 # for i in $(seq -w 000 199)
@@ -81,4 +82,8 @@ download_mdlcompr ${model_name}
 
 
 
+=======
+>>>>>>> Stashed changes
 
+
+scp ${src_data_dir}/yfcc10k.vocab ${dst_precomputed_dir}
