@@ -34,8 +34,8 @@ tf.app.flags.DEFINE_string('optimizer', 'rmsprop', 'adam|sgd')
 # learning rate
 tf.app.flags.DEFINE_float('gen_learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('gen_learning_rate_decay_factor', 0.94, '')
-tf.app.flags.DEFINE_float('gen_end_learning_rate', 0.0001, '')
-tf.app.flags.DEFINE_float('num_epochs_per_decay', 2.0, '')
+tf.app.flags.DEFINE_float('gen_num_epochs_per_decay', 2.0, '')
+tf.app.flags.DEFINE_float('end_learning_rate', 0.0001, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
