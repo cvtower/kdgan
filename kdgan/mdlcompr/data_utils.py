@@ -2,7 +2,6 @@
 # TODO:
 # * distroted.npy regenerate
 
-from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
 import time
 
@@ -188,10 +187,10 @@ def extract_labels(f, one_hot=False, num_classes=10):
 
 def preprocessing(images):
   images = images.astype(np.float32)
-  images = np.multiply(images, 1.0 / 255.0)
+  # images = np.multiply(images, 1.0 / 255.0)
   ## lenet preprocessing
-  # images = np.subtract(images, 128.0)
-  # images = np.multiply(images, 1.0 / 128.0)
+  images = np.subtract(images, 128.0)
+  images = np.multiply(images, 1.0 / 128.0)
   return images
 
 
