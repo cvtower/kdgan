@@ -44,7 +44,7 @@ flags = tf.app.flags.FLAGS
 # tn_image_bt, tn_label_bt = data_utils.generate_batch(flags, tn_dataset, is_training=True)
 # vd_image_bt, vd_label_bt = data_utils.generate_batch(flags, vd_dataset, is_training=False)
 
-mnist = input_data.read_data_sets(flags.dataset_dir,
+mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,
     validation_size=0,
     reshape=True)
@@ -107,7 +107,7 @@ def main(_):
         continue
       best_acc_v = acc_v
       global_step, = sess.run([tn_tch.global_step])
-      # print('#%08d acc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
+      print('#%08d curacc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_tch.saver.save(utils.get_session(sess), flags.tch_save_path, global_step=global_step)
   print('bstacc=%.4f' % (best_acc_v))
 

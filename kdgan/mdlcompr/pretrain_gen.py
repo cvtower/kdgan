@@ -93,7 +93,7 @@ def main(_):
         continue
       best_acc_v = acc_v
       global_step, = sess.run([tn_gen.global_step])
-      print('#%08d acc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
+      print('#%08d curacc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_gen.saver.save(utils.get_session(sess), flags.gen_save_path, global_step=global_step)
   print('bstacc=%.4f' % (best_acc_v))
 
