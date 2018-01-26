@@ -1,5 +1,6 @@
 # kdgan
 pip install -Ue .
+521729 182850 7288
 
 remote.unimelb.edu.au/student
 ssh xiaojie@10.100.229.246 # cpu
