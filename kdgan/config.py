@@ -1,20 +1,25 @@
 import sys
 from os import path
 
+config_file = path.realpath(__file__)
+kdgan_dir = path.dirname(config_file)
+pypkg_dir = path.dirname(kdgan_dir)
+
 home_dir = path.expanduser('~')
 proj_dir = path.join(home_dir, 'Projects')
 data_dir = path.join(proj_dir, 'data')
 yfcc_dir = path.join(data_dir, 'yfcc100m')
-root_dir = path.join(proj_dir, 'kdgan')
+# pypkg_dir = path.join(proj_dir, 'kdgan')
 surv_dir = path.join(yfcc_dir, 'survey_data')
-kdgan_dir = path.join(root_dir, 'kdgan')
+# kdgan_dir = path.join(pypkg_dir, 'kdgan')
+
 logs_dir = path.join(kdgan_dir, 'logs')
 temp_dir = path.join(kdgan_dir, 'temp')
 ckpt_dir = path.join(kdgan_dir, 'checkpoints')
 image_dir = path.join(yfcc_dir, 'images')
 mnist_dir = path.join(data_dir, 'mnist')
 
-slim_dir = path.join(root_dir, 'slim')
+slim_dir = path.join(pypkg_dir, 'slim')
 sys.path.insert(0, slim_dir)
 
 rawtag_file = path.join(yfcc_dir, 'sample_00')
