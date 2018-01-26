@@ -1,4 +1,4 @@
-kdgan_dir=$HOME/Projects/kdgan/kdgan_xw
+kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
 
