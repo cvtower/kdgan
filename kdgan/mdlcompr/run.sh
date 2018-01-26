@@ -8,7 +8,7 @@ python pretrain_gen.py \
   --gen_save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
   --dataset_dir=$HOME/Projects/data/mnist \
   --optimizer=adam \
-  --gen_learning_rate=0.01 \
+  --gen_learning_rate=0.001 \
   --learning_rate_decay_type=exponential \
   --num_epoch=200
 # target=0.9854
