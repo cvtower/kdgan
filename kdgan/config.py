@@ -4,6 +4,7 @@ from os import path
 config_file = path.realpath(__file__)
 kdgan_dir = path.dirname(config_file)
 pypkg_dir = path.dirname(kdgan_dir)
+print('config pypkg:%s' % (pypkg_dir))
 
 home_dir = path.expanduser('~')
 proj_dir = path.join(home_dir, 'Projects')
