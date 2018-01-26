@@ -55,6 +55,16 @@ scope = tf.get_variable_scope()
 scope.reuse_variables()
 vd_gen = GEN(flags, mnist.test, is_training=False)
 
+tot_params = 0
+for variable in tf.trainable_variables():
+  num_params = 1
+  for dim in variable.shape:
+    num_params *= dim.value
+  print('%-50s (%d params)' % (variable.name, num_params))
+  tot_params += num_params
+print('%-50s (%d params)' % ('mlp', tot_params))
+exit()
+
 tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate)
 tf.summary.scalar(tn_gen.pre_loss.name, tn_gen.pre_loss)
 summary_op = tf.summary.merge_all()

@@ -20,6 +20,7 @@ tf.app.flags.DEFINE_integer('num_label', 10, '')
 tf.app.flags.DEFINE_float('tch_keep_prob', 0.50, '')
 tf.app.flags.DEFINE_string('tch_checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('tch_save_path', None, '')
+tf.app.flags.DEFINE_string('tch_model_name', None, '')
 # optimization
 tf.app.flags.DEFINE_float('tch_weight_decay', 0.00004, 'l2 coefficient')
 tf.app.flags.DEFINE_float('tch_opt_epsilon', 1e-6, '')
@@ -75,11 +76,14 @@ def main(_):
     exit()
   utils.create_if_nonexist(flags.tch_checkpoint_dir)
 
-  # for variable in tf.trainable_variables():
-  #   num_params = 1
-  #   for dim in variable.shape:
-  #     num_params *= dim.value
-  #   print('%-50s (%d params)' % (variable.name, num_params))
+  tot_params = 0
+  for variable in tf.trainable_variables():
+    num_params = 1
+    for dim in variable.shape:
+      num_params *= dim.value
+    print('%-50s (%d params)' % (variable.name, num_params))
+    tot_params += num_params
+  print('%-50s (%d params)' % (flags.tch_model_name, tot_params))
 
   best_acc_v = -np.inf
   start = time.time()
@@ -101,13 +105,13 @@ def main(_):
       predictions, = sess.run([vd_tch.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
       tot_time = time.time() - start
-      # print('#%08d hit=%.4f %06ds' % (tn_batch, acc_v, int(tot_time)))
+      print('#%08d curbst=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
 
       if acc_v < best_acc_v:
         continue
       best_acc_v = acc_v
       global_step, = sess.run([tn_tch.global_step])
-      # print('#%08d curacc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
+      print('#%08d curbst=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_tch.saver.save(utils.get_session(sess), flags.tch_save_path, global_step=global_step)
   print('bstacc=%.4f' % (best_acc_v))
 

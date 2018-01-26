@@ -16,6 +16,9 @@ ssh -NL 6006:localhost:6006 xiaojie@10.100.228.181 # gpu
 
 python mnist_bn_wi.py --weight-init xavier --bias-init zero --batch-norm True
 
+virtualenv --system-site-packages venv
+pip install --ignore-installed --upgrade tensorflow
+
 ################################################################
 #
 # baseline
