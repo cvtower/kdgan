@@ -37,7 +37,13 @@ class TCH():
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = tf.Variable(0, trainable=False)
-      self.learning_rate = utils.get_lr(flags, self.global_step, dataset.num_examples, tch_scope)
+      self.learning_rate = utils.get_lr(flags, 
+          self.global_step,
+          dataset.num_examples,
+          flags.tch_learning_rate,
+          flags.tch_learning_rate_decay_factor,
+          flags.tch_num_epochs_per_decay,
+          tch_scope)
 
       pre_losses = self.get_pre_losses()
       self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % tch_scope)
