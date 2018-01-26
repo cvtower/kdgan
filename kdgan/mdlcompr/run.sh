@@ -9,6 +9,7 @@ python pretrain_gen.py \
   --dataset_dir=$HOME/Projects/data/mnist \
   --optimizer=adam \
   --gen_learning_rate=0.001 \
+  --gen_learning_rate_decay_factor=0.88 \
   --learning_rate_decay_type=exponential \
   --num_epoch=200
 # target=0.9854
