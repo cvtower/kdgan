@@ -17,7 +17,6 @@ do
       --num_epoch=200
     # target=0.9932
     # bstacc=0.9951
-    exit
   done
 done
 exit
