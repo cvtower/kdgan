@@ -115,6 +115,7 @@ def main(_):
         for batch_v in range(num_batch_v):
           #image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
           text_np_v, image_np_v, label_np_v = sess.run([text_bt_v, image_bt_v, label_bt_v])
+          text_np_v = np.zeros_like(text_np_v)
           feed_dict = {tch_v.text_ph:text_np_v, tch_v.image_ph:image_np_v}
           logit_np_v, = sess.run([tch_v.logits], feed_dict=feed_dict)
           hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)

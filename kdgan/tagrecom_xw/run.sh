@@ -11,7 +11,7 @@ python pretrain_tch.py \
   --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
   --feature_size=4096 \
   --learning_rate=0.05 \
-  --num_epoch=200
+  --num_epoch=500
 # 0232s best hit=0.9657
 exit
 
