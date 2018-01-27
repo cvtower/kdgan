@@ -104,14 +104,18 @@ def main(_):
       feed_dict = {vd_tch.image_ph:vd_image_np}
       predictions, = sess.run([vd_tch.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
+
+      # global_step = tn_batch + 1
+      global_step, = sess.run([tn_tch.global_step])
       tot_time = time.time() - start
-      print('#%08d curacc=%.4f %.0fs' % (tn_batch, best_acc_v, tot_time))
+      avg_time = (tot_time / global_step) * (mnist.train.num_examples / flags.batch_size)
+      print('#%08d curacc=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+          (tn_batch, best_acc_v, tot_time, avg_time))
 
       if acc_v < best_acc_v:
         continue
       best_acc_v = acc_v
-      global_step, = sess.run([tn_tch.global_step])
-      print('#%08d curbst=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
+      # print('#%08d curbst=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_tch.saver.save(utils.get_session(sess), flags.tch_save_path, global_step=global_step)
   print('bstacc=%.4f' % (best_acc_v))
 
