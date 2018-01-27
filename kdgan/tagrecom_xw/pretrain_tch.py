@@ -132,11 +132,11 @@ def main(_):
         tch_t.saver.save(sess, flags.tch_model_ckpt)
   print('bsthit=%.4f' % (best_hit_v))
 
-  utils.create_if_nonexist(os.path.dirname(flags.gen_figure_data))
-  fout = open(flags.gen_figure_data, 'w')
-  for epoch, hit_v, batch_t in figure_data:
-    fout.write('%d\t%.4f\t%d\n' % (epoch, hit_v, batch_t))
-  fout.close()
+  # utils.create_if_nonexist(os.path.dirname(flags.gen_figure_data))
+  # fout = open(flags.gen_figure_data, 'w')
+  # for epoch, hit_v, batch_t in figure_data:
+  #   fout.write('%d\t%.4f\t%d\n' % (epoch, hit_v, batch_t))
+  # fout.close()
 
 if __name__ == '__main__':
   tf.app.run()
