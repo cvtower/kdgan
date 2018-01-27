@@ -61,6 +61,16 @@ scope = tf.get_variable_scope()
 scope.reuse_variables()
 vd_tch = TCH(flags, mnist.test, is_training=False)
 
+tot_params = 0
+for variable in tf.trainable_variables():
+  num_params = 1
+  for dim in variable.shape:
+    num_params *= dim.value
+  print('%-50s (%d params)' % (variable.name, num_params))
+  tot_params += num_params
+print('%-50s (%d params)' % (flags.tch_model_name, tot_params))
+input()
+
 tf.summary.scalar(tn_tch.learning_rate.name, tn_tch.learning_rate)
 tf.summary.scalar(tn_tch.pre_loss.name, tn_tch.pre_loss)
 summary_op = tf.summary.merge_all()
@@ -75,15 +85,6 @@ def main(_):
     print('todo init from tch ckpt')
     exit()
   utils.create_if_nonexist(flags.tch_checkpoint_dir)
-
-  tot_params = 0
-  for variable in tf.trainable_variables():
-    num_params = 1
-    for dim in variable.shape:
-      num_params *= dim.value
-    print('%-50s (%d params)' % (variable.name, num_params))
-    tot_params += num_params
-  print('%-50s (%d params)' % (flags.tch_model_name, tot_params))
 
   best_acc_v = -np.inf
   start = time.time()
