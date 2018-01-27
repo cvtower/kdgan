@@ -28,6 +28,7 @@ python pretrain_tch.py \
   --tch_learning_rate_decay_factor=0.96 \
   --num_epoch=200
 # target=0.9932
+# bstacc=0.9951
 exit
 
 for tch_keep_prob in 0.95 0.90 0.85 0.80 0.75

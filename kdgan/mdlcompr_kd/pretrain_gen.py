@@ -63,7 +63,6 @@ for variable in tf.trainable_variables():
   print('%-50s (%d params)' % (variable.name, num_params))
   tot_params += num_params
 print('%-50s (%d params)' % ('mlp', tot_params))
-exit()
 
 tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate)
 tf.summary.scalar(tn_gen.pre_loss.name, tn_gen.pre_loss)
@@ -96,14 +95,16 @@ def main(_):
       feed_dict = {vd_gen.image_ph:vd_image_np}
       predictions, = sess.run([vd_gen.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
+      global_step, = sess.run([tn_gen.global_step])
       tot_time = time.time() - start
-      # print('#%08d hit=%.4f %06ds' % (tn_batch, acc_v, int(tot_time)))
+      avg_time = (tot_time / global_step) * (mnist.train.num_examples / flags.batch_size)
+      print('#%08d curacc=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+          (tn_batch, best_acc_v, tot_time, avg_time))
 
       if acc_v < best_acc_v:
         continue
       best_acc_v = acc_v
-      global_step, = sess.run([tn_gen.global_step])
-      print('#%08d curacc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
+      # print('#%08d curacc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_gen.saver.save(utils.get_session(sess), flags.gen_save_path, global_step=global_step)
   print('bstacc=%.4f' % (best_acc_v))
 
