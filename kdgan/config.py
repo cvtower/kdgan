@@ -5,7 +5,7 @@ home_dir = path.expanduser('~')
 proj_dir = path.join(home_dir, 'Projects')
 data_dir = path.join(proj_dir, 'data')
 yfcc_dir = path.join(data_dir, 'yfcc100m')
-root_dir = path.join(proj_dir, 'kdgan')
+root_dir = path.join(proj_dir, 'kdgan_ys')
 surv_dir = path.join(yfcc_dir, 'survey_data')
 kdgan_dir = path.join(root_dir, 'kdgan')
 logs_dir = path.join(kdgan_dir, 'logs')
@@ -34,8 +34,7 @@ pad_token = ' '
 num_readers = 4
 num_threads = 4
 num_preprocessing_threads = 4
-
-# train_batch_size = 32
+train_batch_size = 32
 valid_batch_size = 100
 
 
