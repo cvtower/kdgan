@@ -14,6 +14,7 @@ python pretrain_gen.py \
 # target=0.9854
 # bstacc=0.9862 # no dropout no l2
 # bstacc=0.9884 # wt dropout wt l2
+# avg=0.89s/epoch
 exit
 
 python pretrain_tch.py \
@@ -29,6 +30,7 @@ python pretrain_tch.py \
   --num_epoch=200
 # target=0.9932
 # bstacc=0.9951
+# avg=2.62s/epoch
 exit
 
 for tch_keep_prob in 0.95 0.90 0.85 0.80 0.75

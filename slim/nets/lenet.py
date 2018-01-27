@@ -66,7 +66,8 @@ def lenet(images, num_classes=10, is_training=False,
     net = slim.flatten(net)
     end_points['Flatten'] = net
 
-    net = end_points['fc3'] = slim.fully_connected(net, 1024, scope='fc3')
+    # net = end_points['fc3'] = slim.fully_connected(net, 1024, scope='fc3')
+    net = end_points['fc3'] = slim.fully_connected(net, 800, scope='fc3')
     if not num_classes:
       return net, end_points
     net = end_points['dropout3'] = slim.dropout(
