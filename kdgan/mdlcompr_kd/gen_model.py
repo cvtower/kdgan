@@ -19,7 +19,8 @@ class GEN():
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
     self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
 
-    hidden_size = 800
+    # hidden_size = 800
+    hidden_size = 200
     self.gen_scope = gen_scope = 'gen'
     with tf.variable_scope(gen_scope):
       self.logits = utils.build_mlp_logits(flags, self.image_ph,
