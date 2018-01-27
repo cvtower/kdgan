@@ -105,7 +105,7 @@ def main(_):
       predictions, = sess.run([vd_tch.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
       tot_time = time.time() - start
-      print('#%08d curbst=%.4f %.0fs' % (tn_batch, best_acc_v, tot_time))
+      print('#%08d curacc=%.4f %.0fs' % (tn_batch, best_acc_v, tot_time))
 
       if acc_v < best_acc_v:
         continue
