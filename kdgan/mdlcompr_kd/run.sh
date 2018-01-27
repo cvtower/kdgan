@@ -2,6 +2,15 @@ kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
 
+python train_kd.py \
+  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
+  --tch_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --tch_model_name=lenet \
+  --preprocessing_name='lenet'
+exit
+
+
 python pretrain_dis.py \
   --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
   --dis_save_path=$checkpoint_dir/mdlcompr_mnist_dis/model \
@@ -83,15 +92,6 @@ python train_gan.py \
   --num_dis_epoch=20 \
   --optimizer=sgd \
   --num_gen_epoch=10
-exit
-
-
-python train_kd.py \
-  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
-  --tch_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --tch_model_name=lenet \
-  --preprocessing_name='lenet'
 exit
 
 
