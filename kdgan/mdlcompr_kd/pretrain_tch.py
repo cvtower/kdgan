@@ -69,7 +69,7 @@ for variable in tf.trainable_variables():
   print('%-50s (%d params)' % (variable.name, num_params))
   tot_params += num_params
 print('%-50s (%d params)' % (flags.tch_model_name, tot_params))
-input()
+# input()
 
 tf.summary.scalar(tn_tch.learning_rate.name, tn_tch.learning_rate)
 tf.summary.scalar(tn_tch.pre_loss.name, tn_tch.pre_loss)
