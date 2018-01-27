@@ -2,21 +2,6 @@ kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
 
-python pretrain_gen.py \
-  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
-  --gen_save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --optimizer=adam \
-  --gen_learning_rate=0.001 \
-  --gen_learning_rate_decay_factor=0.98 \
-  --learning_rate_decay_type=exponential \
-  --num_epoch=200
-# target=0.9854
-# bstacc=0.9862 # no dropout no l2
-# bstacc=0.9884 # wt dropout wt l2
-# avg=0.89s/epoch
-exit
-
 python pretrain_tch.py \
   --tch_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
   --tch_save_path=$checkpoint_dir/mdlcompr_mnist_tch/model \
@@ -32,6 +17,23 @@ python pretrain_tch.py \
 # bstacc=0.9951
 # avg=2.62s/epoch
 exit
+
+
+python pretrain_gen.py \
+  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
+  --gen_save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --optimizer=adam \
+  --gen_learning_rate=0.001 \
+  --gen_learning_rate_decay_factor=0.98 \
+  --learning_rate_decay_type=exponential \
+  --num_epoch=200
+# target=0.9854
+# bstacc=0.9862 # no dropout no l2
+# bstacc=0.9884 # wt dropout wt l2
+# avg=0.89s/epoch
+exit
+
 
 for tch_keep_prob in 0.95 0.90 0.85 0.80 0.75
 do
