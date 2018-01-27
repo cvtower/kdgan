@@ -1,105 +1,3 @@
-# Data generator
-# TODO:
-# * distroted.npy regenerate
-
-import numpy as np
-import time
-
-def one_hot_encode(dense, ndim=10):
-    N = dense.shape[0]
-    ret = np.zeros([N, ndim])
-    ret[np.arange(N), dense] = 1
-    return ret
-
-# train: [:, 794]
-# validation, test: images / labels
-
-def Generator(aug_type, mnist):
-    if aug_type == "none":
-        datagen = NormalGenerator(mnist)
-    elif aug_type == "affine":
-        datagen = AffineGenerator(mnist)
-    elif aug_type == "align":
-        datagen = AlignGenerator()
-    elif aug_type == "distortion":
-        datagen = DistortionGenerator()
-    else:
-        assert False, "augmentation type error [{}]".format(aug_type)
-
-    return datagen
-
-class NormalGenerator():
-    def __init__(self, mnist):
-        self.mnist = mnist
-        self.train = np.concatenate([self.mnist.train.images, self.mnist.train.labels], axis=1)
-        self.N = self.train.shape[0]
-
-    def generate(self, batch_size=64):
-        np.random.shuffle(self.train)
-        for i in range(0, self.N, batch_size):
-            batch = self.train[i:i+batch_size]
-            yield batch[:, :784], batch[:, 784:]
-
-# no overhead comparision with normal gen
-class AffineGenerator():
-    def __init__(self, mnist):
-        from keras.preprocessing.image import ImageDataGenerator
-        
-        self.mnist = mnist
-        self.datagen = ImageDataGenerator(rotation_range=15, width_shift_range=0.1, height_shift_range=0.1, zoom_range=0.1)
-        self.train_x = np.reshape(self.mnist.train.images, [-1, 28, 28, 1])
-        self.train_y = self.mnist.train.labels
-
-    def generate(self, batch_size=64):
-        cnt = 0
-        batch_n = self.train_x.shape[0] // batch_size
-        for x, y in self.datagen.flow(self.train_x, self.train_y, batch_size=batch_size):
-            ret_x = x.reshape(-1, 784)
-            yield ret_x, y
-
-            cnt += 1
-            if cnt == batch_n:
-                break
-
-# painful loading time... [380s]
-class AlignGenerator():
-    def __init__(self, filename="alignmnist.npz"):
-        loading_start = time.time()
-        print("1. file load & reshape ...")
-        align = np.load(filename)
-        train_x = align['x'].reshape(-1, 784)
-        train_y = one_hot_encode(align['y'].astype(int))
-        print("[{:.1f}s]".format(time.time()-loading_start))
-
-        print("2. normalize ...",)
-        train_x = train_x / 255.0
-        print("[{:.1f}s]".format(time.time()-loading_start))
-        
-        print("3. concat ...")
-        self.train = np.concatenate([train_x, train_y], axis=1)
-        print("=== loading done! === [{:.1f}s]".format(time.time()-loading_start))
-        self.epoch = -1
-
-    # no generation overhead
-    def generate(self, batch_size=64):
-        # 60000 * 76, first 1 epoch is original
-        self.epoch += 1
-        if self.epoch == 76:
-            self.epoch = 0
-
-        N = 60000
-        st_pos = self.epoch * N
-        ed_pos = (self.epoch+1) * N
-        data = self.train[st_pos:ed_pos] # data for each epoch
-        np.random.shuffle(data)
-        for i in range(0, N, batch_size):
-            batch = data[i:i+batch_size]
-            yield batch[:, :784], batch[:, 784:]
-
-# class DistortionGenerator():
-#     def __init__(self, filename="distorted.npz")
-#         Generator.__init__(self)
-
 from kdgan import config
 from kdgan import utils
 
@@ -115,6 +13,7 @@ from tensorflow.python.framework import dtypes
 from tensorflow.python.framework import random_seed
 from tensorflow.python.platform import gfile
 import gzip
+import hashlib
 import numpy as np
 import tensorflow as tf
 
@@ -136,7 +35,7 @@ def extract_images(f):
   Raises:
     ValueError: If the bytestream does not start with 2051.
   """
-  print('Extracting', f.name)
+  # print('Extracting', f.name)
   with gzip.GzipFile(fileobj=f) as bytestream:
     magic = _read32(bytestream)
     if magic != 2051:
@@ -171,7 +70,7 @@ def extract_labels(f, one_hot=False, num_classes=10):
   Raises:
     ValueError: If the bystream doesn't start with 2049.
   """
-  print('Extracting', f.name)
+  # print('Extracting', f.name)
   with gzip.GzipFile(fileobj=f) as bytestream:
     magic = _read32(bytestream)
     if magic != 2049:
@@ -304,7 +203,8 @@ def read_data_sets(train_dir,
                    one_hot=False,
                    dtype=dtypes.float32,
                    reshape=True,
-                   validation_size=5000,
+                   train_size=50000,
+                   valid_size=10000,
                    seed=None,
                    source_url=DEFAULT_SOURCE_URL):
   if fake_data:
@@ -331,6 +231,20 @@ def read_data_sets(train_dir,
   with gfile.Open(local_file, 'rb') as f:
     train_images = extract_images(f)
 
+  # train_num_examples = train_images.shape[0]
+  # ikeys = set()
+  # for i in range(train_num_examples):
+  #   inonzero_m, inonzero_n, inonzero_l = train_images[i].nonzero()
+  #   ikey = []
+  #   for m, n, l in zip(inonzero_m, inonzero_n, inonzero_l):
+  #     ikey.append(str(train_images[i, m, n, l]))
+  #   ikey = '_'.join(ikey)
+  #   ikey = hashlib.sha224(ikey)
+  #   ikey = ikey.hexdigest()
+  #   # print('%d %s' % (i, ikey))
+  #   ikeys.add(ikey)
+  # print('#ikey=%d' % (len(ikeys)))
+
   local_file = base.maybe_download(TRAIN_LABELS, train_dir,
                                    source_url + TRAIN_LABELS)
   with gfile.Open(local_file, 'rb') as f:
@@ -346,21 +260,34 @@ def read_data_sets(train_dir,
   with gfile.Open(local_file, 'rb') as f:
     test_labels = extract_labels(f, one_hot=one_hot)
 
-  if not 0 <= validation_size <= len(train_images):
+  if not 0 <= train_size <= len(train_images):
     raise ValueError(
-        'Validation size should be between 0 and {}. Received: {}.'
-        .format(len(train_images), validation_size))
+        'train size should be between 0 and {}. Received: {}.'
+        .format(len(train_images), train_size))
 
-  validation_images = train_images[:validation_size]
-  validation_labels = train_labels[:validation_size]
-  train_images = train_images[validation_size:]
-  train_labels = train_labels[validation_size:]
+  if not 0 <= valid_size <= len(train_images):
+    raise ValueError(
+        'valid size should be between 0 and {}. Received: {}.'
+        .format(len(train_images), valid_size))
 
+  valid_images = train_images[:valid_size]
+  valid_labels = train_labels[:valid_size]
+  # train_images = train_images[valid_size:]
+  # train_labels = train_labels[valid_size:]
+  train_images = train_images[len(train_images) - train_size:]
+  train_labels = train_labels[len(train_labels) - train_size:]
+  # print('train image={} label={}'.format(train_images.shape, train_labels.shape))
+  # train_label_cn = {}
+  # for train_label in train_labels:
+  #   train_label = train_label.nonzero()[0][0]
+  #   train_label_cn[train_label] = train_label_cn.get(train_label, 0) + 1
+  # for train_label, count in train_label_cn.items():
+  #   print('train label=%d count=%d' % (train_label, count))
 
   options = dict(dtype=dtype, reshape=reshape, seed=seed)
 
   train = DataSet(train_images, train_labels, **options)
-  validation = DataSet(validation_images, validation_labels, **options)
+  validation = DataSet(valid_images, valid_labels, **options)
   test = DataSet(test_images, test_labels, **options)
 
   return base.Datasets(train=train, validation=validation, test=test)

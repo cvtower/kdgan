@@ -2,19 +2,19 @@ kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
 
-python pretrain_gen.py \
-  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
-  --gen_save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
+python pretrain_dis.py \
+  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
+  --dis_save_path=$checkpoint_dir/mdlcompr_mnist_dis/model \
   --dataset_dir=$HOME/Projects/data/mnist \
+  --dis_model_name=lenet_v1 \
+  --dis_keep_prob=0.75 \
+  --dis_weight_decay=0.00001 \
   --optimizer=adam \
-  --gen_learning_rate=0.001 \
-  --gen_learning_rate_decay_factor=0.98 \
-  --learning_rate_decay_type=exponential \
+  --dis_learning_rate=0.001 \
+  --dis_learning_rate_decay_factor=0.96 \
+  --train_size=500 \
   --num_epoch=200
-# target=0.9854
-# bstacc=0.9862 # no dropout no l2
-# bstacc=0.9884 # wt dropout wt l2
-# avg=0.89s/epoch
+# target=0.9932
 exit
 
 
@@ -28,10 +28,28 @@ python pretrain_tch.py \
   --optimizer=adam \
   --tch_learning_rate=0.001 \
   --tch_learning_rate_decay_factor=0.96 \
+  --train_size=500 \
   --num_epoch=200
 # target=0.9932
 # bstacc=0.9951
 # avg=2.62s/epoch
+exit
+
+
+python pretrain_gen.py \
+  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
+  --gen_save_path=$checkpoint_dir/mdlcompr_mnist_gen/model \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --optimizer=adam \
+  --gen_learning_rate=0.001 \
+  --gen_learning_rate_decay_factor=0.98 \
+  --learning_rate_decay_type=exponential \
+  --train_size=500 \
+  --num_epoch=200
+# target=0.9854
+# bstacc=0.9862 # no dropout no l2
+# bstacc=0.9884 # wt dropout wt l2
+# avg=0.89s/epoch
 exit
 
 
@@ -65,17 +83,6 @@ python train_gan.py \
   --num_dis_epoch=20 \
   --optimizer=sgd \
   --num_gen_epoch=10
-exit
-
-
-python pretrain_dis.py \
-  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
-  --dis_save_path=$checkpoint_dir/mdlcompr_mnist_dis/model \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --num_epoch=200
-# target=0.9854
-# bstacc=0.9862 # no dropout no l2
-# bstacc=0.9884 # wt dropout wt l2
 exit
 
 

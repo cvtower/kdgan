@@ -18,15 +18,16 @@ class DIS():
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
     self.dis_label_ph = tf.placeholder(tf.float32, shape=(None,))
 
-    hidden_size = 800
     self.dis_scope = dis_scope = 'dis'
     with tf.variable_scope(dis_scope):
-      self.logits = utils.build_mlp_logits(flags, self.image_ph,
-        hidden_size=hidden_size,
-        keep_prob=flags.dis_keep_prob,
-        weight_decay=flags.dis_weight_decay,
-        is_training=is_training)
-      
+      network_fn = nets_factory.get_network_fn(flags.dis_model_name,
+          num_classes=flags.num_label,
+          weight_decay=flags.dis_weight_decay,
+          is_training=is_training)
+      assert flags.image_size==network_fn.default_image_size
+      net = tf.reshape(self.image_ph, [-1, flags.image_size, flags.image_size, flags.channels])
+      self.logits, _ = network_fn(net, dropout_keep_prob=flags.dis_keep_prob)
+
       sample_logits = tf.gather_nd(self.logits, self.sample_ph)
       reward_logits = self.logits
       # reward_logits = 2 * (tf.sigmoid(reward_logits) - 0.5)
@@ -37,13 +38,12 @@ class DIS():
         self.predictions = tf.argmax(self.logits, axis=1)
         return
 
-      save_dict, var_list = {}, []
+      save_dict = {}
       for variable in tf.trainable_variables():
         if not variable.name.startswith(dis_scope):
           continue
         print('%-50s added to DIS saver' % variable.name)
         save_dict[variable.name] = variable
-        var_list.append(variable)
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = tf.Variable(0, trainable=False)

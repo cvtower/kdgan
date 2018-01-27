@@ -16,6 +16,8 @@ tf.app.flags.DEFINE_string('dataset_dir', None, '')
 tf.app.flags.DEFINE_integer('image_size', 28, '')
 tf.app.flags.DEFINE_integer('channels', 1, '')
 tf.app.flags.DEFINE_integer('num_label', 10, '')
+tf.app.flags.DEFINE_integer('train_size', 60000, '')
+tf.app.flags.DEFINE_integer('valid_size', 0, '')
 # model
 tf.app.flags.DEFINE_float('tch_keep_prob', 0.50, '')
 tf.app.flags.DEFINE_string('tch_checkpoint_dir', None, '')
@@ -47,7 +49,8 @@ flags = tf.app.flags.FLAGS
 
 mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,
-    validation_size=0,
+    train_size=flags.train_size,
+    valid_size=flags.valid_size,
     reshape=True)
 print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
 tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
