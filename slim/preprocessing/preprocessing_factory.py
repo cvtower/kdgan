@@ -53,6 +53,7 @@ def get_preprocessing(name, is_training=False):
       'inception_v4': inception_preprocessing,
       'inception_resnet_v2': inception_preprocessing,
       'lenet': lenet_preprocessing,
+      'lenet_v1': lenet_preprocessing,
       'mobilenet_v1': inception_preprocessing,
       'nasnet_mobile': inception_preprocessing,
       'nasnet_large': inception_preprocessing,

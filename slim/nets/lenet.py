@@ -81,7 +81,7 @@ lenet.default_image_size = 28
 
 
 def lenet_v1(images, num_classes=10, is_training=False,
-          dropout_keep_prob=0.5,
+          dropout_keep_prob=0.8,
           prediction_fn=slim.softmax,
           scope='LeNetV1'):
   """Creates a variant of the LeNetV1 model.
@@ -116,14 +116,17 @@ def lenet_v1(images, num_classes=10, is_training=False,
   end_points = {}
 
   with tf.variable_scope(scope, 'LeNetV1', [images]):
-    net = end_points['conv1'] = slim.conv2d(images, 32, [5, 5], scope='conv1')
+    # net = end_points['conv1'] = slim.conv2d(images, 32, [5, 5], scope='conv1')
+    net = end_points['conv1'] = slim.conv2d(images, 8, [5, 5], scope='conv1')
     net = end_points['pool1'] = slim.max_pool2d(net, [2, 2], 2, scope='pool1')
-    net = end_points['conv2'] = slim.conv2d(net, 64, [5, 5], scope='conv2')
+    # net = end_points['conv2'] = slim.conv2d(net, 64, [5, 5], scope='conv2')
+    net = end_points['conv2'] = slim.conv2d(net, 16, [5, 5], scope='conv2')
     net = end_points['pool2'] = slim.max_pool2d(net, [2, 2], 2, scope='pool2')
     net = slim.flatten(net)
     end_points['Flatten'] = net
 
-    net = end_points['fc3'] = slim.fully_connected(net, 1024, scope='fc3')
+    # net = end_points['fc3'] = slim.fully_connected(net, 1024, scope='fc3')
+    net = end_points['fc3'] = slim.fully_connected(net, 200, scope='fc3')
     if not num_classes:
       return net, end_points
     net = end_points['dropout3'] = slim.dropout(
