@@ -1,5 +1,6 @@
 # kdgan
 pip install -Ue .
+521729 182850 7288
 
 remote.unimelb.edu.au/student
 ssh xiaojie@10.100.229.246 # cpu
@@ -14,6 +15,9 @@ ssh -NL 6006:localhost:6006 xiaojie@10.100.229.246 # cpu
 ssh -NL 6006:localhost:6006 xiaojie@10.100.228.181 # gpu
 
 python mnist_bn_wi.py --weight-init xavier --bias-init zero --batch-norm True
+
+virtualenv --system-site-packages venv
+pip install --ignore-installed --upgrade tensorflow
 
 ################################################################
 #
