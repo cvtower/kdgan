@@ -71,7 +71,7 @@ def main(_):
     for dim in variable.shape:
       num_params *= dim.value
     print('%-50s (%d params)' % (variable.name, num_params))
-  raw_input()
+  # input()
 
   data_sources_t = utils.get_data_sources(flags, is_training=True)
   data_sources_v = utils.get_data_sources(flags, is_training=False)
