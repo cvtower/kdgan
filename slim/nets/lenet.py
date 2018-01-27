@@ -60,10 +60,10 @@ def lenet(images, num_classes=10, is_training=False,
 
   with tf.variable_scope(scope, 'LeNet', [images]):
     # net = end_points['conv1'] = slim.conv2d(images, 32, [5, 5], scope='conv1')
-    net = end_points['conv1'] = slim.conv2d(images, 16, [5, 5], scope='conv1')
+    net = end_points['conv1'] = slim.conv2d(images, 8, [5, 5], scope='conv1')
     net = end_points['pool1'] = slim.max_pool2d(net, [2, 2], 2, scope='pool1')
     # net = end_points['conv2'] = slim.conv2d(net, 64, [5, 5], scope='conv2')
-    net = end_points['conv2'] = slim.conv2d(net, 32, [5, 5], scope='conv2')
+    net = end_points['conv2'] = slim.conv2d(net, 8, [5, 5], scope='conv2')
     net = end_points['pool2'] = slim.max_pool2d(net, [2, 2], 2, scope='pool2')
     net = slim.flatten(net)
     end_points['Flatten'] = net

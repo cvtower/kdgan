@@ -78,7 +78,7 @@ def main(_):
     exit()
   utils.create_if_nonexist(flags.gen_checkpoint_dir)
 
-  best_acc_v = -np.inf
+  best_acc_v = 0.0
   start = time.time()
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
