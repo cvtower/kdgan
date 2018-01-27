@@ -6,7 +6,7 @@ python pretrain_tch.py \
   --tch_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
   --tch_save_path=$checkpoint_dir/mdlcompr_mnist_tch/model \
   --dataset_dir=$HOME/Projects/data/mnist \
-  --tch_model_name=lenet \
+  --tch_model_name=lenet_v1 \
   --tch_keep_prob=0.75 \
   --tch_weight_decay=0.00001 \
   --optimizer=adam \
