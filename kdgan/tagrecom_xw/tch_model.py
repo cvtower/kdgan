@@ -50,8 +50,14 @@ class TCH():
         #self.logits = slim.fully_connected(text_embedding, flags.num_label,
                   #activation_fn=None)
         self.combined_layer = tf.concat([net, text_embedding], 1)
-        self.logits =slim.fully_connected(self.combined_layer, flags.num_label,
-                activation_fn=None) 
+
+
+        net = slim.fully_connected(self.combined_layer, 800,
+            weights_initializer=tf.truncated_normal_initializer(stddev=0.1),
+            activation_fn=tf.nn.relu)
+
+        self.logits =slim.fully_connected(net, flags.num_label,
+            activation_fn=None) 
         #"""
         self.labels = tf.nn.softmax(self.logits)
 
