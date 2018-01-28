@@ -18,6 +18,7 @@ python mnist_bn_wi.py --weight-init xavier --bias-init zero --batch-norm True
 
 virtualenv --system-site-packages venv
 pip install --ignore-installed --upgrade tensorflow
+pip install --ignore-installed -r requirements.txt
 
 ################################################################
 #

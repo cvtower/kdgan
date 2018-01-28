@@ -13,7 +13,7 @@ class GEN():
     num_feature = flags.image_size * flags.image_size * flags.channels
     self.image_ph = tf.placeholder(tf.float32, shape=(None, num_feature))
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
-    self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
+    self.soft_logit_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
     # None = batch_size * sample_size
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
@@ -69,6 +69,12 @@ class GEN():
       # pre_grads, _ = tf.clip_by_global_norm(pre_grads, flags.clip_norm)
       # self.pre_update = pre_optimizer.apply_gradients(zip(pre_grads, pre_vars), global_step=self.global_step)
 
+      # kd train
+      kd_losses = self.get_kd_losses(flags)
+      self.kd_loss = tf.add_n(kd_losses, name='%s_kd_loss' % gen_scope)
+      kd_optimizer = utils.get_opt(flags, self.learning_rate, opt_epsilon=flags.gen_opt_epsilon)
+      self.kd_update = kd_optimizer.minimize(self.kd_loss, global_step=self.global_step)
+
       # gan train
       gan_losses = self.get_gan_losses(flags)
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % gen_scope)
@@ -91,6 +97,17 @@ class GEN():
     pre_losses.extend(self.get_regularization_losses())
     print('#pre_losses=%d' % (len(pre_losses)))
     return pre_losses
+
+  def get_kd_losses(self, flags):
+    gen_logits = tf.scalar_mul(1.0 / flags.temperature, self.logits)
+    tch_logits = tf.scalar_mul(1.0 / flags.temperature, self.soft_logit_ph)
+    hard_loss = tf.losses.softmax_cross_entropy(self.hard_label_ph, gen_logits)
+    hard_loss = flags.kd_hard_pct * hard_loss
+    soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
+    # soft_loss = tf.nn.l2_loss(tch_logits - gen_logits)
+    soft_loss = (1 - flags.kd_hard_pct) * soft_loss
+    kd_losses = [hard_loss, soft_loss]
+    return kd_losses
 
   def get_gan_losses(self, flags):
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)

@@ -6,8 +6,8 @@ python train_kd.py \
   --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
   --tch_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
   --dataset_dir=$HOME/Projects/data/mnist \
-  --tch_model_name=lenet \
-  --preprocessing_name='lenet'
+  --train_size=500 \
+  --tch_model_name=lenet_v1
 exit
 
 
@@ -97,8 +97,7 @@ exit
 
 python chk_model.py \
   --dataset_dir=$HOME/Projects/data/mnist \
-  --model_name=lenet \
-  --preprocessing_name='lenet'
+  --model_name=lenet
 exit
 
 
