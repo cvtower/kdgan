@@ -3,11 +3,17 @@ checkpoint_dir=$kdgan_dir/checkpoints
 
 
 python train_kd.py \
+  --kd_hard_pct=1.0 \
+  --temperature=1.0 \
   --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
   --tch_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_tch \
   --dataset_dir=$HOME/Projects/data/mnist \
+  --tch_model_name=lenet_v1 \
+  --tch_keep_prob=0.75 \
+  --optimizer=adam \
+  --tch_opt_epsilon=1e-8 \
   --train_size=500 \
-  --tch_model_name=lenet_v1
+  --num_epoch=200
 exit
 
 
@@ -35,6 +41,7 @@ python pretrain_tch.py \
   --tch_keep_prob=0.75 \
   --tch_weight_decay=0.00001 \
   --optimizer=adam \
+  --tch_opt_epsilon=1e-8 \
   --tch_learning_rate=0.001 \
   --tch_learning_rate_decay_factor=0.96 \
   --train_size=500 \

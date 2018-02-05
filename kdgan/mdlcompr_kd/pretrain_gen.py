@@ -22,6 +22,8 @@ tf.app.flags.DEFINE_integer('valid_size', 0, '')
 tf.app.flags.DEFINE_float('gen_keep_prob', 0.88, '')
 tf.app.flags.DEFINE_string('gen_checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('gen_save_path', None, '')
+tf.app.flags.DEFINE_float('kd_hard_pct', 0.3, '')
+tf.app.flags.DEFINE_float('temperature', 3.0, '')
 # optimization
 tf.app.flags.DEFINE_float('gen_weight_decay', 0.00004, 'l2 coefficient')
 tf.app.flags.DEFINE_float('gen_opt_epsilon', 1e-6, '')
@@ -73,18 +75,17 @@ summary_op = tf.summary.merge_all()
 init_op = tf.global_variables_initializer()
 
 def main(_):
-  utils.delete_if_exist(flags.gen_checkpoint_dir)
-  gen_ckpt = tf.train.latest_checkpoint(flags.gen_checkpoint_dir)
-  # print('gen ckpt=%s' % (gen_ckpt))
-  if gen_ckpt != None:
-    print('todo init from gen ckpt')
-    exit()
+  # utils.delete_if_exist(flags.gen_checkpoint_dir)
+  gen_model_ckpt = tf.train.latest_checkpoint(flags.gen_checkpoint_dir)
+  # print('gen ckpt=%s' % (gen_model_ckpt))
   utils.create_if_nonexist(flags.gen_checkpoint_dir)
 
-  best_acc_v = 0.0
   start = time.time()
   with tf.train.MonitoredTrainingSession() as sess:
+    best_acc_v = metric.eval_mdlcompr(sess, vd_gen, mnist)
     sess.run(init_op)
+    if gen_model_ckpt != None:
+      tn_gen.saver.restore(sess, gen_model_ckpt)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
@@ -94,21 +95,18 @@ def main(_):
 
       if (tn_batch + 1) % eval_interval != 0:
         continue
-      vd_image_np, vd_label_np = mnist.test.images, mnist.test.labels
-      feed_dict = {vd_gen.image_ph:vd_image_np}
-      predictions, = sess.run([vd_gen.predictions], feed_dict=feed_dict)
-      acc_v = metric.compute_acc(predictions, vd_label_np)
+      acc_v = metric.eval_mdlcompr(sess, vd_gen, mnist)
       global_step, = sess.run([tn_gen.global_step])
       tot_time = time.time() - start
       avg_time = (tot_time / global_step) * (mnist.train.num_examples / flags.batch_size)
-      print('#%08d curacc=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-          (tn_batch, best_acc_v, tot_time, avg_time))
+      print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+          (tn_batch, acc_v, best_acc_v, tot_time, avg_time))
 
       if acc_v < best_acc_v:
         continue
       best_acc_v = acc_v
       # print('#%08d curacc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
-      tn_gen.saver.save(utils.get_session(sess), flags.gen_save_path, global_step=global_step)
+      # tn_gen.saver.save(utils.get_session(sess), flags.gen_save_path, global_step=global_step)
   print('bstacc=%.4f' % (best_acc_v))
 
 if __name__ == '__main__':

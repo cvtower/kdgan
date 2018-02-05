@@ -58,7 +58,7 @@ mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
-    reshape=False)
+    reshape=True)
 print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
 tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
 print('tn #batch=%d' % (tn_num_batch))
@@ -101,29 +101,34 @@ def main(_):
     tch_acc = metric.eval_mdlcompr(sess, vd_tch, mnist)
     tot_time = time.time() - start
     print('inigen=%.4f initch=%.4f tot=%.0fs' % (gen_acc, tch_acc, tot_time))
-    exit()
+
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
+
+      feed_dict = {vd_tch.image_ph:tn_image_np}
+      soft_logit_np, = sess.run([vd_tch.logits], feed_dict=feed_dict)
+
       feed_dict = {
         tn_gen.image_ph:tn_image_np,
         tn_gen.hard_label_ph:tn_label_np,
-        tn_tch.image_ph:tn_image_np,
+        tn_gen.soft_logit_ph:soft_logit_np,
       }
-      _, summary = sess.run([kd_loss, summary_op], feed_dict=feed_dict)
+      _, summary = sess.run([tn_gen.kd_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
 
       if (tn_batch + 1) % eval_interval != 0:
         continue
       gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
+
+      global_step, = sess.run([tn_gen.global_step])
       tot_time = time.time() - start
-      print('#%08d gen_acc=%.4f time=%.0fs' % (tn_batch, gen_acc, tot_time))
+      avg_time = (tot_time / global_step) * (mnist.train.num_examples / flags.batch_size)
+      print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+          (tn_batch, gen_acc, bst_gen_acc, tot_time, avg_time))
 
       if gen_acc <= bst_gen_acc:
         continue
       bst_gen_acc = gen_acc
-      global_step, = sess.run([global_step])
-      print('#%08d gen_acc=%.4f time=%.0fs' % (global_step, bst_gen_acc, tot_time))
-      # tn_gen.saver.save(utils.get_session(sess), flags.save_path, global_step=global_step)
   print('bstacc=%.4f' % (bst_gen_acc))
 
 if __name__ == '__main__':
