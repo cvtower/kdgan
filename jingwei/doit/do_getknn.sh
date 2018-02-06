@@ -1,18 +1,6 @@
 # ./do_getknn.sh yfcc9k yfcc9k vgg-verydeep-16-fc7relu 0 1 1
 # ./do_getknn.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu 0 1 1
 
-# export BASEDIR=/Users/xiaojiew1/Projects # mac
-export BASEDIR=/home/xiaojie/Projects
-export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
-export SURVEY_CODE=$BASEDIR/kdgan/jingwei
-export SURVEY_DB=$BASEDIR/kdgan/results/runs
-# export MATLAB_PATH=/Applications/MATLAB_R2017b.app # mac
-export MATLAB_PATH=/usr/local
-export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
-
-rootpath=$SURVEY_DATA
-codepath=$SURVEY_CODE
-
 if [ "$#" -ne 6 ]; then
     echo "Usage: $0 trainCollection testCollection feature uu numjobs job"
     exit
@@ -34,6 +22,7 @@ uniqueUser=$4
 numjobs=$5
 job=$6
 
+echo $codepath
 python $codepath/instance_based/getknn.py \
     $trainCollection $testCollection $feature \
     --distance $distance \

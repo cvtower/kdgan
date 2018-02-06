@@ -15,167 +15,94 @@ INFO = __file__
 
 
 def process(options, collection, annotationName, runfile):
-    rootpath = options.rootpath
-    
-    apscorer = getScorer('AP')
-    ndcg = getScorer('NDCG@20')
-    ndcg2 = getScorer('NDCG2@20')
-    p1scorer = getScorer('P@1')
-    p3scorer = getScorer('P@3')
-    p5scorer = getScorer('P@5')
+  rootpath = options.rootpath
+  
+  p1_scorer = getScorer('P@1')
+  p3_scorer = getScorer('P@3')
+  r1_scorer = getScorer('R@1')
+  r3_scorer = getScorer('R@3')
+  ndcg1_scorer = getScorer('NDCG2@1')
+  ndcg3_scorer = getScorer('NDCG2@3')
+  ap_scorer = getScorer('AP')
+  rr_scorer = getScorer('RR')
 
-    datafiles = [x.strip() for x in open(runfile).readlines() if x.strip() and not x.strip().startswith('#')]
-    nr_of_runs = len(datafiles)
-    
-    concepts = readConcepts(collection, annotationName, rootpath=rootpath)  
-    nr_of_concepts = len(concepts)
-    
-    # printStatus(INFO, 'read annotations from files')
-    
-    name2label = [{} for i in range(nr_of_concepts)]
-    hit_imgset = [[] for i in range(nr_of_concepts)]
-    rel_conset = {}
-    
-    for i in range(nr_of_concepts):
-        names,labels = readAnnotationsFrom(collection, annotationName, concepts[i], skip_0=False, rootpath=rootpath)
-        #names = map(int, names)
-        name2label[i] = dict(zip(names,labels))
-        # print(name2label[i])
-        # exit()
+  datafiles = [x.strip() for x in open(runfile).readlines() if x.strip() and not x.strip().startswith('#')]
+  nr_of_runs = len(datafiles)
+  
+  concepts = readConcepts(collection, annotationName, rootpath=rootpath)  
+  nr_of_concepts = len(concepts)
+  
+  name2label = [{} for i in range(nr_of_concepts)]
+  rel_conset = {}
+  
+  for i in range(nr_of_concepts):
+    names,labels = readAnnotationsFrom(collection, annotationName, concepts[i], skip_0=False, rootpath=rootpath)
+    #names = map(int, names)
+    name2label[i] = dict(zip(names,labels))
 
-        for im,lab in zip(names,labels):
-            if lab > 0:
-                rel_conset.setdefault(im,set()).add(i)
-        # print(rel_conset)
-        # exit()
+    for im,lab in zip(names,labels):
+      if lab > 0:
+        rel_conset.setdefault(im,set()).add(i)
 
-        label_file = os.path.join(rootpath, collection, 'tagged,lemm', '%s.txt'% concepts[i])
-        # print(label_file)
-        # exit()
-        try:
-            hit_imgset[i] = set(map(string.strip, map(str, open(label_file).readlines()))) # set(map(int, open(label_file).readlines()))
-        except:
-            hit_imgset[i] = set()
-        # printStatus(INFO, 'readLabeledImageSet for %s-%s -> %d hits' % (collection, concepts[i], len(hit_imgset[i])))
-        
-    ap_table = np.zeros((nr_of_runs, nr_of_concepts))
-    ap2_table = np.zeros((nr_of_runs, nr_of_concepts))
-    ndcg_table = np.zeros((nr_of_runs, nr_of_concepts))
-    ndcg2_table = np.zeros((nr_of_runs, nr_of_concepts))
-    
-    # print '#'*100
-    # print '# method miap hit1 hit5'
-    print 'method miap hit1 hit3 hit5'
-    # print '#'*100
-    
-    for run_idx in range(nr_of_runs):
-        data = pickle.load(open(datafiles[run_idx],'rb'))
-        scores = data['scores']
-        assert(scores.shape[1] == nr_of_concepts)
-        imset = data['id_images']
-        # for im in imset:
-        #     print(im)
-        #     raw_input()
-        nr_of_images = len(imset)
-        #print datafiles[run_idx], imset[:5], imset[-5:]
-                   
-        for c_idx in range(nr_of_concepts):
-            ground_truth = name2label[c_idx]
-            # print(ground_truth)
-            ranklist =  zip(imset, scores[:,c_idx])
-            ranklist.sort(key=lambda v:(v[1], str(v[0])), reverse=True)
-            # print(ranklist)
-            ranklist = [x for x in ranklist if x[0] in ground_truth]
-            # print(ranklist)
-            
-            sorted_labels = [ground_truth[x[0]] for x in ranklist]
-            # print(sorted_labels)
-            assert(len(sorted_labels)>0)
-            #print concepts[c_idx], ranklist[:5], sorted_labels[:5]
+  # ('7975436322', set([33]))
+  # for im, im_labels in rel_conset.items():
+  #   print(im, im_labels)
 
-            ap_table[run_idx, c_idx] = apscorer.score(sorted_labels)
-            # print(hit_imgset[c_idx])
-            # sorted_labels = [ground_truth[x[0]] for x in ranklist if x[0] in hit_imgset[c_idx]]
-            # print(sorted_labels)
-            # raw_input()
-            ap2_table[run_idx, c_idx] = apscorer.score(sorted_labels)
-            ndcg_table[run_idx, c_idx] = ndcg.score(sorted_labels)
-            ndcg2_table[run_idx, c_idx] = ndcg2.score(sorted_labels)
+  for run_idx in range(nr_of_runs):
+    data = pickle.load(open(datafiles[run_idx],'rb'))
+    scores = data['scores']
+    assert(scores.shape[1] == nr_of_concepts)
+    imset = data['id_images']
+    # for im in imset:
+    #     print(im)
+    #     raw_input()
+    nr_of_images = len(imset)
+    #print datafiles[run_idx], imset[:5], imset[-5:]
 
-        # res = np.zeros((nr_of_images, 3))
-        res = np.zeros((nr_of_images, 4))
-        for j in range(nr_of_images):
-            ranklist = zip(range(nr_of_concepts), scores[j,:])
-            ranklist.sort(key=lambda v:v[1], reverse=True)
-            # print(ranklist)
-            # raw_input()
-            rel_set = rel_conset.get(imset[j], set())
-            sorted_labels = [int(x[0] in rel_set) for x in ranklist]
-            ap = apscorer.score(sorted_labels)
-            hit1 = p1scorer.score(sorted_labels)
-            hit3 = p3scorer.score(sorted_labels) > 0.1
-            hit5 = p5scorer.score(sorted_labels) > 0.1
-            # print(imset[j], sorted_labels[0:5], ap, hit1, hit5)
-            # raw_input()
-            # res[j,:] = [ap, hit1, hit5]
-            res[j,:] = [ap, hit1, hit3, hit5]
-        avg_perf = res.mean(axis=0)
-        print os.path.split(datafiles[run_idx])[-1], ' '.join(['%.3f' % x for x in avg_perf])
+    res = np.zeros((nr_of_images, 8))
+    for j in range(nr_of_images):
+      ranklist = zip(range(nr_of_concepts), scores[j,:])
+      ranklist.sort(key=lambda v:v[1], reverse=True)
+      # print(ranklist)
+      # raw_input()
+      rel_set = rel_conset.get(imset[j], set())
+      sorted_labels = [int(x[0] in rel_set) for x in ranklist]
+      # print(sorted_labels)
+      # raw_input()
+      assert len(sorted_labels) == nr_of_concepts
+      p1 = p1_scorer.score(sorted_labels)
+      p3 = p3_scorer.score(sorted_labels)
+      r1 = r1_scorer.score(sorted_labels)
+      r3 = r3_scorer.score(sorted_labels)
+      ndcg1 = ndcg1_scorer.score(sorted_labels)
+      ndcg3 = ndcg3_scorer.score(sorted_labels)
+      ap = ap_scorer.score(sorted_labels)
+      rr = rr_scorer.score(sorted_labels)
 
-    return
-
-    print '#'*100
-    print '# untagged-concept', ' '.join([os.path.split(x)[-1] for x in datafiles])
-    print '#'*100
-            
-    for c_idx in range(nr_of_concepts):
-        print concepts[c_idx], ' '.join(['%.3f' % x for x in ap_table[:,c_idx]])
-    print 'meanAP', ' '.join(['%.3f' % x for x in ap_table.mean(axis=1)])
-    
-    print '#'*100
-    print '# tagged-concept'
-    print '#'*100
-    
-    for c_idx in range(nr_of_concepts):
-        print concepts[c_idx], ' '.join(['%.3f' % x for x in ap2_table[:,c_idx]])
-    print 'meanAP2', ' '.join(['%.3f' % x for x in ap2_table.mean(axis=1)])
-    
-    print '#'*100
-    print '# tagged-concept'
-    print '#'*100
-
-    for c_idx in range(nr_of_concepts):
-        print concepts[c_idx], ' '.join(['%.3f' % x for x in ndcg_table[:,c_idx]])
-    print 'mean%s' % ndcg.name(), ' '.join(['%.3f' % x for x in ndcg_table.mean(axis=1)])
-
-    print '#'*100
-    print '# tagged-concept'
-    print '#'*100
-
-    for c_idx in range(nr_of_concepts):
-        print concepts[c_idx], ' '.join(['%.3f' % x for x in ndcg2_table[:,c_idx]])
-    print 'mean%s'%ndcg2.name(), ' '.join(['%.3f' % x for x in ndcg2_table.mean(axis=1)])
-    
+      res[j,:] = [p1, p3, r1, r3, ndcg1, ndcg3, ap, rr]
+    avg_perf = res.mean(axis=0)
+    print '{}\t{}'.format(
+      os.path.split(datafiles[run_idx])[-1],
+      ' & '.join(['%.4f' % x for x in avg_perf])
+    )
 
 def main(argv=None):
-    if argv is None:
-        argv = sys.argv[1:]
+  if argv is None:
+    argv = sys.argv[1:]
 
-    from optparse import OptionParser
-    parser = OptionParser(usage="""usage: %prog [options] collection annotationName runfile""")
-    parser.add_option("--rootpath", default=ROOT_PATH, type="string", help="rootpath (default: %s)" % ROOT_PATH)
-    
-    
-    (options, args) = parser.parse_args(argv)
-    if len(args) < 3:
-        parser.print_help()
-        return 1
-    
-    return process(options, args[0], args[1], args[2])
+  from optparse import OptionParser
+  parser = OptionParser(usage="""usage: %prog [options] collection annotationName runfile""")
+  parser.add_option("--rootpath", default=ROOT_PATH, type="string", help="rootpath (default: %s)" % ROOT_PATH)
 
+  (options, args) = parser.parse_args(argv)
+  if len(args) < 3:
+    parser.print_help()
+    return 1
+
+  return process(options, args[0], args[1], args[2])
 
 if __name__ == "__main__":
-    sys.exit(main())
+  sys.exit(main())
 
 
 
