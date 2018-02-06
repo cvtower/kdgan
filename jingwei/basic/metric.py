@@ -108,17 +108,44 @@ class NDCG2Scorer (NDCGScorer):
             #assert(rel_i in VALID_LABEL_SET_NDCG2)
             dcg += (math.pow(2,rel_i) - 1) / math.log(i+2, 2)
         return dcg
-        
-        
+
+
+class RecallScorer (MetricScorer):
+    def getLength(self, sorted_labels):
+        length = 0
+        for i in range(len(sorted_labels)):
+            if 1 <= sorted_labels[i]:
+                length += 1
+        # print('{}\nlength={}'.format(sorted_labels, length))
+        return length
+
+    def score(self, sorted_labels):
+        length = self.getLength(sorted_labels)
+
+        rel = 0
+        for i in range(length):
+            if sorted_labels[i] >= 1:
+                rel += 1
+
+        return float(rel)/length
+
+
 def getScorer(name):
-    mapping = {"P":PrecisionScorer, "AP":APScorer, "RR":RRScorer, "NDCG":NDCGScorer, "NDCG2":NDCG2Scorer}
+    mapping = {
+        "P":PrecisionScorer,
+        "AP":APScorer,
+        "RR":RRScorer,
+        "NDCG":NDCGScorer,
+        "NDCG2":NDCG2Scorer,
+        "R":RecallScorer,
+    }
     elems = name.split("@")
     if len(elems) == 2:
         k = int(elems[1])
     else:
         k = 0
     return mapping[elems[0]](k)
-   
+
 
 if __name__ == "__main__":
     sorted_labels = [1, 1, 0, 0, 0]

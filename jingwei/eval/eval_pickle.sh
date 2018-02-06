@@ -3,8 +3,8 @@
 # export BASEDIR=/Users/xiaojiew1/Projects # mac
 export BASEDIR=/home/xiaojie/Projects
 export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
-export SURVEY_CODE=$BASEDIR/kdgan/jingwei
-export SURVEY_DB=$BASEDIR/kdgan/results/runs
+export SURVEY_CODE=$BASEDIR/kdgan_xw/jingwei
+export SURVEY_DB=$BASEDIR/kdgan_xw/results/runs
 # export MATLAB_PATH=/Applications/MATLAB_R2017b.app/bin # mac
 export MATLAB_PATH=/usr/local/bin
 export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
@@ -19,7 +19,7 @@ fi
 
 testCollection=$1
 
-export SURVEY_EVAL=$BASEDIR/kdgan/results/eval
+export SURVEY_EVAL=$BASEDIR/kdgan_xw/results/eval
 [ -d $SURVEY_EVAL ] || mkdir $SURVEY_EVAL
 runfile=$SURVEY_EVAL/runs_"$testCollection".txt
 resfile=$SURVEY_EVAL/runs_"$testCollection".res
@@ -51,6 +51,6 @@ else
     exit
 fi
 
-python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile > $resfile
-# python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile
+# python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile > $resfile
+python $codepath/eval/eval_pickle.py $testCollection $annotationName $runfile
 

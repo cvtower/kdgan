@@ -1,6 +1,7 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
+train_size=500
 
 python train_gan.py \
   --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
@@ -15,9 +16,12 @@ python train_gan.py \
   --gen_learning_rate=0.001 \
   --gen_learning_rate_decay_factor=0.98 \
   --learning_rate_decay_type=exponential \
-  --num_epoch=400 \
+  --train_size=$train_size \
+  --num_epoch=100 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10
+# bstacc=0.7839 # 500 train examples
+# bstacc=0.9548 # 5000 train examples
 exit
 
 
@@ -34,7 +38,7 @@ python train_kd.py \
   --gen_learning_rate=0.001 \
   --gen_learning_rate_decay_factor=0.98 \
   --learning_rate_decay_type=exponential \
-  --train_size=500 \
+  --train_size=$train_size \
   --num_epoch=200
 exit
 
@@ -50,9 +54,11 @@ python pretrain_dis.py \
   --dis_learning_rate=0.001 \
   --dis_learning_rate_decay_factor=0.96 \
   --learning_rate_decay_type=exponential \
-  --train_size=500 \
+  --train_size=$train_size \
   --num_epoch=200
 # target=0.9932
+# bstacc=0.7679 # 500 train examples
+# bstacc=0.9756 # 5000 train examples
 exit
 
 
@@ -67,7 +73,7 @@ python pretrain_tch.py \
   --tch_opt_epsilon=1e-8 \
   --tch_learning_rate=0.001 \
   --tch_learning_rate_decay_factor=0.96 \
-  --train_size=500 \
+  --train_size=$train_size \
   --num_epoch=200
 # target=0.9932
 # bstacc=0.9951
@@ -83,12 +89,15 @@ python pretrain_gen.py \
   --gen_learning_rate=0.001 \
   --gen_learning_rate_decay_factor=0.98 \
   --learning_rate_decay_type=exponential \
-  --train_size=500 \
+  --train_size=$train_size \
   --num_epoch=200
 # target=0.9854
 # bstacc=0.9862 # no dropout no l2
 # bstacc=0.9884 # wt dropout wt l2
 # avg=0.89s/epoch
+# bstacc=0.7554 # 500 train examples
+# bstacc=0.7653 # 500 train examples
+# bstacc=0.9511 # 5000 train examples
 exit
 
 

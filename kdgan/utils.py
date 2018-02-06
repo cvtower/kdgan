@@ -318,9 +318,41 @@ def kdgan_dis_sample(flags, label_dat, label_gen, label_tch):
   #   print(sample, label)
   return sample_np, label_np
 
-def generate_label(flags, label_dat, label_gen):
-  sample_np = []
+def generate_label_imp(flags, label_dat, label_gen):
+  sample_np, rescale_np_g = [], []
   for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
+    # print(label_d)
+    # print(label_g)
+
+    # importance sampling
+    prob = label_g
+    sample_lambda = 0.4
+    pn = (1 - sample_lambda) * prob
+    pn += sample_lambda * label_d
+    label_g = pn
+
+    num_sample = np.count_nonzero(label_d)
+    num_sample *= (flags.num_positive + flags.num_negative)
+    # print(num_sample, label_g.sum())
+    # if abs(label_g.sum() - 1.0) > 0.001:
+    #   print(label_g)
+    #   exit()
+    sample_g = np.random.choice(flags.num_label, num_sample, p=label_g)
+    for sample in sample_g:
+      # if (sample < 0) or (sample > flags.num_label - 1):
+      #   print(sample_g)
+      #   exit()
+      sample_np.append((batch, sample))
+      rescale_np_g.append(prob[sample] / pn[sample])
+  sample_np = np.asarray(sample_np)
+  rescale_np_g = np.asarray(rescale_np_g)
+  return sample_np, rescale_np_g
+
+def generate_label(flags, label_dat, label_gen):
+  sample_np, rescale_np_g = [], []
+  for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
+    # print(label_d)
+    # print(label_g)
     num_sample = np.count_nonzero(label_d)
     num_sample *= (flags.num_positive + flags.num_negative)
     # print(num_sample, label_g.sum())

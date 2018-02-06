@@ -1,15 +1,4 @@
-# ./do_tagvote.sh yfcc8k yfcc2k vgg-verydeep-16-fc7relu
-
-# export BASEDIR=/Users/xiaojiew1/Projects # mac
-export BASEDIR=/home/xiaojie/Projects
-export SURVEY_DATA=$BASEDIR/data/yfcc100m/survey_data
-export SURVEY_CODE=$BASEDIR/kdgan/jingwei
-export SURVEY_DB=$BASEDIR/kdgan/logs
-export MATLAB_PATH=/Applications/MATLAB_R2017b.app/bin
-export PYTHONPATH=$PYTHONPATH:$SURVEY_CODE
-
-rootpath=$SURVEY_DATA
-codepath=$SURVEY_CODE
+# ./do_tagvote.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
 
 if [ "$#" -ne 3 ]; then
     echo "Usage: $0 trainCollection testCollection feature"
@@ -19,7 +8,6 @@ fi
 trainCollection=$1
 testCollection=$2
 feature=$3
-k=1000
 tagger=tagvote
 
 
@@ -41,21 +29,25 @@ elif [ "$testCollection" == "mirflickr08" ]; then
     testAnnotationName=conceptsmir14.txt
 elif [ "$testCollection" == "yfcc2k" ]; then
     testAnnotationName=concepts.txt
+elif [ "$testCollection" == "yfcc0k" ]; then
+  testAnnotationName=concepts.txt
 else
     echo "unknown testCollection $testCollection"
     exit
 fi
 
-annotationName=concepts.txt
-python $codepath/instance_based/apply_tagger.py $testCollection $trainCollection $annotationName $feature --tagger $tagger --distance $distance --k $k
-tagvotesfile=$rootpath/$testCollection/autotagging/$testCollection/$trainCollection/$annotationName/$tagger/$feature,"$distance"knn,$k/id.tagvotes.txt
+for k in 1 2 4 8 16
+do
+    annotationName=concepts.txt
+    python $codepath/instance_based/apply_tagger.py $testCollection $trainCollection $annotationName $feature --tagger $tagger --distance $distance --k $k
+    tagvotesfile=$rootpath/$testCollection/autotagging/$testCollection/$trainCollection/$annotationName/$tagger/$feature,"$distance"knn,$k/id.tagvotes.txt
 
-if [ ! -f "$tagvotesfile" ]; then
-    echo "tagvotes file $tagvotesfile does not exist!"
-    exit
-fi
+    if [ ! -f "$tagvotesfile" ]; then
+        echo "tagvotes file $tagvotesfile does not exist!"
+        exit
+    fi
 
-conceptfile=$rootpath/$testCollection/Annotations/$testAnnotationName
-resultfile=$SURVEY_DB/"$trainCollection"_"$testCollection"_$feature,tagvote.pkl
-python $codepath/postprocess/pickle_tagvotes.py $conceptfile $tagvotesfile $resultfile
-
+    conceptfile=$rootpath/$testCollection/Annotations/$testAnnotationName
+    resultfile=$SURVEY_DB/"$trainCollection"_"$testCollection"_$feature,tagvote,$k.pkl
+    python $codepath/postprocess/pickle_tagvotes.py $conceptfile $tagvotesfile $resultfile
+done
