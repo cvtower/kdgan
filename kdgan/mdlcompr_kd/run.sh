@@ -20,7 +20,7 @@ python train_gan.py \
   --num_epoch=100 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10
-# bstacc=0.7640 # 500 train examples
+# bstacc=0.7839 # 500 train examples
 # bstacc=0.9548 # 5000 train examples
 exit
 

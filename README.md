@@ -94,3 +94,6 @@ https://github.com/keras-team/keras/tree/master/examples
 
 https://github.com/hwalsuklee/how-far-can-we-go-with-MNIST
 http://www.pythonexample.com/user/vamsiramakrishnan
+
+# gan trick
+https://github.com/gitlimlab/SSGAN-Tensorflow
