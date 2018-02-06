@@ -65,18 +65,18 @@ summary_op = tf.summary.merge_all()
 init_op = tf.global_variables_initializer()
 
 def main(_):
-  utils.delete_if_exist(flags.dis_checkpoint_dir)
-  dis_ckpt = tf.train.latest_checkpoint(flags.dis_checkpoint_dir)
-  # print('dis ckpt=%s' % (dis_ckpt))
-  if dis_ckpt != None:
-    print('todo init from dis ckpt')
-    exit()
+  # utils.delete_if_exist(flags.dis_checkpoint_dir)
+  dis_model_ckpt = tf.train.latest_checkpoint(flags.dis_checkpoint_dir)
+  # print('dis ckpt=%s' % (dis_model_ckpt))
   utils.create_if_nonexist(flags.dis_checkpoint_dir)
 
-  best_acc_v = -np.inf
+  best_acc_v = 0.0
   start = time.time()
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
+    if dis_model_ckpt != None:
+      tn_dis.saver.restore(sess, dis_model_ckpt)
+      init_acc_v = metric.eval_mdlcompr(sess, vd_dis, mnist)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)

@@ -86,6 +86,7 @@ def main(_):
     sess.run(init_op)
     if gen_model_ckpt != None:
       tn_gen.saver.restore(sess, gen_model_ckpt)
+      acc_v = metric.eval_mdlcompr(sess, vd_gen, mnist)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
@@ -106,7 +107,9 @@ def main(_):
         continue
       best_acc_v = acc_v
       # print('#%08d curacc=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
-      # tn_gen.saver.save(utils.get_session(sess), flags.gen_save_path, global_step=global_step)
+      tn_gen.saver.save(utils.get_session(sess), flags.gen_save_path, global_step=global_step)
+    learning_rate, = sess.run([tn_gen.learning_rate])
+    print(learning_rate)
   print('bstacc=%.4f' % (best_acc_v))
 
 if __name__ == '__main__':

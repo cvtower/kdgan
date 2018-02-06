@@ -2,6 +2,25 @@ kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
 
+python train_gan.py \
+  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
+  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --dis_model_name=lenet_v1 \
+  --dis_keep_prob=0.75 \
+  --dis_weight_decay=0.00001 \
+  --optimizer=adam \
+  --dis_learning_rate=0.001 \
+  --dis_learning_rate_decay_factor=0.96 \
+  --gen_learning_rate=0.001 \
+  --gen_learning_rate_decay_factor=0.98 \
+  --learning_rate_decay_type=exponential \
+  --num_epoch=400 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=10
+exit
+
+
 python train_kd.py \
   --kd_hard_pct=1.0 \
   --temperature=1.0 \
@@ -12,6 +31,9 @@ python train_kd.py \
   --tch_keep_prob=0.75 \
   --optimizer=adam \
   --tch_opt_epsilon=1e-8 \
+  --gen_learning_rate=0.001 \
+  --gen_learning_rate_decay_factor=0.98 \
+  --learning_rate_decay_type=exponential \
   --train_size=500 \
   --num_epoch=200
 exit
@@ -27,6 +49,7 @@ python pretrain_dis.py \
   --optimizer=adam \
   --dis_learning_rate=0.001 \
   --dis_learning_rate_decay_factor=0.96 \
+  --learning_rate_decay_type=exponential \
   --train_size=500 \
   --num_epoch=200
 # target=0.9932
@@ -87,18 +110,6 @@ do
     # bstacc=0.9951
   done
 done
-exit
-
-
-
-python train_gan.py \
-  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
-  --gen_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_gen \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --num_epoch=400 \
-  --num_dis_epoch=20 \
-  --optimizer=sgd \
-  --num_gen_epoch=10
 exit
 
 

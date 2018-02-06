@@ -25,6 +25,7 @@ tf.app.flags.DEFINE_float('tch_keep_prob', 0.50, '')
 tf.app.flags.DEFINE_float('kd_hard_pct', 0.7, '')
 tf.app.flags.DEFINE_float('temperature', 3.0, '')
 tf.app.flags.DEFINE_string('dis_checkpoint_dir', None, '')
+tf.app.flags.DEFINE_string('dis_model_name', None, '')
 tf.app.flags.DEFINE_string('gen_checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('tch_checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('tch_model_name', None, '')
@@ -105,6 +106,7 @@ def main(_):
     gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
     print('init dis_acc=%.4f' % (dis_acc))
     print('init gen_acc=%.4f' % (gen_acc))
+    exit()
     tot_time = time.time() - start
     batch_d, batch_g = -1, -1
     no_impr_patience = init_patience = flags.num_gen_epoch

@@ -97,10 +97,10 @@ def main(_):
     sess.run(init_op)
     tn_gen.saver.restore(sess, gen_model_ckpt)
     tn_tch.saver.restore(sess, tch_model_ckpt)
-    gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
-    tch_acc = metric.eval_mdlcompr(sess, vd_tch, mnist)
+    ini_gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
+    ini_tch_acc = metric.eval_mdlcompr(sess, vd_tch, mnist)
     tot_time = time.time() - start
-    print('inigen=%.4f initch=%.4f tot=%.0fs' % (gen_acc, tch_acc, tot_time))
+    print('inigen=%.4f initch=%.4f tot=%.0fs' % (ini_gen_acc, ini_tch_acc, tot_time))
 
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
@@ -129,7 +129,7 @@ def main(_):
       if gen_acc <= bst_gen_acc:
         continue
       bst_gen_acc = gen_acc
-  print('bstacc=%.4f' % (bst_gen_acc))
+  print('bstacc=%.4f iniacc=%.4f' % (bst_gen_acc, ini_gen_acc))
 
 if __name__ == '__main__':
     tf.app.run()
