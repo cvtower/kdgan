@@ -6,7 +6,7 @@ from nets import nets_factory
 from tensorflow.contrib import slim
 
 class GEN():
-  def __init__(self, flags, dataset, is_training=True):
+  def __init__(self, flags, dataset, is_training=True, gen_scope='gen'):
     self.is_training = is_training
     
     # None = batch_size
@@ -21,7 +21,7 @@ class GEN():
 
     # hidden_size = 800
     hidden_size = 200
-    self.gen_scope = gen_scope = 'gen'
+    self.gen_scope = gen_scope # = 'gen'
     with tf.variable_scope(gen_scope):
       self.logits = utils.build_mlp_logits(flags, self.image_ph,
         hidden_size=hidden_size,
@@ -43,6 +43,7 @@ class GEN():
         save_dict[variable.name] = variable
         var_list.append(variable)
       self.saver = tf.train.Saver(save_dict)
+      self.var_list = var_list
 
       self.global_step = tf.Variable(0, trainable=False)
       self.learning_rate = utils.get_lr(flags,
