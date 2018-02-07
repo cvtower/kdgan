@@ -23,6 +23,7 @@ tf.app.flags.DEFINE_float('gen_keep_prob', 0.88, '')
 tf.app.flags.DEFINE_string('gen_checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('gen_save_path', None, '')
 tf.app.flags.DEFINE_float('kd_hard_pct', 0.3, '')
+tf.app.flags.DEFINE_float('kd_soft_pct', 0.3, '')
 tf.app.flags.DEFINE_float('temperature', 3.0, '')
 # optimization
 tf.app.flags.DEFINE_float('gen_weight_decay', 0.00004, 'l2 coefficient')
@@ -34,6 +35,7 @@ tf.app.flags.DEFINE_float('rmsprop_momentum', 0.0, '')
 tf.app.flags.DEFINE_float('rmsprop_decay', 0.9, '')
 tf.app.flags.DEFINE_integer('batch_size', 128, '')
 tf.app.flags.DEFINE_integer('num_epoch', 200, '')
+tf.app.flags.DEFINE_integer('num_batch', 20, '')
 tf.app.flags.DEFINE_string('optimizer', 'rmsprop', 'adam|sgd')
 # learning rate
 tf.app.flags.DEFINE_float('gen_learning_rate', 0.01, '')
@@ -84,18 +86,19 @@ def main(_):
   with tf.train.MonitoredTrainingSession() as sess:
     best_acc_v = metric.eval_mdlcompr(sess, vd_gen, mnist)
     sess.run(init_op)
-    if gen_model_ckpt != None:
-      tn_gen.saver.restore(sess, gen_model_ckpt)
-      acc_v = metric.eval_mdlcompr(sess, vd_gen, mnist)
+    # if gen_model_ckpt != None:
+    #   tn_gen.saver.restore(sess, gen_model_ckpt)
+    #   acc_v = metric.eval_mdlcompr(sess, vd_gen, mnist)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
-    for tn_batch in range(tn_num_batch):
+    # for tn_batch in range(tn_num_batch):
+    for tn_batch in range(flags.num_batch):
       tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
       feed_dict = {tn_gen.image_ph:tn_image_np, tn_gen.hard_label_ph:tn_label_np}
       _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
 
-      if (tn_batch + 1) % eval_interval != 0:
-        continue
+      # if (tn_batch + 1) % eval_interval != 0:
+      #   continue
       acc_v = metric.eval_mdlcompr(sess, vd_gen, mnist)
       global_step, = sess.run([tn_gen.global_step])
       tot_time = time.time() - start

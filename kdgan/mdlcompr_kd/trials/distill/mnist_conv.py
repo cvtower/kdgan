@@ -1,11 +1,9 @@
-from kdgan.mdlcompr_kd import data_utils
-
 import tensorflow as tf
 import numpy as np
 from tensorflow.examples.tutorials.mnist import input_data
 
 batch_size = 128
-test_size = 10000
+test_size = 1000
 net_name = 'conv_net_3x3'
 
 def init_weights(shape):
@@ -38,7 +36,7 @@ def model(X, w, w2, w3, w4, w_o, p_keep_conv, p_keep_hidden):
     pyx = tf.matmul(l4, w_o)
     return pyx
 
-mnist = data_utils.read_data_sets("data/", one_hot=True, train_size=500)
+mnist = input_data.read_data_sets("data", one_hot=True)
 trX, trY, teX, teY = mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
 trX = trX.reshape(-1, 28, 28, 1)  # 28x28x1 input img
 teX = teX.reshape(-1, 28, 28, 1)  # 28x28x1 input img
@@ -56,7 +54,7 @@ p_keep_conv = tf.placeholder("float")
 p_keep_hidden = tf.placeholder("float")
 py_x = model(X, w, w2, w3, w4, w_o, p_keep_conv, p_keep_hidden)
 
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=py_x, labels=Y))
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(py_x, Y))
 train_op = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)
 predict_op = tf.argmax(py_x, 1)
 
@@ -65,7 +63,7 @@ prec = tf.reduce_mean(tf.cast(tf.equal(predict_op, tf.argmax(Y, 1)), tf.float32)
 summary_cost = tf.summary.scalar('cost', cost)
 summary_prec = tf.summary.scalar('prec', prec)
 
-train_writer = tf.summary.FileWriter("logs/" + net_name + "/train", flush_secs=5)
+# train_writer = tf.summary.FileWriter("logs/" + net_name + "/train", flush_secs=5)
 test_writer = tf.summary.FileWriter("logs/" + net_name + "/test", flush_secs=5)
 
 sav = tf.train.Saver()
@@ -82,9 +80,9 @@ with tf.Session() as sess:
         for start, end in training_batch:
             log_cost, log_prec, val_prec, _ = sess.run([summary_cost, summary_prec, prec, train_op], feed_dict={X: trX[start:end], Y: trY[start:end],
                                           p_keep_conv: 0.8, p_keep_hidden: 0.5})
-            train_writer.add_summary(log_cost, k)
-            train_writer.add_summary(log_prec, k)
-            # print(i, k, "train prec", val_prec)
+            # train_writer.add_summary(log_cost, k)
+            # train_writer.add_summary(log_prec, k)
+            print(i, k, "train prec", val_prec)
             k = k + 1
 
         log_prec, val_prec = sess.run([summary_prec,prec], feed_dict={X: teX[:test_size],
