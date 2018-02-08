@@ -1,5 +1,7 @@
-import matplotlib.pyplot as plt
+from kdgan import config
 
+from os import path
+import matplotlib.pyplot as plt
 import numpy as np
 
 def read_data(filepath):
@@ -10,7 +12,7 @@ def read_data(filepath):
       data.append(float(fields[1]))
   return data
 
-def main():
+def test():
   gan_filepath = 'gan_vgg_16.csv'
   kdgan_filepath = 'kdgan_vgg_16.csv'
   gan_data = read_data(gan_filepath)
@@ -35,6 +37,32 @@ def main():
   ax.legend(loc='lower right')
   
   fig.savefig('gan_kdgan.eps', format='eps', bbox_inches='tight')
+
+def main():
+  filepath = path.join(config.logs_dir, 'mdlcompr_check_kd.txt')
+  fin = open(filepath)
+  line = fin.readline()
+  fields = line.split()
+  sl_label, kd_label = fields[0], fields[1]
+  batches, sl_data, kd_data = [], [], []
+  for line in fin.readlines():
+    fields = line.split()
+    batches.append(int(fields[0]))
+    sl_data.append(float(fields[1]))
+    kd_data.append(float(fields[2]))
+  fin.close()
+  start = 49999
+  batches = np.asarray(batches)[start:]
+  sl_data = np.asarray(sl_data)[start:]
+  kd_data = np.asarray(kd_data)[start:]
+
+  fig, ax = plt.subplots(1)
+  ax.set_ylabel('accuracy')
+  ax.set_xlabel('#batch')
+  ax.plot(batches, sl_data, color='r', label=sl_label)
+  ax.plot(batches, kd_data, color='b', label=kd_label)
+  ax.legend(loc='lower right')
+  fig.savefig('sl_kd.eps', format='eps', bbox_inches='tight')
 
 if __name__ == '__main__':
   main()

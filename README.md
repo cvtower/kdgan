@@ -8,7 +8,8 @@ pwd: 12345678
 
 remote.unimelb.edu.au/student
 ssh xiaojie@10.100.229.246 # cpu
-ssh xiaojie@10.100.228.181 # gpu
+ssh xiaojie@10.100.228.181 # gpu xw
+ssh xiaojie@10.100.228.149 # gpu cz
 
 conda create -n py27 python=2.7
 conda create -n py34 python=3.4

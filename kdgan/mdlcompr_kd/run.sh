@@ -1,7 +1,7 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 
-train_size=500
+train_size=5000
 
 
 python check_kd.py \
@@ -17,8 +17,8 @@ python check_kd.py \
   --gen_learning_rate_decay_factor=0.98 \
   --learning_rate_decay_type=fixed \
   --train_size=$train_size \
-  --batch_size=128 \
-  --num_batch=1000000 \
+  --batch_size=2 \
+  --num_batch=100000 \
   --kd_soft_pct=0.3 \
   --temperature=3.0
 exit

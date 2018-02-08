@@ -128,6 +128,8 @@ def run():
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   # sl_writer = tf.summary.FileWriter(path.join(config.logs_dir, 'sl'), graph=tf.get_default_graph())
   # kd_writer = tf.summary.FileWriter(path.join(config.logs_dir, 'kd'), graph=tf.get_default_graph())
+  fout = open(path.join(config.logs_dir, 'mdlcompr_check_kd.txt'), 'w')
+  fout.write('%s\t%s\n' % ('sl', 'kd'))
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     tn_tch.saver.restore(sess, tch_model_ckpt)
@@ -156,19 +158,19 @@ def run():
       }
       sess.run([tn_sl_gen.pre_update, tn_kd_gen.kd_update], feed_dict=feed_dict)
 
-      if tn_batch % 100 != 0:
-        continue
+      # if tn_batch % 100 != 0:
+      #   continue
       sl_acc = metric.eval_mdlcompr(sess, vd_sl_gen, mnist)
       kd_acc = metric.eval_mdlcompr(sess, vd_kd_gen, mnist)
-      feed_dict = {
-        vd_sl_gen.image_ph:mnist.test.images, 
-        vd_sl_gen.hard_label_ph:mnist.test.labels,
-        vd_kd_gen.image_ph:mnist.test.images,
-        vd_kd_gen.hard_label_ph:mnist.test.labels,
-      }
-      sl_gen_acc = sess.run(vd_sl_gen.accuracy, feed_dict=feed_dict)
-      kd_gen_acc = sess.run(vd_kd_gen.accuracy, feed_dict=feed_dict)
-      print(sl_gen_acc - sl_acc, kd_gen_acc - kd_acc)
+      # feed_dict = {
+      #   vd_sl_gen.image_ph:mnist.test.images, 
+      #   vd_sl_gen.hard_label_ph:mnist.test.labels,
+      #   vd_kd_gen.image_ph:mnist.test.images,
+      #   vd_kd_gen.hard_label_ph:mnist.test.labels,
+      # }
+      # sl_gen_acc = sess.run(vd_sl_gen.accuracy, feed_dict=feed_dict)
+      # kd_gen_acc = sess.run(vd_kd_gen.accuracy, feed_dict=feed_dict)
+      # print(sl_gen_acc - sl_acc, kd_gen_acc - kd_acc)
 
       # sl_summary, kd_summary = sess.run([sl_summary_op, kd_summary_op],
       #     feed_dict=feed_dict)
@@ -179,17 +181,22 @@ def run():
 
       # if kd_gen_acc < sl_gen_acc:
       #   continue
-      # print('%d %.4f %.4f' % (tn_batch + 1, sl_gen_acc, kd_gen_acc))
+      print('%d %.4f %.4f' % (tn_batch + 1, sl_acc, kd_acc))
+      fout.write('%d\t%.4f\t%.4f\n' % (tn_batch + 1, sl_acc, kd_acc))
       # count += 1
       # if best_sl_acc < sl_gen_acc:
       #   best_sl_acc = sl_gen_acc
       # if best_kd_acc < kd_gen_acc:
       #   best_kd_acc = kd_gen_acc
       # print('%d %.4f %.4f' % (tn_batch + 1, best_sl_acc, best_kd_acc))
+      if (tn_batch % 1000) != 0:
+        continue
+      fout.flush()
 
   tot_time = time.time() - start
   # print('cn=%d tm=%.0fs' % (count, tot_time))
   # print('bst %.4f %.4f' % (best_sl_acc, best_kd_acc))
+  fout.close()
 
 def main(_):
   ini()
