@@ -1119,7 +1119,8 @@ def create_test_set():
     print('#vocab={}'.format(vocab_size))
 
     images = np.zeros((valid_size, 4096), dtype=np.float32)
-    image_ids = []
+    labels = np.zeros((vocab_size, 100), dtype=np.int32)
+    imgids = []
     reader = ImageReader()
     with tf.Session() as sess:
         init_fn(sess)
@@ -1140,18 +1141,20 @@ def create_test_set():
             text = [token_to_id.get(token, unk_token_id) for token in text]
 
             label_ids = [label_to_id[label] for label in labels]
-            label_vec = np.zeros((num_label,), dtype=np.int64)
+            label_vec = np.zeros((num_label,), dtype=np.int32)
             label_vec[label_ids] = 1
             label = label_vec.tolist()
+            labels[i,:] = label
 
             image_id = path.basename(file).split('.')[0]
-            image_ids.append(image_id)
+            imgids.append(image_id)
             # example = build_example(user, image, text, label, file)
 
-    image_ids = np.asarray(image_ids)
+    imgids = np.asarray(imgids)
     filename_tmpl = 'yfcc10k_%s.valid.%s'
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')), images)
-    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')), image_ids)
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')), labels)
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')), imgids)
 
 def main(_):
     create_test_set()
