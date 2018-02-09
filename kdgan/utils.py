@@ -77,9 +77,9 @@ def get_data_sources(flags, is_training=True, single_source=False):
   precomputed_dir = get_precomputed_dir(flags.dataset)
   for (dirpath, dirnames, filenames) in os.walk(precomputed_dir):
     break
-  marker = 'train'
+  marker = 'train.tfrecord'
   if not is_training:
-    marker = 'valid'
+    marker = 'valid.tfrecord'
   data_sources = []
   for filename in filenames:
     if filename.find(marker) < 0:
