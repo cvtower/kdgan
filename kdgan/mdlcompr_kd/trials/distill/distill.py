@@ -5,7 +5,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 batch_size = 128
 test_size = 1000
 
-donor_name = 'conv_net_3x3-79'
+donor_name = 'conv_net_3x3-99'
 acceptor_name = 'distil_comb_L2'
 
 def init_weights(shape):
@@ -88,7 +88,7 @@ def prec(y_pred):
     return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(y_pred, 1), tf.argmax(Y, 1)), tf.float32))
 
 # MNIST data
-mnist = input_data.read_data_sets("data/", one_hot=True)
+mnist = input_data.read_data_sets("data", one_hot=True)
 trX, trY, teX, teY = mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
 trX = trX.reshape(-1, 28, 28, 1)  # 28x28x1 input img
 teX = teX.reshape(-1, 28, 28, 1)  # 28x28x1 input img
@@ -98,7 +98,7 @@ def distillate(net_name):
     acceptor_prec = prec(y_acceptor)
     donor_prec = prec(y_donor)
 
-    distil_writer = tf.summary.FileWriter("logs/" + net_name + "/train", flush_secs=5)
+    # distil_writer = tf.summary.FileWriter("logs/" + net_name + "/train", flush_secs=5)
     distil_test_writer = tf.summary.FileWriter("logs/" + net_name + "/test", flush_secs=5)
 
     tf.summary.scalar('accuracy', acceptor_prec)
@@ -133,7 +133,7 @@ def distillate(net_name):
                                                                         p_keep_conv: 1.0,
                                                                         p_keep_hidden: 1.0})
 
-                distil_writer.add_summary(log_summaries, k)
+                # distil_writer.add_summary(log_summaries, k)
                 distil_test_writer.add_summary(test_log_summaries, k)
                 print(i, k, 'distillation distil_ent:', val_distil_ent, 'truth_ent', val_truth_ent, 'donor_prec: ', val_donor_prec, '; train_prec', val_prec, '; test_prec', test_val_prec)
 
@@ -145,11 +145,11 @@ def distillate(net_name):
 def train_net(train_step, net_prec, net_params, net_name):
     net_prec = prec(y_acceptor)
 
-    writer = tf.train.SummaryWriter("logs/" + net_name + "/train", flush_secs=5)
-    test_writer = tf.train.SummaryWriter("logs/" + net_name + "/test", flush_secs=5)
+    writer = tf.summary.FileWriter("logs/" + net_name + "/train", flush_secs=5)
+    test_writer = tf.summary.FileWriter("logs/" + net_name + "/test", flush_secs=5)
 
     tf.summary.scalar('accuracy', net_prec)
-    summaries = tf.merge_all_summaries()
+    summaries = tf.summary.merge_all()
 
     # Launch the graph in a session
     with tf.Session() as sess:

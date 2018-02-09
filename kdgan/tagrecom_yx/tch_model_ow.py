@@ -13,14 +13,14 @@ class TCH():
     self.is_training = is_training
     
     # None = batch_size
-    self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size), name="tch_image")
-    self.text_ph = tf.placeholder(tf.int64, shape=(None, None), name="tch_text")
-    self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label), name="tch_hard_label")
-    self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label), name="tch_soft_label")
+    self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size))
+    self.text_ph = tf.placeholder(tf.int64, shape=(None, None))
+    self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
+    self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
     # None = batch_size * sample_size
-    self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2), name="tch_sample")
-    self.reward_ph = tf.placeholder(tf.float32, shape=(None,), name="tch_reward")
+    self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
+    self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
 
     tch_scope = 'tch'
     vocab_size = utils.get_vocab_size(flags.dataset)
@@ -96,21 +96,10 @@ class TCH():
 
     # kdgan train
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
-    gan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
-    kd_losses = self.get_kd_losses(flags)
-    kdgan_losses = gan_losses + kd_losses
+    kdgan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
     self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % tch_scope)
     kdgan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
     self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
 
-  def get_kd_losses(self, flags):
-    hard_loss = flags.kd_lamda * tf.losses.sigmoid_cross_entropy(
-        self.hard_label_ph, self.logits)
-    
-    smooth_labels = tf.nn.softmax(self.soft_label_ph / flags.temperature)
-    soft_loss = (1.0 - flags.kd_lamda) * tf.nn.l2_loss(
-        tf.nn.softmax(self.logits) - smooth_labels)
 
-    kd_losses = [hard_loss, soft_loss]
-    return kd_losses
 

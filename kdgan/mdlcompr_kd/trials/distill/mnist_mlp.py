@@ -1,5 +1,3 @@
-from kdgan.mdlcompr_kd import data_utils
-
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
@@ -30,10 +28,10 @@ sess = tf.Session()
 init = tf.initialize_all_variables()
 
 merged = tf.summary.merge_all()
-train_writer = tf.summary.FileWriter("logs/" + net_name + "/train", sess.graph)
+# train_writer = tf.summary.FileWriter("logs/" + net_name + "/train", sess.graph)
 test_writer = tf.summary.FileWriter("logs/" + net_name + "/test")
 
-mnist = data_utils.read_data_sets("data/", one_hot=True, train_size=500)
+mnist = input_data.read_data_sets("data", one_hot=True)
 
 sess.run(init)
 
@@ -43,7 +41,7 @@ sav = tf.train.Saver()
 for i in range(1000):
     batch_xs,batch_ys = mnist.train.next_batch(100)
     tlog, _ = sess.run([merged, step], feed_dict= {x: batch_xs, y_true: batch_ys})
-    train_writer.add_summary(tlog, i)
+    # train_writer.add_summary(tlog, i)
     if i % 10 == 0:
         train_acc = sess.run(accuracy, feed_dict={x : batch_xs, y_true : batch_ys})
         log2, test_acc = sess.run([merged,accuracy], feed_dict={x : mnist.test.images, y_true : mnist.test.labels})

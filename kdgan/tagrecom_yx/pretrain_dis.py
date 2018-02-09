@@ -1,7 +1,7 @@
 from kdgan import config
 from kdgan import metric
 from kdgan import utils
-from gen_model import GEN
+from dis_model import DIS
 
 import os
 import time
@@ -15,7 +15,7 @@ from tensorflow.contrib import slim
 tf.app.flags.DEFINE_string('dataset', None, '')
 tf.app.flags.DEFINE_integer('num_label', 100, '')
 # evaluation
-tf.app.flags.DEFINE_integer('cutoff', 1, '')
+tf.app.flags.DEFINE_integer('cutoff', 3, '')
 # image model
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
@@ -31,9 +31,8 @@ tf.app.flags.DEFINE_float('num_epochs_per_decay', 10.0, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 # dis model
 tf.app.flags.DEFINE_float('dis_weight_decay', 0.0, 'l2 coefficient')
-tf.app.flags.DEFINE_integer('num_dis_epoch', 10, '')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
-tf.app.flags.DEFINE_string('gen_figure_data', None, '')
+tf.app.flags.DEFINE_integer('num_dis_epoch', 10, '')
 # gen model
 tf.app.flags.DEFINE_float('kd_lamda', 0.3, '')
 tf.app.flags.DEFINE_float('gen_weight_decay', 0.001, 'l2 coefficient')
@@ -56,13 +55,13 @@ print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (
     num_batch_t, num_batch_v, eval_interval))
 
 def main(_):
-  gen_t = GEN(flags, is_training=True)
+  dis_t = DIS(flags, is_training=True)
   scope = tf.get_variable_scope()
   scope.reuse_variables()
-  gen_v = GEN(flags, is_training=False)
+  dis_v = DIS(flags, is_training=False)
 
-  tf.summary.scalar(gen_t.learning_rate.name, gen_t.learning_rate)
-  tf.summary.scalar(gen_t.pre_loss.name, gen_t.pre_loss)
+  tf.summary.scalar(dis_t.learning_rate.name, dis_t.learning_rate)
+  tf.summary.scalar(dis_t.pre_loss.name, dis_t.pre_loss)
   summary_op = tf.summary.merge_all()
   init_op = tf.global_variables_initializer()
 
@@ -83,57 +82,38 @@ def main(_):
   user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
 
-  figure_data = []
-  best_hit_v = -np.inf
   start = time.time()
+  best_hit_v = -np.inf
   with tf.Session() as sess:
     sess.run(init_op)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
       for batch_t in range(num_batch_t):
         image_np_t, label_np_t = sess.run([image_bt_t, label_bt_t])
-        feed_dict = {gen_t.image_ph:image_np_t, gen_t.hard_label_ph:label_np_t}
-        _, summary = sess.run([gen_t.pre_update, summary_op], feed_dict=feed_dict)
+        feed_dict = {dis_t.image_ph:image_np_t, dis_t.hard_label_ph:label_np_t}
+        _, summary = sess.run([dis_t.pre_update, summary_op], feed_dict=feed_dict)
         writer.add_summary(summary, batch_t)
 
-        batch = batch_t + 1
-        remain = (batch * flags.batch_size) % train_data_size
-        epoch = (batch * flags.batch_size) // train_data_size
-        if remain == 0:
-          pass
-          # print('%d\t%d\t%d' % (epoch, batch, remain))
-        elif (train_data_size - remain) < flags.batch_size:
-          epoch = epoch + 1
-          # print('%d\t%d\t%d' % (epoch, batch, remain))
-        else:
-          continue
-        # if (batch_t + 1) % eval_interval != 0:
-        #     continue
+        if (batch_t + 1) % eval_interval != 0:
+            continue
 
         hit_v = []
         for batch_v in range(num_batch_v):
           image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
-          feed_dict = {gen_v.image_ph:image_np_v}
-          logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
+          feed_dict = {dis_v.image_ph:image_np_v}
+          logit_np_v, = sess.run([dis_v.logits], feed_dict=feed_dict)
           hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
           hit_v.append(hit_bt)
         hit_v = np.mean(hit_v)
 
-        figure_data.append((epoch, hit_v, batch_t))
+        tot_time = time.time() - start
+        print('#%08d hit=%.4f %06ds' % (batch_t, hit_v, int(tot_time)))
 
         if hit_v < best_hit_v:
           continue
-        tot_time = time.time() - start
         best_hit_v = hit_v
-        print('#%03d curbst=%.4f time=%.0fs' % (epoch, hit_v, tot_time))
-        gen_t.saver.save(sess, flags.gen_model_ckpt)
-  print('bsthit=%.4f' % (best_hit_v))
-
-  utils.create_if_nonexist(os.path.dirname(flags.gen_figure_data))
-  fout = open(flags.gen_figure_data, 'w')
-  for epoch, hit_v, batch_t in figure_data:
-    fout.write('%d\t%.4f\t%d\n' % (epoch, hit_v, batch_t))
-  fout.close()
+        dis_t.saver.save(sess, flags.dis_model_ckpt)
+  print('best hit=%.4f' % (best_hit_v))
 
 if __name__ == '__main__':
   tf.app.run()

@@ -15,7 +15,7 @@ from tensorflow.contrib import slim
 tf.app.flags.DEFINE_string('dataset', None, '')
 tf.app.flags.DEFINE_integer('num_label', 100, '')
 # evaluation
-tf.app.flags.DEFINE_integer('cutoff', 1, '')
+tf.app.flags.DEFINE_integer('cutoff', 3, '')
 # image model
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')

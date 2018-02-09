@@ -18,7 +18,7 @@ python train_kdgan.py \
   --gen_weight_decay=0.0 \
   --tch_weight_decay=0.0 \
   --num_epoch=200 \
-  --num_dis_epoch=20 \
+  --num_dis_epoch=10 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10
 # 12517s best hit=0.7973

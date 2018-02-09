@@ -1,5 +1,5 @@
 # pip install --ignore-installed --upgrade tensorflow
-# pip install --ignore-installed --upgrade tensorflow-gpu
+# pip install --ignore-installed --upgrade tensorflow-gpu==1.4.1
 
 beautifulsoup4==4.6.0
 nltk==3.2.5
