@@ -142,7 +142,7 @@ def train():
   print('bsthit=%.4f' % (best_hit_v))
 
 def test():
-  id_to_label = utils.load_id_to_label(label_file)
+  id_to_label = utils.load_id_to_label(flags.dataset)
   pritn(id_to_label)
   exit()
   with tf.train.MonitoredTrainingSession() as sess:
