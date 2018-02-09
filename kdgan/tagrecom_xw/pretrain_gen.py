@@ -61,7 +61,7 @@ filename_tmpl = 'yfcc10k_%s.valid.%s.npy'
 image_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')))
 label_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')))
 imgid_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')))
-print(image_npy.shape, label_npy.shape, imgid.shape)
+print(image_npy.shape, label_npy.shape, imgid_npy.shape)
 exit()
 
 def main(_):
