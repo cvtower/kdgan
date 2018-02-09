@@ -1092,6 +1092,7 @@ def create_test_set():
     text_list = []
     label_list = []
     fin = open(valid_file)
+    valid_size = 0
     while True:
         line = fin.readline()
         if not line:
@@ -1106,6 +1107,7 @@ def create_test_set():
         file_list.append(file)
         text_list.append(tokens)
         label_list.append(labels)
+        valid_size += 1
     fin.close()
 
     label_to_id = utils.load_sth_to_id(label_file)
@@ -1116,10 +1118,11 @@ def create_test_set():
     vocab_size = len(token_to_id)
     print('#vocab={}'.format(vocab_size))
 
+    images = np.zeros((valid_size, 4096), dtype=np.float32)
     reader = ImageReader()
     with tf.Session() as sess:
         init_fn(sess)
-        for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
+        for i, (user, file, text, labels) in enumerate(zip(user_list, file_list, text_list, label_list)):
             user = bytes(user, encoding='utf-8')
             
             image_np = np.array(Image.open(file))
@@ -1129,6 +1132,8 @@ def create_test_set():
             image = image.tolist()
             # print(image)
             print(type(image), len(image))
+            images[i,:] = image
+            print(images)
             # input()
 
             text = [token_to_id.get(token, unk_token_id) for token in text]
