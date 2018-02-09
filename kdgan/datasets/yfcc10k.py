@@ -1118,7 +1118,7 @@ def create_test_set():
     vocab_size = len(token_to_id)
     print('#vocab={}'.format(vocab_size))
 
-    images = np.zeros((valid_size, 4096), dtype=np.float32)
+    images = np.zeros((valid_size, 4095), dtype=np.float32)
     reader = ImageReader()
     with tf.Session() as sess:
         init_fn(sess)
