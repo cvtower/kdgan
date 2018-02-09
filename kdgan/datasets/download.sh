@@ -19,7 +19,7 @@ dst_data_dir=$HOME/$yfcc_dir/$dataset
 echo $src_data_dir
 echo $dst_data_dir
 
-[ -d $dst_data_dir ] || mkdir $dst_data_dir
+[ -d $dst_data_dir ] || mkdir -p $dst_data_dir
 # scp $src_data_dir/$dataset.label $dst_data_dir
 # scp $src_data_dir/$dataset.vocab $dst_data_dir
 # scp $src_data_dir/$dataset.train $dst_data_dir
@@ -27,7 +27,7 @@ echo $dst_data_dir
 
 src_precomputed_dir=$src_data_dir/Precomputed
 dst_precomputed_dir=$dst_data_dir/Precomputed
-[ -d ${dst_precomputed_dir} ] || mkdir ${dst_precomputed_dir}
+[ -d ${dst_precomputed_dir} ] || mkdir -p ${dst_precomputed_dir}
 
 model_name=vgg_16
 scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
