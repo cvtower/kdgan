@@ -1084,7 +1084,7 @@ def create_tfrecord(infile, end_point, is_training=False):
                     if (count % 500) == 0:
                         print('count={}'.format(count))
 
-def create_testset():
+def create_test_set():
     utils.create_if_nonexist(precomputed_dir)
 
     num_epoch = flags.num_epoch
