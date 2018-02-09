@@ -1118,7 +1118,8 @@ def create_test_set():
     vocab_size = len(token_to_id)
     print('#vocab={}'.format(vocab_size))
 
-    images = np.zeros((valid_size, 4095), dtype=np.float32)
+    images = np.zeros((valid_size, 4096), dtype=np.float32)
+    image_ids = []
     reader = ImageReader()
     with tf.Session() as sess:
         init_fn(sess)
@@ -1144,14 +1145,15 @@ def create_test_set():
             label = label_vec.tolist()
 
             image_id = path.basename(file).split('.')[0]
-            print(image_id)
-            exit()
+            image_ids.append(image_id)
             # example = build_example(user, image, text, label, file)
-
 
             count += 1
             if (count % 500) == 0:
                 print('count={}'.format(count))
+    image_ids = np.asarray(image_ids)
+    print(image_ids)
+    exit()
 
 def main(_):
     create_test_set()
