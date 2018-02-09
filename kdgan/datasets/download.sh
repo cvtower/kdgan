@@ -1,5 +1,5 @@
 server=xiaojie@10.100.228.181 # xw
-server=xiaojie@10.100.228.149 # cz
+# server=xiaojie@10.100.228.149 # cz
 
 ################################################################
 #
@@ -29,13 +29,10 @@ echo $dst_data_dir
 src_precomputed_dir=$src_data_dir/Precomputed
 dst_precomputed_dir=$dst_data_dir/Precomputed
 [ -d ${dst_precomputed_dir} ] || mkdir -p ${dst_precomputed_dir}
-scp ${src_precomputed_dir}/*.npy ${dst_precomputed_dir}
-exit
-
 
 model_name=vgg_16
 scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
-for i in $(seq -w 000 499)
+for i in $(seq -w 000 49)
 do
   filename=${dataset}_${model_name}_${i}.train.tfrecord
   if [ -f ${dst_precomputed_dir}/$filename ]
