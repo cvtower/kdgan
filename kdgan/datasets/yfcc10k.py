@@ -1118,9 +1118,9 @@ def create_test_set():
     vocab_size = len(token_to_id)
     print('#vocab={}'.format(vocab_size))
 
-    images = np.zeros((valid_size, 4096), dtype=np.float32)
-    labels = np.zeros((vocab_size, 100), dtype=np.int32)
-    imgids = []
+    image_npy = np.zeros((valid_size, 4096), dtype=np.float32)
+    label_npy = np.zeros((vocab_size, 100), dtype=np.int32)
+    imgid_npy = []
     reader = ImageReader()
     with tf.Session() as sess:
         init_fn(sess)
@@ -1134,8 +1134,8 @@ def create_test_set():
             image = image.tolist()
             # print(image)
             # print(type(image), len(image))
-            images[i,:] = image
-            # print(images)
+            image_npy[i,:] = image
+            # print(image_npy)
             # input()
 
             text = [token_to_id.get(token, unk_token_id) for token in text]
@@ -1144,17 +1144,17 @@ def create_test_set():
             label_vec = np.zeros((num_label,), dtype=np.int32)
             label_vec[label_ids] = 1
             label = label_vec.tolist()
-            labels[i,:] = label
+            label_npy[i,:] = label
 
             image_id = path.basename(file).split('.')[0]
-            imgids.append(image_id)
+            imgid_npy.append(image_id)
             # example = build_example(user, image, text, label, file)
 
-    imgids = np.asarray(imgids)
+    imgid_npy = np.asarray(imgid_npy)
     filename_tmpl = 'yfcc10k_%s.valid.%s'
-    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')), images)
-    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')), labels)
-    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')), imgids)
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')), image_npy)
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')), label_npy)
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')), imgid_npy)
 
 def main(_):
     create_test_set()
