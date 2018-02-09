@@ -1119,7 +1119,7 @@ def create_test_set():
     print('#vocab={}'.format(vocab_size))
 
     image_npy = np.zeros((valid_size, 4096), dtype=np.float32)
-    label_npy = np.zeros((vocab_size, 100), dtype=np.int32)
+    label_npy = np.zeros((valid_size, 100), dtype=np.int32)
     imgid_npy = []
     reader = ImageReader()
     with tf.Session() as sess:
