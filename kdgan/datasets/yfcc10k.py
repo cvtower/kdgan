@@ -1128,7 +1128,7 @@ def create_test_set():
             image, = sess.run([end_point_v], feed_dict)
             image = image.tolist()
             # print(image)
-            # print(type(image), len(image))
+            print(type(image), len(image))
             # input()
 
             text = [token_to_id.get(token, unk_token_id) for token in text]
@@ -1138,10 +1138,9 @@ def create_test_set():
             label_vec[label_ids] = 1
             label = label_vec.tolist()
 
-            file = file
-            print(file)
+            image_id = path.basename(file).split('.')[0]
+            print(image_id)
             exit()
-
             # example = build_example(user, image, text, label, file)
 
 
