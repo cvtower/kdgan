@@ -29,18 +29,17 @@ src_precomputed_dir=$src_data_dir/Precomputed
 dst_precomputed_dir=$dst_data_dir/Precomputed
 [ -d ${dst_precomputed_dir} ] || mkdir ${dst_precomputed_dir}
 
-<<<<<<< Updated upstream
-# model_name=vgg_16
-# scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
-# for i in $(seq -w 000 199)
-# do
-#   filename=${dataset}_${model_name}_${i}.train.tfrecord
-#   if [ -f ${dst_precomputed_dir}/$filename ]
-#   then
-#     continue
-#   fi
-#   scp ${src_precomputed_dir}/$filename ${dst_precomputed_dir}
-# done
+model_name=vgg_16
+scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
+for i in $(seq -w 000 499)
+do
+  filename=${dataset}_${model_name}_${i}.train.tfrecord
+  if [ -f ${dst_precomputed_dir}/$filename ]
+  then
+    continue
+  fi
+  scp ${src_precomputed_dir}/$filename ${dst_precomputed_dir}
+done
 
 
 ################################################################
@@ -48,6 +47,8 @@ dst_precomputed_dir=$dst_data_dir/Precomputed
 # download mdlcompr data
 #
 ################################################################
+
+exit
 
 download_mdlcompr()
 {
@@ -69,21 +70,4 @@ model_name=mdlcompr_mnist_gen
 download_mdlcompr ${model_name}
 model_name=mdlcompr_mnist_tch
 download_mdlcompr ${model_name}
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> Stashed changes
-
-
 scp ${src_data_dir}/yfcc10k.vocab ${dst_precomputed_dir}
