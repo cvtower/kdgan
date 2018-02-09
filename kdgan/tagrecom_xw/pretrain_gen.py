@@ -143,8 +143,7 @@ def train():
 
 def test():
   id_to_label = utils.load_id_to_label(flags.dataset)
-  print(id_to_label)
-  exit()
+  # print(id_to_label)
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
@@ -152,7 +151,8 @@ def test():
     logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
     # print(logit_np_v.shape, label_np_v.shape)
     hit_v = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
-    print(hit_v)
+    for imgid, logit_np in zip(imgid_np_v, logit_np_v):
+      print(imgid.shape, logit_np.shape)
 
 def main(_):
   if flags.task == 'train':
