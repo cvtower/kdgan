@@ -152,7 +152,10 @@ def test():
     # print(logit_np_v.shape, label_np_v.shape)
     hit_v = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
     for imgid, logit_np in zip(imgid_np_v, logit_np_v):
-      print(imgid.shape, logit_np.shape)
+      sorted_labels = (-logit_np).argsort()
+      print(sorted_labels)
+      print(id_to_label)
+      exit()
 
 def main(_):
   if flags.task == 'train':
