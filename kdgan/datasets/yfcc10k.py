@@ -1087,10 +1087,6 @@ def create_tfrecord(infile, end_point, is_training=False):
 def create_test_set():
     utils.create_if_nonexist(precomputed_dir)
 
-    fields = path.basename(infile).split('.')
-    dataset, version = fields[0], fields[1]
-    filepath = path.join(precomputed_dir, tfrecord_tmpl)
-
     user_list = []
     file_list = []
     text_list = []
