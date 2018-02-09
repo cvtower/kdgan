@@ -55,6 +55,9 @@ eval_interval = int(train_data_size / flags.batch_size)
 print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (
     num_batch_t, num_batch_v, eval_interval))
 
+outdir = path.dirname(flags.gen_model_ckpt)
+utils.create_if_nonexist(outdir)
+
 def main(_):
   gen_t = GEN(flags, is_training=True)
   scope = tf.get_variable_scope()
