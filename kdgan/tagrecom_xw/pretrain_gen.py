@@ -144,6 +144,7 @@ def train():
 def test():
   id_to_label = utils.load_id_to_label(flags.dataset)
   # print(id_to_label)
+  fout = open(flags.gen_model_txt, 'w')
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
@@ -153,9 +154,11 @@ def test():
     hit_v = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
     for imgid, logit_np in zip(imgid_np_v, logit_np_v):
       sorted_labels = (-logit_np).argsort()
-      print(sorted_labels)
-      print(id_to_label)
-      exit()
+      fout.write('%s' % (imgid))
+      for label in sorted_labels:
+        fout.write(' %s %.4f' % (id_to_label[label], logit_np[label]))
+      fout.write('\n')
+  fout.close()
 
 def main(_):
   if flags.task == 'train':
