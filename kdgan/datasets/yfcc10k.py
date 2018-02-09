@@ -1008,74 +1008,6 @@ def build_example(user, image, text, label, file):
 def create_tfrecord(infile, end_point, is_training=False):
     utils.create_if_nonexist(precomputed_dir)
 
-    fields = path.basename(infile).split('.')
-    dataset, version = fields[0], fields[1]
-    filepath = path.join(precomputed_dir, tfrecord_tmpl)
-
-    user_list = []
-    file_list = []
-    text_list = []
-    label_list = []
-    fin = open(infile)
-    while True:
-        line = fin.readline()
-        if not line:
-            break
-        fields = line.strip().split(FIELD_SEPERATOR)
-        user = fields[USER_INDEX]
-        image = fields[IMAGE_INDEX]
-        file = path.join(image_data_dir, '%s.jpg' % image)
-        tokens = fields[TEXT_INDEX].split()
-        labels = fields[LABEL_INDEX].split()
-        user_list.append(user)
-        file_list.append(file)
-        text_list.append(tokens)
-        label_list.append(labels)
-    fin.close()
-
-    label_to_id = utils.load_sth_to_id(label_file)
-    num_label = len(label_to_id)
-    print('#label={}'.format(num_label))
-    token_to_id = utils.load_sth_to_id(vocab_file)
-    unk_token_id = token_to_id[unk_token]
-    vocab_size = len(token_to_id)
-    print('#vocab={}'.format(vocab_size))
-
-    reader = ImageReader()
-    with tf.Session() as sess:
-        init_fn(sess)
-        count = 0
-        for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
-            user = bytes(user, encoding='utf-8')
-            
-            image_np = np.array(Image.open(file))
-            # print(type(image_np), image_np.shape)
-            feed_dict = {image_ph:image_np}
-            image, = sess.run([end_point], feed_dict)
-            image = image.tolist()
-            # print(image)
-            # print(type(image), len(image))
-            # input()
-
-            text = [token_to_id.get(token, unk_token_id) for token in text]
-
-            label_ids = [label_to_id[label] for label in labels]
-            label_vec = np.zeros((num_label,), dtype=np.int64)
-            label_vec[label_ids] = 1
-            label = label_vec.tolist()
-
-            file = bytes(file, encoding='utf-8')
-            # print(file)
-
-            example = build_example(user, image, text, label, file)
-            fout.write(example.SerializeToString())
-            count += 1
-            if (count % 500) == 0:
-                print('count={}'.format(count))
-
-def create_test_set():
-    utils.create_if_nonexist(precomputed_dir)
-
     num_epoch = flags.num_epoch
     if not is_training:
         num_epoch = 1
@@ -1088,7 +1020,7 @@ def create_test_set():
     file_list = []
     text_list = []
     label_list = []
-    fin = open(valid_file)
+    fin = open(infile)
     while True:
         line = fin.readline()
         if not line:
@@ -1143,16 +1075,83 @@ def create_test_set():
                     label_vec[label_ids] = 1
                     label = label_vec.tolist()
 
-                    file = file
-                    print(file)
-                    exit()
+                    file = bytes(file, encoding='utf-8')
+                    # print(file)
 
-                    # example = build_example(user, image, text, label, file)
-
-
+                    example = build_example(user, image, text, label, file)
+                    fout.write(example.SerializeToString())
                     count += 1
                     if (count % 500) == 0:
                         print('count={}'.format(count))
+
+def create_test_set():
+    utils.create_if_nonexist(precomputed_dir)
+
+    fields = path.basename(infile).split('.')
+    dataset, version = fields[0], fields[1]
+    filepath = path.join(precomputed_dir, tfrecord_tmpl)
+
+    user_list = []
+    file_list = []
+    text_list = []
+    label_list = []
+    fin = open(valid_file)
+    while True:
+        line = fin.readline()
+        if not line:
+            break
+        fields = line.strip().split(FIELD_SEPERATOR)
+        user = fields[USER_INDEX]
+        image = fields[IMAGE_INDEX]
+        file = path.join(image_data_dir, '%s.jpg' % image)
+        tokens = fields[TEXT_INDEX].split()
+        labels = fields[LABEL_INDEX].split()
+        user_list.append(user)
+        file_list.append(file)
+        text_list.append(tokens)
+        label_list.append(labels)
+    fin.close()
+
+    label_to_id = utils.load_sth_to_id(label_file)
+    num_label = len(label_to_id)
+    print('#label={}'.format(num_label))
+    token_to_id = utils.load_sth_to_id(vocab_file)
+    unk_token_id = token_to_id[unk_token]
+    vocab_size = len(token_to_id)
+    print('#vocab={}'.format(vocab_size))
+
+    reader = ImageReader()
+    with tf.Session() as sess:
+        init_fn(sess)
+        for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
+            user = bytes(user, encoding='utf-8')
+            
+            image_np = np.array(Image.open(file))
+            # print(type(image_np), image_np.shape)
+            feed_dict = {image_ph:image_np}
+            image, = sess.run([end_point], feed_dict)
+            image = image.tolist()
+            # print(image)
+            # print(type(image), len(image))
+            # input()
+
+            text = [token_to_id.get(token, unk_token_id) for token in text]
+
+            label_ids = [label_to_id[label] for label in labels]
+            label_vec = np.zeros((num_label,), dtype=np.int64)
+            label_vec[label_ids] = 1
+            label = label_vec.tolist()
+
+            file = file
+            print(file)
+            exit()
+
+            # example = build_example(user, image, text, label, file)
+
+
+            count += 1
+            if (count % 500) == 0:
+                print('count={}'.format(count))
 
 def main(_):
     create_test_set()
