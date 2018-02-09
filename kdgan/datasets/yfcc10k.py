@@ -1045,39 +1045,33 @@ def create_tfrecord(infile, end_point, is_training=False):
     with tf.Session() as sess:
         init_fn(sess)
         count = 0
-        tfrecord_file = filepath.format(dataset, flags.model_name, epoch, version)
-        if path.isfile(tfrecord_file):
-            continue
-        # print(tfrecord_file)
-        # exit()
-        with tf.python_io.TFRecordWriter(tfrecord_file) as fout:
-            for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
-                user = bytes(user, encoding='utf-8')
-                
-                image_np = np.array(Image.open(file))
-                # print(type(image_np), image_np.shape)
-                feed_dict = {image_ph:image_np}
-                image, = sess.run([end_point], feed_dict)
-                image = image.tolist()
-                # print(image)
-                # print(type(image), len(image))
-                # input()
+        for user, file, text, labels in zip(user_list, file_list, text_list, label_list):
+            user = bytes(user, encoding='utf-8')
+            
+            image_np = np.array(Image.open(file))
+            # print(type(image_np), image_np.shape)
+            feed_dict = {image_ph:image_np}
+            image, = sess.run([end_point], feed_dict)
+            image = image.tolist()
+            # print(image)
+            # print(type(image), len(image))
+            # input()
 
-                text = [token_to_id.get(token, unk_token_id) for token in text]
+            text = [token_to_id.get(token, unk_token_id) for token in text]
 
-                label_ids = [label_to_id[label] for label in labels]
-                label_vec = np.zeros((num_label,), dtype=np.int64)
-                label_vec[label_ids] = 1
-                label = label_vec.tolist()
+            label_ids = [label_to_id[label] for label in labels]
+            label_vec = np.zeros((num_label,), dtype=np.int64)
+            label_vec[label_ids] = 1
+            label = label_vec.tolist()
 
-                file = bytes(file, encoding='utf-8')
-                # print(file)
+            file = bytes(file, encoding='utf-8')
+            # print(file)
 
-                example = build_example(user, image, text, label, file)
-                fout.write(example.SerializeToString())
-                count += 1
-                if (count % 500) == 0:
-                    print('count={}'.format(count))
+            example = build_example(user, image, text, label, file)
+            fout.write(example.SerializeToString())
+            count += 1
+            if (count % 500) == 0:
+                print('count={}'.format(count))
 
 def create_test_set():
     utils.create_if_nonexist(precomputed_dir)
