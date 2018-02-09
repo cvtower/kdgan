@@ -6,7 +6,7 @@ datafig_dir=$kdgan_dir/datafigs
 
 python pretrain_gen.py \
   --task=test \
-  --gen_model_txt=$checkpoint_dir/gen_vgg_16.txt \
+  --gen_model_eval=$checkpoint_dir/gen_vgg_16.eval \
   --dataset=yfcc10k \
   --model_name=vgg_16 \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \

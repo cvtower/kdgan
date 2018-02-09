@@ -40,6 +40,7 @@ tf.app.flags.DEFINE_float('kd_lamda', 0.3, '')
 tf.app.flags.DEFINE_float('gen_weight_decay', 0.001, 'l2 coefficient')
 tf.app.flags.DEFINE_float('temperature', 3.0, '')
 tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
+tf.app.flags.DEFINE_string('gen_model_eval', None, '')
 tf.app.flags.DEFINE_integer('num_gen_epoch', 5, '')
 # tch model
 tf.app.flags.DEFINE_float('tch_weight_decay', 0.00001, 'l2 coefficient')
@@ -144,7 +145,7 @@ def train():
 def test():
   id_to_label = utils.load_id_to_label(flags.dataset)
   # print(id_to_label)
-  fout = open(flags.gen_model_txt, 'w')
+  fout = open(flags.gen_model_eval, 'w')
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
