@@ -12,6 +12,6 @@ export codepath=$SURVEY_CODE
 
 # ./do_tagvote.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
 
-./do_tagprop.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
+# ./do_tagprop.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
 
-# ./do_tagfeat.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
+./do_tagfeat.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu

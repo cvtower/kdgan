@@ -25,6 +25,7 @@ runfile=$SURVEY_EVAL/runs_"$testCollection".txt
 resfile=$SURVEY_EVAL/runs_"$testCollection".res
 
 ls -d "$SURVEY_DB"/* > $runfile
+# ls -d "$SURVEY_DB"/* | grep tagprop > $runfile
 # if [ -f "$resfile" ]; then
 #     echo "result file exists at $resfile"
 #     exit

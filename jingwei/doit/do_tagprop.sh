@@ -34,13 +34,14 @@ else
 fi
 
 tagsh5file=$rootpath/$trainCollection/TextData/lemm_wordnet_freq_tags.h5
+rm $tagsh5file
 if [ ! -f "$tagsh5file" ]; then
   cd $rootpath/${trainCollection}
   python $codepath/tools/wordnet_frequency_tags.py 
   cd -
 fi
 
-for k in 20 40 60 80 100 # 200 400 600 800 1000
+for k in 1000 500 200 100 50
 do
   python $codepath/model_based/tagprop/prepare_tagprop_data.py \
       --distance $distance \
