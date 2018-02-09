@@ -1132,9 +1132,9 @@ def create_test_set():
             image, = sess.run([end_point_v], feed_dict)
             image = image.tolist()
             # print(image)
-            print(type(image), len(image))
+            # print(type(image), len(image))
             images[i,:] = image
-            print(images)
+            # print(images)
             # input()
 
             text = [token_to_id.get(token, unk_token_id) for token in text]
@@ -1149,8 +1149,9 @@ def create_test_set():
             # example = build_example(user, image, text, label, file)
 
     image_ids = np.asarray(image_ids)
-    print(image_ids)
-    exit()
+    filename_tmpl = 'yfcc10k_%s.valid.%s.np'
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')), images)
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')), image_ids)
 
 def main(_):
     create_test_set()
