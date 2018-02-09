@@ -1,5 +1,27 @@
-kdgan_dir=/home/xiaojie/Projects/kdgan/kdgan
+kdgan_dir=/home/xiaojie/Projects/kdgan_xw/kdgan
 pretrained_dir=$kdgan_dir/checkpoints/pretrained
+checkpoint_path=$pretrained_dir/vgg_16.ckpt
+
+# tar -zcvf archive-name.tar.gz directory-name
+# scp xiaojie@10.100.228.181:/home/xiaojie/Projects/data/yfcc100m/yfcc10k/* .
+if [ ! -f $checkpoint_path ]; then
+    [ -d $pretrained_dir ] || mkdir -p $pretrained_dir
+    temp_path=$pretrained_dir/vgg_16_2016_08_28.tar.gz
+    curl http://download.tensorflow.org/models/vgg_16_2016_08_28.tar.gz \
+        -o $temp_path
+    tar -xzvf $temp_path -C $pretrained_dir
+    rm $temp_path
+fi
+
+python yfcc10k.py \
+    --model_name=vgg_16 \
+    --preprocessing_name=vgg_16 \
+    --checkpoint_path=$checkpoint_path \
+    --end_point=vgg_16/fc7 \
+    --num_epoch=500
+# 4096
+exit
+
 
 python yfcc10k.py \
     --model_name=inception_resnet_v2 \
@@ -8,15 +30,6 @@ python yfcc10k.py \
     --end_point=global_pool \
     --num_epoch=500
 # 1536
-exit
-
-python yfcc10k.py \
-    --model_name=vgg_16 \
-    --preprocessing_name=vgg_16 \
-    --checkpoint_path=$pretrained_dir/vgg_16.ckpt \
-    --end_point=vgg_16/fc7 \
-    --num_epoch=500
-# 4096
 exit
 
 python yfcc10k_fast.py \
