@@ -1149,7 +1149,7 @@ def create_test_set():
             # example = build_example(user, image, text, label, file)
 
     image_ids = np.asarray(image_ids)
-    filename_tmpl = 'yfcc10k_%s.valid.%s.np'
+    filename_tmpl = 'yfcc10k_%s.valid.%s'
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')), images)
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')), image_ids)
 
