@@ -40,7 +40,7 @@ def load_sth_to_id(infile):
   return sth_to_id
 
 def load_label_to_id(dataset):
-  label_file = get_label_file()
+  label_file = get_label_file(dataset)
   label_to_id = load_sth_to_id(label_file)
   return label_to_id
 
@@ -55,9 +55,8 @@ def load_id_to_sth(infile):
   id_to_sth = dict(zip(range(len(sth_list)), sth_list))
   return id_to_sth
 
-def load_id_to_label():
-  label_file = get_label_file()
-  label_to_id = load_sth_to_id(label_file)
+def load_id_to_label(dataset):
+  label_file = get_label_file(dataset)
   id_to_label = load_id_to_sth(label_file)
   return id_to_label
 

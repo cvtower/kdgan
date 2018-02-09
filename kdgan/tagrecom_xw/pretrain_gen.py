@@ -142,6 +142,9 @@ def train():
   print('bsthit=%.4f' % (best_hit_v))
 
 def test():
+  id_to_label = utils.load_id_to_label(label_file)
+  pritn(id_to_label)
+  exit()
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
