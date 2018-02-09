@@ -143,7 +143,7 @@ def train():
 
 def test():
   id_to_label = utils.load_id_to_label(flags.dataset)
-  pritn(id_to_label)
+  print(id_to_label)
   exit()
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
