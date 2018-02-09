@@ -130,8 +130,7 @@ def main(_):
 
         feed_dict = {gen_v.image_ph:image_np_v}
         logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
-        print(logit_np_v.shape, label_np_v.shape)
-        exit()
+        # print(logit_np_v.shape, label_np_v.shape)
         hit_v = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
         
         figure_data.append((epoch, hit_v, batch_t))
