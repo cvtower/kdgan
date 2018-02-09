@@ -58,11 +58,11 @@ print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (
 
 precomputed_dir = utils.get_precomputed_dir(flags.dataset)
 filename_tmpl = 'yfcc10k_%s.valid.%s.npy'
-image_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')))
-label_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')))
-imgid_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')))
-print(image_npy.shape, label_npy.shape, imgid_npy.shape)
-exit()
+image_np_v = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')))
+label_np_v = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')))
+imgid_np_v = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')))
+# print(image_np_v.shape, label_np_v.shape, imgid_np_v.shape)
+# exit()
 
 def main(_):
   gen_t = GEN(flags, is_training=True)
@@ -127,6 +127,10 @@ def main(_):
         #   hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
         #   hit_v.append(hit_bt)
         # hit_v = np.mean(hit_v)
+
+        feed_dict = {gen_v.image_ph:image_np_v}
+        logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
+        hit_v = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
 
         figure_data.append((epoch, hit_v, batch_t))
 
