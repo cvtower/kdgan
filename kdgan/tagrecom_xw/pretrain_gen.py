@@ -13,6 +13,7 @@ from os import path
 from tensorflow.contrib import slim
 
 tf.app.flags.DEFINE_string('dataset', None, '')
+tf.app.flags.DEFINE_string('task', None, '')
 tf.app.flags.DEFINE_integer('num_label', 100, '')
 # evaluation
 tf.app.flags.DEFINE_integer('cutoff', 3, '')
@@ -64,17 +65,17 @@ imgid_np_v = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_nam
 # print(image_np_v.shape, label_np_v.shape, imgid_np_v.shape)
 # exit()
 
-def main(_):
-  gen_t = GEN(flags, is_training=True)
-  scope = tf.get_variable_scope()
-  scope.reuse_variables()
-  gen_v = GEN(flags, is_training=False)
+gen_t = GEN(flags, is_training=True)
+scope = tf.get_variable_scope()
+scope.reuse_variables()
+gen_v = GEN(flags, is_training=False)
 
-  tf.summary.scalar(gen_t.learning_rate.name, gen_t.learning_rate)
-  tf.summary.scalar(gen_t.pre_loss.name, gen_t.pre_loss)
-  summary_op = tf.summary.merge_all()
-  init_op = tf.global_variables_initializer()
+tf.summary.scalar(gen_t.learning_rate.name, gen_t.learning_rate)
+tf.summary.scalar(gen_t.pre_loss.name, gen_t.pre_loss)
+summary_op = tf.summary.merge_all()
+init_op = tf.global_variables_initializer()
 
+def train():
   for variable in tf.trainable_variables():
     num_params = 1
     for dim in variable.shape:
@@ -92,7 +93,6 @@ def main(_):
   user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
   # user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
 
-  figure_data = []
   best_hit_v = -np.inf
   start = time.time()
   with tf.Session() as sess:
@@ -132,8 +132,6 @@ def main(_):
         logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
         # print(logit_np_v.shape, label_np_v.shape)
         hit_v = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
-        
-        figure_data.append((epoch, hit_v, batch_t))
 
         if hit_v < best_hit_v:
           continue
@@ -143,11 +141,21 @@ def main(_):
         gen_t.saver.save(sess, flags.gen_model_ckpt)
   print('bsthit=%.4f' % (best_hit_v))
 
-  utils.create_if_nonexist(os.path.dirname(flags.gen_figure_data))
-  fout = open(flags.gen_figure_data, 'w')
-  for epoch, hit_v, batch_t in figure_data:
-    fout.write('%d\t%.4f\t%d\n' % (epoch, hit_v, batch_t))
-  fout.close()
+def test():
+  with tf.train.MonitoredTrainingSession() as sess:
+    sess.run(init_op)
+    gen_t.saver.restore(sess, flags.gen_model_ckpt)
+    feed_dict = {gen_v.image_ph:image_np_v}
+    logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
+    # print(logit_np_v.shape, label_np_v.shape)
+    hit_v = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
+    print(hit_v)
+
+def main(_):
+  if flags.task == 'train':
+    train()
+  else:
+    test()
 
 if __name__ == '__main__':
   tf.app.run()
