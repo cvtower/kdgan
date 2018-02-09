@@ -55,6 +55,15 @@ eval_interval = int(train_data_size / flags.batch_size)
 print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (
     num_batch_t, num_batch_v, eval_interval))
 
+
+precomputed_dir = utils.get_precomputed_dir(flags.dataset)
+filename_tmpl = 'yfcc10k_%s.valid.%s'
+image_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')))
+label_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')))
+imgid_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')))
+print(image_npy.shape, label_npy.shape, imgid.shape)
+exit()
+
 def main(_):
   gen_t = GEN(flags, is_training=True)
   scope = tf.get_variable_scope()
@@ -73,15 +82,15 @@ def main(_):
     print('%-50s (%d params)' % (variable.name, num_params))
 
   data_sources_t = utils.get_data_sources(flags, is_training=True)
-  data_sources_v = utils.get_data_sources(flags, is_training=False)
-  print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(data_sources_t), len(data_sources_v)))
+  # data_sources_v = utils.get_data_sources(flags, is_training=False)
+  # print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(data_sources_t), len(data_sources_v)))
   
   ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-  ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
+  # ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
   bt_list_t = utils.generate_batch(ts_list_t, flags.batch_size)
-  bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
+  # bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
   user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
-  user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
+  # user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
 
   figure_data = []
   best_hit_v = -np.inf
@@ -110,14 +119,14 @@ def main(_):
         # if (batch_t + 1) % eval_interval != 0:
         #     continue
 
-        hit_v = []
-        for batch_v in range(num_batch_v):
-          image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
-          feed_dict = {gen_v.image_ph:image_np_v}
-          logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
-          hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
-          hit_v.append(hit_bt)
-        hit_v = np.mean(hit_v)
+        # hit_v = []
+        # for batch_v in range(num_batch_v):
+        #   image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
+        #   feed_dict = {gen_v.image_ph:image_np_v}
+        #   logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
+        #   hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
+        #   hit_v.append(hit_bt)
+        # hit_v = np.mean(hit_v)
 
         figure_data.append((epoch, hit_v, batch_t))
 
