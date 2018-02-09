@@ -57,7 +57,7 @@ print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (
 
 
 precomputed_dir = utils.get_precomputed_dir(flags.dataset)
-filename_tmpl = 'yfcc10k_%s.valid.%s'
+filename_tmpl = 'yfcc10k_%s.valid.%s.npy'
 image_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')))
 label_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')))
 imgid_npy = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')))
