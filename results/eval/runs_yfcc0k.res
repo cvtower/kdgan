@@ -1,36 +1,40 @@
-method miap hit1 hit3 hit5
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,knn,1000.pkl 0.412 0.254 0.504 0.634
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,knn,200.pkl 0.575 0.446 0.662 0.764
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,knn,400.pkl 0.510 0.360 0.606 0.722
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,knn,600.pkl 0.467 0.314 0.562 0.692
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,knn,800.pkl 0.435 0.278 0.538 0.652
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fastlinear,100.pkl 0.703 0.636 0.764 0.808
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fastlinear,20.pkl 0.703 0.636 0.764 0.808
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fastlinear,40.pkl 0.703 0.636 0.764 0.808
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fastlinear,60.pkl 0.703 0.636 0.764 0.808
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fastlinear,80.pkl 0.703 0.636 0.764 0.808
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fik50,100.pkl 0.709 0.638 0.764 0.824
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fik50,20.pkl 0.708 0.638 0.764 0.824
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fik50,40.pkl 0.709 0.638 0.764 0.824
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fik50,60.pkl 0.709 0.638 0.764 0.824
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fik50,80.pkl 0.709 0.638 0.764 0.824
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,dist,1000.pkl 0.072 0.030 0.050 0.070
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,dist,200.pkl 0.121 0.082 0.106 0.118
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,dist,400.pkl 0.106 0.076 0.094 0.114
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,dist,600.pkl 0.068 0.028 0.048 0.070
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,dist,800.pkl 0.087 0.050 0.066 0.088
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,distsigmoids,1000.pkl 0.339 0.232 0.398 0.482
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,distsigmoids,200.pkl 0.135 0.074 0.122 0.180
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,distsigmoids,400.pkl 0.132 0.086 0.124 0.146
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,distsigmoids,600.pkl 0.374 0.272 0.442 0.512
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,distsigmoids,800.pkl 0.082 0.030 0.072 0.108
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,rank,1000.pkl 0.506 0.456 0.552 0.578
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,rank,200.pkl 0.532 0.468 0.578 0.608
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,rank,400.pkl 0.534 0.470 0.576 0.608
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,rank,600.pkl 0.458 0.430 0.480 0.486
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,rank,800.pkl 0.472 0.438 0.504 0.514
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,1000.pkl 0.534 0.482 0.580 0.616
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,200.pkl 0.536 0.478 0.592 0.622
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,400.pkl 0.539 0.486 0.576 0.620
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,600.pkl 0.530 0.474 0.576 0.606
-yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,800.pkl 0.534 0.484 0.572 0.612
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,knn,1000.pkl	0.2540 & 0.1787 & 0.2477 & 0.2477 & 0.2540 & 0.3868 & 0.4116 & 0.4225
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,knn,200.pkl	0.4460 & 0.2320 & 0.4400 & 0.4400 & 0.4460 & 0.5592 & 0.5755 & 0.5852
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,knn,400.pkl	0.3600 & 0.2120 & 0.3530 & 0.3530 & 0.3600 & 0.4916 & 0.5104 & 0.5209
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,knn,600.pkl	0.3140 & 0.1980 & 0.3057 & 0.3057 & 0.3140 & 0.4455 & 0.4670 & 0.4781
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,knn,800.pkl	0.2780 & 0.1893 & 0.2723 & 0.2723 & 0.2780 & 0.4146 & 0.4345 & 0.4457
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fastlinear,100.pkl	0.6360 & 0.2720 & 0.6285 & 0.6285 & 0.6360 & 0.6999 & 0.7034 & 0.7142
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fastlinear,20.pkl	0.6360 & 0.2720 & 0.6285 & 0.6285 & 0.6360 & 0.6999 & 0.7032 & 0.7140
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fastlinear,40.pkl	0.6360 & 0.2720 & 0.6285 & 0.6285 & 0.6360 & 0.6999 & 0.7034 & 0.7142
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fastlinear,60.pkl	0.6360 & 0.2720 & 0.6285 & 0.6285 & 0.6360 & 0.6999 & 0.7034 & 0.7142
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fastlinear,80.pkl	0.6360 & 0.2720 & 0.6285 & 0.6285 & 0.6360 & 0.6999 & 0.7034 & 0.7142
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fik50,100.pkl	0.6380 & 0.2727 & 0.6293 & 0.6293 & 0.6380 & 0.7016 & 0.7088 & 0.7192
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fik50,20.pkl	0.6380 & 0.2727 & 0.6293 & 0.6293 & 0.6380 & 0.7016 & 0.7083 & 0.7187
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fik50,40.pkl	0.6380 & 0.2727 & 0.6293 & 0.6293 & 0.6380 & 0.7016 & 0.7087 & 0.7191
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fik50,60.pkl	0.6380 & 0.2727 & 0.6293 & 0.6293 & 0.6380 & 0.7016 & 0.7088 & 0.7192
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagfeat,fik50,80.pkl	0.6380 & 0.2727 & 0.6293 & 0.6293 & 0.6380 & 0.7016 & 0.7088 & 0.7192
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,dist,1000.pkl	0.0580 & 0.0280 & 0.0557 & 0.0557 & 0.0580 & 0.0677 & 0.0974 & 0.1012
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,dist,200.pkl	0.0460 & 0.0227 & 0.0457 & 0.0457 & 0.0460 & 0.0566 & 0.0859 & 0.0876
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,dist,400.pkl	0.0400 & 0.0193 & 0.0371 & 0.0371 & 0.0400 & 0.0471 & 0.0778 & 0.0806
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,dist,600.pkl	0.1480 & 0.0567 & 0.1425 & 0.1425 & 0.1480 & 0.1508 & 0.1758 & 0.1811
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,dist,800.pkl	0.1480 & 0.0587 & 0.1397 & 0.1397 & 0.1480 & 0.1523 & 0.1760 & 0.1867
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,distsigmoids,1000.pkl	0.0260 & 0.0227 & 0.0270 & 0.0270 & 0.0260 & 0.0465 & 0.0833 & 0.0873
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,distsigmoids,200.pkl	0.0660 & 0.0407 & 0.0624 & 0.0624 & 0.0660 & 0.0919 & 0.1222 & 0.1300
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,distsigmoids,400.pkl	0.2060 & 0.0860 & 0.2017 & 0.2017 & 0.2060 & 0.2223 & 0.2484 & 0.2563
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,distsigmoids,600.pkl	0.0520 & 0.0340 & 0.0503 & 0.0503 & 0.0520 & 0.0753 & 0.1049 & 0.1096
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,distsigmoids,800.pkl	0.0360 & 0.0307 & 0.0363 & 0.0363 & 0.0360 & 0.0644 & 0.0950 & 0.0987
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,rank,1000.pkl	0.4560 & 0.1993 & 0.4553 & 0.4553 & 0.4560 & 0.5035 & 0.5062 & 0.5143
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,rank,200.pkl	0.4680 & 0.2080 & 0.4673 & 0.4673 & 0.4680 & 0.5233 & 0.5320 & 0.5393
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,rank,400.pkl	0.4700 & 0.2073 & 0.4693 & 0.4693 & 0.4700 & 0.5231 & 0.5337 & 0.5410
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,rank,600.pkl	0.4300 & 0.1747 & 0.4279 & 0.4279 & 0.4300 & 0.4516 & 0.4581 & 0.4663
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,rank,800.pkl	0.4380 & 0.1827 & 0.4359 & 0.4359 & 0.4380 & 0.4679 & 0.4719 & 0.4815
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,1000.pkl	0.4820 & 0.2080 & 0.4709 & 0.4709 & 0.4820 & 0.5264 & 0.5344 & 0.5475
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,200.pkl	0.4780 & 0.2120 & 0.4673 & 0.4673 & 0.4780 & 0.5327 & 0.5361 & 0.5484
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,400.pkl	0.4860 & 0.2073 & 0.4753 & 0.4753 & 0.4860 & 0.5282 & 0.5387 & 0.5496
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,600.pkl	0.4740 & 0.2073 & 0.4647 & 0.4647 & 0.4740 & 0.5220 & 0.5296 & 0.5415
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,800.pkl	0.4840 & 0.2053 & 0.4709 & 0.4709 & 0.4840 & 0.5232 & 0.5335 & 0.5473
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagvote,16.pkl	0.4040 & 0.2073 & 0.3963 & 0.3963 & 0.4040 & 0.5068 & 0.5266 & 0.5394
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagvote,1.pkl	0.6120 & 0.2213 & 0.6100 & 0.6100 & 0.6120 & 0.6142 & 0.6239 & 0.6281
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagvote,2.pkl	0.4860 & 0.2420 & 0.4925 & 0.4925 & 0.4860 & 0.6074 & 0.5929 & 0.5976
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagvote,4.pkl	0.4420 & 0.2360 & 0.4371 & 0.4371 & 0.4420 & 0.5713 & 0.5664 & 0.5759
+yfcc9k_yfcc0k_vgg-verydeep-16-fc7relu,tagvote,8.pkl	0.4380 & 0.2147 & 0.4271 & 0.4271 & 0.4380 & 0.5334 & 0.5540 & 0.5654

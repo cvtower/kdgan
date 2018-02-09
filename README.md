@@ -1,10 +1,15 @@
 # kdgan
 pip install -Ue .
-521729 182850 7288
+
+# 商品入库
+url: http://admin-test.glbuyer.com/#/
+usr: rootAdmin
+pwd: 12345678
 
 remote.unimelb.edu.au/student
 ssh xiaojie@10.100.229.246 # cpu
-ssh xiaojie@10.100.228.181 # gpu
+ssh xiaojie@10.100.228.181 # gpu xw
+ssh xiaojie@10.100.228.149 # gpu cz
 
 conda create -n py27 python=2.7
 conda create -n py34 python=3.4
@@ -18,6 +23,7 @@ python mnist_bn_wi.py --weight-init xavier --bias-init zero --batch-norm True
 
 virtualenv --system-site-packages venv
 pip install --ignore-installed --upgrade tensorflow
+pip install --ignore-installed -r requirements.txt
 
 ################################################################
 #
@@ -29,8 +35,7 @@ pip install --ignore-installed --upgrade tensorflow
 cd jingwei/image_feature/matcovnet/
 wget http://lixirong.net/data/csur2016/matconvnet-1.0-beta8.tar.gz
 tar -xzvf matconvnet-1.0-beta8.tar.gz
-wget http://lixirong.net/data/csur2016/matconvnet-models.tar
-.gz
+wget http://lixirong.net/data/csur2016/matconvnet-models.tar.gz
 tar -xzvf matconvnet-models.tar.gz
 matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
 # jingwei: precompute k nearest neighbors
@@ -45,6 +50,7 @@ sudo apt-get install libboost-dev
 import nltk & nltk.download('wordnet')
 ./do_getknn.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu 0 1 1
 ./do_getknn.sh yfcc9k yfcc9k vgg-verydeep-16-fc7relu 0 1 1
+setup-tagprop.sh
 wget http://lear.inrialpes.fr/people/guillaumin/code/TagProp_0.2.tar.gz
 ./do_tagprop.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
 patch TagProp/sigmoids.m < sigmoids.m.patch
@@ -93,3 +99,6 @@ https://github.com/keras-team/keras/tree/master/examples
 
 https://github.com/hwalsuklee/how-far-can-we-go-with-MNIST
 http://www.pythonexample.com/user/vamsiramakrishnan
+
+# gan trick
+https://github.com/gitlimlab/SSGAN-Tensorflow

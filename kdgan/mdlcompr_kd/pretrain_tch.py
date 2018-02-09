@@ -16,6 +16,8 @@ tf.app.flags.DEFINE_string('dataset_dir', None, '')
 tf.app.flags.DEFINE_integer('image_size', 28, '')
 tf.app.flags.DEFINE_integer('channels', 1, '')
 tf.app.flags.DEFINE_integer('num_label', 10, '')
+tf.app.flags.DEFINE_integer('train_size', 60000, '')
+tf.app.flags.DEFINE_integer('valid_size', 0, '')
 # model
 tf.app.flags.DEFINE_float('tch_keep_prob', 0.50, '')
 tf.app.flags.DEFINE_string('tch_checkpoint_dir', None, '')
@@ -35,8 +37,8 @@ tf.app.flags.DEFINE_string('optimizer', 'rmsprop', 'adam|sgd')
 # learning rate
 tf.app.flags.DEFINE_float('tch_learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('tch_learning_rate_decay_factor', 0.94, '')
-tf.app.flags.DEFINE_float('end_learning_rate', 0.0001, '')
 tf.app.flags.DEFINE_float('tch_num_epochs_per_decay', 2.0, '')
+tf.app.flags.DEFINE_float('end_learning_rate', 0.0001, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 flags = tf.app.flags.FLAGS
 
@@ -47,7 +49,8 @@ flags = tf.app.flags.FLAGS
 
 mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,
-    validation_size=0,
+    train_size=flags.train_size,
+    valid_size=flags.valid_size,
     reshape=True)
 print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
 tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
@@ -60,6 +63,16 @@ tn_tch = TCH(flags, mnist.train, is_training=True)
 scope = tf.get_variable_scope()
 scope.reuse_variables()
 vd_tch = TCH(flags, mnist.test, is_training=False)
+
+tot_params = 0
+for variable in tf.trainable_variables():
+  num_params = 1
+  for dim in variable.shape:
+    num_params *= dim.value
+  print('%-50s (%d params)' % (variable.name, num_params))
+  tot_params += num_params
+print('%-50s (%d params)' % (flags.tch_model_name, tot_params))
+# input()
 
 tf.summary.scalar(tn_tch.learning_rate.name, tn_tch.learning_rate)
 tf.summary.scalar(tn_tch.pre_loss.name, tn_tch.pre_loss)
@@ -76,16 +89,7 @@ def main(_):
     exit()
   utils.create_if_nonexist(flags.tch_checkpoint_dir)
 
-  tot_params = 0
-  for variable in tf.trainable_variables():
-    num_params = 1
-    for dim in variable.shape:
-      num_params *= dim.value
-    print('%-50s (%d params)' % (variable.name, num_params))
-    tot_params += num_params
-  print('%-50s (%d params)' % (flags.tch_model_name, tot_params))
-
-  best_acc_v = -np.inf
+  best_acc_v = 0.0
   start = time.time()
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -104,14 +108,18 @@ def main(_):
       feed_dict = {vd_tch.image_ph:vd_image_np}
       predictions, = sess.run([vd_tch.predictions], feed_dict=feed_dict)
       acc_v = metric.compute_acc(predictions, vd_label_np)
+
+      # global_step = tn_batch + 1
+      global_step, = sess.run([tn_tch.global_step])
       tot_time = time.time() - start
-      print('#%08d curbst=%.4f %.0fs' % (tn_batch, best_acc_v, tot_time))
+      avg_time = (tot_time / global_step) * (mnist.train.num_examples / flags.batch_size)
+      print('#%08d curacc=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+          (tn_batch, best_acc_v, tot_time, avg_time))
 
       if acc_v < best_acc_v:
         continue
       best_acc_v = acc_v
-      global_step, = sess.run([tn_tch.global_step])
-      print('#%08d curbst=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
+      # print('#%08d curbst=%.4f %.0fs' % (global_step, best_acc_v, tot_time))
       tn_tch.saver.save(utils.get_session(sess), flags.tch_save_path, global_step=global_step)
   print('bstacc=%.4f' % (best_acc_v))
 
