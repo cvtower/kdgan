@@ -1125,7 +1125,7 @@ def create_test_set():
             image_np = np.array(Image.open(file))
             # print(type(image_np), image_np.shape)
             feed_dict = {image_ph:image_np}
-            image, = sess.run([end_point], feed_dict)
+            image, = sess.run([end_point_v], feed_dict)
             image = image.tolist()
             # print(image)
             # print(type(image), len(image))
