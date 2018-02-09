@@ -1148,9 +1148,6 @@ def create_test_set():
             image_ids.append(image_id)
             # example = build_example(user, image, text, label, file)
 
-            count += 1
-            if (count % 500) == 0:
-                print('count={}'.format(count))
     image_ids = np.asarray(image_ids)
     print(image_ids)
     exit()
