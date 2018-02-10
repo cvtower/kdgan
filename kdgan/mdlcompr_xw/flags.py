@@ -32,5 +32,5 @@ tf.app.flags.DEFINE_float('tch_learning_rate', 1e-3, '')
 tf.app.flags.DEFINE_float('kd_hard_pct', 0.7, '')
 tf.app.flags.DEFINE_float('kd_soft_pct', 0.3, '')
 tf.app.flags.DEFINE_float('temperature', 3.0, '')
-tf.app.flags.DEFINE_string('kd_model', None, '')
+tf.app.flags.DEFINE_string('kd_model', None, 'mimic|distn|noisy')
 flags = tf.app.flags.FLAGS

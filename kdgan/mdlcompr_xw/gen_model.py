@@ -100,19 +100,25 @@ class GEN():
     return pre_losses
 
   def get_kd_losses(self, flags):
-    gen_logits = self.logits * (1.0 / flags.temperature)
-    tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
-
     hard_loss = self.get_hard_loss()
     # hard_loss = tf.losses.softmax_cross_entropy(self.hard_label_ph, gen_logits)
     # hard_loss *= flags.kd_hard_pct
     hard_loss *= 1.0 / flags.batch_size
 
-    # soft_loss = tf.losses.softmax_cross_entropy(tch_logits, gen_logits)
-    soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
-    # soft_loss = tf.nn.l2_loss(tch_logits - gen_logits)
-    # soft_loss *= (1 - flags.kd_hard_pct)
+    gen_logits = self.logits * (1.0 / flags.temperature)
+    tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
+
+    if flags.kd_model == 'mimic':
+      soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
+    elif flags.kd_model = 'distn':
+      soft_loss = tf.losses.softmax_cross_entropy(tch_logits, gen_logits)
+      soft_loss *= pow(flags.temperature, 2.0)
+    elif flags.kd_model == 'noisy':
+      soft_loss = 0.0
+    else:
+      raise ValueError('bad kd model %s', flags.kd_model)
     soft_loss *= flags.kd_soft_pct / flags.batch_size
+
     kd_losses = [hard_loss, soft_loss]
     print('#kd_losses=%d' % (len(kd_losses)))
     # kd_losses.extend(self.get_regularization_losses())
