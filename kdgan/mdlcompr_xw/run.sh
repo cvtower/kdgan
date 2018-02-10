@@ -15,7 +15,7 @@ python train_kd.py \
   --batch_size=$batch_size \
   --num_epoch=200 \
   --kd_hard_pct=1.0 \
-  --temperature=1.0 \
+  --temperature=1.0
 exit
 
 

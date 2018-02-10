@@ -19,10 +19,11 @@ mnist = data_utils.read_data_sets(flags.dataset_dir,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
-print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
-tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
+tn_size, vd_size = mnist.train.num_examples, mnist.test.num_examples
+print('tn size=%d vd size=%d' % (tn_size, vd_size))
+tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
 print('tn #batch=%d' % (tn_num_batch))
-eval_interval = int(mnist.train.num_examples / flags.batch_size)
+eval_interval = int(tn_size / flags.batch_size)
 print('ev #interval=%d' % (eval_interval))
 
 tn_gen = GEN(flags, mnist.train, is_training=True)
@@ -47,16 +48,14 @@ for variable in tf.trainable_variables():
 print('%-50s (%d params)' % ('kd', tot_params))
 
 def main(_):
-  writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   bst_acc = 0.0
+  writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     tn_gen.saver.restore(sess, flags.gen_ckpt_file)
     tn_tch.saver.restore(sess, flags.tch_ckpt_file)
     ini_gen = metric.eval_mdlcompr(sess, vd_gen, mnist)
     ini_tch = metric.eval_mdlcompr(sess, vd_tch, mnist)
-    print('inigen=%.4f initch=%.4f' % (ini_gen, ini_tch))
-    exit()
 
     start = time.time()
     for tn_batch in range(tn_num_batch):
@@ -75,18 +74,23 @@ def main(_):
 
       if (tn_batch + 1) % eval_interval != 0:
         continue
-      gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
+      feed_dict = {
+        vd_gen.image_ph:mnist.test.images,
+        vd_gen.hard_label_ph:mnist.test.labels,
+      }
+      acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
 
-      global_step, = sess.run([tn_gen.global_step])
+      best_acc = max(acc, best_acc)
       tot_time = time.time() - start
-      avg_time = (tot_time / global_step) * (mnist.train.num_examples / flags.batch_size)
+      global_step = sess.run(tn_tch.global_step)
+      avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
       print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-          (tn_batch, gen_acc, bst_gen_acc, tot_time, avg_time))
+          (tn_batch, acc, best_acc, tot_time, avg_time))
 
       if gen_acc <= bst_gen_acc:
         continue
-      bst_gen_acc = gen_acc
-  print('bstacc=%.4f iniacc=%.4f' % (bst_gen_acc, ini_gen_acc))
+      # save gen parameters if necessary
+  print('#mnist=%d bstacc=%.4f iniacc=%.4f' % (tn_size, best_acc, ini_gen))
 
 if __name__ == '__main__':
     tf.app.run()
