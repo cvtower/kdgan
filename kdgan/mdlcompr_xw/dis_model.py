@@ -20,13 +20,12 @@ class DIS():
 
     self.dis_scope = dis_scope = 'dis'
     with tf.variable_scope(dis_scope):
-      network_fn = nets_factory.get_network_fn(flags.dis_model_name,
-          num_classes=flags.num_label,
-          weight_decay=flags.dis_weight_decay,
+      self.logits = utils.get_logits(flags, 
+          self.image_ph,
+          flags.dis_model_name,
+          flags.dis_weight_decay,
+          flags.dis_keep_prob, 
           is_training=is_training)
-      assert flags.image_size==network_fn.default_image_size
-      net = tf.reshape(self.image_ph, [-1, flags.image_size, flags.image_size, flags.channels])
-      self.logits, _ = network_fn(net, dropout_keep_prob=flags.dis_keep_prob)
 
       sample_logits = tf.gather_nd(self.logits, self.sample_ph)
       reward_logits = self.logits
@@ -36,6 +35,8 @@ class DIS():
 
       if not is_training:
         self.predictions = tf.argmax(self.logits, axis=1)
+        self.accuracy = tf.equal(self.predictions, tf.argmax(self.hard_label_ph, 1))
+        self.accuracy = tf.reduce_mean(tf.cast(self.accuracy, tf.float32))
         return
 
       save_dict = {}
@@ -47,29 +48,19 @@ class DIS():
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = tf.Variable(0, trainable=False)
-      self.learning_rate = utils.get_lr(flags,
-          self.global_step,
-          dataset.num_examples,
-          flags.dis_learning_rate,
-          flags.dis_learning_rate_decay_factor,
-          flags.dis_num_epochs_per_decay,
-          dis_scope)
-      # self.learning_rate = tf.Variable(flags.learning_rate, trainable=False)
+      self.learning_rate = tf.Variable(flags.gen_learning_rate, trainable=False)
       # self.lr_update = tf.assign(self.learning_rate, self.learning_rate * flags.learning_rate_decay_factor)
 
       # pre train
       pre_losses = self.get_pre_losses()
       self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % dis_scope)
-      pre_optimizer = utils.get_opt(flags, self.learning_rate, opt_epsilon=flags.dis_opt_epsilon)
+      pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
 
       # gan train
-      gan_losses = []
-      gan_losses.append(tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits))
-      # gan_losses.extend(self.get_regularization_losses())
+      gan_losses = self.get_gan_losses(sample_logits)
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % dis_scope)
-      # gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
-      gan_optimizer = utils.get_opt(flags, self.learning_rate, opt_epsilon=flags.dis_opt_epsilon)
+      gan_optimizer = utils.get_opt(flags, self.learning_rate)
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=self.global_step)
 
   def get_regularization_losses(self):
@@ -87,8 +78,12 @@ class DIS():
     print('#pre_losses=%d' % (len(pre_losses)))
     return pre_losses
 
-
-
+  def get_gan_losses(self, sample_logits):
+    gan_losses = []
+    gan_loss = tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits)
+    gan_losses.append(gan_loss)
+    gan_losses.extend(self.get_regularization_losses())
+    return gan_losses
 
 
 

@@ -3,6 +3,18 @@ checkpoint_dir=$kdgan_dir/checkpoints
 
 train_size=50
 
+python pretrain_dis.py \
+  --dis_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --dis_model_name=lenet \
+  --optimizer=adam \
+  --dis_learning_rate=0.001 \
+  --learning_rate_decay_type=fixed \
+  --train_size=$train_size \
+  --batch_size=5 \
+  --num_epoch=2
+exit
+
 
 python pretrain_tch.py \
   --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
@@ -87,41 +99,6 @@ python train_kd.py \
   --learning_rate_decay_type=exponential \
   --train_size=$train_size \
   --num_epoch=200
-exit
-
-
-python pretrain_dis.py \
-  --dis_checkpoint_dir=$checkpoint_dir/mdlcompr_mnist_dis \
-  --dis_save_path=$checkpoint_dir/mdlcompr_mnist_dis/model \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --dis_model_name=lenet_v1 \
-  --dis_keep_prob=0.75 \
-  --dis_weight_decay=0.00001 \
-  --optimizer=adam \
-  --dis_learning_rate=0.001 \
-  --dis_learning_rate_decay_factor=0.96 \
-  --learning_rate_decay_type=exponential \
-  --train_size=$train_size \
-  --num_epoch=200
-# target=0.9932
-# bstacc=0.7679 # 500 train examples
-# bstacc=0.9756 # 5000 train examples
-exit
-
-
-# target=0.9932
-# bstacc=0.9951
-# avg=2.62s/epoch
-exit
-
-
-# target=0.9854
-# bstacc=0.9862 # no dropout no l2
-# bstacc=0.9884 # wt dropout wt l2
-# avg=0.89s/epoch
-# bstacc=0.7554 # 500 train examples
-# bstacc=0.7653 # 500 train examples
-# bstacc=0.9511 # 5000 train examples
 exit
 
 
