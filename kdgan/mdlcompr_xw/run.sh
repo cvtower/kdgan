@@ -14,7 +14,7 @@ python train_kd.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200 \
-  --kd_model=distn \
+  --kd_model=mimic \
   --kd_soft_pct=0.3 \
   --temperature=3.0
 exit
