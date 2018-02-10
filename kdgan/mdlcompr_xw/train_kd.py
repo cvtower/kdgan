@@ -51,8 +51,8 @@ def main(_):
   bst_acc = 0.0
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
-    tn_gen.saver.restore(sess, gen_ckpt_file)
-    tn_tch.saver.restore(sess, tch_ckpt_file)
+    tn_gen.saver.restore(sess, flags.gen_ckpt_file)
+    tn_tch.saver.restore(sess, flags.tch_ckpt_file)
     ini_gen = metric.eval_mdlcompr(sess, vd_gen, mnist)
     ini_tch = metric.eval_mdlcompr(sess, vd_tch, mnist)
     print('inigen=%.4f initch=%.4f' % (ini_gen, ini_tch))
