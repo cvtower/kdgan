@@ -110,7 +110,7 @@ class GEN():
 
     if flags.kd_model == 'mimic':
       soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
-    elif flags.kd_model = 'distn':
+    elif flags.kd_model == 'distn':
       soft_loss = tf.losses.softmax_cross_entropy(tch_logits, gen_logits)
       soft_loss *= pow(flags.temperature, 2.0)
     elif flags.kd_model == 'noisy':
