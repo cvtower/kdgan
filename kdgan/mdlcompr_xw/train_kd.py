@@ -87,7 +87,7 @@ def main(_):
       print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
           (tn_batch, acc, bst_acc, tot_time, avg_time))
 
-      if gen_acc <= bst_gen_acc:
+      if acc <= bst_acc:
         continue
       # save gen parameters if necessary
   print('#mnist=%d bstacc=%.4f iniacc=%.4f' % (tn_size, bst_acc, ini_gen))
