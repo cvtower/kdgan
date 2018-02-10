@@ -12,7 +12,8 @@ python pretrain_dis.py \
   --learning_rate_decay_type=fixed \
   --train_size=$train_size \
   --batch_size=5 \
-  --num_epoch=2
+  --num_epoch=200
+#mnist=50 bstacc=0.6536
 exit
 
 
@@ -26,6 +27,7 @@ python pretrain_tch.py \
   --train_size=$train_size \
   --batch_size=5 \
   --num_epoch=200
+#mnist=50 bstacc=0.6507
 exit
 
 

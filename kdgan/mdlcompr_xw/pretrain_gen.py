@@ -44,9 +44,9 @@ init_op = tf.global_variables_initializer()
 
 def main(_):
   best_acc = 0.0
+  writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
-    writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     start = time.time()
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
@@ -72,7 +72,7 @@ def main(_):
       if acc < best_acc:
         continue
       tn_gen.saver.save(utils.get_session(sess), flags.gen_ckpt_file)
-  print('bstacc=%.4f' % (best_acc))
+  print('#mnist=%d bstacc=%.4f' % (mnist.train.num_examples, best_acc))
 
 if __name__ == '__main__':
   tf.app.run()
