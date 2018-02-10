@@ -80,17 +80,17 @@ def main(_):
       }
       acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
 
-      best_acc = max(acc, best_acc)
+      bst_acc = max(acc, bst_acc)
       tot_time = time.time() - start
       global_step = sess.run(tn_tch.global_step)
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
       print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-          (tn_batch, acc, best_acc, tot_time, avg_time))
+          (tn_batch, acc, bst_acc, tot_time, avg_time))
 
       if gen_acc <= bst_gen_acc:
         continue
       # save gen parameters if necessary
-  print('#mnist=%d bstacc=%.4f iniacc=%.4f' % (tn_size, best_acc, ini_gen))
+  print('#mnist=%d bstacc=%.4f iniacc=%.4f' % (tn_size, bst_acc, ini_gen))
 
 if __name__ == '__main__':
     tf.app.run()

@@ -35,7 +35,7 @@ summary_op = tf.summary.merge_all()
 init_op = tf.global_variables_initializer()
 
 def main(_):
-  best_acc = 0.0
+  bst_acc = 0.0
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -57,17 +57,17 @@ def main(_):
       }
       acc = sess.run(vd_dis.accuracy, feed_dict=feed_dict)
 
-      best_acc = max(acc, best_acc)
+      bst_acc = max(acc, bst_acc)
       tot_time = time.time() - start
       global_step = sess.run(tn_dis.global_step)
       avg_time = (tot_time / global_step) * (mnist.train.num_examples / flags.batch_size)
       print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-          (tn_batch, acc, best_acc, tot_time, avg_time))
+          (tn_batch, acc, bst_acc, tot_time, avg_time))
 
-      if acc < best_acc:
+      if acc < bst_acc:
         continue
       tn_dis.saver.save(utils.get_session(sess), flags.dis_ckpt_file)
-  print('#mnist=%d bstacc=%.4f' % (mnist.train.num_examples, best_acc))
+  print('#mnist=%d bstacc=%.4f' % (mnist.train.num_examples, bst_acc))
 
 if __name__ == '__main__':
   tf.app.run()
