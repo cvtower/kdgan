@@ -244,19 +244,11 @@ def get_lr(flags, global_step, train_data_size,
     raise ValueError('bad learning rate decay type %s', flags.learning_rate_decay_type)
   return learning_rate
 
-def get_opt(flags, learning_rate, opt_epsilon=1e-08):
+def get_opt(flags, learning_rate):
   if flags.optimizer == 'adam':
-    optimizer = tf.train.AdamOptimizer(
-        learning_rate,
-        beta1=flags.adam_beta1,
-        beta2=flags.adam_beta2,
-        epsilon=opt_epsilon)
+    optimizer = tf.train.AdamOptimizer(learning_rate)
   elif flags.optimizer == 'rmsprop':
-    optimizer = tf.train.RMSPropOptimizer(
-        learning_rate,
-        decay=flags.rmsprop_decay,
-        momentum=flags.rmsprop_momentum,
-        epsilon=opt_epsilon)
+    optimizer = tf.train.RMSPropOptimizer(learning_rate)
   elif flags.optimizer == 'sgd':
     optimizer = tf.train.GradientDescentOptimizer(learning_rate)
   else:
@@ -380,11 +372,11 @@ def get_latest_ckpt(checkpoint_dir):
     exit()
   return ckpt_file
 
-def build_mlp_logits(flags, image_ph, 
-    hidden_size=800,
+def build_mlp_logits(flags, image_ph,
     keep_prob=0.88,
     weight_decay=0.00004,
     is_training=True):
+  hidden_size=800
   num_feature = flags.image_size * flags.image_size * flags.channels
   with tf.variable_scope('fc1'):
     fc1_weights = tf.get_variable('weights', [num_feature, hidden_size],
@@ -420,4 +412,22 @@ def build_mlp_logits(flags, image_ph,
   net = tf.contrib.layers.dropout(net, keep_prob=keep_prob, is_training=is_training)
 
   logits = tf.matmul(net, fc3_weights) + fc3_biases
+  return logits
+
+from nets import nets_factory
+def get_logits(flags, image_ph, model_name, weight_decay, keep_prob, 
+    is_training=True):
+  if model_name == 'mlp':
+    logits = build_mlp_logits(flags, image_ph,
+        weight_decay=weight_decay,
+        keep_prob=keep_prob,
+        is_training=is_training)
+  else:
+    network_fn = nets_factory.get_network_fn(model_name,
+        num_classes=flags.num_label,
+        weight_decay=weight_decay,
+        is_training=is_training)
+    assert flags.image_size==network_fn.default_image_size
+    net = tf.reshape(image_ph, [-1, flags.image_size, flags.image_size, flags.channels])
+    logits, _ = network_fn(net, dropout_keep_prob=keep_prob)
   return logits
