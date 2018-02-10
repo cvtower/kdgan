@@ -79,7 +79,13 @@ def process(options, collection, annotationName, runfile):
       ap = ap_scorer.score(sorted_labels)
       rr = rr_scorer.score(sorted_labels)
 
+      f1, f3 = 0.0, 0.0
+      if (p1 + r1) != 0.0:
+        f1 = 2 * p1 * r1 / (p1 + r1)
+      if (p3 + r3) != 0.0:
+        f3 = 2 * p3 * r3 / (p3 + r3)
       res[j,:] = [p1, p3, r1, r3, ndcg1, ndcg3, ap, rr]
+      res[j,:] = [p1, p3, f1, f3, ndcg1, ndcg3, ap, rr]
     avg_perf = res.mean(axis=0)
     print '{}\t{}'.format(
       os.path.split(datafiles[run_idx])[-1],
