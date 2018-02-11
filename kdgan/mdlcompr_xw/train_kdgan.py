@@ -105,8 +105,8 @@ def main(_):
           label_tch_t = sess.run(tn_tch.labels, feed_dict=feed_dict)
           sample_t = utils.generate_label(flags, label_dat_t, label_tch_t)
           feed_dict = {
-            tn_tch.image_ph:image_t,
-            tn_tch.sample_ph:sample_t,
+            tn_dis.image_ph:image_t,
+            tn_dis.sample_ph:sample_t,
           }
           reward_t = sess.run(tn_dis.rewards, feed_dict=feed_dict)
           feed_dict = {
