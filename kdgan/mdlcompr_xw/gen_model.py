@@ -80,7 +80,7 @@ class GEN():
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=self.global_step)
 
       # kdgan train
-      kdgan_losses = self.get_kd_losses(flags) + self.get_gan_losses(flags)
+      kdgan_losses = self.get_kdgan_losses(flags)
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % gen_scope)
       kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
       self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=self.global_step)
@@ -144,7 +144,10 @@ class GEN():
     gan_losses.extend(self.get_regularization_losses())
     return gan_losses
 
-
+  def get_kdgan_losses(self, flags):
+    # self.get_kd_losses(flags) + self.get_gan_losses(flags)
+    kdgan_losses = self.get_gan_losses(flags)
+    return kdgan_losses
 
 
 

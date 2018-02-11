@@ -169,7 +169,7 @@ def main(_):
             tn_gen.sample_ph:sample_g,
             tn_gen.reward_ph:reward_g,
           }
-          sess.run(tn_gen.gan_update, feed_dict=feed_dict)
+          sess.run(tn_gen.kdgan_update, feed_dict=feed_dict)
           
           if (batch_g + 1) % eval_interval != 0:
             continue
