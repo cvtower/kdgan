@@ -27,14 +27,14 @@ print('ev #interval=%d' % (eval_interval))
 
 tn_dis = DIS(flags, mnist.train, is_training=True)
 tn_gen = GEN(flags, mnist.train, is_training=True)
-# dis_summary_op = tf.summary.merge([
-#   tf.summary.scalar(tn_dis.learning_rate.name, tn_dis.learning_rate),
-#   tf.summary.scalar(tn_dis.gan_loss.name, tn_dis.gan_loss),
-# ])
-# gen_summary_op = tf.summary.merge([
-#   tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate),
-#   tf.summary.scalar(tn_gen.gan_loss.name, tn_gen.gan_loss),
-# ])
+dis_summary_op = tf.summary.merge([
+  tf.summary.scalar(tn_dis.learning_rate.name, tn_dis.learning_rate),
+  tf.summary.scalar(tn_dis.gan_loss.name, tn_dis.gan_loss),
+])
+gen_summary_op = tf.summary.merge([
+  tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate),
+  tf.summary.scalar(tn_gen.gan_loss.name, tn_gen.gan_loss),
+])
 init_op = tf.global_variables_initializer()
 
 scope = tf.get_variable_scope()
