@@ -136,7 +136,7 @@ def main(_):
           if acc <= bst_acc:
             continue
           # save gen parameters if necessary
-  print('bstacc=%.4f' % (bst_gen_acc))
+  print('#mnist=%d bstacc=%.4f' % (tn_size, bst_acc))
 
 if __name__ == '__main__':
     tf.app.run()
