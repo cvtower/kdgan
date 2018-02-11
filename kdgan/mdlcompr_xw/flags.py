@@ -30,6 +30,8 @@ tf.app.flags.DEFINE_string('optimizer', 'adam', 'adam|rmsprop|sgd')
 tf.app.flags.DEFINE_float('dis_learning_rate', 1e-3, '')
 tf.app.flags.DEFINE_float('gen_learning_rate', 1e-3, '')
 tf.app.flags.DEFINE_float('tch_learning_rate', 1e-3, '')
+tf.app.flags.DEFINE_integer('num_negative', 10, '')
+tf.app.flags.DEFINE_integer('num_positive', 10, '')
 # kd or gan
 tf.app.flags.DEFINE_float('kd_hard_pct', 0.7, '')
 tf.app.flags.DEFINE_float('kd_soft_pct', 0.3, '')
