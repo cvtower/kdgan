@@ -67,7 +67,7 @@ def main(_):
     }
     ini_gen = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
     print('ini dis=%.4f ini gen=%.4f' % (ini_dis, ini_gen))
-    exit()
+    # exit()
 
     tot_time = time.time() - start
     batch_d, batch_g = -1, -1
