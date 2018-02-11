@@ -55,8 +55,17 @@ def main(_):
     sess.run(init_op)
     tn_dis.saver.restore(sess, flags.dis_ckpt_file)
     tn_gen.saver.restore(sess, flags.gen_ckpt_file)
-    ini_dis = metric.eval_mdlcompr(sess, tn_dis, mnist)
-    ini_gen = metric.eval_mdlcompr(sess, vd_gen, mnist)
+
+    feed_dict = {
+      vd_dis.image_ph:mnist.test.images,
+      vd_dis.hard_label_ph:mnist.test.labels,
+    }
+    ini_dis = sess.run(vd_dis.accuracy, feed_dict=feed_dict)
+    feed_dict = {
+      vd_gen.image_ph:mnist.test.images,
+      vd_gen.hard_label_ph:mnist.test.labels,
+    }
+    ini_gen = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
     print('ini dis=%.4f ini gen=%.4f' % (ini_dis, ini_gen))
     exit()
     tot_time = time.time() - start
