@@ -17,6 +17,7 @@ python train_kdgan.py \
   --num_epoch=200 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
+  --num_tch_epoch=10 \
   --num_negative=20 \
   --num_positive=2 \
   --kd_model=mimic \
