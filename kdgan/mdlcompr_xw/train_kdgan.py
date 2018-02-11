@@ -25,9 +25,13 @@ gen_mnist = data_utils.read_data_sets(flags.dataset_dir,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
+tch_mnist = data_utils.read_data_sets(flags.dataset_dir,
+    one_hot=True,
+    train_size=flags.train_size,
+    valid_size=flags.valid_size,
+    reshape=True)
 
-tn_size = int((dis_mnist.train.num_examples + gen_mnist.train.num_examples) / 2)
-vd_size = int((dis_mnist.test.num_examples + gen_mnist.test.num_examples) / 2)
+tn_size, vd_size = gen_mnist.train.num_examples, gen_mnist.test.num_examples
 print('tn size=%d vd size=%d' % (tn_size, vd_size))
 tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
 print('tn #batch=%d' % (tn_num_batch))
@@ -36,7 +40,7 @@ print('ev #interval=%d' % (eval_interval))
 
 tn_dis = DIS(flags, dis_mnist.train, is_training=True)
 tn_gen = GEN(flags, gen_mnist.train, is_training=True)
-tn_tch = TCH(flags, mnist.train, is_training=True)
+tn_tch = TCH(flags, tch_mnist.train, is_training=True)
 dis_summary_op = tf.summary.merge([
   tf.summary.scalar(tn_dis.learning_rate.name, tn_dis.learning_rate),
   tf.summary.scalar(tn_dis.gan_loss.name, tn_dis.gan_loss),
@@ -51,7 +55,7 @@ scope = tf.get_variable_scope()
 scope.reuse_variables()
 vd_dis = DIS(flags, dis_mnist.test, is_training=False)
 vd_gen = GEN(flags, gen_mnist.test, is_training=False)
-vd_tch = TCH(flags, mnist.test, is_training=False)
+vd_tch = TCH(flags, tch_mnist.test, is_training=False)
 
 # for variable in tf.trainable_variables():
 #   num_params = 1
