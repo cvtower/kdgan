@@ -70,6 +70,7 @@ def main(_):
     sess.run(init_op)
     tn_dis.saver.restore(sess, flags.dis_ckpt_file)
     tn_gen.saver.restore(sess, flags.gen_ckpt_file)
+    tn_tch.saver.restore(sess, flags.tch_ckpt_file)
 
     feed_dict = {
       vd_dis.image_ph:dis_mnist.test.images,
