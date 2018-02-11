@@ -35,6 +35,7 @@ print('ev #interval=%d' % (eval_interval))
 
 tn_dis = DIS(flags, dis_mnist.train, is_training=True)
 tn_gen = GEN(flags, gen_mnist.train, is_training=True)
+tn_tch = TCH(flags, mnist.train, is_training=True)
 dis_summary_op = tf.summary.merge([
   tf.summary.scalar(tn_dis.learning_rate.name, tn_dis.learning_rate),
   tf.summary.scalar(tn_dis.gan_loss.name, tn_dis.gan_loss),
@@ -49,6 +50,7 @@ scope = tf.get_variable_scope()
 scope.reuse_variables()
 vd_dis = DIS(flags, dis_mnist.test, is_training=False)
 vd_gen = GEN(flags, gen_mnist.test, is_training=False)
+vd_tch = TCH(flags, mnist.test, is_training=False)
 
 # for variable in tf.trainable_variables():
 #   num_params = 1
@@ -78,7 +80,7 @@ def main(_):
     # exit()
 
     start = time.time()
-    batch_d, batch_g = -1, -1
+    batch_d, batch_g, batch_t = -1, -1, -1
     for epoch in range(flags.num_epoch):
       for dis_epoch in range(flags.num_dis_epoch):
         # print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
@@ -89,15 +91,22 @@ def main(_):
 
           feed_dict = {tn_gen.image_ph:image_d}
           label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
-          sample_d, label_d = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
+          sample_gen_d, dis_label_gen = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
           feed_dict = {
             tn_dis.image_ph:image_d,
-            tn_dis.sample_ph:sample_d,
-            tn_dis.dis_label_ph:label_d,
+            tn_dis.sample_ph:sample_gen_d,
+            tn_dis.dis_label_ph:dis_label_gen,
           }
+
+          feed_dict = {tn_tch.image_ph:image_d}
+          label_tch_d = sess.run(tn_tch.labels, feed_dict=feed_dict)
+
 
           _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
           writer.add_summary(summary_d, batch_d)
+
+      for tch_epoch in range(flags.num_tch_epoch):
+        num_batch_t = math.ceil(tn_size / flags.batch_size)
 
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
