@@ -113,6 +113,21 @@ def main(_):
         num_batch_t = math.ceil(tn_size / flags.batch_size)
         for _ in range(num_batch_t):
           batch_t += 1
+          image_t, label_dat_t = tch_mnist.train.next_batch(flags.batch_size)
+          feed_dict = {tn_tch.image_ph:image_t}
+          label_tch_t = sess.run(tn_tch.labels, feed_dict=feed_dict)
+          sample_t = utils.generate_label(flags, label_dat_t, label_tch_t)
+          feed_dict = {
+            tn_dis.image_ph:image_t,
+            tn_dis.sample_ph:sample_t,
+          }
+          reward_t = sess.run(tn_dis.rewards, feed_dict=feed_dict)
+          feed_dict = {
+            tn_tch.image_ph:image_t,
+            tn_tch.sample_ph:sample_t,
+            tn_tch.reward_ph:reward_t,
+          }
+          sess.run(tn_tch.kdgan_update, feed_dict=feed_dict)
 
           if (batch_t + 1) % eval_interval != 0:
             continue
