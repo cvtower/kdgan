@@ -77,41 +77,50 @@ def main(_):
     for epoch in range(flags.num_epoch):
       for dis_epoch in range(flags.num_dis_epoch):
         # print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
-        num_batch_d = math.ceil(mnist.train.num_examples / flags.batch_size)
+        num_batch_d = math.ceil(tn_size / flags.batch_size)
         for _ in range(num_batch_d):
           batch_d += 1
-          image_np_d, label_dat_d = mnist.train.next_batch(flags.batch_size)
-          feed_dict = {tn_gen.image_ph:image_np_d}
-          label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
-          # print('label_dat_d={} label_gen_d={}'.format(label_dat_d.shape, label_gen_d.shape))
-          sample_np_d, label_np_d = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
+          image_d, label_dat_d = mnist.train.next_batch(flags.batch_size)
+
+          feed_dict = {tn_gen.image_ph:image_d}
+          label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
+          feed_dict = {tn_tch.image_ph:image_d}
+          label_tch_d = sess.run(tn_tch.labels, feed_dict=feed_dict)
+
+          sample_d, label_d = utils.kdgan_dis_sample(flags, label_dat_d, label_gen_d, label_tch_d)
           feed_dict = {
-            tn_dis.image_ph:image_np_d,
-            tn_dis.sample_ph:sample_np_d,
-            tn_dis.dis_label_ph:label_np_d,
+            tn_dis.image_ph:image_d,
+            tn_dis.sample_ph:sample_d,
+            tn_dis.dis_label_ph:label_d,
           }
           sess.run(tn_dis.gan_update, feed_dict=feed_dict)
 
+      for tch_epoch in range(flags.num_tch_epoch):
+        num_batch_t = math.ceil(tn_size / flags.batch_size)
+        for _ in range(num_batch_t):
+          batch_t += 1
+          image_t, label_dat_t = mnist.train.next_batch(flags.batch_size)
+
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
-        num_batch_g = math.ceil(mnist.train.num_examples / flags.batch_size)
+        num_batch_g = math.ceil(tn_size / flags.batch_size)
         for _ in range(num_batch_g):
           batch_g += 1
-          image_np_g, label_dat_g = mnist.train.next_batch(flags.batch_size)
-          feed_dict = {tn_gen.image_ph:image_np_g}
+          image_g, label_dat_g = mnist.train.next_batch(flags.batch_size)
+          feed_dict = {tn_gen.image_ph:image_g}
           label_gen_g, = sess.run([tn_gen.labels], feed_dict=feed_dict)
           sample_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
           # sample_np_g, rescale_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
           # print(sample_np_g.shape, rescale_np_g.shape)
           feed_dict = {
-            tn_dis.image_ph:image_np_g,
+            tn_dis.image_ph:image_g,
             tn_dis.sample_ph:sample_np_g,
           }
           reward_np_g, = sess.run([tn_dis.rewards], feed_dict=feed_dict)
           # reward_np_g *= rescale_np_g
           # print(reward_np_g)
           feed_dict = {
-            tn_gen.image_ph:image_np_g,
+            tn_gen.image_ph:image_g,
             tn_gen.sample_ph:sample_np_g,
             tn_gen.reward_ph:reward_np_g,
           }

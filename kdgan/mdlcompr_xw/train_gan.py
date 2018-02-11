@@ -14,21 +14,27 @@ import time
 import numpy as np
 import tensorflow as tf
 
-mnist = data_utils.read_data_sets(flags.dataset_dir,
+dis_mnist = data_utils.read_data_sets(flags.dataset_dir,
+    one_hot=True,
+    train_size=flags.train_size,
+    valid_size=flags.valid_size,
+    reshape=True)
+gen_mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
 
-tn_size, vd_size = mnist.train.num_examples, mnist.test.num_examples
+tn_size = int((dis_mnist.train.num_examples + gen_mnist.train.num_examples) / 2)
+vd_size = int((dis_mnist.test.num_examples + gen_mnist.test.num_examples) / 2)
 print('tn size=%d vd size=%d' % (tn_size, vd_size))
 tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
 print('tn #batch=%d' % (tn_num_batch))
 eval_interval = int(tn_size / flags.batch_size)
 print('ev #interval=%d' % (eval_interval))
 
-tn_dis = DIS(flags, mnist.train, is_training=True)
-tn_gen = GEN(flags, mnist.train, is_training=True)
+tn_dis = DIS(flags, dis_mnist.train, is_training=True)
+tn_gen = GEN(flags, gen_mnist.train, is_training=True)
 dis_summary_op = tf.summary.merge([
   tf.summary.scalar(tn_dis.learning_rate.name, tn_dis.learning_rate),
   tf.summary.scalar(tn_dis.gan_loss.name, tn_dis.gan_loss),
@@ -41,8 +47,8 @@ init_op = tf.global_variables_initializer()
 
 scope = tf.get_variable_scope()
 scope.reuse_variables()
-vd_dis = DIS(flags, mnist.test, is_training=False)
-vd_gen = GEN(flags, mnist.test, is_training=False)
+vd_dis = DIS(flags, dis_mnist.test, is_training=False)
+vd_gen = GEN(flags, gen_mnist.test, is_training=False)
 
 # for variable in tf.trainable_variables():
 #   num_params = 1
@@ -59,13 +65,13 @@ def main(_):
     tn_gen.saver.restore(sess, flags.gen_ckpt_file)
 
     feed_dict = {
-      vd_dis.image_ph:mnist.test.images,
-      vd_dis.hard_label_ph:mnist.test.labels,
+      vd_dis.image_ph:dis_mnist.test.images,
+      vd_dis.hard_label_ph:dis_mnist.test.labels,
     }
     ini_dis = sess.run(vd_dis.accuracy, feed_dict=feed_dict)
     feed_dict = {
-      vd_gen.image_ph:mnist.test.images,
-      vd_gen.hard_label_ph:mnist.test.labels,
+      vd_gen.image_ph:gen_mnist.test.images,
+      vd_gen.hard_label_ph:gen_mnist.test.labels,
     }
     ini_gen = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
     print('ini dis=%.4f ini gen=%.4f' % (ini_dis, ini_gen))
@@ -76,10 +82,10 @@ def main(_):
     for epoch in range(flags.num_epoch):
       for dis_epoch in range(flags.num_dis_epoch):
         # print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
-        num_batch_d = math.ceil(mnist.train.num_examples / flags.batch_size)
+        num_batch_d = math.ceil(tn_size / flags.batch_size)
         for _ in range(num_batch_d):
           batch_d += 1
-          image_np_d, label_dat_d = mnist.train.next_batch(flags.batch_size)
+          image_np_d, label_dat_d = dis_mnist.train.next_batch(flags.batch_size)
           feed_dict = {tn_gen.image_ph:image_np_d}
           label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
           # print('label_dat_d={} label_gen_d={}'.format(label_dat_d.shape, label_gen_d.shape))
@@ -94,10 +100,10 @@ def main(_):
 
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
-        num_batch_g = math.ceil(mnist.train.num_examples / flags.batch_size)
+        num_batch_g = math.ceil(tn_size / flags.batch_size)
         for _ in range(num_batch_g):
           batch_g += 1
-          image_np_g, label_dat_g = mnist.train.next_batch(flags.batch_size)
+          image_np_g, label_dat_g = gen_mnist.train.next_batch(flags.batch_size)
           feed_dict = {tn_gen.image_ph:image_np_g}
           label_gen_g, = sess.run([tn_gen.labels], feed_dict=feed_dict)
           sample_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
@@ -121,8 +127,8 @@ def main(_):
           if (batch_g + 1) % eval_interval != 0:
             continue
           feed_dict = {
-            vd_gen.image_ph:mnist.test.images,
-            vd_gen.hard_label_ph:mnist.test.labels,
+            vd_gen.image_ph:gen_mnist.test.images,
+            vd_gen.hard_label_ph:gen_mnist.test.labels,
           }
           acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
 
