@@ -116,7 +116,7 @@ def main(_):
           _, summary_g = sess.run([tn_gen.gan_update, gen_summary_op], feed_dict=feed_dict)
           writer.add_summary(summary_g, batch_g)
           
-          if (tn_batch + 1) % eval_interval != 0:
+          if (batch_g + 1) % eval_interval != 0:
             continue
           feed_dict = {
             vd_gen.image_ph:mnist.test.images,
@@ -129,7 +129,7 @@ def main(_):
           global_step = sess.run(tn_gen.global_step)
           avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
           print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-              (tn_batch, acc, bst_acc, tot_time, avg_time))
+              (batch_g, acc, bst_acc, tot_time, avg_time))
 
           if acc <= bst_acc:
             continue
