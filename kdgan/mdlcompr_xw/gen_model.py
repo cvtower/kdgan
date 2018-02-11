@@ -145,8 +145,8 @@ class GEN():
     return gan_losses
 
   def get_kdgan_losses(self, flags):
-    # kdgan_losses = self.get_gan_losses(flags) + self.get_kd_losses(flags)
-    kdgan_losses = self.get_gan_losses(flags)
+    kdgan_losses = self.get_gan_losses(flags) + self.get_kd_losses(flags)
+    # kdgan_losses = self.get_gan_losses(flags)
     return kdgan_losses
 
 

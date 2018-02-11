@@ -95,15 +95,15 @@ def main(_):
           batch_d += 1
           image_d, label_dat_d = dis_mnist.train.next_batch(flags.batch_size)
 
-          feed_dict = {tn_gen.image_ph:image_d}
-          label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
-          sample_gen_d, dis_label_gen = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
-          feed_dict = {
-            tn_dis.image_ph:image_d,
-            tn_dis.sample_ph:sample_gen_d,
-            tn_dis.dis_label_ph:dis_label_gen,
-          }
-          sess.run(tn_dis.gan_update, feed_dict=feed_dict)
+          # feed_dict = {tn_gen.image_ph:image_d}
+          # label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
+          # sample_gen_d, dis_label_gen = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
+          # feed_dict = {
+          #   tn_dis.image_ph:image_d,
+          #   tn_dis.sample_ph:sample_gen_d,
+          #   tn_dis.dis_label_ph:dis_label_gen,
+          # }
+          # sess.run(tn_dis.gan_update, feed_dict=feed_dict)
 
           feed_dict = {tn_tch.image_ph:image_d}
           label_tch_d = sess.run(tn_tch.labels, feed_dict=feed_dict)
