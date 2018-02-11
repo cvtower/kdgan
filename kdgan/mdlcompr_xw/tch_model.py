@@ -13,6 +13,7 @@ class TCH():
     num_feature = flags.image_size * flags.image_size * flags.channels
     self.image_ph = tf.placeholder(tf.float32, shape=(None, num_feature))
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
+    self.soft_logit_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
     # None = batch_size * sample_size
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
