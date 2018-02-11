@@ -3,6 +3,7 @@ from kdgan import metric
 from kdgan import utils
 from dis_model import DIS
 from gen_model import GEN
+from tch_model import TCH
 from flags import flags
 import data_utils
 
