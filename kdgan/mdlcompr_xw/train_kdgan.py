@@ -96,15 +96,14 @@ def main(_):
           image_d, label_dat_d = dis_mnist.train.next_batch(flags.batch_size)
 
           feed_dict = {tn_gen.image_ph:image_d}
-          label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
+          label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
           sample_gen_d, dis_label_gen = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
           feed_dict = {
             tn_dis.image_ph:image_d,
             tn_dis.sample_ph:sample_gen_d,
             tn_dis.dis_label_ph:dis_label_gen,
           }
-          _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
-          writer.add_summary(summary_d, batch_d)
+          sess.run(tn_dis.gan_update, feed_dict=feed_dict)
 
           # feed_dict = {tn_tch.image_ph:image_d}
           # label_tch_d = sess.run(tn_tch.labels, feed_dict=feed_dict)
@@ -145,24 +144,23 @@ def main(_):
           batch_g += 1
           image_g, label_dat_g = gen_mnist.train.next_batch(flags.batch_size)
           feed_dict = {tn_gen.image_ph:image_g}
-          label_gen_g, = sess.run([tn_gen.labels], feed_dict=feed_dict)
-          sample_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
-          # sample_np_g, rescale_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
-          # print(sample_np_g.shape, rescale_np_g.shape)
+          label_gen_g = sess.run(tn_gen.labels, feed_dict=feed_dict)
+          sample_g = utils.generate_label(flags, label_dat_g, label_gen_g)
+          # sample_g, rescale_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
+          # print(sample_g.shape, rescale_np_g.shape)
           feed_dict = {
             tn_dis.image_ph:image_g,
-            tn_dis.sample_ph:sample_np_g,
+            tn_dis.sample_ph:sample_g,
           }
-          reward_np_g, = sess.run([tn_dis.rewards], feed_dict=feed_dict)
-          # reward_np_g *= rescale_np_g
-          # print(reward_np_g)
+          reward_g = sess.run(tn_dis.rewards, feed_dict=feed_dict)
+          # reward_g *= rescale_np_g
+          # print(reward_g)
           feed_dict = {
             tn_gen.image_ph:image_g,
-            tn_gen.sample_ph:sample_np_g,
-            tn_gen.reward_ph:reward_np_g,
+            tn_gen.sample_ph:sample_g,
+            tn_gen.reward_ph:reward_g,
           }
-          _, summary_g = sess.run([tn_gen.gan_update, gen_summary_op], feed_dict=feed_dict)
-          writer.add_summary(summary_g, batch_g)
+          sess.run(tn_gen.gan_update, feed_dict=feed_dict)
           
           if (batch_g + 1) % eval_interval != 0:
             continue
