@@ -20,7 +20,7 @@ python train_kdgan.py \
   --num_tch_epoch=10 \
   --num_negative=20 \
   --num_positive=2 \
-  --kd_model=mimic \
+  --kd_model=distn \
   --kd_soft_pct=0.7 \
   --temperature=3.0
 exit
