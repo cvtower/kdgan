@@ -110,6 +110,17 @@ def main(_):
 
       for tch_epoch in range(flags.num_tch_epoch):
         num_batch_t = math.ceil(tn_size / flags.batch_size)
+        for _ in range(num_batch_t):
+          batch_t += 1
+
+          if (batch_t + 1) % eval_interval != 0:
+            continue
+          feed_dict = {
+            vd_tch.image_ph:gen_mnist.test.images,
+            vd_tch.hard_label_ph:gen_mnist.test.labels,
+          }
+          tch_acc = sess.run(vd_tch.accuracy, feed_dict=feed_dict)
+          print('#%08d tchacc=%.4f' % (batch_t, tch_acc))
 
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
