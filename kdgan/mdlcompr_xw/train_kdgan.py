@@ -120,6 +120,7 @@ def main(_):
         for _ in range(num_batch_t):
           batch_t += 1
           image_t, label_dat_t = tch_mnist.train.next_batch(flags.batch_size)
+
           feed_dict = {tn_tch.image_ph:image_t}
           label_tch_t = sess.run(tn_tch.labels, feed_dict=feed_dict)
           sample_t = utils.generate_label(flags, label_dat_t, label_tch_t)
@@ -128,6 +129,10 @@ def main(_):
             tn_dis.sample_ph:sample_t,
           }
           reward_t = sess.run(tn_dis.rewards, feed_dict=feed_dict)
+
+          feed_dict = {vd_gen.image_ph:image_g}
+          soft_logit_t = sess.run(vd_gen.logits, feed_dict=feed_dict)
+
           feed_dict = {
             tn_tch.image_ph:image_t,
             tn_tch.sample_ph:sample_t,

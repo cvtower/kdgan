@@ -74,10 +74,42 @@ class TCH():
     print('#pre_losses=%d' % (len(pre_losses)))
     return pre_losses
 
+  def get_kd_losses(self, flags):
+    kd_losses = []
+    if flags.kd_model == 'mimic':
+      soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits) / flags.batch_size
+      kd_losses.append(soft_loss)
+    elif flags.kd_model == 'distn':
+      hard_loss = self.get_hard_loss()
+      hard_loss *= (1.0 - flags.kd_soft_pct) / flags.batch_size
+      gen_logits = self.logits * (1.0 / flags.temperature)
+      tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
+      soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
+      soft_loss *= (pow(flags.temperature, 2.0) * flags.kd_soft_pct) / flags.batch_size
+      kd_losses.extend([hard_loss, soft_loss])
+    elif flags.kd_model == 'noisy':
+      # self.noisy = noisy = tf.multiply(noisy_mask, gaussian)
+      # tch_logits = tf.multiply(self.soft_logit_ph, tf.tile(noisy, tf.constant([1, flags.num_label])))
+      # soft_loss = tf.nn.l2_loss(tch_logits - self.logits) / flags.batch_size
+      # kd_losses.append(soft_loss)
+      noisy = np.float32(np.ones((flags.batch_size, flags.num_label)))
+      noisy = tf.nn.dropout(noisy, keep_prob=(1.0 - flags.noisy_ratio))
+      noisy += tf.random_normal((flags.batch_size, flags.num_label), stddev=flags.noisy_sigma)
+      tch_logits = tf.multiply(self.soft_logit_ph, noisy)
+      soft_loss = tf.nn.l2_loss(tch_logits - self.logits) / flags.batch_size
+      kd_losses.append(soft_loss)
+    else:
+      raise ValueError('bad kd model %s', flags.kd_model)
+    print('#kd_losses=%d' % (len(kd_losses)))
+    # kd_losses.extend(self.get_regularization_losses())
+    # print('#kd_losses=%d' % (len(kd_losses)))
+    return kd_losses
+
   def get_kdgan_losses(self, flags):
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
     # kdgan_losses = -tf.reduce_mean(self.reward_ph * sample_logits)
     kdgan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
+    # kdgan_losses.extend(self.get_kd_losses(flags))
     kdgan_losses.extend(self.get_regularization_losses())
     return kdgan_losses
 
