@@ -137,6 +137,8 @@ def main(_):
             tn_tch.image_ph:image_t,
             tn_tch.sample_ph:sample_t,
             tn_tch.reward_ph:reward_t,
+            tn_tch.hard_label_ph:label_dat_t,
+            tn_tch.soft_logit_ph:soft_logit_t,
           }
           sess.run(tn_tch.kdgan_update, feed_dict=feed_dict)
 
