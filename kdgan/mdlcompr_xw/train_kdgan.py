@@ -70,7 +70,7 @@ def main(_):
     }
     ini_tch = sess.run(vd_tch.accuracy, feed_dict=feed_dict)
     print('ini dis=%.4f gen=%.4f tch=%.4f' % (ini_dis, ini_gen, ini_tch))
-    exit()
+    # exit()
 
     start = time.time()
     batch_d, batch_g, batch_t = -1, -1, -1
