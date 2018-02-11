@@ -18,7 +18,7 @@ python train_kdgan.py \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_negative=20 \
-  --num_positive=2 \
+  --num_positive=5 \
   --kd_model=mimic \
   --kd_soft_pct=0.7 \
   --temperature=3.0
