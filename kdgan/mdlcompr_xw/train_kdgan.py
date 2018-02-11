@@ -108,7 +108,7 @@ def main(_):
             tn_tch.image_ph:image_t,
             tn_tch.sample_ph:sample_t,
           }
-          reward_t = sess.run(tn_tch.rewards, feed_dict=feed_dict)
+          reward_t = sess.run(tn_dis.rewards, feed_dict=feed_dict)
           feed_dict = {
             tn_tch.image_ph:image_t,
             tn_tch.sample_ph:sample_t,
