@@ -102,13 +102,11 @@ def main(_):
             tn_dis.sample_ph:sample_gen_d,
             tn_dis.dis_label_ph:dis_label_gen,
           }
-
-          feed_dict = {tn_tch.image_ph:image_d}
-          label_tch_d = sess.run(tn_tch.labels, feed_dict=feed_dict)
-
-
           _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
           writer.add_summary(summary_d, batch_d)
+
+          # feed_dict = {tn_tch.image_ph:image_d}
+          # label_tch_d = sess.run(tn_tch.labels, feed_dict=feed_dict)
 
       for tch_epoch in range(flags.num_tch_epoch):
         num_batch_t = math.ceil(tn_size / flags.batch_size)
