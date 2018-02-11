@@ -98,7 +98,7 @@ class GEN():
     return hard_loss
 
   def get_pre_losses(self, flags):
-    hard_loss = [self.get_hard_loss()]
+    hard_loss = self.get_hard_loss()
     hard_loss *= 1.0 / flags.batch_size
     pre_losses = [hard_loss]
     print('#pre_losses=%d' % (len(pre_losses)))
