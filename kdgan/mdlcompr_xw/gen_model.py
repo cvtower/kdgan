@@ -74,10 +74,16 @@ class GEN():
       # gan train
       gan_losses = self.get_gan_losses(flags)
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % gen_scope)
-      # gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
       gan_optimizer = utils.get_opt(flags, self.learning_rate)
+      # gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      gan_optimizer = tf.train.AdamOptimizer(self.learning_rate)
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=self.global_step)
 
+      # kdgan train
+      kdgan_losses = self.get_kd_losses(flags) + self.get_gan_losses(flags)
+      self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % gen_scope)
+      kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
+      self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
 
   def get_regularization_losses(self):
     regularization_losses = []
