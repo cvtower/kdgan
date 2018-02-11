@@ -1,6 +1,5 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
-
 train_size=50
 batch_size=5
 
@@ -14,9 +13,7 @@ python train_gan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
-  --num_dis_epoch=20 \
-  --num_gen_epoch=10
+  --num_epoch=200
 exit
 
 
