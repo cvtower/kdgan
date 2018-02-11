@@ -64,7 +64,7 @@ vd_tch = TCH(flags, tch_mnist.test, is_training=False)
 #   print('%-50s (%d params)' % (variable.name, num_params))
 
 def main(_):
-  bst_acc = 0.0
+  bst_gen_acc, bst_tch_acc = 0.0, 0.0
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -135,7 +135,9 @@ def main(_):
             vd_tch.hard_label_ph:gen_mnist.test.labels,
           }
           tch_acc = sess.run(vd_tch.accuracy, feed_dict=feed_dict)
-          print('#%08d tchacc=%.4f' % (batch_t, tch_acc))
+
+          bst_tch_acc = max(tch_acc, bst_tch_acc)
+          print('#%08d tchcur=%.4f tchbst=%.4f' % (batch_t, tch_acc, bst_tch_acc))
 
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
@@ -168,19 +170,19 @@ def main(_):
             vd_gen.image_ph:gen_mnist.test.images,
             vd_gen.hard_label_ph:gen_mnist.test.labels,
           }
-          acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
+          gen_acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
 
-          bst_acc = max(acc, bst_acc)
+          bst_gen_acc = max(gen_acc, bst_gen_acc)
           tot_time = time.time() - start
           global_step = sess.run(tn_gen.global_step)
           avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
-          print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-              (batch_g, acc, bst_acc, tot_time, avg_time))
+          print('#%08d gencur=%.4f genbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+              (batch_g, gen_acc, bst_gen_acc, tot_time, avg_time))
 
-          if acc <= bst_acc:
+          if gen_acc <= bst_gen_acc:
             continue
           # save gen parameters if necessary
-  print('#mnist=%d bstacc=%.4f' % (tn_size, bst_acc))
+  print('#mnist=%d bstacc=%.4f' % (tn_size, bst_gen_acc))
 
 if __name__ == '__main__':
     tf.app.run()
