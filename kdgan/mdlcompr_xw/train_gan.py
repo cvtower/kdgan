@@ -69,7 +69,7 @@ def main(_):
     print('ini dis=%.4f ini gen=%.4f' % (ini_dis, ini_gen))
     # exit()
 
-    tot_time = time.time() - start
+    start = time.time()
     batch_d, batch_g = -1, -1
     for epoch in range(flags.num_epoch):
       for dis_epoch in range(flags.num_dis_epoch):
