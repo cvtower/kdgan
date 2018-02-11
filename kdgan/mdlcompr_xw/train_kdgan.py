@@ -152,22 +152,25 @@ def main(_):
         for _ in range(num_batch_g):
           batch_g += 1
           image_g, label_dat_g = gen_mnist.train.next_batch(flags.batch_size)
+
           feed_dict = {tn_gen.image_ph:image_g}
           label_gen_g = sess.run(tn_gen.labels, feed_dict=feed_dict)
           sample_g = utils.generate_label(flags, label_dat_g, label_gen_g)
-          # sample_g, rescale_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
-          # print(sample_g.shape, rescale_np_g.shape)
           feed_dict = {
             tn_dis.image_ph:image_g,
             tn_dis.sample_ph:sample_g,
           }
           reward_g = sess.run(tn_dis.rewards, feed_dict=feed_dict)
-          # reward_g *= rescale_np_g
-          # print(reward_g)
+
+          feed_dict = {vd_tch.image_ph:image_g}
+          soft_logit_g = sess.run(vd_tch.logits, feed_dict=feed_dict)
+
           feed_dict = {
             tn_gen.image_ph:image_g,
             tn_gen.sample_ph:sample_g,
             tn_gen.reward_ph:reward_g,
+            tn_gen.hard_label_ph:label_dat_g,
+            tn_gen.soft_logit_ph:soft_logit_g,
           }
           sess.run(tn_gen.kdgan_update, feed_dict=feed_dict)
           
