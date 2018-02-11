@@ -19,10 +19,12 @@ mnist = data_utils.read_data_sets(flags.dataset_dir,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
-print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
-tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
+
+tn_size, vd_size = mnist.train.num_examples, mnist.test.num_examples
+print('tn size=%d vd size=%d' % (tn_size, vd_size))
+tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
 print('tn #batch=%d' % (tn_num_batch))
-eval_interval = int(mnist.train.num_examples / flags.batch_size)
+eval_interval = int(tn_size / flags.batch_size)
 print('ev #interval=%d' % (eval_interval))
 
 tn_dis = DIS(flags, mnist.train, is_training=True)
