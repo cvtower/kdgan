@@ -67,8 +67,12 @@ class TCH():
       regularization_losses.append(regularization_loss)
     return regularization_losses
 
+  def get_hard_loss(self):
+    hard_loss = tf.losses.softmax_cross_entropy(self.hard_label_ph, self.logits)
+    return hard_loss
+
   def get_pre_losses(self):
-    pre_losses = [tf.losses.softmax_cross_entropy(self.hard_label_ph, self.logits)]
+    pre_losses = self.get_hard_loss()
     print('#pre_losses=%d' % (len(pre_losses)))
     pre_losses.extend(self.get_regularization_losses())
     print('#pre_losses=%d' % (len(pre_losses)))
