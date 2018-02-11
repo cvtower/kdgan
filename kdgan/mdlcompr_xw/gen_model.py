@@ -1,6 +1,7 @@
 from kdgan import config
 from kdgan import utils
 
+import numpy as np
 import tensorflow as tf
 from nets import nets_factory
 from tensorflow.contrib import slim
@@ -100,26 +101,31 @@ class GEN():
     return pre_losses
 
   def get_kd_losses(self, flags):
-    hard_loss = self.get_hard_loss()
-    # hard_loss = tf.losses.softmax_cross_entropy(self.hard_label_ph, gen_logits)
-    # hard_loss *= flags.kd_hard_pct
-    hard_loss *= 1.0 / flags.batch_size
-
-    gen_logits = self.logits * (1.0 / flags.temperature)
-    tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
-
+    kd_losses = []
     if flags.kd_model == 'mimic':
-      soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
+      soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits) / flags.batch_size
+      kd_losses.append(soft_loss)
     elif flags.kd_model == 'distn':
-      soft_loss = tf.losses.softmax_cross_entropy(tch_logits, gen_logits)
-      soft_loss *= pow(flags.temperature, 2.0)
+      hard_loss = self.get_hard_loss()
+      hard_loss *= (1.0 - flags.kd_soft_pct) / flags.batch_size
+      gen_logits = self.logits * (1.0 / flags.temperature)
+      tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
+      soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
+      soft_loss *= (pow(flags.temperature, 2.0) * flags.kd_soft_pct) / flags.batch_size
+      kd_losses.extend([hard_loss, soft_loss])
     elif flags.kd_model == 'noisy':
-      soft_loss = 0.0
+      # self.noisy = noisy = tf.multiply(noisy_mask, gaussian)
+      # tch_logits = tf.multiply(self.soft_logit_ph, tf.tile(noisy, tf.constant([1, flags.num_label])))
+      # soft_loss = tf.nn.l2_loss(tch_logits - self.logits) / flags.batch_size
+      # kd_losses.append(soft_loss)
+      noisy = np.float32(np.ones((flags.batch_size, flags.num_label)))
+      noisy = tf.nn.dropout(noisy, keep_prob=(1.0 - flags.noisy_ratio))
+      noisy += tf.random_normal((flags.batch_size, flags.num_label), stddev=flags.noisy_sigma)
+      tch_logits = tf.multiply(self.soft_logit_ph, noisy)
+      soft_loss = tf.nn.l2_loss(tch_logits - self.logits) / flags.batch_size
+      kd_losses.append(soft_loss)
     else:
       raise ValueError('bad kd model %s', flags.kd_model)
-    soft_loss *= flags.kd_soft_pct / flags.batch_size
-
-    kd_losses = [hard_loss, soft_loss]
     print('#kd_losses=%d' % (len(kd_losses)))
     # kd_losses.extend(self.get_regularization_losses())
     # print('#kd_losses=%d' % (len(kd_losses)))

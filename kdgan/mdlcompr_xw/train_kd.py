@@ -45,7 +45,7 @@ for variable in tf.trainable_variables():
     num_params *= dim.value
   print('%-50s (%d params)' % (variable.name, num_params))
   tot_params += num_params
-print('%-50s (%d params)' % ('kd', tot_params))
+print('%-50s (%d params)' % (' '.join(['kd', flags.kd_model]), tot_params))
 
 def main(_):
   bst_acc = 0.0
@@ -59,6 +59,10 @@ def main(_):
 
     start = time.time()
     for tn_batch in range(tn_num_batch):
+      # noisy = sess.run(tn_gen.noisy)
+      # print(noisy)
+      # raw_input()
+      # continue
       tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
 
       feed_dict = {vd_tch.image_ph:tn_image_np}
@@ -82,7 +86,7 @@ def main(_):
 
       bst_acc = max(acc, bst_acc)
       tot_time = time.time() - start
-      global_step = sess.run(tn_tch.global_step)
+      global_step = sess.run(tn_gen.global_step)
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
       print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
           (tn_batch, acc, bst_acc, tot_time, avg_time))
@@ -90,7 +94,7 @@ def main(_):
       if acc <= bst_acc:
         continue
       # save gen parameters if necessary
-  print('#mnist=%d bstacc=%.4f iniacc=%.4f' % (tn_size, bst_acc, ini_gen))
+  print('#mnist=%d bstacc=%.4f (%s) iniacc=%.4f' % (tn_size, bst_acc, flags.kd_model, ini_gen))
 
 if __name__ == '__main__':
     tf.app.run()
