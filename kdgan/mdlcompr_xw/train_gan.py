@@ -68,9 +68,9 @@ def main(_):
     ini_gen = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
     print('ini dis=%.4f ini gen=%.4f' % (ini_dis, ini_gen))
     exit()
+
     tot_time = time.time() - start
     batch_d, batch_g = -1, -1
-    no_impr_patience = init_patience = flags.num_gen_epoch
     for epoch in range(flags.num_epoch):
       for dis_epoch in range(flags.num_dis_epoch):
         # print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
@@ -116,21 +116,24 @@ def main(_):
           _, summary_g = sess.run([tn_gen.gan_update, gen_summary_op], feed_dict=feed_dict)
           writer.add_summary(summary_g, batch_g)
           
-          if (batch_g + 1) % eval_interval != 0:
+          if (tn_batch + 1) % eval_interval != 0:
             continue
-          tot_time = time.time() - start
-          gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
-          print('#%08d curacc=%.4f %.0fs' % (batch_g, gen_acc, tot_time))
+          feed_dict = {
+            vd_gen.image_ph:mnist.test.images,
+            vd_gen.hard_label_ph:mnist.test.labels,
+          }
+          acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
 
-          if gen_acc < bst_gen_acc:
-            no_impr_patience -= 1
-            if no_impr_patience == 0:
-              no_impr_patience = init_patience
-              # sess.run([tn_dis.lr_update, tn_gen.lr_update])
+          bst_acc = max(acc, bst_acc)
+          tot_time = time.time() - start
+          global_step = sess.run(tn_gen.global_step)
+          avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
+          print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+              (tn_batch, acc, bst_acc, tot_time, avg_time))
+
+          if acc <= bst_acc:
             continue
-          bst_gen_acc = gen_acc
-          global_step, = sess.run([tn_gen.global_step])
-          print('#%08d bstacc=%.4f %.0fs' % (global_step, bst_gen_acc, tot_time))
+          # save gen parameters if necessary
   print('bstacc=%.4f' % (bst_gen_acc))
 
 if __name__ == '__main__':
