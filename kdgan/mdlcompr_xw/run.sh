@@ -38,7 +38,7 @@ python train_gan.py \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_negative=20 \
-  --num_positive=2
+  --num_positive=5
 exit
 
 
