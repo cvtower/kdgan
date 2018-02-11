@@ -27,6 +27,8 @@ class TCH():
           flags.tch_keep_prob, 
           is_training=is_training)
 
+      self.labels = tf.nn.softmax(self.logits)
+
       if not is_training:
         self.predictions = tf.argmax(self.logits, axis=1)
         self.accuracy = tf.equal(self.predictions, tf.argmax(self.hard_label_ph, 1))
