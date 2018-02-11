@@ -14,6 +14,10 @@ class TCH():
     self.image_ph = tf.placeholder(tf.float32, shape=(None, num_feature))
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
+    # None = batch_size * sample_size
+    self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
+    self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
+
     self.tch_scope = tch_scope = 'tch'
     with tf.variable_scope(tch_scope) as scope:
       self.logits = utils.get_logits(flags, 
@@ -46,6 +50,12 @@ class TCH():
       pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
 
+      # kdgan train
+      kdgan_losses = self.get_kdgan_losses(flags)
+      self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % tch_scope)
+      kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
+      self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=self.global_step)
+
   def get_regularization_losses(self):
     regularization_losses = []
     for regularization_loss in tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES):
@@ -60,3 +70,24 @@ class TCH():
     pre_losses.extend(self.get_regularization_losses())
     print('#pre_losses=%d' % (len(pre_losses)))
     return pre_losses
+
+  def get_kdgan_losses(self, flags):
+    sample_logits = tf.gather_nd(self.logits, self.sample_ph)
+    # kdgan_losses = -tf.reduce_mean(self.reward_ph * sample_logits)
+    kdgan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
+    kdgan_losses.extend(self.get_regularization_losses())
+    return kdgan_losses
+
+
+
+
+
+
+
+
+
+
+
+
+
+
