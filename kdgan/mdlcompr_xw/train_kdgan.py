@@ -130,7 +130,7 @@ def main(_):
           }
           reward_t = sess.run(tn_dis.rewards, feed_dict=feed_dict)
 
-          feed_dict = {vd_gen.image_ph:image_g}
+          feed_dict = {vd_gen.image_ph:image_t}
           soft_logit_t = sess.run(vd_gen.logits, feed_dict=feed_dict)
 
           feed_dict = {
