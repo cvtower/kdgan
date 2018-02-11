@@ -18,7 +18,7 @@ python train_kdgan.py \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_negative=20 \
-  --num_positive=5 \
+  --num_positive=2 \
   --kd_model=mimic \
   --kd_soft_pct=0.7 \
   --temperature=3.0
@@ -36,7 +36,7 @@ python train_gan.py \
   --batch_size=$batch_size \
   --num_epoch=200 \
   --num_dis_epoch=20 \
-  --num_gen_epoch=10 \
+  --num_gen_epoch=2 \
   --num_negative=20 \
   --num_positive=5
 exit
