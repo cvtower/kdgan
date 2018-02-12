@@ -83,7 +83,7 @@ def get_data_sources(flags, is_training=True, single_source=False):
   for filename in filenames:
     if filename.find(marker) < 0:
       continue
-    if filename.find(flags.model_name) < 0:
+    if filename.find(flags.image_model) < 0:
       continue
     if single_source and (filename.find('000') < 0):
       continue

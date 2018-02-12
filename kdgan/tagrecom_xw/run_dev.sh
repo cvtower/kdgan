@@ -8,9 +8,9 @@ precomputed_dir=$data_dir/Precomputed
 # scp xiaojie@10.100.228.149:$precomputed_dir/*.npy $precomputed_dir
 
 python pretrain_gen.py \
-  --dataset=yfcc10k \
-  --gen_model_name=vgg_16 \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
+  --dataset=yfcc10k \
+  --image_model=vgg_16 \
   --feature_size=4096 \
   --gen_learning_rate=0.05 \
   --num_epoch=200
