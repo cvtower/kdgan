@@ -3,6 +3,7 @@ checkpoint_dir=$kdgan_dir/checkpoints
 train_size=10000
 batch_size=100
 
+scp xiaojie@10.100.228.149:$checkpoint_dir/mdlcompr_mnist* $checkpoint_dir
 
 python train_kdgan.py \
   --dis_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
@@ -46,7 +47,7 @@ python train_kdgan.py \
   --kdgan_model=ow \
   --num_negative=20 \
   --num_positive=5 \
-  --kd_model=distn \
+  --kd_model=mimic \
   --kd_soft_pct=0.0 \
   --temperature=3.0
 exit
