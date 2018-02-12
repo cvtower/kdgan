@@ -3,7 +3,7 @@ checkpoint_dir=$kdgan_dir/checkpoints
 train_size=10000
 batch_size=100
 
-scp xiaojie@10.100.228.149:$checkpoint_dir/mdlcompr_mnist* $checkpoint_dir
+# scp xiaojie@10.100.228.149:$checkpoint_dir/mdlcompr_mnist* $checkpoint_dir
 
 python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \

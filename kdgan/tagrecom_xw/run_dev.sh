@@ -3,6 +3,9 @@ checkpoint_dir=$kdgan_dir/checkpoints
 pretrained_dir=$checkpoint_dir/pretrained
 datafig_dir=$kdgan_dir/datafigs
 
+data_dir=$HOME/Projects/data/yfcc100m/yfcc10k
+precomputed_dir=$data_dir/Precomputed
+# scp xiaojie@10.100.228.149:$precomputed_dir/*.npy $precomputed_dir
 
 python pretrain_gen.py \
   --dataset=yfcc10k \
