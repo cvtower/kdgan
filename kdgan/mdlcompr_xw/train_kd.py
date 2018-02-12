@@ -94,7 +94,7 @@ def main(_):
       if acc <= bst_acc:
         continue
       # save gen parameters if necessary
-  print('#mnist=%d bstacc=%.4f (%s) iniacc=%.4f' % (tn_size, bst_acc, flags.kd_model, ini_gen))
+  print('#mnist=%d %s=%.4f iniacc=%.4f' % (tn_size, flags.kd_model, bst_acc, ini_gen))
 
 if __name__ == '__main__':
     tf.app.run()
