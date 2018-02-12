@@ -44,6 +44,8 @@ num_preprocessing_threads = 4
 train_batch_size = 32
 valid_batch_size = 100
 
+kdgan_ow_flag = 'ow'
+
 
 
 
