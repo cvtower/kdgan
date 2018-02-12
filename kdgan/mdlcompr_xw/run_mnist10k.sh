@@ -48,8 +48,9 @@ python train_kdgan.py \
   --num_negative=20 \
   --num_positive=5 \
   --kd_model=mimic \
-  --kd_soft_pct=0.0 \
+  --kd_soft_pct=0.3 \
   --temperature=3.0
+#mnist=10000 kdgan_ow=0.9786 et=10419s
 exit
 
 
