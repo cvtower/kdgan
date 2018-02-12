@@ -146,8 +146,8 @@ def generate_batch(ts_list, batch_size):
   return user_bt, image_bt, text_bt, label_bt, file_bt
 
 def evaluate_image(flags, sess, gen_v, bt_list_v):
-  valid_data_size = get_vd_size(flags.dataset)
-  num_batch_v = int(valid_data_size / config.valid_batch_size)
+  vd_size = get_vd_size(flags.dataset)
+  num_batch_v = int(vd_size / config.valid_batch_size)
   # print('vd:\t#batch=%d\n' % num_batch_v)
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
   image_hit_v = []
@@ -162,8 +162,8 @@ def evaluate_image(flags, sess, gen_v, bt_list_v):
   return image_hit_v
 
 def evaluate_text(flags, sess, tch_v, bt_list_v):
-  valid_data_size = get_vd_size(flags.dataset)
-  num_batch_v = int(valid_data_size / config.valid_batch_size)
+  vd_size = get_vd_size(flags.dataset)
+  num_batch_v = int(vd_size / config.valid_batch_size)
   # print('vd:\t#batch=%d\n' % num_batch_v)
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
   text_hit_v = []
@@ -178,20 +178,20 @@ def evaluate_text(flags, sess, tch_v, bt_list_v):
   return text_hit_v
 
 def get_tn_size(dataset):
-  train_data_sizes = {
+  tn_sizes = {
     'yfcc10k':9500,
     'yfcc20k':19000,
   }
-  train_data_size = train_data_sizes[dataset]
-  return train_data_size
+  tn_size = tn_sizes[dataset]
+  return tn_size
 
 def get_vd_size(dataset):
-  valid_data_sizes = {
+  vd_sizes = {
     'yfcc10k':500,
     'yfcc20k':1000,
   }
-  valid_data_size = valid_data_sizes[dataset]
-  return valid_data_size
+  vd_size = vd_sizes[dataset]
+  return vd_size
 
 def get_vocab_size(dataset):
   vocab_sizes = {
@@ -220,13 +220,18 @@ def get_label_file(dataset):
   label_file = path.join(dataset_dir, '%s.label' % dataset)
   return label_file
 
-def get_lr(flags, global_step, train_data_size, 
-    learning_rate, learning_rate_decay_factor, num_epochs_per_decay, scope_name):
-  decay_steps = int(train_data_size / flags.batch_size * num_epochs_per_decay)
+def get_lr(flags,
+    tn_size,
+    global_step,
+    learning_rate,
+    scope_name):
+  decay_steps = int(tn_size * flags.num_epochs_per_decay / flags.batch_size)
   if flags.learning_rate_decay_type == 'exponential':
     name = '%s_exponential_decay_learning_rate' % scope_name
     learning_rate = tf.train.exponential_decay(learning_rate,
-        global_step, decay_steps, learning_rate_decay_factor,
+        global_step,
+        decay_steps,
+        flags.learning_rate_decay_factor,
         staircase=True,
         name=name)
   elif flags.learning_rate_decay_type == 'fixed':
@@ -236,7 +241,9 @@ def get_lr(flags, global_step, train_data_size,
   elif flags.learning_rate_decay_type == 'polynomial':
     name = '%s_polynomial_decay_learning_rate' % scope_name
     learning_rate = tf.train.polynomial_decay(learning_rate,
-        global_step, decay_steps, flags.end_learning_rate,
+        global_step,
+        decay_steps,
+        flags.end_learning_rate,
         power=1.0,
         cycle=False,
         name=name)
