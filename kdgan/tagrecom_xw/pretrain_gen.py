@@ -19,9 +19,12 @@ print('#batch=%d #interval=%d' % (tn_num_batch, eval_interval))
 
 precomputed_dir = utils.get_precomputed_dir(flags.dataset)
 filename_tmpl = 'yfcc10k_%s.valid.%s.npy'
-vd_image_np = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')))
-vd_label_np = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')))
-vd_imgid_np = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')))
+vd_image_file = filename_tmpl % (flags.gen_model_name, 'image')
+vd_image_np = np.load(path.join(precomputed_dir, vd_image_file))
+vd_label_file = filename_tmpl % (flags.gen_model_name, 'label')
+vd_label_np = np.load(path.join(precomputed_dir, vd_label_file))
+vd_imgid_file = filename_tmpl % (flags.model_name, 'imgid')
+vd_imgid_np = np.load(path.join(precomputed_dir, vd_imgid_file))
 print(vd_image_np.shape, vd_label_np.shape, vd_imgid_np.shape)
 exit()
 
