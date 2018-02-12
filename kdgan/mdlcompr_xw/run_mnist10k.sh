@@ -23,7 +23,7 @@ python train_kdgan.py \
   --num_negative=20 \
   --num_positive=5 \
   --kd_model=distn \
-  --kd_soft_pct=0.7 \
+  --kd_soft_pct=0.0 \
   --temperature=3.0
 exit
 
