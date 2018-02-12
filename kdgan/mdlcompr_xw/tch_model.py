@@ -114,8 +114,9 @@ class TCH():
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
     # kdgan_losses = -tf.reduce_mean(self.reward_ph * sample_logits)
     kdgan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
-    kdgan_losses.extend(self.get_kd_losses(flags))
     kdgan_losses.extend(self.get_regularization_losses())
+    if flags.kdgan_model != config.kdgan_ow_flag:
+      kdgan_losses.extend(self.get_kd_losses(flags))
     return kdgan_losses
 
 
