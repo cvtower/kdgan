@@ -19,6 +19,30 @@ python train_kdgan.py \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10 \
+  --kdgan_model=tw \
+  --num_negative=20 \
+  --num_positive=5 \
+  --kd_model=distn \
+  --kd_soft_pct=0.7 \
+  --temperature=3.0
+exit
+
+
+python train_kdgan.py \
+  --dis_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --dis_model_name=lenet \
+  --gen_model_name=mlp \
+  --tch_model_name=lenet \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --num_epoch=200 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=10 \
+  --num_tch_epoch=10 \
   --kdgan_model=ow \
   --num_negative=20 \
   --num_positive=5 \
