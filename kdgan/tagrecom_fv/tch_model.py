@@ -1,16 +1,22 @@
-from kdgan import config
-from kdgan import utils
+from kdgan import config, utils
 
+from nets import nets_factory
+from nets import vgg
+
+import numpy as np
 import tensorflow as tf
+
 from tensorflow.contrib import slim
 
 class TCH():
   def __init__(self, flags, is_training=True):
     self.is_training = is_training
-
+    
     # None = batch_size
+    self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size))
     self.text_ph = tf.placeholder(tf.int64, shape=(None, None))
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
+    self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
     # None = batch_size * sample_size
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
@@ -18,10 +24,22 @@ class TCH():
 
     tch_scope = 'tch'
     vocab_size = utils.get_vocab_size(flags.dataset)
-    # initializer = tf.random_uniform([vocab_size, flags.embedding_size], -0.1, 0.1)
+    model_scope = nets_factory.arg_scopes_map[flags.model_name]
     with tf.variable_scope(tch_scope) as scope:
+      
+      #with slim.arg_scope(model_scope(weight_decay=flags.gen_weight_decay)):
       with slim.arg_scope([slim.fully_connected],
-          weights_regularizer=slim.l2_regularizer(flags.tch_weight_decay)):
+            weights_regularizer=slim.l2_regularizer(flags.tch_weight_decay)):
+        #"""
+        net = self.image_ph
+        net = slim.dropout(net, flags.dropout_keep_prob, 
+            is_training=is_training)
+        #net = slim.fully_connected(net, flags.num_label,
+            #activation_fn=None)
+        #self.logits = net
+        #"""
+        #with slim.arg_scope([slim.fully_connected],
+            #weights_regularizer=slim.l2_regularizer(flags.tch_weight_decay)):
         word_embedding = slim.variable('word_embedding',
             shape=[vocab_size, flags.embedding_size],
             # regularizer=slim.l2_regularizer(flags.tch_weight_decay),
@@ -29,10 +47,17 @@ class TCH():
         # word_embedding = tf.get_variable('word_embedding', initializer=initializer)
         text_embedding = tf.nn.embedding_lookup(word_embedding, self.text_ph)
         text_embedding = tf.reduce_mean(text_embedding, axis=-2)
-        self.logits = slim.fully_connected(text_embedding, flags.num_label,
-                  activation_fn=None)
+        #self.logits = slim.fully_connected(text_embedding, flags.num_label,
+                  #activation_fn=None)
+        self.combined_layer = tf.concat([net, text_embedding], 1)
 
-    self.labels = tf.nn.softmax(self.logits)
+
+        net = slim.fully_connected(self.combined_layer, 200)
+
+        self.logits =slim.fully_connected(net, flags.num_label,
+            activation_fn=None) 
+        #"""
+        self.labels = tf.nn.softmax(self.logits)
 
     if not is_training:
       return
@@ -62,7 +87,16 @@ class TCH():
     pre_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
     self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % tch_scope)
     pre_optimizer = tf.train.AdamOptimizer(self.learning_rate)
+    #pre_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
     self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
+
+    """
+    # kd train
+    kd_losses = self.get_kd_losses(flags)
+    self.kd_loss = tf.add_n(kd_losses, name='%s_kd_loss' % gen_scope)
+    kd_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+    self.kd_update = kd_optimizer.minimize(self.kd_loss, global_step=global_step)
+    """
 
     # kdgan train
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
@@ -70,5 +104,6 @@ class TCH():
     self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % tch_scope)
     kdgan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
     self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
+
 
 

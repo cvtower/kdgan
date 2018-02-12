@@ -21,11 +21,11 @@ mnist = data_utils.read_data_sets(flags.dataset_dir,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
-print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
-tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
-vd_num_batch = int(mnist.train.num_examples / config.valid_batch_size)
-print('tn #batch=%d vd #batch=%d' % (tn_num_batch, vd_num_batch))
-eval_interval = int(mnist.train.num_examples / flags.batch_size)
+tn_size, vd_size = mnist.train.num_examples, mnist.test.num_examples
+print('tn size=%d vd size=%d' % (tn_size, vd_size))
+tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
+print('tn #batch=%d' % (tn_num_batch))
+eval_interval = max(int(tn_size / flags.batch_size), 1)
 print('ev #interval=%d' % (eval_interval))
 
 tn_tch = TCH(flags, mnist.train, is_training=True)
@@ -81,7 +81,8 @@ def main(_):
       if acc < bst_acc:
         continue
       tn_tch.saver.save(utils.get_session(sess), flags.tch_ckpt_file)
-  print('#mnist=%d bstacc=%.4f' % (mnist.train.num_examples, bst_acc))
+  tot_time = time.time() - start
+  print('#mnist=%d bstacc=%.4f et=%.0fs' % (tn_size, bst_acc, tot_time))
 
 if __name__ == '__main__':
   tf.app.run()

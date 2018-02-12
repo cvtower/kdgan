@@ -8,7 +8,7 @@ tf.app.flags.DEFINE_integer('train_size', 60000, '')
 tf.app.flags.DEFINE_integer('valid_size', 0, '')
 tf.app.flags.DEFINE_string('dataset_dir', None, '')
 tf.app.flags.DEFINE_string('preprocessing_name', None, '')
-# image model
+# model
 tf.app.flags.DEFINE_string('dis_model_name', None, '')
 tf.app.flags.DEFINE_string('gen_model_name', None, '')
 tf.app.flags.DEFINE_string('tch_model_name', None, '')
@@ -33,7 +33,7 @@ tf.app.flags.DEFINE_float('gen_learning_rate', 1e-3, '')
 tf.app.flags.DEFINE_float('tch_learning_rate', 1e-3, '')
 tf.app.flags.DEFINE_integer('num_negative', 10, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
-# kd or gan
+# kdgan
 tf.app.flags.DEFINE_float('kd_hard_pct', 0.7, '')
 tf.app.flags.DEFINE_float('kd_soft_pct', 0.3, '')
 tf.app.flags.DEFINE_float('temperature', 3.0, '')
