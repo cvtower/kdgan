@@ -82,13 +82,13 @@ def main(_):
     start = time.time()
     ckpt_file = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
     print(ckpt_file)
-    tch_ckpt_file = path.join(config.ckpt_dir, 'tch.ckpt'.format(flags.model_name))
-    print(tch_ckpt_file)
+    tch_model_ckpt = path.join(config.ckpt_dir, 'tch.ckpt'.format(flags.model_name))
+    print(tch_model_ckpt)
     with tf.Session() as sess:
         # sess.run(init_op)
         gen_t.init_fn(sess)
         gen_t.saver.restore(sess, ckpt_file)
-        # tch_t.saver.restore(sess, tch_ckpt_file)
+        # tch_t.saver.restore(sess, tch_model_ckpt)
         with slim.queues.QueueRunners(sess):
             hit_v = []
             image_file_v = set()

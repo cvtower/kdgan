@@ -5,12 +5,9 @@ datafig_dir=$kdgan_dir/datafigs
 
 
 python pretrain_gen.py \
-  --task=test \
-  --gen_model_eval=$checkpoint_dir/gen_vgg_16.eval \
   --dataset=yfcc10k \
-  --model_name=vgg_16 \
+  --gen_model_name=vgg_16 \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
-  --gen_figure_data=$figure_data_dir/gen_vgg_16.csv \
   --feature_size=4096 \
   --learning_rate=0.05 \
   --num_epoch=200

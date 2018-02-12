@@ -66,7 +66,7 @@ def main(_):
 
       if acc < bst_acc:
         continue
-      tn_dis.saver.save(utils.get_session(sess), flags.dis_ckpt_file)
+      tn_dis.saver.save(utils.get_session(sess), flags.dis_model_ckpt)
   tot_time = time.time() - start
   print('#mnist=%d bstacc=%.4f et=%.0fs' % (tn_size, bst_acc, tot_time))
 

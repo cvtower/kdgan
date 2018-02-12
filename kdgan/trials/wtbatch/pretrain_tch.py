@@ -27,8 +27,8 @@ tf.app.flags.DEFINE_string('tch_model', None, '')
 
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_train_data_size(flags.dataset)
-valid_data_size = utils.get_valid_data_size(flags.dataset)
+train_data_size = utils.get_tn_size(flags.dataset)
+valid_data_size = utils.get_vd_size(flags.dataset)
 num_batch_t = int(flags.num_epoch * train_data_size / config.train_batch_size)
 num_batch_v = int(valid_data_size / config.valid_batch_size)
 eval_interval = int(train_data_size / config.train_batch_size)

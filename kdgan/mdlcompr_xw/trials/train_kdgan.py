@@ -50,9 +50,9 @@ def main(_):
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
-    tn_dis.saver.restore(sess, flags.dis_ckpt_file)
-    tn_gen.saver.restore(sess, flags.gen_ckpt_file)
-    tn_tch.saver.restore(sess, flags.tch_ckpt_file)
+    tn_dis.saver.restore(sess, flags.dis_model_ckpt)
+    tn_gen.saver.restore(sess, flags.gen_model_ckpt)
+    tn_tch.saver.restore(sess, flags.tch_model_ckpt)
 
     feed_dict = {
       vd_dis.image_ph:mnist.test.images,

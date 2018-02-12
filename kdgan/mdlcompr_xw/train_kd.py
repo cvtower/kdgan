@@ -52,8 +52,8 @@ def main(_):
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
-    tn_gen.saver.restore(sess, flags.gen_ckpt_file)
-    tn_tch.saver.restore(sess, flags.tch_ckpt_file)
+    tn_gen.saver.restore(sess, flags.gen_model_ckpt)
+    tn_tch.saver.restore(sess, flags.tch_model_ckpt)
     ini_gen = metric.eval_mdlcompr(sess, vd_gen, mnist)
     ini_tch = metric.eval_mdlcompr(sess, vd_tch, mnist)
 

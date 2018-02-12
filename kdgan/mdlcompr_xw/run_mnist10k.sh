@@ -6,9 +6,9 @@ batch_size=100
 scp xiaojie@10.100.228.149:$checkpoint_dir/mdlcompr_mnist* $checkpoint_dir
 
 python train_kdgan.py \
-  --dis_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
-  --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
-  --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
   --dataset_dir=$HOME/Projects/data/mnist \
   --dis_model_name=lenet \
   --gen_model_name=mlp \
@@ -23,16 +23,16 @@ python train_kdgan.py \
   --kdgan_model=tw \
   --num_negative=20 \
   --num_positive=5 \
-  --kd_model=distn \
+  --kd_model=mimic \
   --kd_soft_pct=0.0 \
   --temperature=3.0
 exit
 
 
 python train_kdgan.py \
-  --dis_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
-  --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
-  --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
   --dataset_dir=$HOME/Projects/data/mnist \
   --dis_model_name=lenet \
   --gen_model_name=mlp \
@@ -54,8 +54,8 @@ exit
 
 
 python train_kd.py \
-  --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
-  --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
   --dataset_dir=$HOME/Projects/data/mnist \
   --gen_model_name=mlp \
   --tch_model_name=lenet \
@@ -71,8 +71,8 @@ exit
 
 
 python train_kd.py \
-  --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
-  --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
   --dataset_dir=$HOME/Projects/data/mnist \
   --gen_model_name=mlp \
   --tch_model_name=lenet \
@@ -88,8 +88,8 @@ exit
 
 
 python train_kd.py \
-  --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
-  --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
   --dataset_dir=$HOME/Projects/data/mnist \
   --gen_model_name=mlp \
   --tch_model_name=lenet \
@@ -103,7 +103,7 @@ exit
 
 
 python pretrain_dis.py \
-  --dis_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
   --dataset_dir=$HOME/Projects/data/mnist \
   --dis_model_name=lenet \
   --optimizer=adam \
@@ -115,7 +115,7 @@ exit
 
 
 python pretrain_tch.py \
-  --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
   --dataset_dir=$HOME/Projects/data/mnist \
   --tch_model_name=lenet \
   --optimizer=adam \
@@ -127,7 +127,7 @@ exit
 
 
 python pretrain_gen.py \
-  --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --dataset_dir=$HOME/Projects/data/mnist \
   --gen_model_name=mlp \
   --optimizer=adam \
@@ -139,8 +139,8 @@ exit
 
 
 python train_gan.py \
-  --dis_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
-  --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --dataset_dir=$HOME/Projects/data/mnist \
   --dis_model_name=lenet \
   --gen_model_name=mlp \

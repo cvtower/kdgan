@@ -146,7 +146,7 @@ def generate_batch(ts_list, batch_size):
   return user_bt, image_bt, text_bt, label_bt, file_bt
 
 def evaluate_image(flags, sess, gen_v, bt_list_v):
-  valid_data_size = get_valid_data_size(flags.dataset)
+  valid_data_size = get_vd_size(flags.dataset)
   num_batch_v = int(valid_data_size / config.valid_batch_size)
   # print('vd:\t#batch=%d\n' % num_batch_v)
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
@@ -162,7 +162,7 @@ def evaluate_image(flags, sess, gen_v, bt_list_v):
   return image_hit_v
 
 def evaluate_text(flags, sess, tch_v, bt_list_v):
-  valid_data_size = get_valid_data_size(flags.dataset)
+  valid_data_size = get_vd_size(flags.dataset)
   num_batch_v = int(valid_data_size / config.valid_batch_size)
   # print('vd:\t#batch=%d\n' % num_batch_v)
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
@@ -177,7 +177,7 @@ def evaluate_text(flags, sess, tch_v, bt_list_v):
   text_hit_v = np.mean(text_hit_v)
   return text_hit_v
 
-def get_train_data_size(dataset):
+def get_tn_size(dataset):
   train_data_sizes = {
     'yfcc10k':9500,
     'yfcc20k':19000,
@@ -185,7 +185,7 @@ def get_train_data_size(dataset):
   train_data_size = train_data_sizes[dataset]
   return train_data_size
 
-def get_valid_data_size(dataset):
+def get_vd_size(dataset):
   valid_data_sizes = {
     'yfcc10k':500,
     'yfcc20k':1000,
