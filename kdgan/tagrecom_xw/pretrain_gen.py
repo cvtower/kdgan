@@ -87,7 +87,7 @@ def main(_):
       tot_time = time.time() - start
       best_hit = hit_v
       print('#%03d curbst=%.4f time=%.0fs' % (epoch, hit_v, tot_time))
-      tn_gen.saver.save(sess, flags.gen_model_ckpt)
+      tn_gen.saver.save(utils.get_session(sess), flags.gen_model_ckpt)
   print('bsthit=%.4f' % (best_hit))
 
   id_to_label = utils.load_id_to_label(flags.dataset)
