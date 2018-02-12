@@ -15,16 +15,15 @@ tn_size = utils.get_tn_size(flags.dataset)
 tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
 eval_interval = int(tn_size / flags.batch_size)
 print('#batch=%d #interval=%d' % (tn_num_batch, eval_interval))
-
-exit()
+# exit()
 
 precomputed_dir = utils.get_precomputed_dir(flags.dataset)
 filename_tmpl = 'yfcc10k_%s.valid.%s.npy'
-image_np_v = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')))
-label_np_v = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')))
-imgid_np_v = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')))
-# print(image_np_v.shape, label_np_v.shape, imgid_np_v.shape)
-# exit()
+vd_image_np = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')))
+vd_label_np = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')))
+vd_imgid_np = np.load(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')))
+print(vd_image_np.shape, vd_label_np.shape, vd_imgid_np.shape)
+exit()
 
 gen_t = GEN(flags, is_training=True)
 scope = tf.get_variable_scope()
@@ -82,17 +81,17 @@ def train():
 
         # hit_v = []
         # for batch_v in range(num_batch_v):
-        #   image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
-        #   feed_dict = {gen_v.image_ph:image_np_v}
+        #   vd_image_np, vd_label_np = sess.run([image_bt_v, label_bt_v])
+        #   feed_dict = {gen_v.image_ph:vd_image_np}
         #   logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
-        #   hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
+        #   hit_bt = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
         #   hit_v.append(hit_bt)
         # hit_v = np.mean(hit_v)
 
-        feed_dict = {gen_v.image_ph:image_np_v}
+        feed_dict = {gen_v.image_ph:vd_image_np}
         logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
-        # print(logit_np_v.shape, label_np_v.shape)
-        hit_v = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
+        # print(logit_np_v.shape, vd_label_np.shape)
+        hit_v = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
 
         if hit_v < best_hit_v:
           continue
@@ -109,11 +108,11 @@ def test():
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
-    feed_dict = {gen_v.image_ph:image_np_v}
+    feed_dict = {gen_v.image_ph:vd_image_np}
     logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
-    # print(logit_np_v.shape, label_np_v.shape)
-    hit_v = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
-    for imgid, logit_np in zip(imgid_np_v, logit_np_v):
+    # print(logit_np_v.shape, vd_label_np.shape)
+    hit_v = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
+    for imgid, logit_np in zip(vd_imgid_np, logit_np_v):
       sorted_labels = (-logit_np).argsort()
       fout.write('%s' % (imgid))
       for label in sorted_labels:
