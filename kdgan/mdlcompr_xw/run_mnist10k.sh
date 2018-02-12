@@ -3,6 +3,21 @@ checkpoint_dir=$kdgan_dir/checkpoints
 train_size=10000
 batch_size=100
 
+python train_kd.py \
+  --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --gen_model_name=mlp \
+  --tch_model_name=lenet \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --num_epoch=200 \
+  --kd_model=noisy \
+  --noisy_ratio=0.1 \
+  --noisy_sigma=0.1
+exit
+
 
 python train_kd.py \
   --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
@@ -17,6 +32,7 @@ python train_kd.py \
   --kd_model=distn \
   --kd_soft_pct=0.7 \
   --temperature=3.0
+#mnist=10000 distn=0.9760 iniacc=0.9699 et=74s
 exit
 
 

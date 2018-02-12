@@ -1,16 +1,15 @@
 from kdgan import config
 from kdgan import metric
 from kdgan import utils
+from flags import flags
 from gen_model import GEN
-
-import os
-import time
-
-import numpy as np
-import tensorflow as tf
 
 from os import path
 from tensorflow.contrib import slim
+import os
+import time
+import numpy as np
+import tensorflow as tf
 
 tf.app.flags.DEFINE_string('dataset', None, '')
 tf.app.flags.DEFINE_string('task', None, '')
