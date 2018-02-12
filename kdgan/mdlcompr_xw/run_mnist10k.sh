@@ -11,6 +11,7 @@ python pretrain_gen.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
+#mnist=10000 bstacc=0.9691
 exit
 
 

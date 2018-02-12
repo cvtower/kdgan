@@ -16,11 +16,12 @@ mnist = data_utils.read_data_sets(flags.dataset_dir,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
-print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
-tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
-vd_num_batch = int(mnist.train.num_examples / config.valid_batch_size)
+tn_size, vd_size = mnist.train.num_examples, mnist.test.num_examples
+print('tn size=%d vd size=%d' % (tn_size, vd_size))
+tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
+vd_num_batch = int(tn_size / config.valid_batch_size)
 print('tn #batch=%d vd #batch=%d' % (tn_num_batch, vd_num_batch))
-eval_interval = max(int(mnist.train.num_examples / flags.batch_size), 1)
+eval_interval = max(int(tn_size / flags.batch_size), 1)
 print('ev #interval=%d' % (eval_interval))
 
 tn_gen = GEN(flags, mnist.train, is_training=True)
@@ -65,14 +66,15 @@ def main(_):
       bst_acc = max(acc, bst_acc)
       tot_time = time.time() - start
       global_step = sess.run(tn_gen.global_step)
-      avg_time = (tot_time / global_step) * (mnist.train.num_examples / flags.batch_size)
+      avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
       print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
           (tn_batch, acc, bst_acc, tot_time, avg_time))
 
       if acc < bst_acc:
         continue
       tn_gen.saver.save(utils.get_session(sess), flags.gen_ckpt_file)
-  print('#mnist=%d bstacc=%.4f' % (mnist.train.num_examples, bst_acc))
+  tot_time = time.time() - start
+  print('#mnist=%d bstacc=%.4f et=%.0fs' % (tn_size, bst_acc, tot_time))
 
 if __name__ == '__main__':
   tf.app.run()
