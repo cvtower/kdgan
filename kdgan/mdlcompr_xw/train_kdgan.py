@@ -203,7 +203,9 @@ def main(_):
           if gen_acc <= bst_gen_acc:
             continue
           # save gen parameters if necessary
-  print('#mnist=%d bstacc=%.4f' % (tn_size, bst_gen_acc))
+  tot_time = time.time() - start
+  print('#mnist=%d kdgan_%s=%.4f et=%.0f' % 
+      (tn_size, flags.kdgan_model, bst_gen_acc, tot_time))
 
 if __name__ == '__main__':
     tf.app.run()
