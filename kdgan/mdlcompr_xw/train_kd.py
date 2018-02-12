@@ -94,7 +94,9 @@ def main(_):
       if acc <= bst_acc:
         continue
       # save gen parameters if necessary
-  print('#mnist=%d %s=%.4f iniacc=%.4f' % (tn_size, flags.kd_model, bst_acc, ini_gen))
+  tot_time = time.time() - start
+  print('#mnist=%d %s=%.4f iniacc=%.4f et=%.0fs' % 
+      (tn_size, flags.kd_model, bst_acc, ini_gen, tot_time))
 
 if __name__ == '__main__':
     tf.app.run()
