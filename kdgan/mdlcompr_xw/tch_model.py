@@ -1,9 +1,10 @@
 from kdgan import config
 from kdgan import utils
 
-import tensorflow as tf
 from nets import nets_factory
 from tensorflow.contrib import slim
+import tensorflow as tf
+import numpy as np
 
 class TCH():
   def __init__(self, flags, dataset, is_training=True):
