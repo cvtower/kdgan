@@ -3,6 +3,18 @@ checkpoint_dir=$kdgan_dir/checkpoints
 train_size=10000
 batch_size=100
 
+
+python pretrain_tch.py \
+  --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --tch_model_name=lenet \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --num_epoch=200
+exit
+
+
 python pretrain_gen.py \
   --gen_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --dataset_dir=$HOME/Projects/data/mnist \
@@ -11,7 +23,7 @@ python pretrain_gen.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=10000 bstacc=0.9691
+#mnist=10000 bstacc=0.9699 et=38s
 exit
 
 
@@ -80,18 +92,6 @@ python pretrain_dis.py \
   --batch_size=$batch_size \
   --num_epoch=200
 #mnist=50 bstacc=0.6536
-exit
-
-
-python pretrain_tch.py \
-  --tch_ckpt_file=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --tch_model_name=lenet \
-  --optimizer=adam \
-  --train_size=$train_size \
-  --batch_size=$batch_size \
-  --num_epoch=200
-#mnist=50 bstacc=0.6507
 exit
 
 
