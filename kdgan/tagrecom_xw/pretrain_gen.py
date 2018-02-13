@@ -58,18 +58,17 @@ def main(_):
     sess.run(init_op)
     start = time.time()
     for tn_batch in range(tn_num_batch):
-      image_np_t, label_np_t = sess.run([image_bt, label_bt])
-      feed_dict = {tn_gen.image_ph:image_np_t, tn_gen.hard_label_ph:label_np_t}
+      tn_image_np, tn_label_np = sess.run([image_bt, label_bt])
+      feed_dict = {tn_gen.image_ph:tn_image_np, tn_gen.hard_label_ph:tn_label_np}
       _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
 
       if (tn_batch + 1) % eval_interval != 0:
           continue
       feed_dict = {vd_gen.image_ph:vd_image_np}
-      logit_np_v = sess.run(vd_gen.logits, feed_dict=feed_dict)
-      hit = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
+      vd_logit_np = sess.run(vd_gen.logits, feed_dict=feed_dict)
+      hit = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)
       bst_hit = max(hit, bst_hit)
-
       tot_time = time.time() - start
       global_step = sess.run(tn_gen.global_step)
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
