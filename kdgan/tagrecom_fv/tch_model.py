@@ -20,20 +20,20 @@ class TCH():
 
     self.tch_scope = tch_scope = 'tch'
     vocab_size = utils.get_vocab_size(flags.dataset)
-    # initializer = tf.random_uniform([vocab_size, flags.embedding_size], -0.1, 0.1)
     with tf.variable_scope(tch_scope) as scope:
       with slim.arg_scope([slim.fully_connected],
-          weights_regularizer=slim.l2_regularizer(flags.tch_weight_decay)):
+          activation_fn=tf.nn.relu,
+          weights_regularizer=slim.l2_regularizer(flags.tch_weight_decay),
+          biases_initializer=tf.zeros_initializer()):
+        image_feature = slim.dropout(self.image_ph, flags.tch_keep_prob, is_training=is_training)
         word_embedding = slim.variable('word_embedding',
             shape=[vocab_size, flags.embedding_size],
-            # regularizer=slim.l2_regularizer(flags.tch_weight_decay),
             initializer=tf.random_uniform_initializer(-0.1, 0.1))
-        # word_embedding = tf.get_variable('word_embedding', initializer=initializer)
-        text_embedding = tf.nn.embedding_lookup(word_embedding, self.text_ph)
-        text_embedding = tf.reduce_mean(text_embedding, axis=-2)
-        self.logits = slim.fully_connected(text_embedding, flags.num_label,
-                  activation_fn=None)
-
+        text_feature = tf.nn.embedding_lookup(word_embedding, self.text_ph)
+        text_feature = tf.reduce_mean(text_feature, axis=-2)
+        joint_feature = tf.concat([image_feature, text_feature], 1)
+        # self.logits = slim.fully_connected(text_feature, flags.num_label, activation_fn=None)
+        self.logits = slim.fully_connected(joint_feature, flags.num_label, activation_fn=None)
       self.labels = tf.nn.softmax(self.logits)
 
       if not is_training:
@@ -56,9 +56,7 @@ class TCH():
           tch_scope)
 
       # pre train
-      pre_losses = []
-      pre_losses.append(tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits))
-      pre_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+      pre_losses = self.get_pre_losses()
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % tch_scope)
       pre_optimizer = tf.train.AdamOptimizer(self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
@@ -70,4 +68,18 @@ class TCH():
       kdgan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
       self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=self.global_step)
 
+  def get_regularization_losses(self):
+    regularization_losses = []
+    for regularization_loss in tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES):
+      # print('tch model:%s' % (regularization_loss.name))
+      if not regularization_loss.name.startswith(self.tch_scope):
+        continue
+      regularization_losses.append(regularization_loss)
+    return regularization_losses
 
+  def get_pre_losses(self):
+    pre_losses = [tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits)]
+    print('%s #pre_losses wo regularization=%d' % (self.tch_scope, len(pre_losses)))
+    pre_losses.extend(self.get_regularization_losses())
+    print('%s #pre_losses wt regularization=%d' % (self.tch_scope, len(pre_losses)))
+    return pre_losses

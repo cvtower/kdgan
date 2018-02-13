@@ -8,7 +8,7 @@ python pretrain_tch.py \
   --dataset=yfcc10k \
   --image_model=vgg_16 \
   --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
-  --tch_weight_decay=0.0 \
+  --tch_weight_decay=0.00001 \
   --tch_learning_rate=0.01 \
   --num_epoch=200
 # 0232s best hit=0.9657

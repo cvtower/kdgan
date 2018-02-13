@@ -1,6 +1,6 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
-train_size=500
+train_size=100
 batch_size=10
 
 # scp xiaojie@10.100.228.149:$checkpoint_dir/mdlcompr_mnist* $checkpoint_dir
@@ -13,7 +13,7 @@ python pretrain_gen.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=500 bstacc=0.7666 et=17s
+#mnist=100 bstacc=0.5494 et=5s
 exit
 
 
@@ -25,7 +25,7 @@ python pretrain_tch.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=500 bstacc=0.8932 et=41s
+#mnist=100 bstacc=0.6602 et=21s
 exit
 
 
@@ -37,7 +37,7 @@ python pretrain_dis.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=500 bstacc=0.8799 et=41s
+#mnist=100 bstacc=0.6739 et=21s
 exit
 
 
@@ -52,7 +52,7 @@ python train_kd.py \
   --batch_size=$batch_size \
   --num_epoch=200 \
   --kd_model=mimic
-#mnist=500 mimic=0.8086 iniacc=0.7666 et=24s
+#mnist=100 mimic=0.5910 iniacc=0.5494 et=6s
 exit
 
 
@@ -69,7 +69,7 @@ python train_kd.py \
   --kd_model=distn \
   --kd_soft_pct=0.7 \
   --temperature=3.0
-#mnist=500 distn=0.8099 iniacc=0.7666 et=24s
+#mnist=100 distn=0.5845 iniacc=0.5494 et=6s
 exit
 
 
@@ -86,7 +86,7 @@ python train_kd.py \
   --kd_model=noisy \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=500 noisy=0.8106 iniacc=0.7666 et=21s
+#mnist=100 noisy=0.5948 iniacc=0.5494 et=6s
 exit
 
 
