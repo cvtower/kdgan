@@ -57,7 +57,7 @@ def main(_):
       tn_image_np, tn_text_np, tn_label_np = sess.run([tn_image_bt, tn_text_bt, tn_label_bt])
       feed_dict = {
         tn_tch.text_ph:tn_text_np,
-        tn_tch.image_ph:tn_image_np,
+        # tn_tch.image_ph:tn_image_np,
         tn_tch.hard_label_ph:tn_label_np,
       }
       _, summary = sess.run([tn_tch.pre_update, summary_op], 
@@ -71,7 +71,7 @@ def main(_):
         vd_text_np, vd_image_np, vd_label_np = sess.run([vd_text_bt, vd_image_bt, vd_label_bt])
         feed_dict = {
           vd_tch.text_ph:vd_text_np, 
-          vd_tch.image_ph:vd_image_np,
+          # vd_tch.image_ph:vd_image_np,
         }
         vd_logit_np = sess.run(vd_tch.logits, feed_dict=feed_dict)
         hit_bt = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)

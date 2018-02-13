@@ -72,7 +72,7 @@ python train_kdgan.py \
   --num_tch_epoch=10 \
   --kdgan_model=ow \
   --num_negative=20 \
-  --num_positive=5 \
+  --num_positive=2 \
   --kd_model=noisy \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
