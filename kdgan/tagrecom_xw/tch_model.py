@@ -22,7 +22,7 @@ class TCH():
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
     self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
 
-    tch_scope = 'tch'
+    self.tch_scope = tch_scope = 'tch'
     vocab_size = utils.get_vocab_size(flags.dataset)
     with tf.variable_scope(tch_scope) as scope:
       with slim.arg_scope([slim.fully_connected],

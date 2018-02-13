@@ -79,14 +79,14 @@ def main(_):
       hit = np.mean(hit)
       bst_hit = max(hit, bst_hit)
       tot_time = time.time() - start
-      global_step = sess.run(tn_gen.global_step)
+      global_step = sess.run(tn_tch.global_step)
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
       print('#%08d curhit=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
           (tn_batch, hit, bst_hit, tot_time, avg_time))
 
       if hit < bst_hit:
         continue
-      tn_tch.saver.save(sess, flags.tch_model_ckpt)
+      tn_tch.saver.save(utils.get_session(sess), flags.tch_model_ckpt)
   print('bsthit=%.4f' % (bst_hit))
 
 if __name__ == '__main__':

@@ -10,9 +10,9 @@ precomputed_dir=$data_dir/Precomputed
 python pretrain_tch.py \
   --tch_model_ckpt=$checkpoint_dir/tch_vgg_16.ckpt \
   --dataset=yfcc10k \
-  --model_name=vgg_16 \
+  --image_model=vgg_16 \
   --feature_size=4096 \
-  --learning_rate=0.05 \
+  --tch_learning_rate=0.05 \
   --num_epoch=200
 exit
 
