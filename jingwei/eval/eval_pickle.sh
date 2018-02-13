@@ -24,7 +24,8 @@ export SURVEY_EVAL=$BASEDIR/kdgan_xw/results/eval
 runfile=$SURVEY_EVAL/runs_"$testCollection".txt
 resfile=$SURVEY_EVAL/runs_"$testCollection".res
 
-ls -d "$SURVEY_DB"/* > $runfile
+# ls -d "$SURVEY_DB"/* > $runfile
+ls -d "$SURVEY_DB"/* | grep kdgan > $runfile
 # if [ -f "$resfile" ]; then
 #     echo "result file exists at $resfile"
 #     exit

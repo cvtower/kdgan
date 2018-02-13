@@ -40,7 +40,7 @@ def load_sth_to_id(infile):
   return sth_to_id
 
 def load_label_to_id(dataset):
-  label_file = get_label_file()
+  label_file = get_label_file(dataset)
   label_to_id = load_sth_to_id(label_file)
   return label_to_id
 
@@ -55,9 +55,8 @@ def load_id_to_sth(infile):
   id_to_sth = dict(zip(range(len(sth_list)), sth_list))
   return id_to_sth
 
-def load_id_to_label():
-  label_file = get_label_file()
-  label_to_id = load_sth_to_id(label_file)
+def load_id_to_label(dataset):
+  label_file = get_label_file(dataset)
   id_to_label = load_id_to_sth(label_file)
   return id_to_label
 
@@ -77,14 +76,14 @@ def get_data_sources(flags, is_training=True, single_source=False):
   precomputed_dir = get_precomputed_dir(flags.dataset)
   for (dirpath, dirnames, filenames) in os.walk(precomputed_dir):
     break
-  marker = 'train'
+  marker = 'train.tfrecord'
   if not is_training:
-    marker = 'valid'
+    marker = 'valid.tfrecord'
   data_sources = []
   for filename in filenames:
     if filename.find(marker) < 0:
       continue
-    if filename.find(flags.model_name) < 0:
+    if filename.find(flags.image_model) < 0:
       continue
     if single_source and (filename.find('000') < 0):
       continue
@@ -147,8 +146,8 @@ def generate_batch(ts_list, batch_size):
   return user_bt, image_bt, text_bt, label_bt, file_bt
 
 def evaluate_image(flags, sess, gen_v, bt_list_v):
-  valid_data_size = get_valid_data_size(flags.dataset)
-  num_batch_v = int(valid_data_size / config.valid_batch_size)
+  vd_size = get_vd_size(flags.dataset)
+  num_batch_v = int(vd_size / config.valid_batch_size)
   # print('vd:\t#batch=%d\n' % num_batch_v)
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
   image_hit_v = []
@@ -163,8 +162,8 @@ def evaluate_image(flags, sess, gen_v, bt_list_v):
   return image_hit_v
 
 def evaluate_text(flags, sess, tch_v, bt_list_v):
-  valid_data_size = get_valid_data_size(flags.dataset)
-  num_batch_v = int(valid_data_size / config.valid_batch_size)
+  vd_size = get_vd_size(flags.dataset)
+  num_batch_v = int(vd_size / config.valid_batch_size)
   # print('vd:\t#batch=%d\n' % num_batch_v)
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
   text_hit_v = []
@@ -178,21 +177,21 @@ def evaluate_text(flags, sess, tch_v, bt_list_v):
   text_hit_v = np.mean(text_hit_v)
   return text_hit_v
 
-def get_train_data_size(dataset):
-  train_data_sizes = {
+def get_tn_size(dataset):
+  tn_sizes = {
     'yfcc10k':9500,
     'yfcc20k':19000,
   }
-  train_data_size = train_data_sizes[dataset]
-  return train_data_size
+  tn_size = tn_sizes[dataset]
+  return tn_size
 
-def get_valid_data_size(dataset):
-  valid_data_sizes = {
+def get_vd_size(dataset):
+  vd_sizes = {
     'yfcc10k':500,
     'yfcc20k':1000,
   }
-  valid_data_size = valid_data_sizes[dataset]
-  return valid_data_size
+  vd_size = vd_sizes[dataset]
+  return vd_size
 
 def get_vocab_size(dataset):
   vocab_sizes = {
@@ -221,13 +220,18 @@ def get_label_file(dataset):
   label_file = path.join(dataset_dir, '%s.label' % dataset)
   return label_file
 
-def get_lr(flags, global_step, train_data_size, 
-    learning_rate, learning_rate_decay_factor, num_epochs_per_decay, scope_name):
-  decay_steps = int(train_data_size / flags.batch_size * num_epochs_per_decay)
+def get_lr(flags,
+    tn_size,
+    global_step,
+    learning_rate,
+    scope_name):
+  decay_steps = int(tn_size * flags.num_epochs_per_decay / flags.batch_size)
   if flags.learning_rate_decay_type == 'exponential':
     name = '%s_exponential_decay_learning_rate' % scope_name
     learning_rate = tf.train.exponential_decay(learning_rate,
-        global_step, decay_steps, learning_rate_decay_factor,
+        global_step,
+        decay_steps,
+        flags.learning_rate_decay_factor,
         staircase=True,
         name=name)
   elif flags.learning_rate_decay_type == 'fixed':
@@ -237,7 +241,9 @@ def get_lr(flags, global_step, train_data_size,
   elif flags.learning_rate_decay_type == 'polynomial':
     name = '%s_polynomial_decay_learning_rate' % scope_name
     learning_rate = tf.train.polynomial_decay(learning_rate,
-        global_step, decay_steps, flags.end_learning_rate,
+        global_step,
+        decay_steps,
+        flags.end_learning_rate,
         power=1.0,
         cycle=False,
         name=name)
@@ -245,19 +251,11 @@ def get_lr(flags, global_step, train_data_size,
     raise ValueError('bad learning rate decay type %s', flags.learning_rate_decay_type)
   return learning_rate
 
-def get_opt(flags, learning_rate, opt_epsilon=1e-08):
+def get_opt(flags, learning_rate):
   if flags.optimizer == 'adam':
-    optimizer = tf.train.AdamOptimizer(
-        learning_rate,
-        beta1=flags.adam_beta1,
-        beta2=flags.adam_beta2,
-        epsilon=opt_epsilon)
+    optimizer = tf.train.AdamOptimizer(learning_rate)
   elif flags.optimizer == 'rmsprop':
-    optimizer = tf.train.RMSPropOptimizer(
-        learning_rate,
-        decay=flags.rmsprop_decay,
-        momentum=flags.rmsprop_momentum,
-        epsilon=opt_epsilon)
+    optimizer = tf.train.RMSPropOptimizer(learning_rate)
   elif flags.optimizer == 'sgd':
     optimizer = tf.train.GradientDescentOptimizer(learning_rate)
   else:
@@ -381,11 +379,11 @@ def get_latest_ckpt(checkpoint_dir):
     exit()
   return ckpt_file
 
-def build_mlp_logits(flags, image_ph, 
-    hidden_size=800,
+def build_mlp_logits(flags, image_ph,
     keep_prob=0.88,
     weight_decay=0.00004,
     is_training=True):
+  hidden_size=800
   num_feature = flags.image_size * flags.image_size * flags.channels
   with tf.variable_scope('fc1'):
     fc1_weights = tf.get_variable('weights', [num_feature, hidden_size],
@@ -421,4 +419,22 @@ def build_mlp_logits(flags, image_ph,
   net = tf.contrib.layers.dropout(net, keep_prob=keep_prob, is_training=is_training)
 
   logits = tf.matmul(net, fc3_weights) + fc3_biases
+  return logits
+
+from nets import nets_factory
+def get_logits(flags, image_ph, model_name, weight_decay, keep_prob, 
+    is_training=True):
+  if model_name == 'mlp':
+    logits = build_mlp_logits(flags, image_ph,
+        weight_decay=weight_decay,
+        keep_prob=keep_prob,
+        is_training=is_training)
+  else:
+    network_fn = nets_factory.get_network_fn(model_name,
+        num_classes=flags.num_label,
+        weight_decay=weight_decay,
+        is_training=is_training)
+    assert flags.image_size==network_fn.default_image_size
+    net = tf.reshape(image_ph, [-1, flags.image_size, flags.image_size, flags.channels])
+    logits, _ = network_fn(net, dropout_keep_prob=keep_prob)
   return logits

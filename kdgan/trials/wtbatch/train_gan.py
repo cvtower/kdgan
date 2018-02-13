@@ -37,7 +37,7 @@ tf.app.flags.DEFINE_string('model_name', None, '')
 flags = tf.app.flags.FLAGS
 flags.num_epochs_per_decay *= flags.num_dis_epoch
 
-train_data_size = utils.get_train_data_size(flags.dataset)
+train_data_size = utils.get_tn_size(flags.dataset)
 num_batch_t = int(flags.num_epoch * train_data_size / config.train_batch_size)
 eval_interval = int(train_data_size / config.train_batch_size)
 print('tn:\t#batch=%d\neval:\t#interval=%d' % (num_batch_t, eval_interval))

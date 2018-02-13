@@ -11,7 +11,7 @@ home_dir = path.expanduser('~')
 proj_dir = path.join(home_dir, 'Projects')
 data_dir = path.join(proj_dir, 'data')
 yfcc_dir = path.join(data_dir, 'yfcc100m')
-pypkg_dir = path.join(proj_dir, 'kdgan')
+pypkg_dir = path.join(proj_dir, 'kdgan_xw')
 surv_dir = path.join(yfcc_dir, 'survey_data')
 
 slim_dir = path.join(pypkg_dir, 'slim')
@@ -1084,7 +1084,82 @@ def create_tfrecord(infile, end_point, is_training=False):
                     if (count % 500) == 0:
                         print('count={}'.format(count))
 
+def create_test_set():
+    utils.create_if_nonexist(precomputed_dir)
+
+    user_list = []
+    file_list = []
+    text_list = []
+    label_list = []
+    fin = open(valid_file)
+    valid_size = 0
+    while True:
+        line = fin.readline()
+        if not line:
+            break
+        fields = line.strip().split(FIELD_SEPERATOR)
+        user = fields[USER_INDEX]
+        image = fields[IMAGE_INDEX]
+        file = path.join(image_data_dir, '%s.jpg' % image)
+        tokens = fields[TEXT_INDEX].split()
+        labels = fields[LABEL_INDEX].split()
+        user_list.append(user)
+        file_list.append(file)
+        text_list.append(tokens)
+        label_list.append(labels)
+        valid_size += 1
+    fin.close()
+
+    label_to_id = utils.load_sth_to_id(label_file)
+    num_label = len(label_to_id)
+    print('#label={}'.format(num_label))
+    token_to_id = utils.load_sth_to_id(vocab_file)
+    unk_token_id = token_to_id[unk_token]
+    vocab_size = len(token_to_id)
+    print('#vocab={}'.format(vocab_size))
+
+    image_npy = np.zeros((valid_size, 4096), dtype=np.float32)
+    label_npy = np.zeros((valid_size, 100), dtype=np.int32)
+    imgid_npy = []
+    reader = ImageReader()
+    with tf.Session() as sess:
+        init_fn(sess)
+        for i, (user, file, text, labels) in enumerate(zip(user_list, file_list, text_list, label_list)):
+            user = bytes(user, encoding='utf-8')
+            
+            image_np = np.array(Image.open(file))
+            # print(type(image_np), image_np.shape)
+            feed_dict = {image_ph:image_np}
+            image, = sess.run([end_point_v], feed_dict)
+            image = image.tolist()
+            # print(image)
+            # print(type(image), len(image))
+            image_npy[i,:] = image
+            # print(image_npy)
+            # input()
+
+            text = [token_to_id.get(token, unk_token_id) for token in text]
+
+            label_ids = [label_to_id[label] for label in labels]
+            label_vec = np.zeros((num_label,), dtype=np.int32)
+            label_vec[label_ids] = 1
+            label = label_vec.tolist()
+            label_npy[i,:] = label
+
+            image_id = path.basename(file).split('.')[0]
+            imgid_npy.append(image_id)
+            # example = build_example(user, image, text, label, file)
+
+    imgid_npy = np.asarray(imgid_npy)
+    filename_tmpl = 'yfcc10k_%s.valid.%s'
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')), image_npy)
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')), label_npy)
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')), imgid_npy)
+
 def main(_):
+    create_test_set()
+    exit()
+
     check_num_field()
     utils.create_if_nonexist(dataset_dir)
     if not utils.skip_if_exist(label_file):
@@ -1111,8 +1186,8 @@ def main(_):
         collect_image(data_file, image_data_dir)
     # create_survey_data()
 
-    create_tfrecord(valid_file, end_point_v, is_training=False)
-    create_tfrecord(train_file, end_point_t, is_training=True)
+    # create_tfrecord(valid_file, end_point_v, is_training=False)
+    # create_tfrecord(train_file, end_point_t, is_training=True)
 
 if __name__ == '__main__':
   tf.app.run()

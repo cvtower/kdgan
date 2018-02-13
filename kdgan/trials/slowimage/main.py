@@ -81,13 +81,13 @@ def main(_):
     best_hit_v = -np.inf
     init_op = tf.global_variables_initializer()
     start = time.time()
-    gen_ckpt_file = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
-    tch_ckpt_file = path.join(config.ckpt_dir, 'tch.ckpt'.format(flags.model_name))
+    gen_model_ckpt = path.join(config.ckpt_dir, 'gen_{}.ckpt'.format(flags.model_name))
+    tch_model_ckpt = path.join(config.ckpt_dir, 'tch.ckpt'.format(flags.model_name))
     with tf.Session() as sess:
         # sess.run(init_op)
         gen_t.init_fn(sess)
-        gen_t.saver.restore(sess, gen_ckpt_file)
-        tch_t.saver.restore(sess, tch_ckpt_file)
+        gen_t.saver.restore(sess, gen_model_ckpt)
+        tch_t.saver.restore(sess, tch_model_ckpt)
         with slim.queues.QueueRunners(sess):
             image_hit_v, text_hit_v = [], []
             file_v = set()

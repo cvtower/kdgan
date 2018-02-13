@@ -52,7 +52,7 @@ tf.app.flags.DEFINE_string('kdgan_figure_data', None, '')
 tf.app.flags.DEFINE_string('kdgan_model_ckpt', None, '')
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_train_data_size(flags.dataset)
+train_data_size = utils.get_tn_size(flags.dataset)
 eval_interval = int(train_data_size / flags.batch_size)
 print('eval:\t#interval=%d' % (eval_interval))
 num_batch_per_epoch = math.ceil(train_data_size / flags.batch_size)
