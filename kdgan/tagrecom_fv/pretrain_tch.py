@@ -14,21 +14,22 @@ from os import path
 from tensorflow.contrib import slim
 
 tn_size = utils.get_tn_size(flags.dataset)
-tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
 vd_size = utils.get_vd_size(flags.dataset)
+tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
 vd_num_batch = int(vd_size / config.valid_batch_size)
 eval_interval = int(tn_size / flags.batch_size)
-print('#batch=%d #interval=%d' % (tn_num_batch, eval_interval))
+print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (tn_num_batch, vd_num_batch, eval_interval))
 
 tn_tch = TCH(flags, is_training=True)
-scope = tf.get_variable_scope()
-scope.reuse_variables()
-vd_tch = TCH(flags, is_training=False)
-
 tf.summary.scalar(tn_tch.learning_rate.name, tn_tch.learning_rate)
 tf.summary.scalar(tn_tch.pre_loss.name, tn_tch.pre_loss)
 summary_op = tf.summary.merge_all()
 init_op = tf.global_variables_initializer()
+
+scope = tf.get_variable_scope()
+scope.reuse_variables()
+vd_tch = TCH(flags, is_training=False)
+
 
 for variable in tf.trainable_variables():
   num_params = 1
@@ -36,14 +37,14 @@ for variable in tf.trainable_variables():
     num_params *= dim.value
   print('%-50s (%d params)' % (variable.name, num_params))
 
-tn_data_sources = utils.get_data_sources(flags, is_training=True)
+tn_data_sources = utils.get_data_sources(flags, is_training=True, single_source=True)
 vd_data_sources = utils.get_data_sources(flags, is_training=False)
 print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(tn_data_sources), len(vd_data_sources)))
 
-tn_ts_list = utils.decode_tfrecord(flags, tn_data_sources, shuffle=True)
-vd_ts_list = utils.decode_tfrecord(flags, vd_data_sources, shuffle=False)
-tn_bt_list = utils.generate_batch(tn_ts_list, flags.batch_size)
-vd_bt_list = utils.generate_batch(vd_ts_list, config.valid_batch_size)
+ts_list_t = utils.decode_tfrecord(flags, tn_data_sources, shuffle=True)
+ts_list_v = utils.decode_tfrecord(flags, vd_data_sources, shuffle=False)
+tn_bt_list = utils.generate_batch(ts_list_t, flags.batch_size)
+vd_bt_list = utils.generate_batch(ts_list_v, config.valid_batch_size)
 _, tn_image_bt, tn_text_bt, tn_label_bt, _ = tn_bt_list
 _, vd_image_bt, vd_text_bt, vd_label_bt, _ = vd_bt_list
 
@@ -60,14 +61,14 @@ def main(_):
         # tn_tch.image_ph:tn_image_np,
         tn_tch.hard_label_ph:tn_label_np,
       }
-      _, summary = sess.run([tn_tch.pre_update, summary_op], 
-          feed_dict=feed_dict)
+      _, summary = sess.run([tn_tch.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
 
       if (tn_batch + 1) % eval_interval != 0:
           continue
+
       hit = []
-      for vd_batch in range(vd_num_batch):
+      for _ in range(vd_num_batch):
         vd_text_np, vd_image_np, vd_label_np = sess.run([vd_text_bt, vd_image_bt, vd_label_bt])
         feed_dict = {
           vd_tch.text_ph:vd_text_np, 
