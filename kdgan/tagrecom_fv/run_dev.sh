@@ -4,6 +4,18 @@ pretrained_dir=$checkpoint_dir/pretrained
 datafig_dir=$kdgan_dir/datafigs
 
 
+python pretrain_tch.py \
+  --dataset=yfcc10k \
+  --image_model=vgg_16 \
+  --model_name=vgg_16 \
+  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
+  --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
+  --feature_size=4096 \
+  --learning_rate=0.05 \
+  --num_epoch=500
+# 0232s best hit=0.9657
+exit
+
 python pretrain_gen.py \
   --task=test \
   --gen_model_eval=$checkpoint_dir/gen_vgg_16.eval \
@@ -18,16 +30,6 @@ python pretrain_gen.py \
 exit
 
 
-python pretrain_tch.py \
-  --dataset=yfcc10k \
-  --model_name=vgg_16 \
-  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
-  --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
-  --feature_size=4096 \
-  --learning_rate=0.05 \
-  --num_epoch=500
-# 0232s best hit=0.9657
-exit
 
 
 #"""

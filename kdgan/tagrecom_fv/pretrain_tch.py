@@ -20,6 +20,7 @@ tf.app.flags.DEFINE_integer('cutoff', 3, '')
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
+tf.app.flags.DEFINE_string('image_model', None, '')
 # training
 tf.app.flags.DEFINE_integer('batch_size', 32, '')
 tf.app.flags.DEFINE_integer('num_epoch', 20, '')
