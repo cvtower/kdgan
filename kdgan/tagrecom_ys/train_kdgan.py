@@ -49,6 +49,7 @@ tf.app.flags.DEFINE_integer('num_tch_epoch', 5, '')
 tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
 tf.app.flags.DEFINE_string('kdgan_figure_data', None, '')
+tf.app.flags.DEFINE_string('kdgan_model_ckpt', None, '')
 flags = tf.app.flags.FLAGS
 
 train_data_size = utils.get_train_data_size(flags.dataset)
@@ -124,6 +125,7 @@ def main(_):
         for dis_epoch in range(flags.num_dis_epoch):
           print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
           for _ in range(num_batch_per_epoch):
+            #continue
             batch_d += 1
             image_d, text_d, label_dat_d = sess.run([image_bt_d, text_bt_d, label_bt_d])
             
@@ -150,7 +152,7 @@ def main(_):
         for tch_epoch in range(flags.num_tch_epoch):
           print('epoch %03d tch_epoch %03d' % (epoch, tch_epoch))
           for _ in range(num_batch_per_epoch):
-            continue
+            #continue
             batch_t += 1
             image_t, text_t, label_dat_t = sess.run([image_bt_t, text_bt_t, label_bt_t])
 
@@ -162,16 +164,26 @@ def main(_):
               dis_t.sample_ph:sample_t,
             }
             reward_t, = sess.run([dis_t.rewards], feed_dict=feed_dict)
-
+            
+            feed_dict = {
+              gen_t.image_ph:image_t,
+            }
+            label_gen_g = sess.run(gen_t.logits, feed_dict = feed_dict)
+            #print(len(label_dat_t), len(label_dat_t[0]))
+            #exit()
             feed_dict = {
               tch_t.text_ph:text_t,
               tch_t.image_ph: image_t,
               tch_t.sample_ph:sample_t,
               tch_t.reward_ph:reward_t,
+              tch_t.hard_label_ph:label_dat_t,
+              tch_t.soft_label_ph:label_gen_g,
             }
-            _, summary_t = sess.run([tch_t.kdgan_update, tch_summary_op], 
+
+            _, summary_t, tch_kdgan_loss = sess.run([tch_t.kdgan_update, tch_summary_op, tch_t.kdgan_loss], 
                 feed_dict=feed_dict)
             writer.add_summary(summary_t, batch_t)
+            #print("teacher kdgan loss:", tch_kdgan_loss)
 
         for gen_epoch in range(flags.num_gen_epoch):
           print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
@@ -221,7 +233,12 @@ def main(_):
         if gen_hit <= best_hit_v:
           continue
         best_hit_v = gen_hit
+        print("epoch ", epoch+1, ":, new best validation hit:", best_hit_v, "saving...")
+        gen_t.saver.save(sess, flags.kdgan_model_ckpt, global_step= epoch+1)
+        print("finish saving")
+
   print('best hit=%.4f' % (best_hit_v))
+  
 
   utils.create_if_nonexist(os.path.dirname(flags.kdgan_figure_data))
   fout = open(flags.kdgan_figure_data, 'w')

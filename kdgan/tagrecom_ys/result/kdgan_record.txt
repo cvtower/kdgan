@@ -1,10 +1,140 @@
-2018-02-11 19:37:08.671999: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
-2018-02-11 19:37:08.803891: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:892] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
-2018-02-11 19:37:08.804307: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1030] Found device 0 with properties: 
+./run.sh: 29: ./run.sh: 
+python pretrain_tch.py   --dataset=yfcc10k   --model_name=vgg_16   --gen_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/gen_vgg_16.ckpt   --tch_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/tch.ckpt   --feature_size=4096   --learning_rate=0.05   --num_epoch=500
+# 0232s best hit=0.9657
+exit
+
+
+python train_kd.py   --dataset=yfcc10k   --model_name=vgg_16   --gen_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/gen_vgg_16.ckpt   --tch_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/tch.ckpt   --feature_size=4096   --kd_lamda=0.9999   --temperature=10.0   --num_epoch=1000
+exit
+: not found
+Traceback (most recent call last):
+  File "pretrain_gen.py", line 1, in <module>
+    from kdgan import config
+ImportError: No module named kdgan
+./run.sh: 29: ./run.sh: 
+python pretrain_tch.py   --dataset=yfcc10k   --model_name=vgg_16   --gen_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/gen_vgg_16.ckpt   --tch_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/tch.ckpt   --feature_size=4096   --learning_rate=0.05   --num_epoch=500
+# 0232s best hit=0.9657
+exit
+
+
+python train_kd.py   --dataset=yfcc10k   --model_name=vgg_16   --gen_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/gen_vgg_16.ckpt   --tch_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/tch.ckpt   --feature_size=4096   --kd_lamda=0.9999   --temperature=10.0   --num_epoch=1000
+exit
+: not found
+Traceback (most recent call last):
+  File "pretrain_gen.py", line 1, in <module>
+    from kdgan import config
+ImportError: No module named kdgan
+./run.sh: 29: ./run.sh: 
+python pretrain_tch.py   --dataset=yfcc10k   --model_name=vgg_16   --gen_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/gen_vgg_16.ckpt   --tch_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/tch.ckpt   --feature_size=4096   --learning_rate=0.05   --num_epoch=500
+# 0232s best hit=0.9657
+exit
+
+
+python train_kd.py   --dataset=yfcc10k   --model_name=vgg_16   --gen_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/gen_vgg_16.ckpt   --tch_model_ckpt=/home/xiaojie/Projects/kdgan/kdgan/checkpoints/tch.ckpt   --feature_size=4096   --kd_lamda=0.9999   --temperature=10.0   --num_epoch=1000
+exit
+: not found
+2018-01-25 13:46:22.197544: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2018-01-25 13:46:22.414022: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:892] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2018-01-25 13:46:22.414463: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1030] Found device 0 with properties: 
 name: GeForce GTX 1080 Ti major: 6 minor: 1 memoryClockRate(GHz): 1.582
 pciBusID: 0000:01:00.0
-totalMemory: 10.90GiB freeMemory: 10.08GiB
-2018-02-11 19:37:08.804319: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1120] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: GeForce GTX 1080 Ti, pci bus id: 0000:01:00.0, compute capability: 6.1)
+totalMemory: 10.90GiB freeMemory: 10.18GiB
+2018-01-25 13:46:22.414476: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1120] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: GeForce GTX 1080 Ti, pci bus id: 0000:01:00.0, compute capability: 6.1)
+tn:	#batch=296875
+vd:	#batch=5
+eval:	#interval=296
+gen/fully_connected/weights:0                      added to GEN saver
+gen/fully_connected/biases:0                       added to GEN saver
+gen/fully_connected/weights:0                      (409600 params)
+gen/fully_connected/biases:0                       (100 params)
+tn: #tfrecord=500
+vd: #tfrecord=1
+#001 curbst=0.1887 time=2s
+#002 curbst=0.3540 time=4s
+#003 curbst=0.4487 time=5s
+#004 curbst=0.4977 time=7s
+#005 curbst=0.5390 time=8s
+#006 curbst=0.5627 time=10s
+#007 curbst=0.5880 time=11s
+#008 curbst=0.6120 time=13s
+#009 curbst=0.6240 time=14s
+#010 curbst=0.6280 time=16s
+#011 curbst=0.6437 time=17s
+#012 curbst=0.6567 time=18s
+#013 curbst=0.6580 time=20s
+#014 curbst=0.6600 time=21s
+#015 curbst=0.6660 time=23s
+#016 curbst=0.6700 time=24s
+#017 curbst=0.6700 time=26s
+#018 curbst=0.6713 time=27s
+#019 curbst=0.6733 time=28s
+#020 curbst=0.6747 time=30s
+#021 curbst=0.6777 time=31s
+#022 curbst=0.6820 time=33s
+#023 curbst=0.6840 time=34s
+#024 curbst=0.6853 time=35s
+#026 curbst=0.6913 time=38s
+#028 curbst=0.6943 time=41s
+#029 curbst=0.7017 time=42s
+#031 curbst=0.7017 time=46s
+#033 curbst=0.7047 time=48s
+#036 curbst=0.7063 time=52s
+#037 curbst=0.7097 time=54s
+#042 curbst=0.7097 time=61s
+#043 curbst=0.7137 time=62s
+#045 curbst=0.7197 time=65s
+#046 curbst=0.7217 time=67s
+#047 curbst=0.7270 time=68s
+#048 curbst=0.7277 time=69s
+#053 curbst=0.7277 time=76s
+#056 curbst=0.7310 time=80s
+#058 curbst=0.7350 time=83s
+#065 curbst=0.7360 time=93s
+#077 curbst=0.7387 time=110s
+#078 curbst=0.7397 time=112s
+#079 curbst=0.7397 time=113s
+#085 curbst=0.7397 time=121s
+#088 curbst=0.7407 time=125s
+#089 curbst=0.7407 time=127s
+#092 curbst=0.7407 time=131s
+#094 curbst=0.7447 time=134s
+#097 curbst=0.7447 time=138s
+#098 curbst=0.7467 time=140s
+#099 curbst=0.7487 time=141s
+#105 curbst=0.7487 time=149s
+#117 curbst=0.7497 time=166s
+#122 curbst=0.7527 time=173s
+#126 curbst=0.7547 time=179s
+#136 curbst=0.7557 time=192s
+#144 curbst=0.7577 time=203s
+#156 curbst=0.7577 time=221s
+#157 curbst=0.7597 time=222s
+#168 curbst=0.7597 time=238s
+#170 curbst=0.7597 time=241s
+#172 curbst=0.7597 time=244s
+#175 curbst=0.7607 time=248s
+#177 curbst=0.7637 time=250s
+#219 curbst=0.7643 time=309s
+#224 curbst=0.7643 time=316s
+#235 curbst=0.7683 time=332s
+bsthit=0.7683
+Traceback (most recent call last):
+  File "pretrain_gen.py", line 139, in <module>
+    tf.app.run()
+  File "/home/xiaojie/anaconda2/envs/py34/lib/python3.4/site-packages/tensorflow/python/platform/app.py", line 48, in run
+    _sys.exit(main(_sys.argv[:1] + flags_passthrough))
+  File "pretrain_gen.py", line 132, in main
+    utils.create_if_nonexist(os.path.dirname(flags.gen_figure_data))
+  File "/home/xiaojie/anaconda2/envs/py34/lib/python3.4/posixpath.py", line 148, in dirname
+    i = p.rfind(sep) + 1
+AttributeError: 'NoneType' object has no attribute 'rfind'
+2018-01-27 11:15:38.575599: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2018-01-27 11:15:38.781941: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:892] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2018-01-27 11:15:38.782381: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1030] Found device 0 with properties: 
+name: GeForce GTX 1080 Ti major: 6 minor: 1 memoryClockRate(GHz): 1.582
+pciBusID: 0000:01:00.0
+totalMemory: 10.90GiB freeMemory: 10.19GiB
+2018-01-27 11:15:38.782394: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1120] Creating TensorFlow device (/device:GPU:0) -> (device: 0, name: GeForce GTX 1080 Ti, pci bus id: 0000:01:00.0, compute capability: 6.1)
 eval:	#interval=296
 dis/fully_connected/weights:0                      added to DIS saver
 dis/fully_connected/biases:0                       added to DIS saver
@@ -63,9 +193,7 @@ epoch 000 gen_epoch 006
 epoch 000 gen_epoch 007
 epoch 000 gen_epoch 008
 epoch 000 gen_epoch 009
-#000 curgen=0.5427 curtch=0.4767 111s
-epoch  1 :, new best validation hit: 0.542666666667 saving...
-finish saving
+#000 curgen=0.5157 curtch=0.9267 91s
 epoch 001 dis_epoch 000
 epoch 001 dis_epoch 001
 epoch 001 dis_epoch 002
@@ -106,9 +234,7 @@ epoch 001 gen_epoch 006
 epoch 001 gen_epoch 007
 epoch 001 gen_epoch 008
 epoch 001 gen_epoch 009
-#001 curgen=0.6260 curtch=0.8563 221s
-epoch  2 :, new best validation hit: 0.626 saving...
-finish saving
+#001 curgen=0.6557 curtch=0.9267 169s
 epoch 002 dis_epoch 000
 epoch 002 dis_epoch 001
 epoch 002 dis_epoch 002
@@ -149,7 +275,7 @@ epoch 002 gen_epoch 006
 epoch 002 gen_epoch 007
 epoch 002 gen_epoch 008
 epoch 002 gen_epoch 009
-#002 curgen=0.5220 curtch=0.7240 335s
+#002 curgen=0.6193 curtch=0.9267 264s
 epoch 003 dis_epoch 000
 epoch 003 dis_epoch 001
 epoch 003 dis_epoch 002
@@ -190,9 +316,7 @@ epoch 003 gen_epoch 006
 epoch 003 gen_epoch 007
 epoch 003 gen_epoch 008
 epoch 003 gen_epoch 009
-#003 curgen=0.6273 curtch=0.7547 447s
-epoch  4 :, new best validation hit: 0.627333333333 saving...
-finish saving
+#003 curgen=0.6933 curtch=0.9267 361s
 epoch 004 dis_epoch 000
 epoch 004 dis_epoch 001
 epoch 004 dis_epoch 002
@@ -233,7 +357,7 @@ epoch 004 gen_epoch 006
 epoch 004 gen_epoch 007
 epoch 004 gen_epoch 008
 epoch 004 gen_epoch 009
-#004 curgen=0.5337 curtch=0.7377 551s
+#004 curgen=0.6447 curtch=0.9267 439s
 epoch 005 dis_epoch 000
 epoch 005 dis_epoch 001
 epoch 005 dis_epoch 002
@@ -274,7 +398,7 @@ epoch 005 gen_epoch 006
 epoch 005 gen_epoch 007
 epoch 005 gen_epoch 008
 epoch 005 gen_epoch 009
-#005 curgen=0.6130 curtch=0.7783 657s
+#005 curgen=0.7140 curtch=0.9267 517s
 epoch 006 dis_epoch 000
 epoch 006 dis_epoch 001
 epoch 006 dis_epoch 002
@@ -315,7 +439,7 @@ epoch 006 gen_epoch 006
 epoch 006 gen_epoch 007
 epoch 006 gen_epoch 008
 epoch 006 gen_epoch 009
-#006 curgen=0.6250 curtch=0.7763 767s
+#006 curgen=0.7173 curtch=0.9267 600s
 epoch 007 dis_epoch 000
 epoch 007 dis_epoch 001
 epoch 007 dis_epoch 002
@@ -356,9 +480,7 @@ epoch 007 gen_epoch 006
 epoch 007 gen_epoch 007
 epoch 007 gen_epoch 008
 epoch 007 gen_epoch 009
-#007 curgen=0.6483 curtch=0.7637 874s
-epoch  8 :, new best validation hit: 0.648333333333 saving...
-finish saving
+#007 curgen=0.7300 curtch=0.9267 691s
 epoch 008 dis_epoch 000
 epoch 008 dis_epoch 001
 epoch 008 dis_epoch 002
@@ -399,7 +521,7 @@ epoch 008 gen_epoch 006
 epoch 008 gen_epoch 007
 epoch 008 gen_epoch 008
 epoch 008 gen_epoch 009
-#008 curgen=0.6363 curtch=0.7740 981s
+#008 curgen=0.7320 curtch=0.9267 772s
 epoch 009 dis_epoch 000
 epoch 009 dis_epoch 001
 epoch 009 dis_epoch 002
@@ -440,9 +562,7 @@ epoch 009 gen_epoch 006
 epoch 009 gen_epoch 007
 epoch 009 gen_epoch 008
 epoch 009 gen_epoch 009
-#009 curgen=0.6603 curtch=0.7617 1088s
-epoch  10 :, new best validation hit: 0.660333333333 saving...
-finish saving
+#009 curgen=0.7350 curtch=0.9267 864s
 epoch 010 dis_epoch 000
 epoch 010 dis_epoch 001
 epoch 010 dis_epoch 002
@@ -483,9 +603,7 @@ epoch 010 gen_epoch 006
 epoch 010 gen_epoch 007
 epoch 010 gen_epoch 008
 epoch 010 gen_epoch 009
-#010 curgen=0.6833 curtch=0.7913 1193s
-epoch  11 :, new best validation hit: 0.683333333333 saving...
-finish saving
+#010 curgen=0.7507 curtch=0.9267 949s
 epoch 011 dis_epoch 000
 epoch 011 dis_epoch 001
 epoch 011 dis_epoch 002
@@ -526,7 +644,7 @@ epoch 011 gen_epoch 006
 epoch 011 gen_epoch 007
 epoch 011 gen_epoch 008
 epoch 011 gen_epoch 009
-#011 curgen=0.6820 curtch=0.7590 1305s
+#011 curgen=0.7567 curtch=0.9267 1056s
 epoch 012 dis_epoch 000
 epoch 012 dis_epoch 001
 epoch 012 dis_epoch 002
@@ -567,9 +685,7 @@ epoch 012 gen_epoch 006
 epoch 012 gen_epoch 007
 epoch 012 gen_epoch 008
 epoch 012 gen_epoch 009
-#012 curgen=0.6970 curtch=0.7583 1423s
-epoch  13 :, new best validation hit: 0.697 saving...
-finish saving
+#012 curgen=0.7610 curtch=0.9267 1133s
 epoch 013 dis_epoch 000
 epoch 013 dis_epoch 001
 epoch 013 dis_epoch 002
@@ -610,7 +726,7 @@ epoch 013 gen_epoch 006
 epoch 013 gen_epoch 007
 epoch 013 gen_epoch 008
 epoch 013 gen_epoch 009
-#013 curgen=0.6683 curtch=0.7547 1526s
+#013 curgen=0.7727 curtch=0.9267 1213s
 epoch 014 dis_epoch 000
 epoch 014 dis_epoch 001
 epoch 014 dis_epoch 002
@@ -651,7 +767,7 @@ epoch 014 gen_epoch 006
 epoch 014 gen_epoch 007
 epoch 014 gen_epoch 008
 epoch 014 gen_epoch 009
-#014 curgen=0.6897 curtch=0.7627 1646s
+#014 curgen=0.7650 curtch=0.9267 1300s
 epoch 015 dis_epoch 000
 epoch 015 dis_epoch 001
 epoch 015 dis_epoch 002
@@ -692,7 +808,7 @@ epoch 015 gen_epoch 006
 epoch 015 gen_epoch 007
 epoch 015 gen_epoch 008
 epoch 015 gen_epoch 009
-#015 curgen=0.6793 curtch=0.7543 1754s
+#015 curgen=0.7670 curtch=0.9267 1385s
 epoch 016 dis_epoch 000
 epoch 016 dis_epoch 001
 epoch 016 dis_epoch 002
@@ -733,9 +849,7 @@ epoch 016 gen_epoch 006
 epoch 016 gen_epoch 007
 epoch 016 gen_epoch 008
 epoch 016 gen_epoch 009
-#016 curgen=0.7010 curtch=0.7533 1899s
-epoch  17 :, new best validation hit: 0.701 saving...
-finish saving
+#016 curgen=0.7717 curtch=0.9267 1476s
 epoch 017 dis_epoch 000
 epoch 017 dis_epoch 001
 epoch 017 dis_epoch 002
@@ -776,7 +890,7 @@ epoch 017 gen_epoch 006
 epoch 017 gen_epoch 007
 epoch 017 gen_epoch 008
 epoch 017 gen_epoch 009
-#017 curgen=0.6923 curtch=0.7560 2032s
+#017 curgen=0.7783 curtch=0.9267 1561s
 epoch 018 dis_epoch 000
 epoch 018 dis_epoch 001
 epoch 018 dis_epoch 002
@@ -817,9 +931,7 @@ epoch 018 gen_epoch 006
 epoch 018 gen_epoch 007
 epoch 018 gen_epoch 008
 epoch 018 gen_epoch 009
-#018 curgen=0.7353 curtch=0.7623 2151s
-epoch  19 :, new best validation hit: 0.735333333333 saving...
-finish saving
+#018 curgen=0.7740 curtch=0.9267 1653s
 epoch 019 dis_epoch 000
 epoch 019 dis_epoch 001
 epoch 019 dis_epoch 002
@@ -860,7 +972,7 @@ epoch 019 gen_epoch 006
 epoch 019 gen_epoch 007
 epoch 019 gen_epoch 008
 epoch 019 gen_epoch 009
-#019 curgen=0.7213 curtch=0.7620 2283s
+#019 curgen=0.7783 curtch=0.9267 1740s
 epoch 020 dis_epoch 000
 epoch 020 dis_epoch 001
 epoch 020 dis_epoch 002
@@ -901,9 +1013,7 @@ epoch 020 gen_epoch 006
 epoch 020 gen_epoch 007
 epoch 020 gen_epoch 008
 epoch 020 gen_epoch 009
-#020 curgen=0.7520 curtch=0.7523 2405s
-epoch  21 :, new best validation hit: 0.752 saving...
-finish saving
+#020 curgen=0.7653 curtch=0.9267 1831s
 epoch 021 dis_epoch 000
 epoch 021 dis_epoch 001
 epoch 021 dis_epoch 002
@@ -944,7 +1054,7 @@ epoch 021 gen_epoch 006
 epoch 021 gen_epoch 007
 epoch 021 gen_epoch 008
 epoch 021 gen_epoch 009
-#021 curgen=0.7193 curtch=0.7610 2520s
+#021 curgen=0.7793 curtch=0.9267 1914s
 epoch 022 dis_epoch 000
 epoch 022 dis_epoch 001
 epoch 022 dis_epoch 002
@@ -985,7 +1095,7 @@ epoch 022 gen_epoch 006
 epoch 022 gen_epoch 007
 epoch 022 gen_epoch 008
 epoch 022 gen_epoch 009
-#022 curgen=0.7510 curtch=0.7513 2625s
+#022 curgen=0.7713 curtch=0.9267 2009s
 epoch 023 dis_epoch 000
 epoch 023 dis_epoch 001
 epoch 023 dis_epoch 002
@@ -1026,7 +1136,7 @@ epoch 023 gen_epoch 006
 epoch 023 gen_epoch 007
 epoch 023 gen_epoch 008
 epoch 023 gen_epoch 009
-#023 curgen=0.7433 curtch=0.7757 2749s
+#023 curgen=0.7710 curtch=0.9267 2096s
 epoch 024 dis_epoch 000
 epoch 024 dis_epoch 001
 epoch 024 dis_epoch 002
@@ -1067,9 +1177,7 @@ epoch 024 gen_epoch 006
 epoch 024 gen_epoch 007
 epoch 024 gen_epoch 008
 epoch 024 gen_epoch 009
-#024 curgen=0.7723 curtch=0.7553 2882s
-epoch  25 :, new best validation hit: 0.772333333333 saving...
-finish saving
+#024 curgen=0.7813 curtch=0.9267 2181s
 epoch 025 dis_epoch 000
 epoch 025 dis_epoch 001
 epoch 025 dis_epoch 002
@@ -1110,7 +1218,7 @@ epoch 025 gen_epoch 006
 epoch 025 gen_epoch 007
 epoch 025 gen_epoch 008
 epoch 025 gen_epoch 009
-#025 curgen=0.7537 curtch=0.7447 3012s
+#025 curgen=0.7680 curtch=0.9267 2259s
 epoch 026 dis_epoch 000
 epoch 026 dis_epoch 001
 epoch 026 dis_epoch 002
@@ -1151,9 +1259,7 @@ epoch 026 gen_epoch 006
 epoch 026 gen_epoch 007
 epoch 026 gen_epoch 008
 epoch 026 gen_epoch 009
-#026 curgen=0.7787 curtch=0.7527 3133s
-epoch  27 :, new best validation hit: 0.778666666667 saving...
-finish saving
+#026 curgen=0.7713 curtch=0.9267 2339s
 epoch 027 dis_epoch 000
 epoch 027 dis_epoch 001
 epoch 027 dis_epoch 002
@@ -1194,7 +1300,7 @@ epoch 027 gen_epoch 006
 epoch 027 gen_epoch 007
 epoch 027 gen_epoch 008
 epoch 027 gen_epoch 009
-#027 curgen=0.7623 curtch=0.7427 3240s
+#027 curgen=0.7753 curtch=0.9267 2423s
 epoch 028 dis_epoch 000
 epoch 028 dis_epoch 001
 epoch 028 dis_epoch 002
@@ -1235,7 +1341,7 @@ epoch 028 gen_epoch 006
 epoch 028 gen_epoch 007
 epoch 028 gen_epoch 008
 epoch 028 gen_epoch 009
-#028 curgen=0.7683 curtch=0.7727 3359s
+#028 curgen=0.7903 curtch=0.9267 2502s
 epoch 029 dis_epoch 000
 epoch 029 dis_epoch 001
 epoch 029 dis_epoch 002
@@ -1276,7 +1382,7 @@ epoch 029 gen_epoch 006
 epoch 029 gen_epoch 007
 epoch 029 gen_epoch 008
 epoch 029 gen_epoch 009
-#029 curgen=0.7587 curtch=0.7507 3468s
+#029 curgen=0.7747 curtch=0.9267 2582s
 epoch 030 dis_epoch 000
 epoch 030 dis_epoch 001
 epoch 030 dis_epoch 002
@@ -1317,7 +1423,7 @@ epoch 030 gen_epoch 006
 epoch 030 gen_epoch 007
 epoch 030 gen_epoch 008
 epoch 030 gen_epoch 009
-#030 curgen=0.7673 curtch=0.7557 3603s
+#030 curgen=0.7903 curtch=0.9267 2666s
 epoch 031 dis_epoch 000
 epoch 031 dis_epoch 001
 epoch 031 dis_epoch 002
@@ -1358,7 +1464,7 @@ epoch 031 gen_epoch 006
 epoch 031 gen_epoch 007
 epoch 031 gen_epoch 008
 epoch 031 gen_epoch 009
-#031 curgen=0.7653 curtch=0.7447 3729s
+#031 curgen=0.7853 curtch=0.9267 2756s
 epoch 032 dis_epoch 000
 epoch 032 dis_epoch 001
 epoch 032 dis_epoch 002
@@ -1399,7 +1505,7 @@ epoch 032 gen_epoch 006
 epoch 032 gen_epoch 007
 epoch 032 gen_epoch 008
 epoch 032 gen_epoch 009
-#032 curgen=0.7773 curtch=0.7727 3841s
+#032 curgen=0.7883 curtch=0.9267 2833s
 epoch 033 dis_epoch 000
 epoch 033 dis_epoch 001
 epoch 033 dis_epoch 002
@@ -1440,7 +1546,7 @@ epoch 033 gen_epoch 006
 epoch 033 gen_epoch 007
 epoch 033 gen_epoch 008
 epoch 033 gen_epoch 009
-#033 curgen=0.7663 curtch=0.7533 3972s
+#033 curgen=0.7850 curtch=0.9267 2913s
 epoch 034 dis_epoch 000
 epoch 034 dis_epoch 001
 epoch 034 dis_epoch 002
@@ -1481,7 +1587,7 @@ epoch 034 gen_epoch 006
 epoch 034 gen_epoch 007
 epoch 034 gen_epoch 008
 epoch 034 gen_epoch 009
-#034 curgen=0.7773 curtch=0.7593 4088s
+#034 curgen=0.7763 curtch=0.9267 2994s
 epoch 035 dis_epoch 000
 epoch 035 dis_epoch 001
 epoch 035 dis_epoch 002
@@ -1522,7 +1628,7 @@ epoch 035 gen_epoch 006
 epoch 035 gen_epoch 007
 epoch 035 gen_epoch 008
 epoch 035 gen_epoch 009
-#035 curgen=0.7733 curtch=0.7573 4213s
+#035 curgen=0.7863 curtch=0.9267 3082s
 epoch 036 dis_epoch 000
 epoch 036 dis_epoch 001
 epoch 036 dis_epoch 002
@@ -1563,9 +1669,7 @@ epoch 036 gen_epoch 006
 epoch 036 gen_epoch 007
 epoch 036 gen_epoch 008
 epoch 036 gen_epoch 009
-#036 curgen=0.7860 curtch=0.7633 4337s
-epoch  37 :, new best validation hit: 0.786 saving...
-finish saving
+#036 curgen=0.7873 curtch=0.9267 3167s
 epoch 037 dis_epoch 000
 epoch 037 dis_epoch 001
 epoch 037 dis_epoch 002
@@ -1606,7 +1710,7 @@ epoch 037 gen_epoch 006
 epoch 037 gen_epoch 007
 epoch 037 gen_epoch 008
 epoch 037 gen_epoch 009
-#037 curgen=0.7813 curtch=0.7553 4451s
+#037 curgen=0.7823 curtch=0.9267 3257s
 epoch 038 dis_epoch 000
 epoch 038 dis_epoch 001
 epoch 038 dis_epoch 002
@@ -1647,7 +1751,7 @@ epoch 038 gen_epoch 006
 epoch 038 gen_epoch 007
 epoch 038 gen_epoch 008
 epoch 038 gen_epoch 009
-#038 curgen=0.7800 curtch=0.7583 4564s
+#038 curgen=0.7870 curtch=0.9267 3339s
 epoch 039 dis_epoch 000
 epoch 039 dis_epoch 001
 epoch 039 dis_epoch 002
@@ -1688,7 +1792,7 @@ epoch 039 gen_epoch 006
 epoch 039 gen_epoch 007
 epoch 039 gen_epoch 008
 epoch 039 gen_epoch 009
-#039 curgen=0.7767 curtch=0.7483 4691s
+#039 curgen=0.7853 curtch=0.9267 3427s
 epoch 040 dis_epoch 000
 epoch 040 dis_epoch 001
 epoch 040 dis_epoch 002
@@ -1729,7 +1833,7 @@ epoch 040 gen_epoch 006
 epoch 040 gen_epoch 007
 epoch 040 gen_epoch 008
 epoch 040 gen_epoch 009
-#040 curgen=0.7790 curtch=0.7523 4805s
+#040 curgen=0.7850 curtch=0.9267 3520s
 epoch 041 dis_epoch 000
 epoch 041 dis_epoch 001
 epoch 041 dis_epoch 002
@@ -1770,7 +1874,7 @@ epoch 041 gen_epoch 006
 epoch 041 gen_epoch 007
 epoch 041 gen_epoch 008
 epoch 041 gen_epoch 009
-#041 curgen=0.7837 curtch=0.7623 4927s
+#041 curgen=0.7893 curtch=0.9267 3604s
 epoch 042 dis_epoch 000
 epoch 042 dis_epoch 001
 epoch 042 dis_epoch 002
@@ -1811,7 +1915,7 @@ epoch 042 gen_epoch 006
 epoch 042 gen_epoch 007
 epoch 042 gen_epoch 008
 epoch 042 gen_epoch 009
-#042 curgen=0.7807 curtch=0.7533 5052s
+#042 curgen=0.7880 curtch=0.9267 3689s
 epoch 043 dis_epoch 000
 epoch 043 dis_epoch 001
 epoch 043 dis_epoch 002
@@ -1852,7 +1956,7 @@ epoch 043 gen_epoch 006
 epoch 043 gen_epoch 007
 epoch 043 gen_epoch 008
 epoch 043 gen_epoch 009
-#043 curgen=0.7843 curtch=0.7533 5178s
+#043 curgen=0.7860 curtch=0.9260 3788s
 epoch 044 dis_epoch 000
 epoch 044 dis_epoch 001
 epoch 044 dis_epoch 002
@@ -1893,7 +1997,7 @@ epoch 044 gen_epoch 006
 epoch 044 gen_epoch 007
 epoch 044 gen_epoch 008
 epoch 044 gen_epoch 009
-#044 curgen=0.7847 curtch=0.7513 5286s
+#044 curgen=0.7913 curtch=0.9267 3877s
 epoch 045 dis_epoch 000
 epoch 045 dis_epoch 001
 epoch 045 dis_epoch 002
@@ -1934,9 +2038,7 @@ epoch 045 gen_epoch 006
 epoch 045 gen_epoch 007
 epoch 045 gen_epoch 008
 epoch 045 gen_epoch 009
-#045 curgen=0.7877 curtch=0.7583 5396s
-epoch  46 :, new best validation hit: 0.787666666667 saving...
-finish saving
+#045 curgen=0.7870 curtch=0.9267 3971s
 epoch 046 dis_epoch 000
 epoch 046 dis_epoch 001
 epoch 046 dis_epoch 002
@@ -1977,7 +2079,7 @@ epoch 046 gen_epoch 006
 epoch 046 gen_epoch 007
 epoch 046 gen_epoch 008
 epoch 046 gen_epoch 009
-#046 curgen=0.7787 curtch=0.7583 5544s
+#046 curgen=0.7863 curtch=0.9267 4079s
 epoch 047 dis_epoch 000
 epoch 047 dis_epoch 001
 epoch 047 dis_epoch 002
@@ -2018,7 +2120,7 @@ epoch 047 gen_epoch 006
 epoch 047 gen_epoch 007
 epoch 047 gen_epoch 008
 epoch 047 gen_epoch 009
-#047 curgen=0.7817 curtch=0.7543 5665s
+#047 curgen=0.7883 curtch=0.9267 4171s
 epoch 048 dis_epoch 000
 epoch 048 dis_epoch 001
 epoch 048 dis_epoch 002
@@ -2059,7 +2161,7 @@ epoch 048 gen_epoch 006
 epoch 048 gen_epoch 007
 epoch 048 gen_epoch 008
 epoch 048 gen_epoch 009
-#048 curgen=0.7857 curtch=0.7563 5778s
+#048 curgen=0.7810 curtch=0.9267 4257s
 epoch 049 dis_epoch 000
 epoch 049 dis_epoch 001
 epoch 049 dis_epoch 002
@@ -2100,9 +2202,7 @@ epoch 049 gen_epoch 006
 epoch 049 gen_epoch 007
 epoch 049 gen_epoch 008
 epoch 049 gen_epoch 009
-#049 curgen=0.7897 curtch=0.7633 5894s
-epoch  50 :, new best validation hit: 0.789666666667 saving...
-finish saving
+#049 curgen=0.7843 curtch=0.9267 4346s
 epoch 050 dis_epoch 000
 epoch 050 dis_epoch 001
 epoch 050 dis_epoch 002
@@ -2143,7 +2243,7 @@ epoch 050 gen_epoch 006
 epoch 050 gen_epoch 007
 epoch 050 gen_epoch 008
 epoch 050 gen_epoch 009
-#050 curgen=0.7797 curtch=0.7573 6005s
+#050 curgen=0.7870 curtch=0.9267 4428s
 epoch 051 dis_epoch 000
 epoch 051 dis_epoch 001
 epoch 051 dis_epoch 002
@@ -2184,7 +2284,7 @@ epoch 051 gen_epoch 006
 epoch 051 gen_epoch 007
 epoch 051 gen_epoch 008
 epoch 051 gen_epoch 009
-#051 curgen=0.7817 curtch=0.7643 6110s
+#051 curgen=0.7873 curtch=0.9267 4508s
 epoch 052 dis_epoch 000
 epoch 052 dis_epoch 001
 epoch 052 dis_epoch 002
@@ -2225,7 +2325,7 @@ epoch 052 gen_epoch 006
 epoch 052 gen_epoch 007
 epoch 052 gen_epoch 008
 epoch 052 gen_epoch 009
-#052 curgen=0.7877 curtch=0.7553 6227s
+#052 curgen=0.7913 curtch=0.9267 4594s
 epoch 053 dis_epoch 000
 epoch 053 dis_epoch 001
 epoch 053 dis_epoch 002
@@ -2266,7 +2366,7 @@ epoch 053 gen_epoch 006
 epoch 053 gen_epoch 007
 epoch 053 gen_epoch 008
 epoch 053 gen_epoch 009
-#053 curgen=0.7877 curtch=0.7613 6331s
+#053 curgen=0.7893 curtch=0.9267 4672s
 epoch 054 dis_epoch 000
 epoch 054 dis_epoch 001
 epoch 054 dis_epoch 002
@@ -2307,9 +2407,7 @@ epoch 054 gen_epoch 006
 epoch 054 gen_epoch 007
 epoch 054 gen_epoch 008
 epoch 054 gen_epoch 009
-#054 curgen=0.7897 curtch=0.7573 6442s
-epoch  55 :, new best validation hit: 0.789666666667 saving...
-finish saving
+#054 curgen=0.7890 curtch=0.9267 4750s
 epoch 055 dis_epoch 000
 epoch 055 dis_epoch 001
 epoch 055 dis_epoch 002
@@ -2350,7 +2448,7 @@ epoch 055 gen_epoch 006
 epoch 055 gen_epoch 007
 epoch 055 gen_epoch 008
 epoch 055 gen_epoch 009
-#055 curgen=0.7897 curtch=0.7573 6565s
+#055 curgen=0.7820 curtch=0.9267 4833s
 epoch 056 dis_epoch 000
 epoch 056 dis_epoch 001
 epoch 056 dis_epoch 002
@@ -2391,7 +2489,7 @@ epoch 056 gen_epoch 006
 epoch 056 gen_epoch 007
 epoch 056 gen_epoch 008
 epoch 056 gen_epoch 009
-#056 curgen=0.7877 curtch=0.7553 6680s
+#056 curgen=0.7850 curtch=0.9267 4926s
 epoch 057 dis_epoch 000
 epoch 057 dis_epoch 001
 epoch 057 dis_epoch 002
@@ -2432,7 +2530,7 @@ epoch 057 gen_epoch 006
 epoch 057 gen_epoch 007
 epoch 057 gen_epoch 008
 epoch 057 gen_epoch 009
-#057 curgen=0.7877 curtch=0.7543 6791s
+#057 curgen=0.7853 curtch=0.9267 5035s
 epoch 058 dis_epoch 000
 epoch 058 dis_epoch 001
 epoch 058 dis_epoch 002
@@ -2473,7 +2571,7 @@ epoch 058 gen_epoch 006
 epoch 058 gen_epoch 007
 epoch 058 gen_epoch 008
 epoch 058 gen_epoch 009
-#058 curgen=0.7877 curtch=0.7543 6904s
+#058 curgen=0.7860 curtch=0.9267 5124s
 epoch 059 dis_epoch 000
 epoch 059 dis_epoch 001
 epoch 059 dis_epoch 002
@@ -2514,9 +2612,7 @@ epoch 059 gen_epoch 006
 epoch 059 gen_epoch 007
 epoch 059 gen_epoch 008
 epoch 059 gen_epoch 009
-#059 curgen=0.7917 curtch=0.7603 7012s
-epoch  60 :, new best validation hit: 0.791666666667 saving...
-finish saving
+#059 curgen=0.7830 curtch=0.9267 5205s
 epoch 060 dis_epoch 000
 epoch 060 dis_epoch 001
 epoch 060 dis_epoch 002
@@ -2557,7 +2653,7 @@ epoch 060 gen_epoch 006
 epoch 060 gen_epoch 007
 epoch 060 gen_epoch 008
 epoch 060 gen_epoch 009
-#060 curgen=0.7827 curtch=0.7593 7120s
+#060 curgen=0.7870 curtch=0.9267 5285s
 epoch 061 dis_epoch 000
 epoch 061 dis_epoch 001
 epoch 061 dis_epoch 002
@@ -2598,7 +2694,7 @@ epoch 061 gen_epoch 006
 epoch 061 gen_epoch 007
 epoch 061 gen_epoch 008
 epoch 061 gen_epoch 009
-#061 curgen=0.7877 curtch=0.7543 7240s
+#061 curgen=0.7890 curtch=0.9267 5369s
 epoch 062 dis_epoch 000
 epoch 062 dis_epoch 001
 epoch 062 dis_epoch 002
@@ -2639,7 +2735,7 @@ epoch 062 gen_epoch 006
 epoch 062 gen_epoch 007
 epoch 062 gen_epoch 008
 epoch 062 gen_epoch 009
-#062 curgen=0.7897 curtch=0.7513 7354s
+#062 curgen=0.7890 curtch=0.9267 5466s
 epoch 063 dis_epoch 000
 epoch 063 dis_epoch 001
 epoch 063 dis_epoch 002
@@ -2680,7 +2776,7 @@ epoch 063 gen_epoch 006
 epoch 063 gen_epoch 007
 epoch 063 gen_epoch 008
 epoch 063 gen_epoch 009
-#063 curgen=0.7917 curtch=0.7593 7466s
+#063 curgen=0.7863 curtch=0.9267 5558s
 epoch 064 dis_epoch 000
 epoch 064 dis_epoch 001
 epoch 064 dis_epoch 002
@@ -2721,7 +2817,7 @@ epoch 064 gen_epoch 006
 epoch 064 gen_epoch 007
 epoch 064 gen_epoch 008
 epoch 064 gen_epoch 009
-#064 curgen=0.7837 curtch=0.7653 7585s
+#064 curgen=0.7913 curtch=0.9267 5648s
 epoch 065 dis_epoch 000
 epoch 065 dis_epoch 001
 epoch 065 dis_epoch 002
@@ -2762,7 +2858,7 @@ epoch 065 gen_epoch 006
 epoch 065 gen_epoch 007
 epoch 065 gen_epoch 008
 epoch 065 gen_epoch 009
-#065 curgen=0.7837 curtch=0.7663 7700s
+#065 curgen=0.7863 curtch=0.9267 5736s
 epoch 066 dis_epoch 000
 epoch 066 dis_epoch 001
 epoch 066 dis_epoch 002
@@ -2803,7 +2899,7 @@ epoch 066 gen_epoch 006
 epoch 066 gen_epoch 007
 epoch 066 gen_epoch 008
 epoch 066 gen_epoch 009
-#066 curgen=0.7857 curtch=0.7613 7823s
+#066 curgen=0.7863 curtch=0.9267 5820s
 epoch 067 dis_epoch 000
 epoch 067 dis_epoch 001
 epoch 067 dis_epoch 002
@@ -2844,7 +2940,7 @@ epoch 067 gen_epoch 006
 epoch 067 gen_epoch 007
 epoch 067 gen_epoch 008
 epoch 067 gen_epoch 009
-#067 curgen=0.7837 curtch=0.7613 7939s
+#067 curgen=0.7843 curtch=0.9267 5898s
 epoch 068 dis_epoch 000
 epoch 068 dis_epoch 001
 epoch 068 dis_epoch 002
@@ -2885,7 +2981,7 @@ epoch 068 gen_epoch 006
 epoch 068 gen_epoch 007
 epoch 068 gen_epoch 008
 epoch 068 gen_epoch 009
-#068 curgen=0.7917 curtch=0.7573 8093s
+#068 curgen=0.7890 curtch=0.9260 5982s
 epoch 069 dis_epoch 000
 epoch 069 dis_epoch 001
 epoch 069 dis_epoch 002
@@ -2926,7 +3022,7 @@ epoch 069 gen_epoch 006
 epoch 069 gen_epoch 007
 epoch 069 gen_epoch 008
 epoch 069 gen_epoch 009
-#069 curgen=0.7917 curtch=0.7573 8233s
+#069 curgen=0.7843 curtch=0.9267 6074s
 epoch 070 dis_epoch 000
 epoch 070 dis_epoch 001
 epoch 070 dis_epoch 002
@@ -2967,7 +3063,7 @@ epoch 070 gen_epoch 006
 epoch 070 gen_epoch 007
 epoch 070 gen_epoch 008
 epoch 070 gen_epoch 009
-#070 curgen=0.7917 curtch=0.7543 8353s
+#070 curgen=0.7883 curtch=0.9267 6179s
 epoch 071 dis_epoch 000
 epoch 071 dis_epoch 001
 epoch 071 dis_epoch 002
@@ -3008,7 +3104,7 @@ epoch 071 gen_epoch 006
 epoch 071 gen_epoch 007
 epoch 071 gen_epoch 008
 epoch 071 gen_epoch 009
-#071 curgen=0.7877 curtch=0.7533 8487s
+#071 curgen=0.7873 curtch=0.9267 6276s
 epoch 072 dis_epoch 000
 epoch 072 dis_epoch 001
 epoch 072 dis_epoch 002
@@ -3049,7 +3145,7 @@ epoch 072 gen_epoch 006
 epoch 072 gen_epoch 007
 epoch 072 gen_epoch 008
 epoch 072 gen_epoch 009
-#072 curgen=0.7857 curtch=0.7523 8610s
+#072 curgen=0.7873 curtch=0.9267 6366s
 epoch 073 dis_epoch 000
 epoch 073 dis_epoch 001
 epoch 073 dis_epoch 002
@@ -3090,7 +3186,7 @@ epoch 073 gen_epoch 006
 epoch 073 gen_epoch 007
 epoch 073 gen_epoch 008
 epoch 073 gen_epoch 009
-#073 curgen=0.7897 curtch=0.7503 8753s
+#073 curgen=0.7863 curtch=0.9267 6454s
 epoch 074 dis_epoch 000
 epoch 074 dis_epoch 001
 epoch 074 dis_epoch 002
@@ -3131,7 +3227,7 @@ epoch 074 gen_epoch 006
 epoch 074 gen_epoch 007
 epoch 074 gen_epoch 008
 epoch 074 gen_epoch 009
-#074 curgen=0.7877 curtch=0.7493 8874s
+#074 curgen=0.7843 curtch=0.9267 6540s
 epoch 075 dis_epoch 000
 epoch 075 dis_epoch 001
 epoch 075 dis_epoch 002
@@ -3172,7 +3268,7 @@ epoch 075 gen_epoch 006
 epoch 075 gen_epoch 007
 epoch 075 gen_epoch 008
 epoch 075 gen_epoch 009
-#075 curgen=0.7857 curtch=0.7523 8977s
+#075 curgen=0.7823 curtch=0.9267 6627s
 epoch 076 dis_epoch 000
 epoch 076 dis_epoch 001
 epoch 076 dis_epoch 002
@@ -3213,7 +3309,7 @@ epoch 076 gen_epoch 006
 epoch 076 gen_epoch 007
 epoch 076 gen_epoch 008
 epoch 076 gen_epoch 009
-#076 curgen=0.7847 curtch=0.7543 9081s
+#076 curgen=0.7883 curtch=0.9267 6705s
 epoch 077 dis_epoch 000
 epoch 077 dis_epoch 001
 epoch 077 dis_epoch 002
@@ -3254,7 +3350,7 @@ epoch 077 gen_epoch 006
 epoch 077 gen_epoch 007
 epoch 077 gen_epoch 008
 epoch 077 gen_epoch 009
-#077 curgen=0.7877 curtch=0.7523 9194s
+#077 curgen=0.7890 curtch=0.9267 6791s
 epoch 078 dis_epoch 000
 epoch 078 dis_epoch 001
 epoch 078 dis_epoch 002
@@ -3295,7 +3391,7 @@ epoch 078 gen_epoch 006
 epoch 078 gen_epoch 007
 epoch 078 gen_epoch 008
 epoch 078 gen_epoch 009
-#078 curgen=0.7877 curtch=0.7523 9316s
+#078 curgen=0.7863 curtch=0.9267 6871s
 epoch 079 dis_epoch 000
 epoch 079 dis_epoch 001
 epoch 079 dis_epoch 002
@@ -3336,7 +3432,7 @@ epoch 079 gen_epoch 006
 epoch 079 gen_epoch 007
 epoch 079 gen_epoch 008
 epoch 079 gen_epoch 009
-#079 curgen=0.7857 curtch=0.7523 9436s
+#079 curgen=0.7883 curtch=0.9267 6954s
 epoch 080 dis_epoch 000
 epoch 080 dis_epoch 001
 epoch 080 dis_epoch 002
@@ -3377,7 +3473,7 @@ epoch 080 gen_epoch 006
 epoch 080 gen_epoch 007
 epoch 080 gen_epoch 008
 epoch 080 gen_epoch 009
-#080 curgen=0.7877 curtch=0.7523 9546s
+#080 curgen=0.7883 curtch=0.9267 7036s
 epoch 081 dis_epoch 000
 epoch 081 dis_epoch 001
 epoch 081 dis_epoch 002
@@ -3418,7 +3514,7 @@ epoch 081 gen_epoch 006
 epoch 081 gen_epoch 007
 epoch 081 gen_epoch 008
 epoch 081 gen_epoch 009
-#081 curgen=0.7897 curtch=0.7543 9679s
+#081 curgen=0.7863 curtch=0.9267 7131s
 epoch 082 dis_epoch 000
 epoch 082 dis_epoch 001
 epoch 082 dis_epoch 002
@@ -3459,7 +3555,7 @@ epoch 082 gen_epoch 006
 epoch 082 gen_epoch 007
 epoch 082 gen_epoch 008
 epoch 082 gen_epoch 009
-#082 curgen=0.7917 curtch=0.7503 9787s
+#082 curgen=0.7863 curtch=0.9267 7210s
 epoch 083 dis_epoch 000
 epoch 083 dis_epoch 001
 epoch 083 dis_epoch 002
@@ -3500,7 +3596,7 @@ epoch 083 gen_epoch 006
 epoch 083 gen_epoch 007
 epoch 083 gen_epoch 008
 epoch 083 gen_epoch 009
-#083 curgen=0.7897 curtch=0.7503 9901s
+#083 curgen=0.7903 curtch=0.9267 7292s
 epoch 084 dis_epoch 000
 epoch 084 dis_epoch 001
 epoch 084 dis_epoch 002
@@ -3541,7 +3637,7 @@ epoch 084 gen_epoch 006
 epoch 084 gen_epoch 007
 epoch 084 gen_epoch 008
 epoch 084 gen_epoch 009
-#084 curgen=0.7897 curtch=0.7523 10018s
+#084 curgen=0.7843 curtch=0.9267 7378s
 epoch 085 dis_epoch 000
 epoch 085 dis_epoch 001
 epoch 085 dis_epoch 002
@@ -3582,7 +3678,7 @@ epoch 085 gen_epoch 006
 epoch 085 gen_epoch 007
 epoch 085 gen_epoch 008
 epoch 085 gen_epoch 009
-#085 curgen=0.7917 curtch=0.7523 10127s
+#085 curgen=0.7843 curtch=0.9267 7458s
 epoch 086 dis_epoch 000
 epoch 086 dis_epoch 001
 epoch 086 dis_epoch 002
@@ -3623,7 +3719,7 @@ epoch 086 gen_epoch 006
 epoch 086 gen_epoch 007
 epoch 086 gen_epoch 008
 epoch 086 gen_epoch 009
-#086 curgen=0.7877 curtch=0.7543 10243s
+#086 curgen=0.7863 curtch=0.9267 7541s
 epoch 087 dis_epoch 000
 epoch 087 dis_epoch 001
 epoch 087 dis_epoch 002
@@ -3664,7 +3760,7 @@ epoch 087 gen_epoch 006
 epoch 087 gen_epoch 007
 epoch 087 gen_epoch 008
 epoch 087 gen_epoch 009
-#087 curgen=0.7897 curtch=0.7503 10382s
+#087 curgen=0.7883 curtch=0.9267 7620s
 epoch 088 dis_epoch 000
 epoch 088 dis_epoch 001
 epoch 088 dis_epoch 002
@@ -3705,7 +3801,7 @@ epoch 088 gen_epoch 006
 epoch 088 gen_epoch 007
 epoch 088 gen_epoch 008
 epoch 088 gen_epoch 009
-#088 curgen=0.7897 curtch=0.7543 10494s
+#088 curgen=0.7883 curtch=0.9267 7705s
 epoch 089 dis_epoch 000
 epoch 089 dis_epoch 001
 epoch 089 dis_epoch 002
@@ -3746,7 +3842,7 @@ epoch 089 gen_epoch 006
 epoch 089 gen_epoch 007
 epoch 089 gen_epoch 008
 epoch 089 gen_epoch 009
-#089 curgen=0.7917 curtch=0.7483 10610s
+#089 curgen=0.7883 curtch=0.9267 7787s
 epoch 090 dis_epoch 000
 epoch 090 dis_epoch 001
 epoch 090 dis_epoch 002
@@ -3787,7 +3883,7 @@ epoch 090 gen_epoch 006
 epoch 090 gen_epoch 007
 epoch 090 gen_epoch 008
 epoch 090 gen_epoch 009
-#090 curgen=0.7897 curtch=0.7463 10739s
+#090 curgen=0.7863 curtch=0.9260 7888s
 epoch 091 dis_epoch 000
 epoch 091 dis_epoch 001
 epoch 091 dis_epoch 002
@@ -3828,7 +3924,7 @@ epoch 091 gen_epoch 006
 epoch 091 gen_epoch 007
 epoch 091 gen_epoch 008
 epoch 091 gen_epoch 009
-#091 curgen=0.7897 curtch=0.7483 10844s
+#091 curgen=0.7843 curtch=0.9267 7976s
 epoch 092 dis_epoch 000
 epoch 092 dis_epoch 001
 epoch 092 dis_epoch 002
@@ -3869,7 +3965,7 @@ epoch 092 gen_epoch 006
 epoch 092 gen_epoch 007
 epoch 092 gen_epoch 008
 epoch 092 gen_epoch 009
-#092 curgen=0.7877 curtch=0.7523 10967s
+#092 curgen=0.7883 curtch=0.9267 8087s
 epoch 093 dis_epoch 000
 epoch 093 dis_epoch 001
 epoch 093 dis_epoch 002
@@ -3910,7 +4006,7 @@ epoch 093 gen_epoch 006
 epoch 093 gen_epoch 007
 epoch 093 gen_epoch 008
 epoch 093 gen_epoch 009
-#093 curgen=0.7917 curtch=0.7483 11091s
+#093 curgen=0.7863 curtch=0.9267 8178s
 epoch 094 dis_epoch 000
 epoch 094 dis_epoch 001
 epoch 094 dis_epoch 002
@@ -3951,7 +4047,7 @@ epoch 094 gen_epoch 006
 epoch 094 gen_epoch 007
 epoch 094 gen_epoch 008
 epoch 094 gen_epoch 009
-#094 curgen=0.7917 curtch=0.7463 11197s
+#094 curgen=0.7883 curtch=0.9267 8271s
 epoch 095 dis_epoch 000
 epoch 095 dis_epoch 001
 epoch 095 dis_epoch 002
@@ -3992,7 +4088,7 @@ epoch 095 gen_epoch 006
 epoch 095 gen_epoch 007
 epoch 095 gen_epoch 008
 epoch 095 gen_epoch 009
-#095 curgen=0.7917 curtch=0.7483 11316s
+#095 curgen=0.7883 curtch=0.9267 8370s
 epoch 096 dis_epoch 000
 epoch 096 dis_epoch 001
 epoch 096 dis_epoch 002
@@ -4033,7 +4129,7 @@ epoch 096 gen_epoch 006
 epoch 096 gen_epoch 007
 epoch 096 gen_epoch 008
 epoch 096 gen_epoch 009
-#096 curgen=0.7917 curtch=0.7503 11443s
+#096 curgen=0.7883 curtch=0.9267 8452s
 epoch 097 dis_epoch 000
 epoch 097 dis_epoch 001
 epoch 097 dis_epoch 002
@@ -4074,7 +4170,7 @@ epoch 097 gen_epoch 006
 epoch 097 gen_epoch 007
 epoch 097 gen_epoch 008
 epoch 097 gen_epoch 009
-#097 curgen=0.7917 curtch=0.7503 11555s
+#097 curgen=0.7903 curtch=0.9267 8540s
 epoch 098 dis_epoch 000
 epoch 098 dis_epoch 001
 epoch 098 dis_epoch 002
@@ -4115,7 +4211,7 @@ epoch 098 gen_epoch 006
 epoch 098 gen_epoch 007
 epoch 098 gen_epoch 008
 epoch 098 gen_epoch 009
-#098 curgen=0.7897 curtch=0.7543 11660s
+#098 curgen=0.7863 curtch=0.9267 8626s
 epoch 099 dis_epoch 000
 epoch 099 dis_epoch 001
 epoch 099 dis_epoch 002
@@ -4156,7 +4252,7 @@ epoch 099 gen_epoch 006
 epoch 099 gen_epoch 007
 epoch 099 gen_epoch 008
 epoch 099 gen_epoch 009
-#099 curgen=0.7897 curtch=0.7503 11774s
+#099 curgen=0.7843 curtch=0.9267 8727s
 epoch 100 dis_epoch 000
 epoch 100 dis_epoch 001
 epoch 100 dis_epoch 002
@@ -4197,7 +4293,7 @@ epoch 100 gen_epoch 006
 epoch 100 gen_epoch 007
 epoch 100 gen_epoch 008
 epoch 100 gen_epoch 009
-#100 curgen=0.7877 curtch=0.7543 11876s
+#100 curgen=0.7863 curtch=0.9267 8805s
 epoch 101 dis_epoch 000
 epoch 101 dis_epoch 001
 epoch 101 dis_epoch 002
@@ -4238,7 +4334,7 @@ epoch 101 gen_epoch 006
 epoch 101 gen_epoch 007
 epoch 101 gen_epoch 008
 epoch 101 gen_epoch 009
-#101 curgen=0.7877 curtch=0.7523 11987s
+#101 curgen=0.7863 curtch=0.9267 8891s
 epoch 102 dis_epoch 000
 epoch 102 dis_epoch 001
 epoch 102 dis_epoch 002
@@ -4279,7 +4375,7 @@ epoch 102 gen_epoch 006
 epoch 102 gen_epoch 007
 epoch 102 gen_epoch 008
 epoch 102 gen_epoch 009
-#102 curgen=0.7897 curtch=0.7503 12091s
+#102 curgen=0.7883 curtch=0.9267 8991s
 epoch 103 dis_epoch 000
 epoch 103 dis_epoch 001
 epoch 103 dis_epoch 002
@@ -4320,7 +4416,7 @@ epoch 103 gen_epoch 006
 epoch 103 gen_epoch 007
 epoch 103 gen_epoch 008
 epoch 103 gen_epoch 009
-#103 curgen=0.7877 curtch=0.7503 12214s
+#103 curgen=0.7843 curtch=0.9267 9081s
 epoch 104 dis_epoch 000
 epoch 104 dis_epoch 001
 epoch 104 dis_epoch 002
@@ -4361,7 +4457,7 @@ epoch 104 gen_epoch 006
 epoch 104 gen_epoch 007
 epoch 104 gen_epoch 008
 epoch 104 gen_epoch 009
-#104 curgen=0.7877 curtch=0.7503 12318s
+#104 curgen=0.7843 curtch=0.9267 9179s
 epoch 105 dis_epoch 000
 epoch 105 dis_epoch 001
 epoch 105 dis_epoch 002
@@ -4402,7 +4498,7 @@ epoch 105 gen_epoch 006
 epoch 105 gen_epoch 007
 epoch 105 gen_epoch 008
 epoch 105 gen_epoch 009
-#105 curgen=0.7917 curtch=0.7483 12421s
+#105 curgen=0.7863 curtch=0.9267 9264s
 epoch 106 dis_epoch 000
 epoch 106 dis_epoch 001
 epoch 106 dis_epoch 002
@@ -4443,7 +4539,7 @@ epoch 106 gen_epoch 006
 epoch 106 gen_epoch 007
 epoch 106 gen_epoch 008
 epoch 106 gen_epoch 009
-#106 curgen=0.7897 curtch=0.7523 12529s
+#106 curgen=0.7863 curtch=0.9267 9347s
 epoch 107 dis_epoch 000
 epoch 107 dis_epoch 001
 epoch 107 dis_epoch 002
@@ -4484,7 +4580,7 @@ epoch 107 gen_epoch 006
 epoch 107 gen_epoch 007
 epoch 107 gen_epoch 008
 epoch 107 gen_epoch 009
-#107 curgen=0.7857 curtch=0.7523 12633s
+#107 curgen=0.7843 curtch=0.9267 9425s
 epoch 108 dis_epoch 000
 epoch 108 dis_epoch 001
 epoch 108 dis_epoch 002
@@ -4525,7 +4621,7 @@ epoch 108 gen_epoch 006
 epoch 108 gen_epoch 007
 epoch 108 gen_epoch 008
 epoch 108 gen_epoch 009
-#108 curgen=0.7877 curtch=0.7523 12757s
+#108 curgen=0.7843 curtch=0.9260 9514s
 epoch 109 dis_epoch 000
 epoch 109 dis_epoch 001
 epoch 109 dis_epoch 002
@@ -4566,7 +4662,7 @@ epoch 109 gen_epoch 006
 epoch 109 gen_epoch 007
 epoch 109 gen_epoch 008
 epoch 109 gen_epoch 009
-#109 curgen=0.7877 curtch=0.7543 12868s
+#109 curgen=0.7863 curtch=0.9267 9596s
 epoch 110 dis_epoch 000
 epoch 110 dis_epoch 001
 epoch 110 dis_epoch 002
@@ -4607,7 +4703,7 @@ epoch 110 gen_epoch 006
 epoch 110 gen_epoch 007
 epoch 110 gen_epoch 008
 epoch 110 gen_epoch 009
-#110 curgen=0.7837 curtch=0.7523 13000s
+#110 curgen=0.7823 curtch=0.9267 9678s
 epoch 111 dis_epoch 000
 epoch 111 dis_epoch 001
 epoch 111 dis_epoch 002
@@ -4648,7 +4744,7 @@ epoch 111 gen_epoch 006
 epoch 111 gen_epoch 007
 epoch 111 gen_epoch 008
 epoch 111 gen_epoch 009
-#111 curgen=0.7877 curtch=0.7503 13104s
+#111 curgen=0.7823 curtch=0.9260 9768s
 epoch 112 dis_epoch 000
 epoch 112 dis_epoch 001
 epoch 112 dis_epoch 002
@@ -4689,7 +4785,7 @@ epoch 112 gen_epoch 006
 epoch 112 gen_epoch 007
 epoch 112 gen_epoch 008
 epoch 112 gen_epoch 009
-#112 curgen=0.7877 curtch=0.7523 13221s
+#112 curgen=0.7823 curtch=0.9267 9860s
 epoch 113 dis_epoch 000
 epoch 113 dis_epoch 001
 epoch 113 dis_epoch 002
@@ -4730,7 +4826,7 @@ epoch 113 gen_epoch 006
 epoch 113 gen_epoch 007
 epoch 113 gen_epoch 008
 epoch 113 gen_epoch 009
-#113 curgen=0.7857 curtch=0.7523 13339s
+#113 curgen=0.7823 curtch=0.9267 9953s
 epoch 114 dis_epoch 000
 epoch 114 dis_epoch 001
 epoch 114 dis_epoch 002
@@ -4771,7 +4867,7 @@ epoch 114 gen_epoch 006
 epoch 114 gen_epoch 007
 epoch 114 gen_epoch 008
 epoch 114 gen_epoch 009
-#114 curgen=0.7897 curtch=0.7503 13462s
+#114 curgen=0.7823 curtch=0.9267 10050s
 epoch 115 dis_epoch 000
 epoch 115 dis_epoch 001
 epoch 115 dis_epoch 002
@@ -4812,7 +4908,7 @@ epoch 115 gen_epoch 006
 epoch 115 gen_epoch 007
 epoch 115 gen_epoch 008
 epoch 115 gen_epoch 009
-#115 curgen=0.7877 curtch=0.7503 13597s
+#115 curgen=0.7823 curtch=0.9267 10158s
 epoch 116 dis_epoch 000
 epoch 116 dis_epoch 001
 epoch 116 dis_epoch 002
@@ -4853,7 +4949,7 @@ epoch 116 gen_epoch 006
 epoch 116 gen_epoch 007
 epoch 116 gen_epoch 008
 epoch 116 gen_epoch 009
-#116 curgen=0.7877 curtch=0.7523 13700s
+#116 curgen=0.7843 curtch=0.9267 10238s
 epoch 117 dis_epoch 000
 epoch 117 dis_epoch 001
 epoch 117 dis_epoch 002
@@ -4894,7 +4990,7 @@ epoch 117 gen_epoch 006
 epoch 117 gen_epoch 007
 epoch 117 gen_epoch 008
 epoch 117 gen_epoch 009
-#117 curgen=0.7877 curtch=0.7543 13805s
+#117 curgen=0.7843 curtch=0.9267 10316s
 epoch 118 dis_epoch 000
 epoch 118 dis_epoch 001
 epoch 118 dis_epoch 002
@@ -4935,7 +5031,7 @@ epoch 118 gen_epoch 006
 epoch 118 gen_epoch 007
 epoch 118 gen_epoch 008
 epoch 118 gen_epoch 009
-#118 curgen=0.7857 curtch=0.7523 13911s
+#118 curgen=0.7863 curtch=0.9267 10421s
 epoch 119 dis_epoch 000
 epoch 119 dis_epoch 001
 epoch 119 dis_epoch 002
@@ -4976,7 +5072,7 @@ epoch 119 gen_epoch 006
 epoch 119 gen_epoch 007
 epoch 119 gen_epoch 008
 epoch 119 gen_epoch 009
-#119 curgen=0.7897 curtch=0.7523 14023s
+#119 curgen=0.7863 curtch=0.9267 10516s
 epoch 120 dis_epoch 000
 epoch 120 dis_epoch 001
 epoch 120 dis_epoch 002
@@ -5017,7 +5113,7 @@ epoch 120 gen_epoch 006
 epoch 120 gen_epoch 007
 epoch 120 gen_epoch 008
 epoch 120 gen_epoch 009
-#120 curgen=0.7897 curtch=0.7523 14150s
+#120 curgen=0.7843 curtch=0.9267 10620s
 epoch 121 dis_epoch 000
 epoch 121 dis_epoch 001
 epoch 121 dis_epoch 002
@@ -5058,7 +5154,7 @@ epoch 121 gen_epoch 006
 epoch 121 gen_epoch 007
 epoch 121 gen_epoch 008
 epoch 121 gen_epoch 009
-#121 curgen=0.7897 curtch=0.7523 14257s
+#121 curgen=0.7843 curtch=0.9267 10708s
 epoch 122 dis_epoch 000
 epoch 122 dis_epoch 001
 epoch 122 dis_epoch 002
@@ -5099,7 +5195,7 @@ epoch 122 gen_epoch 006
 epoch 122 gen_epoch 007
 epoch 122 gen_epoch 008
 epoch 122 gen_epoch 009
-#122 curgen=0.7917 curtch=0.7503 14369s
+#122 curgen=0.7823 curtch=0.9267 10810s
 epoch 123 dis_epoch 000
 epoch 123 dis_epoch 001
 epoch 123 dis_epoch 002
@@ -5140,7 +5236,7 @@ epoch 123 gen_epoch 006
 epoch 123 gen_epoch 007
 epoch 123 gen_epoch 008
 epoch 123 gen_epoch 009
-#123 curgen=0.7897 curtch=0.7523 14489s
+#123 curgen=0.7823 curtch=0.9267 10894s
 epoch 124 dis_epoch 000
 epoch 124 dis_epoch 001
 epoch 124 dis_epoch 002
@@ -5181,7 +5277,7 @@ epoch 124 gen_epoch 006
 epoch 124 gen_epoch 007
 epoch 124 gen_epoch 008
 epoch 124 gen_epoch 009
-#124 curgen=0.7897 curtch=0.7503 14616s
+#124 curgen=0.7863 curtch=0.9267 10989s
 epoch 125 dis_epoch 000
 epoch 125 dis_epoch 001
 epoch 125 dis_epoch 002
@@ -5222,7 +5318,7 @@ epoch 125 gen_epoch 006
 epoch 125 gen_epoch 007
 epoch 125 gen_epoch 008
 epoch 125 gen_epoch 009
-#125 curgen=0.7897 curtch=0.7483 14733s
+#125 curgen=0.7843 curtch=0.9267 11067s
 epoch 126 dis_epoch 000
 epoch 126 dis_epoch 001
 epoch 126 dis_epoch 002
@@ -5263,7 +5359,7 @@ epoch 126 gen_epoch 006
 epoch 126 gen_epoch 007
 epoch 126 gen_epoch 008
 epoch 126 gen_epoch 009
-#126 curgen=0.7897 curtch=0.7483 14838s
+#126 curgen=0.7843 curtch=0.9267 11146s
 epoch 127 dis_epoch 000
 epoch 127 dis_epoch 001
 epoch 127 dis_epoch 002
@@ -5304,7 +5400,7 @@ epoch 127 gen_epoch 006
 epoch 127 gen_epoch 007
 epoch 127 gen_epoch 008
 epoch 127 gen_epoch 009
-#127 curgen=0.7917 curtch=0.7463 14964s
+#127 curgen=0.7823 curtch=0.9267 11229s
 epoch 128 dis_epoch 000
 epoch 128 dis_epoch 001
 epoch 128 dis_epoch 002
@@ -5345,7 +5441,7 @@ epoch 128 gen_epoch 006
 epoch 128 gen_epoch 007
 epoch 128 gen_epoch 008
 epoch 128 gen_epoch 009
-#128 curgen=0.7917 curtch=0.7463 15068s
+#128 curgen=0.7843 curtch=0.9267 11306s
 epoch 129 dis_epoch 000
 epoch 129 dis_epoch 001
 epoch 129 dis_epoch 002
@@ -5386,7 +5482,7 @@ epoch 129 gen_epoch 006
 epoch 129 gen_epoch 007
 epoch 129 gen_epoch 008
 epoch 129 gen_epoch 009
-#129 curgen=0.7897 curtch=0.7503 15195s
+#129 curgen=0.7843 curtch=0.9267 11400s
 epoch 130 dis_epoch 000
 epoch 130 dis_epoch 001
 epoch 130 dis_epoch 002
@@ -5427,7 +5523,7 @@ epoch 130 gen_epoch 006
 epoch 130 gen_epoch 007
 epoch 130 gen_epoch 008
 epoch 130 gen_epoch 009
-#130 curgen=0.7897 curtch=0.7503 15317s
+#130 curgen=0.7823 curtch=0.9267 11478s
 epoch 131 dis_epoch 000
 epoch 131 dis_epoch 001
 epoch 131 dis_epoch 002
@@ -5468,7 +5564,7 @@ epoch 131 gen_epoch 006
 epoch 131 gen_epoch 007
 epoch 131 gen_epoch 008
 epoch 131 gen_epoch 009
-#131 curgen=0.7897 curtch=0.7483 15448s
+#131 curgen=0.7843 curtch=0.9267 11564s
 epoch 132 dis_epoch 000
 epoch 132 dis_epoch 001
 epoch 132 dis_epoch 002
@@ -5509,7 +5605,7 @@ epoch 132 gen_epoch 006
 epoch 132 gen_epoch 007
 epoch 132 gen_epoch 008
 epoch 132 gen_epoch 009
-#132 curgen=0.7897 curtch=0.7503 15560s
+#132 curgen=0.7843 curtch=0.9267 11663s
 epoch 133 dis_epoch 000
 epoch 133 dis_epoch 001
 epoch 133 dis_epoch 002
@@ -5550,7 +5646,7 @@ epoch 133 gen_epoch 006
 epoch 133 gen_epoch 007
 epoch 133 gen_epoch 008
 epoch 133 gen_epoch 009
-#133 curgen=0.7897 curtch=0.7523 15685s
+#133 curgen=0.7823 curtch=0.9267 11763s
 epoch 134 dis_epoch 000
 epoch 134 dis_epoch 001
 epoch 134 dis_epoch 002
@@ -5591,7 +5687,7 @@ epoch 134 gen_epoch 006
 epoch 134 gen_epoch 007
 epoch 134 gen_epoch 008
 epoch 134 gen_epoch 009
-#134 curgen=0.7877 curtch=0.7543 15803s
+#134 curgen=0.7843 curtch=0.9267 11841s
 epoch 135 dis_epoch 000
 epoch 135 dis_epoch 001
 epoch 135 dis_epoch 002
@@ -5632,7 +5728,7 @@ epoch 135 gen_epoch 006
 epoch 135 gen_epoch 007
 epoch 135 gen_epoch 008
 epoch 135 gen_epoch 009
-#135 curgen=0.7877 curtch=0.7523 15907s
+#135 curgen=0.7863 curtch=0.9267 11926s
 epoch 136 dis_epoch 000
 epoch 136 dis_epoch 001
 epoch 136 dis_epoch 002
@@ -5673,7 +5769,7 @@ epoch 136 gen_epoch 006
 epoch 136 gen_epoch 007
 epoch 136 gen_epoch 008
 epoch 136 gen_epoch 009
-#136 curgen=0.7897 curtch=0.7523 16014s
+#136 curgen=0.7843 curtch=0.9267 12004s
 epoch 137 dis_epoch 000
 epoch 137 dis_epoch 001
 epoch 137 dis_epoch 002
@@ -5714,7 +5810,7 @@ epoch 137 gen_epoch 006
 epoch 137 gen_epoch 007
 epoch 137 gen_epoch 008
 epoch 137 gen_epoch 009
-#137 curgen=0.7917 curtch=0.7503 16143s
+#137 curgen=0.7863 curtch=0.9267 12098s
 epoch 138 dis_epoch 000
 epoch 138 dis_epoch 001
 epoch 138 dis_epoch 002
@@ -5755,7 +5851,7 @@ epoch 138 gen_epoch 006
 epoch 138 gen_epoch 007
 epoch 138 gen_epoch 008
 epoch 138 gen_epoch 009
-#138 curgen=0.7917 curtch=0.7503 16265s
+#138 curgen=0.7843 curtch=0.9267 12182s
 epoch 139 dis_epoch 000
 epoch 139 dis_epoch 001
 epoch 139 dis_epoch 002
@@ -5796,7 +5892,7 @@ epoch 139 gen_epoch 006
 epoch 139 gen_epoch 007
 epoch 139 gen_epoch 008
 epoch 139 gen_epoch 009
-#139 curgen=0.7877 curtch=0.7543 16388s
+#139 curgen=0.7843 curtch=0.9267 12271s
 epoch 140 dis_epoch 000
 epoch 140 dis_epoch 001
 epoch 140 dis_epoch 002
@@ -5837,7 +5933,7 @@ epoch 140 gen_epoch 006
 epoch 140 gen_epoch 007
 epoch 140 gen_epoch 008
 epoch 140 gen_epoch 009
-#140 curgen=0.7877 curtch=0.7523 16508s
+#140 curgen=0.7863 curtch=0.9267 12349s
 epoch 141 dis_epoch 000
 epoch 141 dis_epoch 001
 epoch 141 dis_epoch 002
@@ -5878,7 +5974,7 @@ epoch 141 gen_epoch 006
 epoch 141 gen_epoch 007
 epoch 141 gen_epoch 008
 epoch 141 gen_epoch 009
-#141 curgen=0.7897 curtch=0.7503 16625s
+#141 curgen=0.7863 curtch=0.9267 12437s
 epoch 142 dis_epoch 000
 epoch 142 dis_epoch 001
 epoch 142 dis_epoch 002
@@ -5919,7 +6015,7 @@ epoch 142 gen_epoch 006
 epoch 142 gen_epoch 007
 epoch 142 gen_epoch 008
 epoch 142 gen_epoch 009
-#142 curgen=0.7897 curtch=0.7523 16727s
+#142 curgen=0.7863 curtch=0.9267 12523s
 epoch 143 dis_epoch 000
 epoch 143 dis_epoch 001
 epoch 143 dis_epoch 002
@@ -5960,7 +6056,7 @@ epoch 143 gen_epoch 006
 epoch 143 gen_epoch 007
 epoch 143 gen_epoch 008
 epoch 143 gen_epoch 009
-#143 curgen=0.7897 curtch=0.7523 16842s
+#143 curgen=0.7863 curtch=0.9267 12607s
 epoch 144 dis_epoch 000
 epoch 144 dis_epoch 001
 epoch 144 dis_epoch 002
@@ -6001,7 +6097,7 @@ epoch 144 gen_epoch 006
 epoch 144 gen_epoch 007
 epoch 144 gen_epoch 008
 epoch 144 gen_epoch 009
-#144 curgen=0.7897 curtch=0.7503 16956s
+#144 curgen=0.7883 curtch=0.9267 12703s
 epoch 145 dis_epoch 000
 epoch 145 dis_epoch 001
 epoch 145 dis_epoch 002
@@ -6042,7 +6138,7 @@ epoch 145 gen_epoch 006
 epoch 145 gen_epoch 007
 epoch 145 gen_epoch 008
 epoch 145 gen_epoch 009
-#145 curgen=0.7897 curtch=0.7523 17061s
+#145 curgen=0.7883 curtch=0.9267 12791s
 epoch 146 dis_epoch 000
 epoch 146 dis_epoch 001
 epoch 146 dis_epoch 002
@@ -6083,7 +6179,7 @@ epoch 146 gen_epoch 006
 epoch 146 gen_epoch 007
 epoch 146 gen_epoch 008
 epoch 146 gen_epoch 009
-#146 curgen=0.7897 curtch=0.7503 17184s
+#146 curgen=0.7863 curtch=0.9267 12870s
 epoch 147 dis_epoch 000
 epoch 147 dis_epoch 001
 epoch 147 dis_epoch 002
@@ -6124,7 +6220,7 @@ epoch 147 gen_epoch 006
 epoch 147 gen_epoch 007
 epoch 147 gen_epoch 008
 epoch 147 gen_epoch 009
-#147 curgen=0.7897 curtch=0.7503 17296s
+#147 curgen=0.7863 curtch=0.9267 12966s
 epoch 148 dis_epoch 000
 epoch 148 dis_epoch 001
 epoch 148 dis_epoch 002
@@ -6165,7 +6261,7 @@ epoch 148 gen_epoch 006
 epoch 148 gen_epoch 007
 epoch 148 gen_epoch 008
 epoch 148 gen_epoch 009
-#148 curgen=0.7897 curtch=0.7503 17408s
+#148 curgen=0.7863 curtch=0.9267 13066s
 epoch 149 dis_epoch 000
 epoch 149 dis_epoch 001
 epoch 149 dis_epoch 002
@@ -6206,7 +6302,7 @@ epoch 149 gen_epoch 006
 epoch 149 gen_epoch 007
 epoch 149 gen_epoch 008
 epoch 149 gen_epoch 009
-#149 curgen=0.7917 curtch=0.7483 17532s
+#149 curgen=0.7863 curtch=0.9267 13164s
 epoch 150 dis_epoch 000
 epoch 150 dis_epoch 001
 epoch 150 dis_epoch 002
@@ -6247,7 +6343,7 @@ epoch 150 gen_epoch 006
 epoch 150 gen_epoch 007
 epoch 150 gen_epoch 008
 epoch 150 gen_epoch 009
-#150 curgen=0.7897 curtch=0.7503 17642s
+#150 curgen=0.7863 curtch=0.9267 13242s
 epoch 151 dis_epoch 000
 epoch 151 dis_epoch 001
 epoch 151 dis_epoch 002
@@ -6288,7 +6384,7 @@ epoch 151 gen_epoch 006
 epoch 151 gen_epoch 007
 epoch 151 gen_epoch 008
 epoch 151 gen_epoch 009
-#151 curgen=0.7897 curtch=0.7503 17784s
+#151 curgen=0.7843 curtch=0.9267 13329s
 epoch 152 dis_epoch 000
 epoch 152 dis_epoch 001
 epoch 152 dis_epoch 002
@@ -6329,7 +6425,7 @@ epoch 152 gen_epoch 006
 epoch 152 gen_epoch 007
 epoch 152 gen_epoch 008
 epoch 152 gen_epoch 009
-#152 curgen=0.7897 curtch=0.7503 17889s
+#152 curgen=0.7843 curtch=0.9267 13415s
 epoch 153 dis_epoch 000
 epoch 153 dis_epoch 001
 epoch 153 dis_epoch 002
@@ -6370,7 +6466,7 @@ epoch 153 gen_epoch 006
 epoch 153 gen_epoch 007
 epoch 153 gen_epoch 008
 epoch 153 gen_epoch 009
-#153 curgen=0.7897 curtch=0.7503 18000s
+#153 curgen=0.7863 curtch=0.9267 13494s
 epoch 154 dis_epoch 000
 epoch 154 dis_epoch 001
 epoch 154 dis_epoch 002
@@ -6411,7 +6507,7 @@ epoch 154 gen_epoch 006
 epoch 154 gen_epoch 007
 epoch 154 gen_epoch 008
 epoch 154 gen_epoch 009
-#154 curgen=0.7917 curtch=0.7463 18109s
+#154 curgen=0.7863 curtch=0.9267 13588s
 epoch 155 dis_epoch 000
 epoch 155 dis_epoch 001
 epoch 155 dis_epoch 002
@@ -6452,7 +6548,7 @@ epoch 155 gen_epoch 006
 epoch 155 gen_epoch 007
 epoch 155 gen_epoch 008
 epoch 155 gen_epoch 009
-#155 curgen=0.7897 curtch=0.7503 18220s
+#155 curgen=0.7863 curtch=0.9267 13676s
 epoch 156 dis_epoch 000
 epoch 156 dis_epoch 001
 epoch 156 dis_epoch 002
@@ -6493,7 +6589,7 @@ epoch 156 gen_epoch 006
 epoch 156 gen_epoch 007
 epoch 156 gen_epoch 008
 epoch 156 gen_epoch 009
-#156 curgen=0.7877 curtch=0.7523 18345s
+#156 curgen=0.7863 curtch=0.9267 13754s
 epoch 157 dis_epoch 000
 epoch 157 dis_epoch 001
 epoch 157 dis_epoch 002
@@ -6534,7 +6630,7 @@ epoch 157 gen_epoch 006
 epoch 157 gen_epoch 007
 epoch 157 gen_epoch 008
 epoch 157 gen_epoch 009
-#157 curgen=0.7877 curtch=0.7503 18464s
+#157 curgen=0.7883 curtch=0.9260 13832s
 epoch 158 dis_epoch 000
 epoch 158 dis_epoch 001
 epoch 158 dis_epoch 002
@@ -6575,7 +6671,7 @@ epoch 158 gen_epoch 006
 epoch 158 gen_epoch 007
 epoch 158 gen_epoch 008
 epoch 158 gen_epoch 009
-#158 curgen=0.7897 curtch=0.7503 18596s
+#158 curgen=0.7843 curtch=0.9267 13918s
 epoch 159 dis_epoch 000
 epoch 159 dis_epoch 001
 epoch 159 dis_epoch 002
@@ -6616,7 +6712,7 @@ epoch 159 gen_epoch 006
 epoch 159 gen_epoch 007
 epoch 159 gen_epoch 008
 epoch 159 gen_epoch 009
-#159 curgen=0.7897 curtch=0.7503 18710s
+#159 curgen=0.7883 curtch=0.9267 14009s
 epoch 160 dis_epoch 000
 epoch 160 dis_epoch 001
 epoch 160 dis_epoch 002
@@ -6657,7 +6753,7 @@ epoch 160 gen_epoch 006
 epoch 160 gen_epoch 007
 epoch 160 gen_epoch 008
 epoch 160 gen_epoch 009
-#160 curgen=0.7897 curtch=0.7503 18812s
+#160 curgen=0.7863 curtch=0.9267 14114s
 epoch 161 dis_epoch 000
 epoch 161 dis_epoch 001
 epoch 161 dis_epoch 002
@@ -6698,7 +6794,7 @@ epoch 161 gen_epoch 006
 epoch 161 gen_epoch 007
 epoch 161 gen_epoch 008
 epoch 161 gen_epoch 009
-#161 curgen=0.7897 curtch=0.7503 18921s
+#161 curgen=0.7863 curtch=0.9267 14213s
 epoch 162 dis_epoch 000
 epoch 162 dis_epoch 001
 epoch 162 dis_epoch 002
@@ -6739,7 +6835,7 @@ epoch 162 gen_epoch 006
 epoch 162 gen_epoch 007
 epoch 162 gen_epoch 008
 epoch 162 gen_epoch 009
-#162 curgen=0.7897 curtch=0.7503 19031s
+#162 curgen=0.7863 curtch=0.9267 14291s
 epoch 163 dis_epoch 000
 epoch 163 dis_epoch 001
 epoch 163 dis_epoch 002
@@ -6780,7 +6876,7 @@ epoch 163 gen_epoch 006
 epoch 163 gen_epoch 007
 epoch 163 gen_epoch 008
 epoch 163 gen_epoch 009
-#163 curgen=0.7897 curtch=0.7503 19146s
+#163 curgen=0.7863 curtch=0.9267 14374s
 epoch 164 dis_epoch 000
 epoch 164 dis_epoch 001
 epoch 164 dis_epoch 002
@@ -6821,7 +6917,7 @@ epoch 164 gen_epoch 006
 epoch 164 gen_epoch 007
 epoch 164 gen_epoch 008
 epoch 164 gen_epoch 009
-#164 curgen=0.7897 curtch=0.7483 19270s
+#164 curgen=0.7863 curtch=0.9267 14461s
 epoch 165 dis_epoch 000
 epoch 165 dis_epoch 001
 epoch 165 dis_epoch 002
@@ -6862,7 +6958,7 @@ epoch 165 gen_epoch 006
 epoch 165 gen_epoch 007
 epoch 165 gen_epoch 008
 epoch 165 gen_epoch 009
-#165 curgen=0.7897 curtch=0.7503 19380s
+#165 curgen=0.7863 curtch=0.9267 14543s
 epoch 166 dis_epoch 000
 epoch 166 dis_epoch 001
 epoch 166 dis_epoch 002
@@ -6903,7 +6999,7 @@ epoch 166 gen_epoch 006
 epoch 166 gen_epoch 007
 epoch 166 gen_epoch 008
 epoch 166 gen_epoch 009
-#166 curgen=0.7897 curtch=0.7483 19493s
+#166 curgen=0.7843 curtch=0.9267 14622s
 epoch 167 dis_epoch 000
 epoch 167 dis_epoch 001
 epoch 167 dis_epoch 002
@@ -6944,7 +7040,7 @@ epoch 167 gen_epoch 006
 epoch 167 gen_epoch 007
 epoch 167 gen_epoch 008
 epoch 167 gen_epoch 009
-#167 curgen=0.7897 curtch=0.7503 19609s
+#167 curgen=0.7863 curtch=0.9267 14700s
 epoch 168 dis_epoch 000
 epoch 168 dis_epoch 001
 epoch 168 dis_epoch 002
@@ -6985,7 +7081,7 @@ epoch 168 gen_epoch 006
 epoch 168 gen_epoch 007
 epoch 168 gen_epoch 008
 epoch 168 gen_epoch 009
-#168 curgen=0.7897 curtch=0.7503 19729s
+#168 curgen=0.7863 curtch=0.9260 14778s
 epoch 169 dis_epoch 000
 epoch 169 dis_epoch 001
 epoch 169 dis_epoch 002
@@ -7026,7 +7122,7 @@ epoch 169 gen_epoch 006
 epoch 169 gen_epoch 007
 epoch 169 gen_epoch 008
 epoch 169 gen_epoch 009
-#169 curgen=0.7897 curtch=0.7483 19860s
+#169 curgen=0.7863 curtch=0.9260 14856s
 epoch 170 dis_epoch 000
 epoch 170 dis_epoch 001
 epoch 170 dis_epoch 002
@@ -7067,7 +7163,7 @@ epoch 170 gen_epoch 006
 epoch 170 gen_epoch 007
 epoch 170 gen_epoch 008
 epoch 170 gen_epoch 009
-#170 curgen=0.7917 curtch=0.7483 19968s
+#170 curgen=0.7863 curtch=0.9267 14935s
 epoch 171 dis_epoch 000
 epoch 171 dis_epoch 001
 epoch 171 dis_epoch 002
@@ -7108,7 +7204,7 @@ epoch 171 gen_epoch 006
 epoch 171 gen_epoch 007
 epoch 171 gen_epoch 008
 epoch 171 gen_epoch 009
-#171 curgen=0.7897 curtch=0.7523 20108s
+#171 curgen=0.7863 curtch=0.9267 15022s
 epoch 172 dis_epoch 000
 epoch 172 dis_epoch 001
 epoch 172 dis_epoch 002
@@ -7149,7 +7245,7 @@ epoch 172 gen_epoch 006
 epoch 172 gen_epoch 007
 epoch 172 gen_epoch 008
 epoch 172 gen_epoch 009
-#172 curgen=0.7877 curtch=0.7503 20219s
+#172 curgen=0.7863 curtch=0.9267 15108s
 epoch 173 dis_epoch 000
 epoch 173 dis_epoch 001
 epoch 173 dis_epoch 002
@@ -7190,7 +7286,7 @@ epoch 173 gen_epoch 006
 epoch 173 gen_epoch 007
 epoch 173 gen_epoch 008
 epoch 173 gen_epoch 009
-#173 curgen=0.7897 curtch=0.7463 20339s
+#173 curgen=0.7883 curtch=0.9267 15190s
 epoch 174 dis_epoch 000
 epoch 174 dis_epoch 001
 epoch 174 dis_epoch 002
@@ -7231,7 +7327,7 @@ epoch 174 gen_epoch 006
 epoch 174 gen_epoch 007
 epoch 174 gen_epoch 008
 epoch 174 gen_epoch 009
-#174 curgen=0.7897 curtch=0.7483 20450s
+#174 curgen=0.7843 curtch=0.9267 15274s
 epoch 175 dis_epoch 000
 epoch 175 dis_epoch 001
 epoch 175 dis_epoch 002
@@ -7272,7 +7368,7 @@ epoch 175 gen_epoch 006
 epoch 175 gen_epoch 007
 epoch 175 gen_epoch 008
 epoch 175 gen_epoch 009
-#175 curgen=0.7897 curtch=0.7503 20580s
+#175 curgen=0.7883 curtch=0.9267 15377s
 epoch 176 dis_epoch 000
 epoch 176 dis_epoch 001
 epoch 176 dis_epoch 002
@@ -7313,7 +7409,7 @@ epoch 176 gen_epoch 006
 epoch 176 gen_epoch 007
 epoch 176 gen_epoch 008
 epoch 176 gen_epoch 009
-#176 curgen=0.7917 curtch=0.7463 20700s
+#176 curgen=0.7883 curtch=0.9267 15455s
 epoch 177 dis_epoch 000
 epoch 177 dis_epoch 001
 epoch 177 dis_epoch 002
@@ -7354,7 +7450,7 @@ epoch 177 gen_epoch 006
 epoch 177 gen_epoch 007
 epoch 177 gen_epoch 008
 epoch 177 gen_epoch 009
-#177 curgen=0.7917 curtch=0.7483 20819s
+#177 curgen=0.7863 curtch=0.9267 15540s
 epoch 178 dis_epoch 000
 epoch 178 dis_epoch 001
 epoch 178 dis_epoch 002
@@ -7395,7 +7491,7 @@ epoch 178 gen_epoch 006
 epoch 178 gen_epoch 007
 epoch 178 gen_epoch 008
 epoch 178 gen_epoch 009
-#178 curgen=0.7897 curtch=0.7483 20934s
+#178 curgen=0.7863 curtch=0.9267 15618s
 epoch 179 dis_epoch 000
 epoch 179 dis_epoch 001
 epoch 179 dis_epoch 002
@@ -7436,7 +7532,7 @@ epoch 179 gen_epoch 006
 epoch 179 gen_epoch 007
 epoch 179 gen_epoch 008
 epoch 179 gen_epoch 009
-#179 curgen=0.7897 curtch=0.7503 21047s
+#179 curgen=0.7883 curtch=0.9267 15705s
 epoch 180 dis_epoch 000
 epoch 180 dis_epoch 001
 epoch 180 dis_epoch 002
@@ -7477,7 +7573,7 @@ epoch 180 gen_epoch 006
 epoch 180 gen_epoch 007
 epoch 180 gen_epoch 008
 epoch 180 gen_epoch 009
-#180 curgen=0.7897 curtch=0.7483 21157s
+#180 curgen=0.7903 curtch=0.9267 15785s
 epoch 181 dis_epoch 000
 epoch 181 dis_epoch 001
 epoch 181 dis_epoch 002
@@ -7518,7 +7614,7 @@ epoch 181 gen_epoch 006
 epoch 181 gen_epoch 007
 epoch 181 gen_epoch 008
 epoch 181 gen_epoch 009
-#181 curgen=0.7897 curtch=0.7503 21272s
+#181 curgen=0.7883 curtch=0.9267 15882s
 epoch 182 dis_epoch 000
 epoch 182 dis_epoch 001
 epoch 182 dis_epoch 002
@@ -7559,7 +7655,7 @@ epoch 182 gen_epoch 006
 epoch 182 gen_epoch 007
 epoch 182 gen_epoch 008
 epoch 182 gen_epoch 009
-#182 curgen=0.7897 curtch=0.7503 21389s
+#182 curgen=0.7883 curtch=0.9267 15970s
 epoch 183 dis_epoch 000
 epoch 183 dis_epoch 001
 epoch 183 dis_epoch 002
@@ -7600,7 +7696,7 @@ epoch 183 gen_epoch 006
 epoch 183 gen_epoch 007
 epoch 183 gen_epoch 008
 epoch 183 gen_epoch 009
-#183 curgen=0.7897 curtch=0.7503 21519s
+#183 curgen=0.7883 curtch=0.9267 16052s
 epoch 184 dis_epoch 000
 epoch 184 dis_epoch 001
 epoch 184 dis_epoch 002
@@ -7641,7 +7737,7 @@ epoch 184 gen_epoch 006
 epoch 184 gen_epoch 007
 epoch 184 gen_epoch 008
 epoch 184 gen_epoch 009
-#184 curgen=0.7897 curtch=0.7503 21639s
+#184 curgen=0.7883 curtch=0.9267 16130s
 epoch 185 dis_epoch 000
 epoch 185 dis_epoch 001
 epoch 185 dis_epoch 002
@@ -7682,7 +7778,7 @@ epoch 185 gen_epoch 006
 epoch 185 gen_epoch 007
 epoch 185 gen_epoch 008
 epoch 185 gen_epoch 009
-#185 curgen=0.7917 curtch=0.7483 21767s
+#185 curgen=0.7883 curtch=0.9267 16226s
 epoch 186 dis_epoch 000
 epoch 186 dis_epoch 001
 epoch 186 dis_epoch 002
@@ -7723,7 +7819,7 @@ epoch 186 gen_epoch 006
 epoch 186 gen_epoch 007
 epoch 186 gen_epoch 008
 epoch 186 gen_epoch 009
-#186 curgen=0.7917 curtch=0.7483 21881s
+#186 curgen=0.7883 curtch=0.9267 16331s
 epoch 187 dis_epoch 000
 epoch 187 dis_epoch 001
 epoch 187 dis_epoch 002
@@ -7764,7 +7860,7 @@ epoch 187 gen_epoch 006
 epoch 187 gen_epoch 007
 epoch 187 gen_epoch 008
 epoch 187 gen_epoch 009
-#187 curgen=0.7897 curtch=0.7503 21983s
+#187 curgen=0.7883 curtch=0.9267 16428s
 epoch 188 dis_epoch 000
 epoch 188 dis_epoch 001
 epoch 188 dis_epoch 002
@@ -7805,7 +7901,7 @@ epoch 188 gen_epoch 006
 epoch 188 gen_epoch 007
 epoch 188 gen_epoch 008
 epoch 188 gen_epoch 009
-#188 curgen=0.7897 curtch=0.7483 22095s
+#188 curgen=0.7883 curtch=0.9267 16515s
 epoch 189 dis_epoch 000
 epoch 189 dis_epoch 001
 epoch 189 dis_epoch 002
@@ -7846,7 +7942,7 @@ epoch 189 gen_epoch 006
 epoch 189 gen_epoch 007
 epoch 189 gen_epoch 008
 epoch 189 gen_epoch 009
-#189 curgen=0.7897 curtch=0.7503 22226s
+#189 curgen=0.7883 curtch=0.9267 16610s
 epoch 190 dis_epoch 000
 epoch 190 dis_epoch 001
 epoch 190 dis_epoch 002
@@ -7887,7 +7983,7 @@ epoch 190 gen_epoch 006
 epoch 190 gen_epoch 007
 epoch 190 gen_epoch 008
 epoch 190 gen_epoch 009
-#190 curgen=0.7897 curtch=0.7523 22337s
+#190 curgen=0.7883 curtch=0.9267 16689s
 epoch 191 dis_epoch 000
 epoch 191 dis_epoch 001
 epoch 191 dis_epoch 002
@@ -7928,7 +8024,7 @@ epoch 191 gen_epoch 006
 epoch 191 gen_epoch 007
 epoch 191 gen_epoch 008
 epoch 191 gen_epoch 009
-#191 curgen=0.7877 curtch=0.7503 22448s
+#191 curgen=0.7883 curtch=0.9267 16787s
 epoch 192 dis_epoch 000
 epoch 192 dis_epoch 001
 epoch 192 dis_epoch 002
@@ -7969,7 +8065,7 @@ epoch 192 gen_epoch 006
 epoch 192 gen_epoch 007
 epoch 192 gen_epoch 008
 epoch 192 gen_epoch 009
-#192 curgen=0.7877 curtch=0.7503 22550s
+#192 curgen=0.7883 curtch=0.9267 16887s
 epoch 193 dis_epoch 000
 epoch 193 dis_epoch 001
 epoch 193 dis_epoch 002
@@ -8010,7 +8106,7 @@ epoch 193 gen_epoch 006
 epoch 193 gen_epoch 007
 epoch 193 gen_epoch 008
 epoch 193 gen_epoch 009
-#193 curgen=0.7897 curtch=0.7503 22666s
+#193 curgen=0.7883 curtch=0.9267 16967s
 epoch 194 dis_epoch 000
 epoch 194 dis_epoch 001
 epoch 194 dis_epoch 002
@@ -8051,7 +8147,7 @@ epoch 194 gen_epoch 006
 epoch 194 gen_epoch 007
 epoch 194 gen_epoch 008
 epoch 194 gen_epoch 009
-#194 curgen=0.7877 curtch=0.7503 22780s
+#194 curgen=0.7843 curtch=0.9267 17047s
 epoch 195 dis_epoch 000
 epoch 195 dis_epoch 001
 epoch 195 dis_epoch 002
@@ -8092,7 +8188,7 @@ epoch 195 gen_epoch 006
 epoch 195 gen_epoch 007
 epoch 195 gen_epoch 008
 epoch 195 gen_epoch 009
-#195 curgen=0.7897 curtch=0.7503 22905s
+#195 curgen=0.7863 curtch=0.9267 17138s
 epoch 196 dis_epoch 000
 epoch 196 dis_epoch 001
 epoch 196 dis_epoch 002
@@ -8133,7 +8229,7 @@ epoch 196 gen_epoch 006
 epoch 196 gen_epoch 007
 epoch 196 gen_epoch 008
 epoch 196 gen_epoch 009
-#196 curgen=0.7897 curtch=0.7503 23027s
+#196 curgen=0.7883 curtch=0.9267 17227s
 epoch 197 dis_epoch 000
 epoch 197 dis_epoch 001
 epoch 197 dis_epoch 002
@@ -8174,7 +8270,7 @@ epoch 197 gen_epoch 006
 epoch 197 gen_epoch 007
 epoch 197 gen_epoch 008
 epoch 197 gen_epoch 009
-#197 curgen=0.7897 curtch=0.7503 23141s
+#197 curgen=0.7903 curtch=0.9267 17311s
 epoch 198 dis_epoch 000
 epoch 198 dis_epoch 001
 epoch 198 dis_epoch 002
@@ -8215,7 +8311,7 @@ epoch 198 gen_epoch 006
 epoch 198 gen_epoch 007
 epoch 198 gen_epoch 008
 epoch 198 gen_epoch 009
-#198 curgen=0.7897 curtch=0.7523 23262s
+#198 curgen=0.7903 curtch=0.9267 17400s
 epoch 199 dis_epoch 000
 epoch 199 dis_epoch 001
 epoch 199 dis_epoch 002
@@ -8256,5 +8352,5 @@ epoch 199 gen_epoch 006
 epoch 199 gen_epoch 007
 epoch 199 gen_epoch 008
 epoch 199 gen_epoch 009
-#199 curgen=0.7877 curtch=0.7503 23367s
-best hit=0.7917
+#199 curgen=0.7863 curtch=0.9267 17504s
+best hit=0.7913

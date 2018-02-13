@@ -10,7 +10,8 @@ python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
   --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
-  --kdgan_figure_data=$figure_data_dir/kdgan_vgg_16.csv \
+  --kdgan_model_ckpt=$checkpoint_dir/kdgan_vgg_16.ckpt \
+  --kdgan_figure_data=$figure_data_dir/kdgan_vgg_16.csv  \
   --feature_size=4096 \
   --kd_lamda=0.9999 \
   --temperature=10.0 \
