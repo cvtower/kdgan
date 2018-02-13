@@ -72,8 +72,8 @@ def main(_):
       tot_time = time.time() - start
       global_step = sess.run(tn_gen.global_step)
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
-      print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-          (tn_batch, acc, bst_acc, tot_time, avg_time))
+      print('#%08d curhit=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+          (tn_batch, hit, bst_hit, tot_time, avg_time))
 
       if hit < bst_hit:
         continue

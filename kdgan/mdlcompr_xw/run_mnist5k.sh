@@ -16,7 +16,7 @@ python train_kd.py \
   --batch_size=$batch_size \
   --num_epoch=200 \
   --kd_model=mimic
-#mnist=10000 mimic=0.9759 iniacc=0.9699 et=61s
+#mnist=5000 mimic=0.9647 iniacc=0.9546 et=55s
 exit
 
 
