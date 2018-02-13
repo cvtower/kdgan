@@ -38,4 +38,5 @@ tf.app.flags.DEFINE_float('kd_soft_pct', 0.3, '')
 tf.app.flags.DEFINE_float('temperature', 3.0, '')
 tf.app.flags.DEFINE_string('kd_model', 'mimic', 'mimic|distn|noisy')
 tf.app.flags.DEFINE_string('kdgan_model', 'ow', 'ow|tw')
+
 flags = tf.app.flags.FLAGS

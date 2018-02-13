@@ -7,6 +7,16 @@ data_dir=$HOME/Projects/data/yfcc100m/yfcc10k
 precomputed_dir=$data_dir/Precomputed
 # scp xiaojie@10.100.228.149:$precomputed_dir/*.npy $precomputed_dir
 
+python pretrain_tch.py \
+  --tch_model_ckpt=$checkpoint_dir/tch_vgg_16.ckpt \
+  --dataset=yfcc10k \
+  --model_name=vgg_16 \
+  --feature_size=4096 \
+  --learning_rate=0.05 \
+  --num_epoch=200
+exit
+
+
 python pretrain_gen.py \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
   --dataset=yfcc10k \
@@ -14,19 +24,6 @@ python pretrain_gen.py \
   --feature_size=4096 \
   --gen_learning_rate=0.05 \
   --num_epoch=200
-# 386s best hit=0.7707
-exit
-
-
-python pretrain_tch.py \
-  --dataset=yfcc10k \
-  --model_name=vgg_16 \
-  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
-  --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
-  --feature_size=4096 \
-  --learning_rate=0.05 \
-  --num_epoch=500
-# 0232s best hit=0.9657
 exit
 
 
