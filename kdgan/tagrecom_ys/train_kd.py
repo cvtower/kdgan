@@ -49,7 +49,7 @@ tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_tn_size(flags.dataset)
+train_data_size = utils.get_train_data_size(flags.dataset)
 num_batch_t = int(flags.num_epoch * train_data_size / config.train_batch_size)
 eval_interval = int(train_data_size / config.train_batch_size)
 print('tn:\t#batch=%d\neval:\t#interval=%d' % (num_batch_t, eval_interval))
