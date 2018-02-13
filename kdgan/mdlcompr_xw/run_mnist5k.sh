@@ -5,6 +5,19 @@ batch_size=50
 
 # scp xiaojie@10.100.228.149:$checkpoint_dir/mdlcompr_mnist* $checkpoint_dir
 
+
+python pretrain_tch.py \
+  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --tch_model_name=lenet \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --num_epoch=200
+#mnist=10000 bstacc=0.9899 et=116s
+exit
+
+
 python pretrain_gen.py \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --dataset_dir=$HOME/Projects/data/mnist \
@@ -13,7 +26,7 @@ python pretrain_gen.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=10000 bstacc=0.9699 et=38s
+#mnist=5000 bstacc=0.9546 et=34s
 exit
 
 
@@ -124,18 +137,6 @@ python pretrain_dis.py \
   --batch_size=$batch_size \
   --num_epoch=200
 #mnist=10000 bstacc=0.9896 et=115s
-exit
-
-
-python pretrain_tch.py \
-  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --tch_model_name=lenet \
-  --optimizer=adam \
-  --train_size=$train_size \
-  --batch_size=$batch_size \
-  --num_epoch=200
-#mnist=10000 bstacc=0.9899 et=116s
 exit
 
 
