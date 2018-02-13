@@ -52,61 +52,35 @@ bt_list = utils.generate_batch(ts_list, flags.batch_size)
 user_bt, image_bt, text_bt, label_bt, file_bt = bt_list
 
 def main(_):
-  best_hit = 0.0
+  bst_hit = 0.0
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     start = time.time()
-    for batch_t in range(tn_num_batch):
+    for tn_batch in range(tn_num_batch):
       image_np_t, label_np_t = sess.run([image_bt, label_bt])
       feed_dict = {tn_gen.image_ph:image_np_t, tn_gen.hard_label_ph:label_np_t}
       _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
-      writer.add_summary(summary, batch_t)
+      writer.add_summary(summary, tn_batch)
 
-      batch = batch_t + 1
-      remain = (batch * flags.batch_size) % tn_size
-      epoch = (batch * flags.batch_size) // tn_size
-      if remain == 0:
-        pass
-        # print('%d\t%d\t%d' % (epoch, batch, remain))
-      elif (tn_size - remain) < flags.batch_size:
-        epoch = epoch + 1
-        # print('%d\t%d\t%d' % (epoch, batch, remain))
-      else:
-        continue
-      # if (batch_t + 1) % eval_interval != 0:
-      #     continue
-
+      if (tn_batch + 1) % eval_interval != 0:
+          continue
       feed_dict = {vd_gen.image_ph:vd_image_np}
-      logit_np_v, = sess.run([vd_gen.logits], feed_dict=feed_dict)
-      # print(logit_np_v.shape, vd_label_np.shape)
-      hit_v = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
+      logit_np_v = sess.run(vd_gen.logits, feed_dict=feed_dict)
+      hit = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
+      bst_hit = max(hit, bst_hit)
 
-      if hit_v < best_hit:
-        continue
       tot_time = time.time() - start
-      best_hit = hit_v
-      print('#%03d curbst=%.4f time=%.0fs' % (epoch, hit_v, tot_time))
-      tn_gen.saver.save(utils.get_session(sess), flags.gen_model_ckpt)
-  print('bsthit=%.4f' % (best_hit))
+      global_step = sess.run(tn_gen.global_step)
+      avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
+      print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+          (tn_batch, acc, bst_acc, tot_time, avg_time))
 
-  id_to_label = utils.load_id_to_label(flags.dataset)
-  # print(id_to_label)
-  fout = open(flags.gen_model_eval, 'w')
-  with tf.train.MonitoredTrainingSession() as sess:
-    sess.run(init_op)
-    tn_gen.saver.restore(sess, flags.gen_model_ckpt)
-    feed_dict = {vd_gen.image_ph:vd_image_np}
-    logit_np_v, = sess.run([vd_gen.logits], feed_dict=feed_dict)
-    # print(logit_np_v.shape, vd_label_np.shape)
-    hit_v = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
-    for imgid, logit_np in zip(vd_imgid_np, logit_np_v):
-      sorted_labels = (-logit_np).argsort()
-      fout.write('%s' % (imgid))
-      for label in sorted_labels:
-        fout.write(' %s %.4f' % (id_to_label[label], logit_np[label]))
-      fout.write('\n')
-  fout.close()
+      if hit < bst_hit:
+        continue
+      tn_gen.saver.save(utils.get_session(sess), flags.gen_model_ckpt)
+  tot_time = time.time() - start
+  print('bsthit=%.4f et=%.0fs' % (bst_hit, tot_time))
 
 if __name__ == '__main__':
   tf.app.run()
