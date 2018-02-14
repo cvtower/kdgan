@@ -18,7 +18,7 @@ python train_kdgan.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=10 \
-  --num_dis_epoch=20 \
+  --num_dis_epoch=200 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10 \
   --kdgan_model=ow \
@@ -76,7 +76,7 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
+  --num_epoch=100 \
   --kd_model=mimic
 #mnist=10000 mimic=0.9759 iniacc=0.9699 et=61s
 exit
@@ -91,7 +91,7 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
+  --num_epoch=100 \
   --kd_model=distn \
   --kd_soft_pct=0.7 \
   --temperature=3.0
@@ -108,7 +108,7 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
+  --num_epoch=100 \
   --kd_model=noisy \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
