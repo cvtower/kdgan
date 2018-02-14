@@ -105,3 +105,6 @@ http://www.pythonexample.com/user/vamsiramakrishnan
 
 # gan trick
 https://github.com/gitlimlab/SSGAN-Tensorflow
+
+
+https://github.com/xiaojiew1/kdgan/tree/bb88661286b092f3576bf2a7b58344ea503452f8/kdgan/mdlcompr/trials

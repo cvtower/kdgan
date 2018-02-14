@@ -1,9 +1,10 @@
 from kdgan import config
 from kdgan import metric
 from kdgan import utils
+from flags import flags
+from data_utils import AffineGenerator
 from dis_model import DIS
 from gen_model import GEN
-from flags import flags
 import data_utils
 
 from os import path
@@ -19,11 +20,13 @@ dis_mnist = data_utils.read_data_sets(flags.dataset_dir,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
+dis_datagen = AffineGenerator(dis_mnist)
 gen_mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
+gen_datagen = AffineGenerator(gen_mnist)
 
 tn_size = int((dis_mnist.train.num_examples + gen_mnist.train.num_examples) / 2)
 vd_size = int((dis_mnist.test.num_examples + gen_mnist.test.num_examples) / 2)
@@ -83,9 +86,10 @@ def main(_):
       for dis_epoch in range(flags.num_dis_epoch):
         # print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
         num_batch_d = math.ceil(tn_size / flags.batch_size)
-        for _ in range(num_batch_d):
+        for image_np_d, label_dat_d in dis_datagen.generate(batch_size=flags.batch_size):
+        # for _ in range(num_batch_d):
+        #   image_np_d, label_dat_d = dis_mnist.train.next_batch(flags.batch_size)
           batch_d += 1
-          image_np_d, label_dat_d = dis_mnist.train.next_batch(flags.batch_size)
           feed_dict = {tn_gen.image_ph:image_np_d}
           label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
           # print('label_dat_d={} label_gen_d={}'.format(label_dat_d.shape, label_gen_d.shape))
@@ -101,9 +105,10 @@ def main(_):
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
         num_batch_g = math.ceil(tn_size / flags.batch_size)
-        for _ in range(num_batch_g):
+        for image_np_g, label_dat_g in gen_datagen.generate(batch_size=flags.batch_size):
+        # for _ in range(num_batch_g):
+        #   image_np_g, label_dat_g = gen_mnist.train.next_batch(flags.batch_size)
           batch_g += 1
-          image_np_g, label_dat_g = gen_mnist.train.next_batch(flags.batch_size)
           feed_dict = {tn_gen.image_ph:image_np_g}
           label_gen_g, = sess.run([tn_gen.labels], feed_dict=feed_dict)
           sample_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
