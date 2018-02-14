@@ -17,6 +17,10 @@ def create_if_nonexist(outdir):
   if not path.exists(outdir):
     os.makedirs(outdir)
 
+def create_pardir(outfile):
+  outdir = path.dirname(outfile)
+  create_if_nonexist(outdir)
+
 def skip_if_exist(infile):
   skip = False
   if path.isfile(infile):

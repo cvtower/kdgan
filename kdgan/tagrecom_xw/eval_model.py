@@ -29,6 +29,7 @@ if flags.gen_checkpoint_dir != None:
   gen_model_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
 
 def main(_):
+  utils.create_pardir(flags.gen_model_run)
   id_to_label = utils.load_id_to_label(flags.dataset)
   fout = open(flags.gen_model_run, 'w')
   with tf.train.MonitoredTrainingSession() as sess:
