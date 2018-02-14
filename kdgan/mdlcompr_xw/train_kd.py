@@ -1,9 +1,9 @@
 from kdgan import config
 from kdgan import metric
 from kdgan import utils
+from flags import flags
 from gen_model import GEN
 from tch_model import TCH
-from flags import flags
 import data_utils
 
 from os import path
