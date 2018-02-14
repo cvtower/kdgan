@@ -273,6 +273,38 @@ def get_opt(flags, learning_rate):
     raise ValueError('bad optimizer %s', flags.optimizer)
   return optimizer
 
+def gan_dis_sample_dev(flags, label_dat, label_gen):
+  # print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
+  # print('{0} {1:.2f}'.format(label_gen.shape, label_gen.sum()))
+  sample_np, label_np = [], []
+  for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
+    num_sample = np.count_nonzero(label_d)
+    # print(batch, label_d.shape, label_g.shape, num_sample)
+    # print(label_d, np.argmax(label_d))
+    pos_labels = [np.argmax(label_d)]
+    # print(label, label_d)
+    num_positive = num_sample * flags.num_positive
+    sample_d = np.random.choice(flags.num_label, num_positive, p=label_d)
+    for sample in sample_d:
+      # print(batch, sample, 1.0)
+      sample_np.append((batch, sample))
+      label_np.append(1.0)
+    num_negative = num_sample * flags.num_negative
+    sample_g = np.random.choice(flags.num_label, num_negative * 2, p=label_g)
+    for sample in sample_g:
+      if sample in pos_labels:
+        # print(sample, pos_labels, label_d)
+        continue
+      if len(sample_np) >= (num_positive + num_negative):
+        break
+      sample_np.append((batch, sample))
+      label_np.append(0.0)
+  sample_np = np.asarray(sample_np)
+  label_np = np.asarray(label_np)
+  # for sample, label in zip(sample_np, label_np):
+  #   print(sample, label)
+  return sample_np, label_np
+
 def gan_dis_sample(flags, label_dat, label_gen):
   # print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
   # print('{0} {1:.2f}'.format(label_gen.shape, label_gen.sum()))
@@ -280,6 +312,7 @@ def gan_dis_sample(flags, label_dat, label_gen):
   for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
     num_sample = np.count_nonzero(label_d)
     # print(batch, label_d.shape, label_g.shape, num_sample)
+    # print(label_d, np.argmax(label_d))
     num_positive = num_sample * flags.num_positive
     sample_d = np.random.choice(flags.num_label, num_positive, p=label_d)
     for sample in sample_d:

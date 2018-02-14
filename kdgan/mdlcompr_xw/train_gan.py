@@ -89,7 +89,7 @@ def main(_):
           feed_dict = {tn_gen.image_ph:image_np_d}
           label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
           # print('label_dat_d={} label_gen_d={}'.format(label_dat_d.shape, label_gen_d.shape))
-          sample_np_d, label_np_d = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
+          sample_np_d, label_np_d = utils.gan_dis_sample_dev(flags, label_dat_d, label_gen_d)
           feed_dict = {
             tn_dis.image_ph:image_np_d,
             tn_dis.sample_ph:sample_np_d,

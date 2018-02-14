@@ -3,7 +3,33 @@ checkpoint_dir=$kdgan_dir/checkpoints
 train_size=50
 batch_size=5
 
-# scp xiaojie@10.100.228.149:$checkpoint_dir/mdlcompr_mnist* $checkpoint_dir
+# scp xiaojie@10.100.228.149:${checkpoint_dir}/mdlcompr_mnist${train_size}* ${checkpoint_dir}
+
+# mac
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.data-00000-of-00001 ${checkpoint_dir}
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.index ${checkpoint_dir}
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.meta ${checkpoint_dir}
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.data-00000-of-00001 ${checkpoint_dir}
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.index ${checkpoint_dir}
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.meta ${checkpoint_dir}
+
+
+python train_gan.py \
+  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --dis_model_name=lenet \
+  --gen_model_name=mlp \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --num_epoch=200 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=2 \
+  --num_negative=20 \
+  --num_positive=5
+exit
+
 
 python pretrain_gen.py \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
@@ -139,22 +165,6 @@ python train_kdgan.py \
 #mnist=10000 kdgan_ow=0.9786 et=10419s
 exit
 
-
-python train_gan.py \
-  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
-  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --dis_model_name=lenet \
-  --gen_model_name=mlp \
-  --optimizer=adam \
-  --train_size=$train_size \
-  --batch_size=$batch_size \
-  --num_epoch=200 \
-  --num_dis_epoch=20 \
-  --num_gen_epoch=2 \
-  --num_negative=20 \
-  --num_positive=5
-exit
 
 
 
