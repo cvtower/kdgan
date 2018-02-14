@@ -1,10 +1,11 @@
 from kdgan import config
 from kdgan import metric
 from kdgan import utils
+from flags import flags
+from data_utils import AffineGenerator
 from dis_model import DIS
 from gen_model import GEN
 from tch_model import TCH
-from flags import flags
 import data_utils
 
 from os import path
@@ -20,16 +21,19 @@ dis_mnist = data_utils.read_data_sets(flags.dataset_dir,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
+dis_datagen = AffineGenerator(dis_mnist)
 gen_mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
+gen_datagen = AffineGenerator(gen_mnist)
 tch_mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
+tch_datagen = AffineGenerator(tch_mnist)
 
 tn_size, vd_size = gen_mnist.train.num_examples, gen_mnist.test.num_examples
 print('tn size=%d vd size=%d' % (tn_size, vd_size))
@@ -90,10 +94,11 @@ def main(_):
     for epoch in range(flags.num_epoch):
       for dis_epoch in range(flags.num_dis_epoch):
         # print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
-        num_batch_d = math.ceil(tn_size / flags.batch_size)
-        for _ in range(num_batch_d):
+        # num_batch_d = math.ceil(tn_size / flags.batch_size)
+        # for _ in range(num_batch_d):
+        #   image_d, label_dat_d = dis_mnist.train.next_batch(flags.batch_size)
+        for image_d, label_dat_d in dis_datagen.generate(batch_size=flags.batch_size):
           batch_d += 1
-          image_d, label_dat_d = dis_mnist.train.next_batch(flags.batch_size)
 
           # feed_dict = {tn_gen.image_ph:image_d}
           # label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
@@ -116,10 +121,11 @@ def main(_):
           sess.run(tn_dis.gan_update, feed_dict=feed_dict)
 
       for tch_epoch in range(flags.num_tch_epoch):
-        num_batch_t = math.ceil(tn_size / flags.batch_size)
-        for _ in range(num_batch_t):
+        # num_batch_t = math.ceil(tn_size / flags.batch_size)
+        # for _ in range(num_batch_t):
+        #   image_t, label_dat_t = tch_mnist.train.next_batch(flags.batch_size)
+        for image_t, label_dat_t in tch_datagen.generate(batch_size=flags.batch_size):
           batch_t += 1
-          image_t, label_dat_t = tch_mnist.train.next_batch(flags.batch_size)
 
           feed_dict = {tn_tch.image_ph:image_t}
           label_tch_t = sess.run(tn_tch.labels, feed_dict=feed_dict)
@@ -162,10 +168,11 @@ def main(_):
 
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
-        num_batch_g = math.ceil(tn_size / flags.batch_size)
-        for _ in range(num_batch_g):
+        # num_batch_g = math.ceil(tn_size / flags.batch_size)
+        # for _ in range(num_batch_g):
+        #   image_g, label_dat_g = gen_mnist.train.next_batch(flags.batch_size)
+        for image_g, label_dat_g in gen_datagen.generate(batch_size=flags.batch_size):
           batch_g += 1
-          image_g, label_dat_g = gen_mnist.train.next_batch(flags.batch_size)
 
           feed_dict = {tn_gen.image_ph:image_g}
           label_gen_g = sess.run(tn_gen.labels, feed_dict=feed_dict)
