@@ -89,7 +89,7 @@ def process(options, collection, annotationName, runfile):
     avg_perf = res.mean(axis=0)
     print '{}\t{}'.format(
       os.path.split(datafiles[run_idx])[-1],
-      ' & '.join(['%.4f' % x for x in avg_perf])
+      ' & '.join(['%.2f' % 100 * x for x in avg_perf])
     )
 
 def main(argv=None):
