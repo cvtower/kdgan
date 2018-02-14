@@ -273,6 +273,7 @@ def get_opt(flags, learning_rate):
     raise ValueError('bad optimizer %s', flags.optimizer)
   return optimizer
 
+import random
 def gan_dis_sample_dev(flags, label_dat, label_gen):
   # print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
   # print('{0} {1:.2f}'.format(label_gen.shape, label_gen.sum()))
@@ -288,7 +289,7 @@ def gan_dis_sample_dev(flags, label_dat, label_gen):
     for sample in sample_d:
       # print(batch, sample, 1.0)
       sample_np.append((batch, sample))
-      label_np.append(1.0)
+      label_np.append(random.uniform(0.7, 1.0))
     num_negative = num_sample * flags.num_negative
     sample_g = np.random.choice(flags.num_label, num_negative * 2, p=label_g)
     for sample in sample_g:
@@ -298,7 +299,7 @@ def gan_dis_sample_dev(flags, label_dat, label_gen):
       if len(sample_np) >= (num_positive + num_negative):
         break
       sample_np.append((batch, sample))
-      label_np.append(0.0)
+      label_np.append(random.uniform(0.0, 0.3))
   sample_np = np.asarray(sample_np)
   label_np = np.asarray(label_np)
   # for sample, label in zip(sample_np, label_np):

@@ -140,7 +140,7 @@ class GEN():
   def get_gan_losses(self, flags):
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
     # gan_loss = -tf.reduce_mean(self.reward_ph * sample_logits)
-    gan_losses = [-tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
+    gan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
     gan_losses.extend(self.get_regularization_losses())
     return gan_losses
 
