@@ -17,8 +17,8 @@ python train_kdgan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=10 \
-  --num_dis_epoch=200 \
+  --num_epoch=200 \
+  --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10 \
   --kdgan_model=ow \
