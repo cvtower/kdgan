@@ -13,6 +13,13 @@ batch_size=5
 # scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.index ${checkpoint_dir}
 # scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.meta ${checkpoint_dir}
 
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.data-00000-of-00001 xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.index xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.meta xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.data-00000-of-00001 xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.index xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.meta xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+
 
 python train_gan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
