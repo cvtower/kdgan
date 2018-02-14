@@ -13,6 +13,7 @@ import tensorflow as tf
 from os import path
 from tensorflow.contrib import slim
 
+tf.app.flags.DEFINE_string('gen_checkpoint_dir', None, '')
 tf.app.flags.DEFINE_string('gen_model_run', None, '')
 flags = tf.app.flags.FLAGS
 
@@ -23,11 +24,15 @@ vd_gen = GEN(flags, is_training=False)
 
 image_np, label_np, imgid_np = utils.get_valid_data(flags)
 
+gen_model_ckpt = flags.gen_model_ckpt
+if flags.gen_checkpoint_dir != None:
+  gen_model_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
+
 def main(_):
   id_to_label = utils.load_id_to_label(flags.dataset)
   fout = open(flags.gen_model_run, 'w')
   with tf.train.MonitoredTrainingSession() as sess:
-    tn_gen.saver.restore(sess, flags.gen_model_ckpt)
+    tn_gen.saver.restore(sess, gen_model_ckpt)
     feed_dict = {vd_gen.image_ph:image_np}
     logit_np = sess.run(vd_gen.logits, feed_dict=feed_dict)
     for imgid, logit_np in zip(imgid_np, logit_np):
