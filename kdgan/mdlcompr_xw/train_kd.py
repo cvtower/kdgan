@@ -64,7 +64,7 @@ def main(_):
     # for tn_batch in range(tn_num_batch):
     #   tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
     tn_batch = -1
-    for tn_epoch in range(flags.num_epoch):
+    for epoch in range(flags.num_epoch):
       for tn_image_np, tn_label_np in datagen.generate(batch_size=flags.batch_size):
         tn_batch += 1
         feed_dict = {vd_tch.image_ph:tn_image_np}
@@ -86,7 +86,9 @@ def main(_):
         }
         acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
 
-        bst_acc = max(acc, bst_acc)
+        if acc > bst_acc:
+          bst_acc = max(acc, bst_acc)
+          bst_epk = epoch
         tot_time = time.time() - start
         global_step = sess.run(tn_gen.global_step)
         avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
@@ -96,12 +98,11 @@ def main(_):
         if acc <= bst_acc:
           continue
         # save gen parameters if necessary
-        bst_epk = tn_epoch
   tot_time = time.time() - start
   bst_acc *= 100
   bst_epk += 1
-  print('#mnist=%d %s=%.2f (%d) iniacc=%.4f et=%.0fs' % 
-      (tn_size, flags.kd_model, bst_acc, bst_epk, ini_gen, tot_time))
+  print('#mnist=%d %s@%d=%.2f iniacc=%.4f et=%.0fs' % 
+      (tn_size, flags.kd_model, bst_epk, bst_acc, ini_gen, tot_time))
 
 if __name__ == '__main__':
     tf.app.run()

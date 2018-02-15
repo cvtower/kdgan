@@ -68,7 +68,7 @@ vd_tch = TCH(flags, tch_mnist.test, is_training=False)
 #   print('%-50s (%d params)' % (variable.name, num_params))
 
 def main(_):
-  bst_gen_acc, bst_tch_acc = 0.0, 0.0
+  bst_gen_acc, bst_tch_acc, bst_eph = 0.0, 0.0, 0
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -213,9 +213,12 @@ def main(_):
           if gen_acc <= bst_gen_acc:
             continue
           # save gen parameters if necessary
+          bst_eph = epoch
   tot_time = time.time() - start
-  print('#mnist=%d kdgan_%s=%.2f et=%.0fs' % 
-      (tn_size, flags.kdgan_model, bst_gen_acc * 100, tot_time))
+  bst_gen_acc *= 100
+  bst_eph += 1
+  print('#mnist=%d kdgan_%s=%.2f (%d) et=%.0fs' % 
+      (tn_size, flags.kdgan_model, bst_gen_acc, bst_eph, tot_time))
 
 if __name__ == '__main__':
     tf.app.run()
