@@ -97,7 +97,7 @@ def main(_):
           continue
       # save gen parameters if necessary
   tot_time = time.time() - start
-  print('#mnist=%d %s=%.4f iniacc=%.4f et=%.0fs' % 
+  print('#mnist=%d %s=%.2f iniacc=%.4f et=%.0fs' % 
       (tn_size, flags.kd_model, bst_acc, ini_gen, tot_time))
 
 if __name__ == '__main__':
