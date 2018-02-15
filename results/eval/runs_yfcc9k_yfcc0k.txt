@@ -1,5 +1,5 @@
-/home/xiaojie/Projects/kdgan_xw/results/pkls/yfcc9k_yfcc0k_kdgan.pkl
-/home/xiaojie/Projects/kdgan_xw/results/pkls/yfcc9k_yfcc0k_knnvote.pkl
-/home/xiaojie/Projects/kdgan_xw/results/pkls/yfcc9k_yfcc0k_relexmp.pkl
-/home/xiaojie/Projects/kdgan_xw/results/pkls/yfcc9k_yfcc0k_tagfeat.pkl
-/home/xiaojie/Projects/kdgan_xw/results/pkls/yfcc9k_yfcc0k_tagprop.pkl
+/home/xiaojie/Projects/kdgan_xw/results/pkls/yfcc9k_yfcc0k_0_knnvote.pkl
+/home/xiaojie/Projects/kdgan_xw/results/pkls/yfcc9k_yfcc0k_1_tagprop.pkl
+/home/xiaojie/Projects/kdgan_xw/results/pkls/yfcc9k_yfcc0k_2_tagfeat.pkl
+/home/xiaojie/Projects/kdgan_xw/results/pkls/yfcc9k_yfcc0k_3_relexmp.pkl
+/home/xiaojie/Projects/kdgan_xw/results/pkls/yfcc9k_yfcc0k_4_kdgan.pkl

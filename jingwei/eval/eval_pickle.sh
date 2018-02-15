@@ -26,7 +26,7 @@ conceptfile=$rootpath/$testCollection/Annotations/$testAnnotationName
 for runfile in ${runs_dir}/*.run
 do
   pklfile=${runfile//run/pkl}
-  python $codepath/postprocess/pickle_tagvotes.py $conceptfile $runfile $pklfile
+  # python $codepath/postprocess/pickle_tagvotes.py $conceptfile $runfile $pklfile
 done
 
 

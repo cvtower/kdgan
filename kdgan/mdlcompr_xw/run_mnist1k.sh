@@ -105,7 +105,8 @@ python train_kdgan.py \
   --kd_model=mimic \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=1000 kdgan_ow=0.8985 et=1459s
+#mnist=1000 kdgan_ow@52=96.31 et=1095s
+
 exit
 
 ################################################################
