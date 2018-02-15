@@ -51,7 +51,7 @@ for variable in tf.trainable_variables():
 print('%-50s (%d params)' % (' '.join(['kd', flags.kd_model]), tot_params))
 
 def main(_):
-  bst_acc = 0.0
+  bst_acc, bst_epk = 0.0, 0
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -64,7 +64,7 @@ def main(_):
     # for tn_batch in range(tn_num_batch):
     #   tn_image_np, tn_label_np = mnist.train.next_batch(flags.batch_size)
     tn_batch = -1
-    for _ in range(flags.num_epoch):
+    for tn_epoch in range(flags.num_epoch):
       for tn_image_np, tn_label_np in datagen.generate(batch_size=flags.batch_size):
         tn_batch += 1
         feed_dict = {vd_tch.image_ph:tn_image_np}
@@ -95,10 +95,13 @@ def main(_):
 
         if acc <= bst_acc:
           continue
-      # save gen parameters if necessary
+        # save gen parameters if necessary
+        bst_epk = tn_epoch
   tot_time = time.time() - start
-  print('#mnist=%d %s=%.2f iniacc=%.4f et=%.0fs' % 
-      (tn_size, flags.kd_model, bst_acc, ini_gen, tot_time))
+  bst_acc *= 100
+  bst_epk += 1
+  print('#mnist=%d %s=%.2f (%d) iniacc=%.4f et=%.0fs' % 
+      (tn_size, flags.kd_model, bst_acc, bst_epk, ini_gen, tot_time))
 
 if __name__ == '__main__':
     tf.app.run()
