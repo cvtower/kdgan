@@ -203,7 +203,9 @@ def main(_):
           }
           gen_acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
 
-          bst_gen_acc = max(gen_acc, bst_gen_acc)
+          if gen_acc > bst_gen_acc:
+            bst_gen_acc = max(gen_acc, bst_gen_acc)
+            bst_eph = epoch
           tot_time = time.time() - start
           global_step = sess.run(tn_gen.global_step)
           avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
@@ -213,12 +215,11 @@ def main(_):
           if gen_acc <= bst_gen_acc:
             continue
           # save gen parameters if necessary
-          bst_eph = epoch
   tot_time = time.time() - start
   bst_gen_acc *= 100
   bst_eph += 1
-  print('#mnist=%d kdgan_%s=%.2f (%d) et=%.0fs' % 
-      (tn_size, flags.kdgan_model, bst_gen_acc, bst_eph, tot_time))
+  print('#mnist=%d kdgan_%s@%d=%.2f et=%.0fs' % 
+      (tn_size, flags.kdgan_model, bst_eph, bst_gen_acc, tot_time))
 
 if __name__ == '__main__':
     tf.app.run()

@@ -49,7 +49,7 @@ python train_kd.py \
   --batch_size=$batch_size \
   --num_epoch=100 \
   --kd_model=mimic
-#mnist=10000 mimic=0.9759 iniacc=0.9699 et=61s
+#mnist=10000 mimic@86=98.65 iniacc=0.9713 et=118s
 exit
 
 python train_kd.py \
@@ -65,7 +65,7 @@ python train_kd.py \
   --kd_model=distn \
   --kd_soft_pct=0.7 \
   --temperature=3.0
-#mnist=10000 distn=0.9760 iniacc=0.9699 et=74s
+#mnist=10000 distn@91=98.79 iniacc=0.9713 et=125s
 exit
 
 python train_kd.py \
@@ -81,7 +81,7 @@ python train_kd.py \
   --kd_model=noisy \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=10000 noisy=0.9757 iniacc=0.9699 et=60s
+#mnist=10000 noisy@79=98.58 iniacc=0.9713 et=121s
 exit
 
 python train_kdgan.py \
@@ -105,12 +105,12 @@ python train_kdgan.py \
   --kd_model=mimic \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=10000 kdgan_ow=0.9786 et=10419s
+#mnist=10000 kdgan_ow=0.9913 tot=14761s
 exit
 
 ################################################################
 #
-# baseline
+# backup
 #
 ################################################################
 
