@@ -5,32 +5,6 @@ batch_size=10
 
 # scp xiaojie@10.100.228.149:$checkpoint_dir/mdlcompr_mnist* $checkpoint_dir
 
-
-python train_kdgan.py \
-  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
-  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
-  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --dis_model_name=lenet \
-  --gen_model_name=mlp \
-  --tch_model_name=lenet \
-  --optimizer=adam \
-  --train_size=$train_size \
-  --batch_size=$batch_size \
-  --num_epoch=20 \
-  --num_dis_epoch=20 \
-  --num_gen_epoch=10 \
-  --num_tch_epoch=10 \
-  --kdgan_model=ow \
-  --num_negative=20 \
-  --num_positive=5 \
-  --kd_model=mimic \
-  --noisy_ratio=0.1 \
-  --noisy_sigma=0.1
-#mnist=1000 kdgan_ow=0.8985 et=1459s
-exit
-
-
 python pretrain_gen.py \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --dataset_dir=$HOME/Projects/data/mnist \
@@ -41,7 +15,6 @@ python pretrain_gen.py \
   --num_epoch=200
 #mnist=100 bstacc=0.5494 et=5s
 exit
-
 
 python pretrain_tch.py \
   --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
@@ -54,7 +27,6 @@ python pretrain_tch.py \
 #mnist=100 bstacc=0.6602 et=21s
 exit
 
-
 python pretrain_dis.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
   --dataset_dir=$HOME/Projects/data/mnist \
@@ -66,7 +38,6 @@ python pretrain_dis.py \
 #mnist=100 bstacc=0.6739 et=21s
 exit
 
-
 python train_kd.py \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
@@ -76,11 +47,10 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
+  --num_epoch=400 \
   --kd_model=mimic
-#mnist=100 mimic=0.5910 iniacc=0.5494 et=6s
+#mnist=100 mimic@339=65.35 iniacc=54.94 et=18s
 exit
-
 
 python train_kd.py \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
@@ -95,9 +65,8 @@ python train_kd.py \
   --kd_model=distn \
   --kd_soft_pct=0.7 \
   --temperature=3.0
-#mnist=100 distn=0.5845 iniacc=0.5494 et=6s
+#mnist=100 distn@130=68.34 iniacc=54.94 et=9s
 exit
-
 
 python train_kd.py \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
@@ -108,13 +77,42 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
+  --num_epoch=400 \
   --kd_model=noisy \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=100 noisy=0.5948 iniacc=0.5494 et=6s
+#mnist=100 noisy@375=65.53 iniacc=54.94 et=16s
 exit
 
+python train_kdgan.py \
+  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --dis_model_name=lenet \
+  --gen_model_name=mlp \
+  --tch_model_name=lenet \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --num_epoch=100 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=10 \
+  --num_tch_epoch=10 \
+  --kdgan_model=ow \
+  --num_negative=20 \
+  --num_positive=5 \
+  --kd_model=mimic \
+  --noisy_ratio=0.1 \
+  --noisy_sigma=0.1
+#mnist=100 kdgan_ow@96=77.26 et=316s
+exit
+
+################################################################
+#
+# backup
+#
+################################################################
 
 python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
@@ -139,7 +137,6 @@ python train_kdgan.py \
   --temperature=3.0
 #mnist=10000 kdgan_ow=0.9786 et=10419s
 exit
-
 
 python train_gan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \

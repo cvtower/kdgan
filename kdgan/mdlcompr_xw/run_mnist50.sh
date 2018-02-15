@@ -62,9 +62,9 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=100 \
+  --num_epoch=400 \
   --kd_model=mimic
-#mnist=50 mimic=0.5690 iniacc=0.5209 et=6s
+#mnist=50 mimic@325=62.74 iniacc=52.09 et=15s
 exit
 
 python train_kd.py \
@@ -80,7 +80,7 @@ python train_kd.py \
   --kd_model=distn \
   --kd_soft_pct=0.7 \
   --temperature=3.0
-#mnist=50 distn=0.5645 iniacc=0.5209 et=6s
+#mnist=50 distn@190=63.92 iniacc=52.09 et=7s
 exit
 
 python train_kd.py \
@@ -92,11 +92,11 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
+  --num_epoch=400 \
   --kd_model=noisy \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=50 noisy=0.5718 iniacc=0.5209 et=6s
+#mnist=50 noisy@232=62.18 iniacc=52.09 et=15s
 exit
 
 python train_kdgan.py \
@@ -120,10 +120,14 @@ python train_kdgan.py \
   --kd_model=mimic \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=1000 kdgan_ow=0.8985 et=1459s
+#mnist=50 kdgan_ow@87=72.32 et=268s
 exit
 
-
+################################################################
+#
+# backup
+#
+################################################################
 
 python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
@@ -148,7 +152,6 @@ python train_kdgan.py \
   --temperature=3.0
 #mnist=10000 kdgan_ow=0.9786 et=10419s
 exit
-
 
 python train_gan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
