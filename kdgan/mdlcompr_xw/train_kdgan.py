@@ -214,8 +214,8 @@ def main(_):
             continue
           # save gen parameters if necessary
   tot_time = time.time() - start
-  print('#mnist=%d kdgan_%s=%.4f et=%.0fs' % 
-      (tn_size, flags.kdgan_model, bst_gen_acc, tot_time))
+  print('#mnist=%d kdgan_%s=%.2f et=%.0fs' % 
+      (tn_size, flags.kdgan_model, bst_gen_acc * 100, tot_time))
 
 if __name__ == '__main__':
     tf.app.run()
