@@ -17,9 +17,27 @@ import hashlib
 import numpy as np
 import tensorflow as tf
 
+class AffineGenerator():
+  def __init__(self, mnist):
+    from keras.preprocessing.image import ImageDataGenerator
+    
+    self.mnist = mnist
+    self.datagen = ImageDataGenerator(rotation_range=15, width_shift_range=0.1, height_shift_range=0.1, zoom_range=0.1)
+    self.train_x = np.reshape(self.mnist.train.images, [-1, 28, 28, 1])
+    self.train_y = self.mnist.train.labels
+
+  def generate(self, batch_size=64):
+    cnt = 0
+    batch_n = self.train_x.shape[0] // batch_size
+    for x, y in self.datagen.flow(self.train_x, self.train_y, batch_size=batch_size):
+      ret_x = x.reshape(-1, 784)
+      yield ret_x, y
+
+      cnt += 1
+      if cnt == batch_n:
+        break
 
 DEFAULT_SOURCE_URL = 'https://storage.googleapis.com/cvdf-datasets/mnist/'
-
 
 def _read32(bytestream):
   dt = np.dtype(np.uint32).newbyteorder('>')

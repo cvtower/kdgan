@@ -1,7 +1,7 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
-train_size=10000
-batch_size=100
+train_size=500
+batch_size=10
 
 # scp xiaojie@10.100.228.149:$checkpoint_dir/mdlcompr_mnist* $checkpoint_dir
 
@@ -13,7 +13,7 @@ python pretrain_gen.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=10000 bstacc=0.9699 et=38s
+#mnist=500 bstacc=0.7666 et=17s
 exit
 
 python pretrain_tch.py \
@@ -24,7 +24,7 @@ python pretrain_tch.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=10000 bstacc=0.9899 et=116s
+#mnist=500 bstacc=0.8932 et=41s
 exit
 
 python pretrain_dis.py \
@@ -35,7 +35,7 @@ python pretrain_dis.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=10000 bstacc=0.9896 et=115s
+#mnist=500 bstacc=0.8799 et=41s
 exit
 
 python train_kd.py \
@@ -47,9 +47,9 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=100 \
+  --num_epoch=200 \
   --kd_model=mimic
-#mnist=10000 mimic@86=98.65 iniacc=0.9713 et=118s
+#mnist=500 mimic@186=88.66 iniacc=76.66 et=39s
 exit
 
 python train_kd.py \
@@ -61,11 +61,11 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=100 \
+  --num_epoch=200 \
   --kd_model=distn \
   --kd_soft_pct=0.7 \
   --temperature=3.0
-#mnist=10000 distn@91=98.79 iniacc=0.9713 et=125s
+#mnist=500 distn@193=89.59 iniacc=76.66 et=36s
 exit
 
 python train_kd.py \
@@ -77,11 +77,11 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=100 \
+  --num_epoch=200 \
   --kd_model=noisy \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=10000 noisy@79=98.58 iniacc=0.9713 et=121s
+#mnist=500 noisy@195=88.42 iniacc=76.66 et=33s
 exit
 
 python train_kdgan.py \
@@ -95,7 +95,7 @@ python train_kdgan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
+  --num_epoch=100 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10 \
@@ -105,7 +105,7 @@ python train_kdgan.py \
   --kd_model=mimic \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=10000 kdgan_ow=0.9913 tot=14761s
+#mnist=1000 kdgan_ow=0.9356 et=1459s
 exit
 
 ################################################################
@@ -133,8 +133,9 @@ python train_kdgan.py \
   --num_negative=20 \
   --num_positive=5 \
   --kd_model=mimic \
-  --kd_soft_pct=0.0 \
+  --kd_soft_pct=0.3 \
   --temperature=3.0
+#mnist=10000 kdgan_ow=0.9786 et=10419s
 exit
 
 python train_gan.py \

@@ -17,6 +17,10 @@ def create_if_nonexist(outdir):
   if not path.exists(outdir):
     os.makedirs(outdir)
 
+def create_pardir(outfile):
+  outdir = path.dirname(outfile)
+  create_if_nonexist(outdir)
+
 def skip_if_exist(infile):
   skip = False
   if path.isfile(infile):
@@ -145,6 +149,17 @@ def generate_batch(ts_list, batch_size):
       num_threads=config.num_threads)
   return user_bt, image_bt, text_bt, label_bt, file_bt
 
+def get_valid_data(flags):
+  precomputed_dir = get_precomputed_dir(flags.dataset)
+  filename_tmpl = 'yfcc10k_%s.valid.%s.npy'
+  vd_image_file = filename_tmpl % (flags.image_model, 'image')
+  vd_image_np = np.load(path.join(precomputed_dir, vd_image_file))
+  vd_label_file = filename_tmpl % (flags.image_model, 'label')
+  vd_label_np = np.load(path.join(precomputed_dir, vd_label_file))
+  vd_imgid_file = filename_tmpl % (flags.image_model, 'imgid')
+  vd_imgid_np = np.load(path.join(precomputed_dir, vd_imgid_file))
+  return vd_image_np, vd_label_np, vd_imgid_np
+
 def evaluate_image(flags, sess, gen_v, bt_list_v):
   vd_size = get_vd_size(flags.dataset)
   num_batch_v = int(vd_size / config.valid_batch_size)
@@ -262,6 +277,39 @@ def get_opt(flags, learning_rate):
     raise ValueError('bad optimizer %s', flags.optimizer)
   return optimizer
 
+import random
+def gan_dis_sample_dev(flags, label_dat, label_gen):
+  # print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
+  # print('{0} {1:.2f}'.format(label_gen.shape, label_gen.sum()))
+  sample_np, label_np = [], []
+  for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
+    num_sample = np.count_nonzero(label_d)
+    # print(batch, label_d.shape, label_g.shape, num_sample)
+    # print(label_d, np.argmax(label_d))
+    pos_labels = [np.argmax(label_d)]
+    # print(label, label_d)
+    num_positive = num_sample * flags.num_positive
+    sample_d = np.random.choice(flags.num_label, num_positive, p=label_d)
+    for sample in sample_d:
+      # print(batch, sample, 1.0)
+      sample_np.append((batch, sample))
+      label_np.append(random.uniform(0.7, 1.0))
+    num_negative = num_sample * flags.num_negative
+    sample_g = np.random.choice(flags.num_label, num_negative * 2, p=label_g)
+    for sample in sample_g:
+      if sample in pos_labels:
+        # print(sample, pos_labels, label_d)
+        continue
+      if len(sample_np) >= (num_positive + num_negative):
+        break
+      sample_np.append((batch, sample))
+      label_np.append(random.uniform(0.0, 0.3))
+  sample_np = np.asarray(sample_np)
+  label_np = np.asarray(label_np)
+  # for sample, label in zip(sample_np, label_np):
+  #   print(sample, label)
+  return sample_np, label_np
+
 def gan_dis_sample(flags, label_dat, label_gen):
   # print('{0} {1:.2f}'.format(label_dat.shape, label_dat.sum()))
   # print('{0} {1:.2f}'.format(label_gen.shape, label_gen.sum()))
@@ -269,6 +317,7 @@ def gan_dis_sample(flags, label_dat, label_gen):
   for batch, (label_d, label_g) in enumerate(zip(label_dat, label_gen)):
     num_sample = np.count_nonzero(label_d)
     # print(batch, label_d.shape, label_g.shape, num_sample)
+    # print(label_d, np.argmax(label_d))
     num_positive = num_sample * flags.num_positive
     sample_d = np.random.choice(flags.num_label, num_positive, p=label_d)
     for sample in sample_d:

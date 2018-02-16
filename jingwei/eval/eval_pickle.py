@@ -17,12 +17,12 @@ INFO = __file__
 def process(options, collection, annotationName, runfile):
   rootpath = options.rootpath
   
-  p1_scorer = getScorer('P@1')
-  p3_scorer = getScorer('P@3')
-  r1_scorer = getScorer('R@1')
-  r3_scorer = getScorer('R@3')
-  ndcg1_scorer = getScorer('NDCG2@1')
-  ndcg3_scorer = getScorer('NDCG2@3')
+  p1_scorer = getScorer('P@3')
+  p3_scorer = getScorer('P@5')
+  r1_scorer = getScorer('R@3')
+  r3_scorer = getScorer('R@5')
+  ndcg1_scorer = getScorer('NDCG2@3')
+  ndcg3_scorer = getScorer('NDCG2@5')
   ap_scorer = getScorer('AP')
   rr_scorer = getScorer('RR')
 
@@ -88,8 +88,8 @@ def process(options, collection, annotationName, runfile):
       res[j,:] = [p1, p3, f1, f3, ndcg1, ndcg3, ap, rr]
     avg_perf = res.mean(axis=0)
     print '{}\t{}'.format(
-      os.path.split(datafiles[run_idx])[-1],
-      ' & '.join(['%.4f' % x for x in avg_perf])
+      '%-16s' % os.path.basename(datafiles[run_idx]).split('.')[0],
+      ' & '.join(['%.2f' % (100 * x) for x in avg_perf])
     )
 
 def main(argv=None):

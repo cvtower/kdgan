@@ -1,9 +1,24 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
-train_size=10000
-batch_size=100
+train_size=50
+batch_size=5
 
-# scp xiaojie@10.100.228.149:$checkpoint_dir/mdlcompr_mnist* $checkpoint_dir
+# scp xiaojie@10.100.228.149:${checkpoint_dir}/mdlcompr_mnist${train_size}* ${checkpoint_dir}
+
+# mac
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.data-00000-of-00001 ${checkpoint_dir}
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.index ${checkpoint_dir}
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.meta ${checkpoint_dir}
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.data-00000-of-00001 ${checkpoint_dir}
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.index ${checkpoint_dir}
+# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.meta ${checkpoint_dir}
+
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.data-00000-of-00001 xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.index xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.meta xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.data-00000-of-00001 xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.index xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.meta xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
 
 python pretrain_gen.py \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
@@ -13,7 +28,7 @@ python pretrain_gen.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=10000 bstacc=0.9699 et=38s
+#mnist=50 bstacc=0.5209 et=5s
 exit
 
 python pretrain_tch.py \
@@ -24,7 +39,7 @@ python pretrain_tch.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=10000 bstacc=0.9899 et=116s
+#mnist=50 bstacc=0.6343 et=21s
 exit
 
 python pretrain_dis.py \
@@ -35,7 +50,7 @@ python pretrain_dis.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200
-#mnist=10000 bstacc=0.9896 et=115s
+#mnist=50 bstacc=0.6294 et=20s
 exit
 
 python train_kd.py \
@@ -47,9 +62,9 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=100 \
+  --num_epoch=400 \
   --kd_model=mimic
-#mnist=10000 mimic@86=98.65 iniacc=0.9713 et=118s
+#mnist=50 mimic@325=62.74 iniacc=52.09 et=15s
 exit
 
 python train_kd.py \
@@ -61,11 +76,11 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=100 \
+  --num_epoch=200 \
   --kd_model=distn \
   --kd_soft_pct=0.7 \
   --temperature=3.0
-#mnist=10000 distn@91=98.79 iniacc=0.9713 et=125s
+#mnist=50 distn@190=63.92 iniacc=52.09 et=7s
 exit
 
 python train_kd.py \
@@ -77,11 +92,11 @@ python train_kd.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=100 \
+  --num_epoch=400 \
   --kd_model=noisy \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=10000 noisy@79=98.58 iniacc=0.9713 et=121s
+#mnist=50 noisy@232=62.18 iniacc=52.09 et=15s
 exit
 
 python train_kdgan.py \
@@ -95,7 +110,7 @@ python train_kdgan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
+  --num_epoch=100 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10 \
@@ -105,7 +120,7 @@ python train_kdgan.py \
   --kd_model=mimic \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
-#mnist=10000 kdgan_ow=0.9913 tot=14761s
+#mnist=50 kdgan_ow@87=72.32 et=268s
 exit
 
 ################################################################
@@ -133,8 +148,9 @@ python train_kdgan.py \
   --num_negative=20 \
   --num_positive=5 \
   --kd_model=mimic \
-  --kd_soft_pct=0.0 \
+  --kd_soft_pct=0.3 \
   --temperature=3.0
+#mnist=10000 kdgan_ow=0.9786 et=10419s
 exit
 
 python train_gan.py \
@@ -152,7 +168,6 @@ python train_gan.py \
   --num_negative=20 \
   --num_positive=5
 exit
-
 
 
 

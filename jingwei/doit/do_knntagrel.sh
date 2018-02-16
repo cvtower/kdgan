@@ -44,7 +44,7 @@ if [ ! -d "$preknn_dir" ]; then
     ./do_getknn.sh $trainCollection $testCollection $feature 0 1 1
 fi
 
-for k in 200 400 600 800 1000
+for k in 100 # 200 400 600 800 1000
 do
     python $codepath/instance_based/apply_tagger.py \
         $testCollection $trainCollection $annotationName $feature \

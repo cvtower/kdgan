@@ -139,9 +139,13 @@ class GEN():
 
   def get_gan_losses(self, flags):
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
-    # gan_loss = -tf.reduce_mean(self.reward_ph * sample_logits)
-    gan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
-    gan_losses.extend(self.get_regularization_losses())
+    gan_loss = tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)
+
+    # sample_labels = tf.gather_nd(self.labels, self.sample_ph)
+    # gan_loss = - tf.reduce_mean(tf.log(sample_labels) * self.reward_ph)
+
+    gan_losses = [gan_loss]
+    # gan_losses.extend(self.get_regularization_losses())
     return gan_losses
 
   def get_kdgan_losses(self, flags):

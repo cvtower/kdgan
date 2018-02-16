@@ -17,16 +17,12 @@ eval_interval = int(tn_size / flags.batch_size)
 print('#batch=%d #interval=%d' % (tn_num_batch, eval_interval))
 # exit()
 
-precomputed_dir = utils.get_precomputed_dir(flags.dataset)
-filename_tmpl = 'yfcc10k_%s.valid.%s.npy'
-vd_image_file = filename_tmpl % (flags.image_model, 'image')
-vd_image_np = np.load(path.join(precomputed_dir, vd_image_file))
-vd_label_file = filename_tmpl % (flags.image_model, 'label')
-vd_label_np = np.load(path.join(precomputed_dir, vd_label_file))
-vd_imgid_file = filename_tmpl % (flags.image_model, 'imgid')
-vd_imgid_np = np.load(path.join(precomputed_dir, vd_imgid_file))
-# print(vd_image_np.shape, vd_label_np.shape, vd_imgid_np.shape)
-# exit()
+data_sources = utils.get_data_sources(flags, is_training=True)
+print('tn: #tfrecord=%d' % (len(data_sources)))
+ts_list = utils.decode_tfrecord(flags, data_sources, shuffle=True)
+bt_list = utils.generate_batch(ts_list, flags.batch_size)
+user_bt, image_bt, text_bt, label_bt, file_bt = bt_list
+vd_image_np, vd_label_np, vd_imgid_np = utils.get_valid_data(flags)
 
 tn_gen = GEN(flags, is_training=True)
 tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate)
@@ -44,12 +40,6 @@ for variable in tf.trainable_variables():
     num_params *= dim.value
   print('%-50s (%d params)' % (variable.name, num_params))
 # exit()
-
-data_sources = utils.get_data_sources(flags, is_training=True)
-print('tn: #tfrecord=%d' % (len(data_sources)))
-ts_list = utils.decode_tfrecord(flags, data_sources, shuffle=True)
-bt_list = utils.generate_batch(ts_list, flags.batch_size)
-user_bt, image_bt, text_bt, label_bt, file_bt = bt_list
 
 def main(_):
   bst_hit = 0.0
