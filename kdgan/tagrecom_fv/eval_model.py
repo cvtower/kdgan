@@ -16,8 +16,9 @@ from os import path
 from tensorflow.contrib import slim
 
 tf.app.flags.DEFINE_string('model_name', None, '')
+tf.app.flags.DEFINE_string('model_ckpt', None, '')
 tf.app.flags.DEFINE_string('checkpoint_dir', None, '')
-tf.app.flags.DEFINE_string('model_runfile', None, '')
+tf.app.flags.DEFINE_string('model_run', None, '')
 flags = tf.app.flags.FLAGS
 
 model = None
@@ -48,9 +49,9 @@ if flags.checkpoint_dir != None:
   model_ckpt = utils.get_latest_ckpt(flags.checkpoint_dir)
 
 def main(_):
-  utils.create_pardir(flags.model_runfile)
+  utils.create_pardir(flags.model_run)
   id_to_label = utils.load_id_to_label(flags.dataset)
-  fout = open(flags.model_runfile, 'w')
+  fout = open(flags.model_run, 'w')
   # with tf.train.MonitoredTrainingSession() as sess:
   #   tn_gen.saver.restore(sess, gen_model_ckpt)
   #   feed_dict = {vd_gen.image_ph:image_np}
@@ -62,7 +63,7 @@ def main(_):
   #       fout.write(' %s %.4f' % (id_to_label[label], logit_np[label]))
   #     fout.write('\n')
   fout.close()
-  print('result saved in %s' % flags.model_runfile)
+  print('result saved in %s' % flags.model_run)
 
 if __name__ == '__main__':
   tf.app.run()
