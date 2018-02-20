@@ -1166,7 +1166,6 @@ def create_test_set():
         print(x.shape)
         return x
     itext_npy = padding(itext_npy)
-    return
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'itext')), itext_npy)
 
 def main(_):
