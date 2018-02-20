@@ -24,7 +24,7 @@ class TCH():
 
     tch_scope = 'tch'
     vocab_size = utils.get_vocab_size(flags.dataset)
-    model_scope = nets_factory.arg_scopes_map[flags.model_name]
+    model_scope = nets_factory.arg_scopes_map[flags.image_model]
     with tf.variable_scope(tch_scope) as scope:
       
       #with slim.arg_scope(model_scope(weight_decay=flags.gen_weight_decay)):

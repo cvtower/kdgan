@@ -24,7 +24,7 @@ class DIS():
     self.dis_label_ph = tf.placeholder(tf.float32, shape=(None,))
 
     dis_scope = 'dis'
-    model_scope = nets_factory.arg_scopes_map[flags.model_name]
+    model_scope = nets_factory.arg_scopes_map[flags.image_model]
     vocab_size = utils.get_vocab_size(flags.dataset)
     with tf.variable_scope(dis_scope) as scope:
       # newly added
@@ -33,7 +33,7 @@ class DIS():
             weights_regularizer=slim.l2_regularizer(flags.tch_weight_decay)):
         #"""
         net = self.image_ph
-        net = slim.dropout(net, flags.dropout_keep_prob, 
+        net = slim.dropout(net, flags.dis_keep_prob, 
             is_training=is_training)
         #net = slim.fully_connected(net, flags.num_label,
             #activation_fn=None)
@@ -67,7 +67,7 @@ class DIS():
       """
       with slim.arg_scope(model_scope(weight_decay=flags.dis_weight_decay)):
         net = self.image_ph
-        net = slim.dropout(net, flags.dropout_keep_prob, 
+        net = slim.dropout(net, flags.dis_keep_prob, 
             is_training=is_training)
         net = slim.fully_connected(net, flags.num_label,
             activation_fn=None)
@@ -96,12 +96,12 @@ class DIS():
 
     global_step = tf.Variable(0, trainable=False)
     train_data_size = utils.get_tn_size(flags.dataset)
-    self.learning_rate = utils.get_lr(
+    self.dis_learning_rate = utils.get_lr(
         flags,
         train_data_size,
         global_step,
         #train_data_size,
-        flags.learning_rate,
+        flags.dis_learning_rate,
         #flags.learning_rate_decay_factor,
         #flags.num_epochs_per_decay,
         dis_scope)
@@ -111,7 +111,7 @@ class DIS():
     pre_losses.append(tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits))
     pre_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
     self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % dis_scope)
-    pre_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+    pre_optimizer = tf.train.GradientDescentOptimizer(self.dis_learning_rate)
     self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
     # gan train
@@ -119,7 +119,7 @@ class DIS():
     gan_losses.append(tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits))
     gan_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
     self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % dis_scope)
-    gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+    gan_optimizer = tf.train.GradientDescentOptimizer(self.dis_learning_rate)
     self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=global_step)
 
 

@@ -13,9 +13,9 @@ python eval_model.py \
   --dataset=$dataset \
   --image_model=$image_model \
   --feature_size=$feature_size \
-  --model_name=tch \
+  --model_name=dis \
   --model_ckpt=${kdgan_dir}/kdgan/checkpoints/dis_vgg_16.ckpt \
-  --model_run=${runs_dir}/${train_dataset}_${test_dataset}_tch.run
+  --model_run=${runs_dir}/${train_dataset}_${test_dataset}_dis.run
 exit
 
 # python eval_model.py \
