@@ -52,16 +52,16 @@ def main(_):
   utils.create_pardir(flags.model_run)
   id_to_label = utils.load_id_to_label(flags.dataset)
   fout = open(flags.model_run, 'w')
-  # with tf.train.MonitoredTrainingSession() as sess:
-  #   tn_gen.saver.restore(sess, gen_model_ckpt)
-  #   feed_dict = {vd_gen.image_ph:image_np}
-  #   logit_np = sess.run(vd_gen.logits, feed_dict=feed_dict)
-  #   for imgid, logit_np in zip(imgid_np, logit_np):
-  #     sorted_labels = (-logit_np).argsort()
-  #     fout.write('%s' % (imgid))
-  #     for label in sorted_labels:
-  #       fout.write(' %s %.4f' % (id_to_label[label], logit_np[label]))
-  #     fout.write('\n')
+  with tf.train.MonitoredTrainingSession() as sess:
+    tn_model.saver.restore(sess, model_ckpt)
+    feed_dict = {vd_model.image_ph:image_np}
+    logit_np = sess.run(vd_gen.logits, feed_dict=feed_dict)
+    for imgid, logit_np in zip(imgid_np, logit_np):
+      sorted_labels = (-logit_np).argsort()
+      fout.write('%s' % (imgid))
+      for label in sorted_labels:
+        fout.write(' %s %.4f' % (id_to_label[label], logit_np[label]))
+      fout.write('\n')
   fout.close()
   print('result saved in %s' % flags.model_run)
 
