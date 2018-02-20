@@ -1159,13 +1159,13 @@ def create_test_set():
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')), imgid_npy)
 
     def padding(x):
-        print(x.shape)
         x = np.array(x)
+        print(x.shape)
         max_length = max(len(row) for row in x)
         x = np.array([row + [0] * (max_length - len(row)) for row in x])
+        print(x.shape)
         return x
     itext_npy = padding(itext_npy)
-    print(itext_npy.shape)
     return
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'itext')), itext_npy)
 
