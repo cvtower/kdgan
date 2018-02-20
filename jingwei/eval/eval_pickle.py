@@ -84,8 +84,10 @@ def process(options, collection, annotationName, runfile):
         f1 = 2 * p1 * r1 / (p1 + r1)
       if (p3 + r3) != 0.0:
         f3 = 2 * p3 * r3 / (p3 + r3)
+      # h1, h3 = max(p1, r1), max(p3, r3)
       res[j,:] = [p1, p3, r1, r3, ndcg1, ndcg3, ap, rr]
       res[j,:] = [p1, p3, f1, f3, ndcg1, ndcg3, ap, rr]
+      # res[j,:] = [p1, p3, h1, h3, ndcg1, ndcg3, ap, rr]
     avg_perf = res.mean(axis=0)
     print '{}\t{}'.format(
       '%-16s' % os.path.basename(datafiles[run_idx]).split('.')[0],
