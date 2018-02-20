@@ -58,13 +58,13 @@ def main(_):
       vd_model.image_ph:image_np,
       vd_model.text_ph:text_np,
     }
-    # logit_np = sess.run(vd_gen.logits, feed_dict=feed_dict)
-    # for imgid, logit_np in zip(imgid_np, logit_np):
-    #   sorted_labels = (-logit_np).argsort()
-    #   fout.write('%s' % (imgid))
-    #   for label in sorted_labels:
-    #     fout.write(' %s %.4f' % (id_to_label[label], logit_np[label]))
-    #   fout.write('\n')
+    logit_np = sess.run(vd_model.logits, feed_dict=feed_dict)
+    for imgid, logit_np in zip(imgid_np, logit_np):
+      sorted_labels = (-logit_np).argsort()
+      fout.write('%s' % (imgid))
+      for label in sorted_labels:
+        fout.write(' %s %.4f' % (id_to_label[label], logit_np[label]))
+      fout.write('\n')
   fout.close()
   print('result saved in %s' % flags.model_run)
 
