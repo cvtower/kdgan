@@ -1157,7 +1157,7 @@ def create_test_set():
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'image')), image_npy)
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'label')), label_npy)
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'imgid')), imgid_npy)
-    print('fffffffasdf')
+    print(itext_npy)
     return
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'itext')), itext_npy)
 
