@@ -1121,7 +1121,7 @@ def create_test_set():
     image_npy = np.zeros((valid_size, 4096), dtype=np.float32)
     label_npy = np.zeros((valid_size, 100), dtype=np.int32)
     imgid_npy = []
-    itext_npy = []
+    text_npy = []
     reader = ImageReader()
     with tf.Session() as sess:
         init_fn(sess)
@@ -1139,8 +1139,8 @@ def create_test_set():
             # print(image_npy)
             # input()
 
-            itext = [token_to_id.get(token, unk_token_id) for token in text]
-            itext_npy.append(itext)
+            text = [token_to_id.get(token, unk_token_id) for token in text]
+            text_npy.append(text)
 
             label_ids = [label_to_id[label] for label in labels]
             label_vec = np.zeros((num_label,), dtype=np.int32)
@@ -1150,7 +1150,7 @@ def create_test_set():
 
             image_id = path.basename(file).split('.')[0]
             imgid_npy.append(image_id)
-            # example = build_example(user, image, itext, label, file)
+            # example = build_example(user, image, text, label, file)
 
     imgid_npy = np.asarray(imgid_npy)
     filename_tmpl = 'yfcc10k_%s.valid.%s'
@@ -1165,8 +1165,8 @@ def create_test_set():
         x = np.array([row + [0] * (max_length - len(row)) for row in x])
         print(x.shape)
         return x
-    itext_npy = padding(itext_npy)
-    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'itext')), itext_npy)
+    text_npy = padding(text_npy)
+    np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'text')), text_npy)
 
 def main(_):
     create_test_set()

@@ -154,13 +154,13 @@ def get_valid_data(flags):
   filename_tmpl = 'yfcc10k_%s.valid.%s.npy'
   vd_image_file = filename_tmpl % (flags.image_model, 'image')
   vd_image_np = np.load(path.join(precomputed_dir, vd_image_file))
-  vd_itext_file = filename_tmpl % (flags.image_model, 'itext')
-  vd_itext_np = np.load(path.join(precomputed_dir, vd_itext_file))
+  vd_text_file = filename_tmpl % (flags.image_model, 'text')
+  vd_text_np = np.load(path.join(precomputed_dir, vd_text_file))
   vd_label_file = filename_tmpl % (flags.image_model, 'label')
   vd_label_np = np.load(path.join(precomputed_dir, vd_label_file))
   vd_imgid_file = filename_tmpl % (flags.image_model, 'imgid')
   vd_imgid_np = np.load(path.join(precomputed_dir, vd_imgid_file))
-  return vd_image_np, vd_itext_np, vd_label_np, vd_imgid_np
+  return vd_image_np, vd_text_np, vd_label_np, vd_imgid_np
 
 def evaluate_image(flags, sess, gen_v, bt_list_v):
   vd_size = get_vd_size(flags.dataset)

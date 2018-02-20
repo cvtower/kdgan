@@ -42,7 +42,7 @@ for var in tf.trainable_variables():
     num_params *= dim.value
   print('%-50s (%d params)' % (var.name, num_params))
 
-image_np, itext_np, label_np, imgid_np = utils.get_valid_data(flags)
+image_np, text_np, label_np, imgid_np = utils.get_valid_data(flags)
 
 model_ckpt = flags.model_ckpt
 if flags.checkpoint_dir != None:
@@ -54,7 +54,10 @@ def main(_):
   fout = open(flags.model_run, 'w')
   with tf.train.MonitoredTrainingSession() as sess:
     tn_model.saver.restore(sess, model_ckpt)
-    feed_dict = {vd_model.image_ph:image_np}
+    feed_dict = {
+      vd_model.image_ph:image_np,
+      vd_model.text_ph:text_np,
+    }
     # logit_np = sess.run(vd_gen.logits, feed_dict=feed_dict)
     # for imgid, logit_np in zip(imgid_np, logit_np):
     #   sorted_labels = (-logit_np).argsort()
