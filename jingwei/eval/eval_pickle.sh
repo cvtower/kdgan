@@ -23,10 +23,12 @@ testCollection=$2
 testAnnotationName=concepts.txt
 conceptfile=$rootpath/$testCollection/Annotations/$testAnnotationName
 
+scp xiaojie@10.100.228.149:${runs_dir}/yfcc9k_yfcc0k_dis.run ${runs_dir}
+
 for runfile in ${runs_dir}/*.run
 do
   pklfile=${runfile//run/pkl}
-  # python $codepath/postprocess/pickle_tagvotes.py $conceptfile $runfile $pklfile
+  python $codepath/postprocess/pickle_tagvotes.py $conceptfile $runfile $pklfile
 done
 
 

@@ -1,6 +1,8 @@
 import sys, os
 import numpy as np
 import string
+from os import path
+from sys import stdout
 
 import cPickle as pickle
 
@@ -89,10 +91,15 @@ def process(options, collection, annotationName, runfile):
       res[j,:] = [p1, p3, f1, f3, ndcg1, ndcg3, ap, rr]
       # res[j,:] = [p1, p3, h1, h3, ndcg1, ndcg3, ap, rr]
     avg_perf = res.mean(axis=0)
-    print '{}\t{}'.format(
-      '%-16s' % os.path.basename(datafiles[run_idx]).split('.')[0],
-      ' & '.join(['%.2f' % (100 * x) for x in avg_perf])
-    )
+    name = path.basename(datafiles[run_idx]).split('.')[0]
+    stdout.write('%s\t' % name)
+    for x in avg_perf:
+      x *= 100
+      if x >= 100.0:
+        stdout.write('& %.1f ' % x)
+      else:
+        stdout.write('& %.2f ' % x)
+    stdout.write('\n')
 
 def main(argv=None):
   if argv is None:
