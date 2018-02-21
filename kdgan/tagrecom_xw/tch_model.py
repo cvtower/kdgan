@@ -35,8 +35,9 @@ class TCH():
             initializer=tf.random_uniform_initializer(-0.1, 0.1))
         text_embedding = tf.nn.embedding_lookup(word_embedding, self.text_ph)
         text_embedding = tf.reduce_mean(text_embedding, axis=-2)
-        self.combined_layer = tf.concat([net, text_embedding], 1)
-        net = slim.fully_connected(self.combined_layer, 200)
+        # self.combined_layer = tf.concat([net, text_embedding], 1)
+        self.combined_layer = tf.concat([text_embedding], 1)
+        # net = slim.fully_connected(self.combined_layer, 200)
         self.logits = slim.fully_connected(net, flags.num_label,
             activation_fn=None) 
       self.labels = tf.nn.softmax(self.logits)
