@@ -32,6 +32,9 @@ src_precomputed_dir=$src_data_dir/Precomputed
 dst_precomputed_dir=$dst_data_dir/Precomputed
 [ -d ${dst_precomputed_dir} ] || mkdir -p ${dst_precomputed_dir}
 
+scp ${src_precomputed_dir}/*.npy ${dst_precomputed_dir}
+exit
+
 model_name=vgg_16
 scp ${src_precomputed_dir}/${dataset}_${model_name}_000.valid.tfrecord ${dst_precomputed_dir}
 for i in $(seq -w 000 49)

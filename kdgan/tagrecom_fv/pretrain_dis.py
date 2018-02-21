@@ -38,15 +38,11 @@ for variable in tf.trainable_variables():
   print('%-50s (%d params)' % (variable.name, num_params))
 
 data_sources_t = utils.get_data_sources(flags, is_training=True)
-data_sources_v = utils.get_data_sources(flags, is_training=False)
-print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(data_sources_t), len(data_sources_v)))
+print('#tn_tfrecord=%d' % (len(data_sources_t)))
 
 ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
 bt_list_t = utils.generate_batch(ts_list_t, flags.batch_size)
-bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
 user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
-user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
 
 vd_image_np, vd_text_np, vd_label_np, _ = utils.get_valid_data(flags)
 
@@ -58,8 +54,7 @@ def main(_):
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
       for batch_t in range(tn_num_batch):
-        #image_np_t, label_np_t = sess.run([image_bt_t, label_bt_t])
-        text_np_t, image_np_t, label_np_t = sess.run([text_bt_v, image_bt_v, label_bt_v])
+        text_np_t, image_np_t, label_np_t = sess.run([text_bt_t, image_bt_t, label_bt_t])
         feed_dict = {dis_t.text_ph:text_np_t, dis_t.image_ph:image_np_t, dis_t.hard_label_ph:label_np_t}
         _, summary = sess.run([dis_t.pre_update, summary_op], feed_dict=feed_dict)
         writer.add_summary(summary, batch_t)
