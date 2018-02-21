@@ -50,7 +50,7 @@ tf.app.flags.DEFINE_integer('num_positive', 1, '')
 tf.app.flags.DEFINE_string('gan_figure_data', None, '')
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_train_data_size(flags.dataset)
+train_data_size = utils.get_tn_size(flags.dataset)
 eval_interval = int(train_data_size / flags.batch_size)
 print('eval:\t#interval=%d' % (eval_interval))
 
@@ -103,7 +103,7 @@ def main(_):
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
-      hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+      hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
       print('init hit=%.4f' % (hit_v))
 
       batch_d, batch_g = -1, -1
@@ -160,7 +160,7 @@ def main(_):
             #   continue
             # best_hit_v = hit_v
             # print('best hit=%.4f' % (best_hit_v))
-        hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+        hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
         tot_time = time.time() - start
         print('#%03d curbst=%.4f %.0fs' % (epoch, hit_v, tot_time))
         figure_data.append((epoch, hit_v))

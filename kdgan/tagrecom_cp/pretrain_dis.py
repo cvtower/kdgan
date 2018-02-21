@@ -1,5 +1,7 @@
-from kdgan import config, metric, utils
-from tch_model import TCH
+from kdgan import config
+from kdgan import metric
+from kdgan import utils
+from dis_model import DIS
 
 import os
 import time
@@ -17,7 +19,7 @@ tf.app.flags.DEFINE_integer('cutoff', 3, '')
 # image model
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
-tf.app.flags.DEFINE_string('image_model', None, '')
+tf.app.flags.DEFINE_string('model_name', None, '')
 # training
 tf.app.flags.DEFINE_integer('batch_size', 32, '')
 tf.app.flags.DEFINE_integer('num_epoch', 20, '')
@@ -53,13 +55,13 @@ print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (
     num_batch_t, num_batch_v, eval_interval))
 
 def main(_):
-  tch_t = TCH(flags, is_training=True)
+  dis_t = DIS(flags, is_training=True)
   scope = tf.get_variable_scope()
   scope.reuse_variables()
-  tch_v = TCH(flags, is_training=False)
+  dis_v = DIS(flags, is_training=False)
 
-  tf.summary.scalar(tch_t.learning_rate.name, tch_t.learning_rate)
-  tf.summary.scalar(tch_t.pre_loss.name, tch_t.pre_loss)
+  tf.summary.scalar(dis_t.learning_rate.name, dis_t.learning_rate)
+  tf.summary.scalar(dis_t.pre_loss.name, dis_t.pre_loss)
   summary_op = tf.summary.merge_all()
   init_op = tf.global_variables_initializer()
 
@@ -69,10 +71,10 @@ def main(_):
       num_params *= dim.value
     print('%-50s (%d params)' % (variable.name, num_params))
 
-  data_sources_t = utils.get_data_sources(flags, is_training=True, single_source=True)
+  data_sources_t = utils.get_data_sources(flags, is_training=True)
   data_sources_v = utils.get_data_sources(flags, is_training=False)
   print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(data_sources_t), len(data_sources_v)))
-
+  
   ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
   ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
   bt_list_t = utils.generate_batch(ts_list_t, flags.batch_size)
@@ -80,16 +82,16 @@ def main(_):
   user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
   user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
 
-  best_hit_v = -np.inf
   start = time.time()
+  best_hit_v = -np.inf
   with tf.Session() as sess:
     sess.run(init_op)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
       for batch_t in range(num_batch_t):
-        text_np_t, label_np_t = sess.run([text_bt_t, label_bt_t])
-        feed_dict = {tch_t.text_ph:text_np_t, tch_t.hard_label_ph:label_np_t}
-        _, summary = sess.run([tch_t.pre_update, summary_op], feed_dict=feed_dict)
+        image_np_t, label_np_t = sess.run([image_bt_t, label_bt_t])
+        feed_dict = {dis_t.image_ph:image_np_t, dis_t.hard_label_ph:label_np_t}
+        _, summary = sess.run([dis_t.pre_update, summary_op], feed_dict=feed_dict)
         writer.add_summary(summary, batch_t)
 
         if (batch_t + 1) % eval_interval != 0:
@@ -97,9 +99,9 @@ def main(_):
 
         hit_v = []
         for batch_v in range(num_batch_v):
-          text_np_v, label_np_v = sess.run([text_bt_v, label_bt_v])
-          feed_dict = {tch_v.text_ph:text_np_v}
-          logit_np_v, = sess.run([tch_v.logits], feed_dict=feed_dict)
+          image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
+          feed_dict = {dis_v.image_ph:image_np_v}
+          logit_np_v, = sess.run([dis_v.logits], feed_dict=feed_dict)
           hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
           hit_v.append(hit_bt)
         hit_v = np.mean(hit_v)
@@ -110,7 +112,7 @@ def main(_):
         if hit_v < best_hit_v:
           continue
         best_hit_v = hit_v
-        tch_t.saver.save(sess, flags.tch_model_ckpt)
+        dis_t.saver.save(sess, flags.dis_model_ckpt)
   print('best hit=%.4f' % (best_hit_v))
 
 if __name__ == '__main__':

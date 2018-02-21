@@ -49,7 +49,7 @@ tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_tn_size(flags.dataset)
+train_data_size = utils.get_train_data_size(flags.dataset)
 num_batch_t = int(flags.num_epoch * train_data_size / config.train_batch_size)
 eval_interval = int(train_data_size / config.train_batch_size)
 print('tn:\t#batch=%d\neval:\t#interval=%d' % (num_batch_t, eval_interval))
@@ -91,7 +91,7 @@ def main(_):
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
     tch_t.saver.restore(sess, flags.tch_model_ckpt)
     with slim.queues.QueueRunners(sess):
-      hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
+      hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
       print('init hit=%.4f' % (hit_v))
 
       for batch_t in range(num_batch_t):
@@ -99,7 +99,7 @@ def main(_):
         # print('hard labels:\t{}'.format(hard_labels.shape))
         # print(np.argsort(-hard_labels[0,:])[:10])
 
-        feed_dict = {tch_t.image_ph:image_np_t, tch_t.text_ph:text_np_t}
+        feed_dict = {tch_t.text_ph:text_np_t}
         soft_labels, = sess.run([tch_t.labels], feed_dict=feed_dict)
         # print('soft labels:\t{}'.format(soft_labels.shape))
         # print(np.argsort(-soft_labels[0,:])[:10])
@@ -114,7 +114,7 @@ def main(_):
 
         if (batch_t + 1) % eval_interval != 0:
             continue
-        hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
+        hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
         tot_time = time.time() - start
         print('#%08d hit=%.4f %06ds' % (batch_t, hit_v, int(tot_time)))
         if hit_v <= best_hit_v:
