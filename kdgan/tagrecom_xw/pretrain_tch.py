@@ -36,45 +36,48 @@ for variable in tf.trainable_variables():
     num_params *= dim.value
   print('%-50s (%d params)' % (variable.name, num_params))
 
-data_sources_t = utils.get_data_sources(flags, is_training=True, single_source=True)
-print('#tfrecord=%d' % (len(data_sources_t)))
+tn_data_sources = utils.get_data_sources(flags, is_training=True, single_source=True)
+print('#tfrecord=%d' % (len(tn_data_sources)))
 
-ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-bt_list_t = utils.generate_batch(ts_list_t, flags.batch_size)
-user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
+tn_ts_list = utils.decode_tfrecord(flags, tn_data_sources, shuffle=True)
+tn_bt_list = utils.generate_batch(tn_ts_list, flags.batch_size)
+tn_user_bt, tn_image_bt, tn_text_bt, tn_label_bt, _ = tn_bt_list
 
-image_np, text_np, label_np_v, imgid_np = utils.get_valid_data(flags)
+vd_image_np, vd_text_np, vd_label_np, _ = utils.get_valid_data(flags)
 
 def main(_):
-  best_hit_v = -np.inf
-  start = time.time()
+  bst_hit = -np.inf
+  writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.Session() as sess:
     sess.run(init_op)
-    writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
+    start = time.time()
     with slim.queues.QueueRunners(sess):
       for batch_t in range(tn_num_batch):
-        text_np_t, label_np_t = sess.run([text_bt_t, label_bt_t])
-        feed_dict = {tch_t.text_ph:text_np_t, tch_t.hard_label_ph:label_np_t}
+        vd_text_np_t, label_np_t = sess.run([tn_text_bt, tn_label_bt])
+        feed_dict = {tch_t.text_ph:vd_text_np_t, tch_t.hard_label_ph:label_np_t}
         _, summary = sess.run([tch_t.pre_update, summary_op], feed_dict=feed_dict)
         writer.add_summary(summary, batch_t)
 
         if (batch_t + 1) % eval_interval != 0:
             continue
         feed_dict = {
-          tch_v.image_ph:image_np,
-          tch_v.text_ph:text_np,
+          tch_v.image_ph:vd_image_np,
+          tch_v.text_ph:vd_text_np,
         }
         logit_np_v = sess.run(tch_v.logits, feed_dict=feed_dict)
-        hit_v = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
+        hit = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
 
+        bst_hit = max(hit, bst_hit)
         tot_time = time.time() - start
-        print('#%08d hit=%.4f %06ds' % (batch_t, hit_v, int(tot_time)))
+        global_step = sess.run(tch_t.global_step)
+        avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
+        print('#%08d curhit=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+            (global_step, hit, bst_hit, tot_time, avg_time))
 
-        if hit_v < best_hit_v:
+        if hit < bst_hit:
           continue
-        best_hit_v = hit_v
         tch_t.saver.save(sess, flags.tch_model_ckpt)
-  print('best hit=%.4f' % (best_hit_v))
+  print('bsthit=%.4f' % (bst_hit))
 
 if __name__ == '__main__':
   tf.app.run()

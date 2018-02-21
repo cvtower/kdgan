@@ -48,12 +48,12 @@ class TCH():
         save_dict[variable.name] = variable
       self.saver = tf.train.Saver(save_dict)
 
-      global_step = tf.Variable(0, trainable=False)
+      self.global_step = global_step = tf.Variable(0, trainable=False)
       train_data_size = utils.get_tn_size(flags.dataset)
       self.learning_rate = utils.get_lr(
           flags,
           train_data_size,
-          global_step,
+          self.global_step,
           flags.tch_learning_rate,
           tch_scope)
 
