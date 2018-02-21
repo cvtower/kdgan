@@ -48,6 +48,8 @@ bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
 user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
 user_bt_v, image_bt_v, text_bt_v, label_bt_v, file_bt_v = bt_list_v
 
+vd_image_np, vd_text_np, vd_label_np, _ = utils.get_valid_data(flags)
+
 def main(_):
   start = time.time()
   best_hit_v = -np.inf
@@ -64,22 +66,19 @@ def main(_):
 
         if (batch_t + 1) % eval_interval != 0:
             continue
-
-        hit_v = []
-        for batch_v in range(vd_num_batch):
-          text_np_v, image_np_v, label_np_v = sess.run([text_bt_v, image_bt_v, label_bt_v])
-          feed_dict = {dis_v.text_ph:text_np_v, dis_v.image_ph:image_np_v}
-          logit_np_v, = sess.run([dis_v.logits], feed_dict=feed_dict)
-          hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
-          hit_v.append(hit_bt)
-        hit_v = np.mean(hit_v)
+        feed_dict = {
+          dis_v.image_ph:vd_image_np,
+          dis_v.text_ph:vd_text_np,
+        }
+        vd_logit_np = sess.run(dis_v.logits, feed_dict=feed_dict)
+        vd_hit = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)
 
         tot_time = time.time() - start
-        print('#%08d hit=%.4f %06ds' % (batch_t, hit_v, int(tot_time)))
+        print('#%08d hit=%.4f %06ds' % (batch_t, vd_hit, int(tot_time)))
 
-        if hit_v < best_hit_v:
+        if vd_hit < best_hit_v:
           continue
-        best_hit_v = hit_v
+        best_hit_v = vd_hit
         dis_t.saver.save(sess, flags.dis_model_ckpt)
   print('best hit=%.4f' % (best_hit_v))
 
