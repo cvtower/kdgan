@@ -57,6 +57,14 @@ def main(_):
     ini_hit = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)
     print('inihit=%.4f' % (ini_hit))
 
+    feed_dict = {
+      vd_tch.image_ph:vd_image_np,
+      vd_tch.text_ph:vd_text_np,
+    }
+    vd_logit_np = sess.run(vd_tch.logits, feed_dict=feed_dict)
+    tch_hit = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)
+    print('tchhit=%.4f' % (tch_hit))
+
     start = time.time()
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_text_np, tn_hard_label_np = sess.run(
