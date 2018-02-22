@@ -56,37 +56,47 @@ def main(_):
     vd_logit_np = sess.run(vd_gen.logits, feed_dict=feed_dict)
     ini_hit = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)
     print('inihit=%.4f' % (ini_hit))
-    exit()
 
     start = time.time()
-    for batch_t in range(tn_num_batch):
-      image_np_t, text_np_t, hard_labels = sess.run([tn_image_bt, tn_text_bt, tn_label_bt])
-      # print('hard labels:\t{}'.format(hard_labels.shape))
-      # print(np.argsort(-hard_labels[0,:])[:10])
-
-      feed_dict = {tn_tch.text_ph:text_np_t}
-      soft_labels, = sess.run([tn_tch.labels], feed_dict=feed_dict)
-      # print('soft labels:\t{}'.format(soft_labels.shape))
-      # print(np.argsort(-soft_labels[0,:])[:10])
+    for tn_batch in range(tn_num_batch):
+      tn_image_np, tn_text_np, tn_hard_label_np = sess.run(
+          [tn_image_bt, tn_text_bt, tn_label_bt])
+      # print('hard labels:\t{}'.format(tn_hard_label_np.shape))
+      # print(np.argsort(-tn_hard_label_np[0,:])[:10])
 
       feed_dict = {
-        tn_gen.image_ph:image_np_t,
-        tn_gen.hard_label_ph:hard_labels,
-        tn_gen.soft_label_ph:soft_labels,
+        tn_tch.image_ph:tn_image_np,
+        tn_tch.text_ph:tn_text_np,
+      }
+      tn_soft_label_np, = sess.run([tn_tch.logits], feed_dict=feed_dict)
+      # print('soft labels:\t{}'.format(tn_soft_label_np.shape))
+      # print(np.argsort(-tn_soft_label_np[0,:])[:10])
+
+      feed_dict = {
+        tn_gen.image_ph:tn_image_np,
+        tn_gen.hard_label_ph:tn_hard_label_np,
+        tn_gen.soft_label_ph:tn_soft_label_np,
       }
       _, summary = sess.run([tn_gen.kd_update, summary_op], feed_dict=feed_dict)
-      writer.add_summary(summary, batch_t)
+      writer.add_summary(summary, tn_batch)
 
-      if (batch_t + 1) % eval_interval != 0:
+      if (tn_batch + 1) % eval_interval != 0:
           continue
-      hit_v = utils.evaluate(flags, sess, vd_gen, bt_list_v)
+      feed_dict = {vd_gen.image_ph:vd_image_np}
+      vd_logit_np = sess.run(vd_gen.logits, feed_dict=feed_dict)
+      hit = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)
+      bst_hit = max(hit, bst_hit)
       tot_time = time.time() - start
-      print('#%08d hit=%.4f %06ds' % (batch_t, hit_v, int(tot_time)))
-      if hit_v <= bst_hit:
+      global_step = sess.run(tn_gen.global_step)
+      avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
+      print('#%08d curhit=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+          (tn_batch, hit, bst_hit, tot_time, avg_time))
+
+      if hit < bst_hit:
         continue
-      bst_hit = hit_v
-      print('best hit=%.4f' % (bst_hit))
-  print('best hit=%.4f' % (bst_hit))
+      # save if necessary
+  tot_time = time.time() - start
+  print('bsthit=%.4f et=%.0fs' % (bst_hit, tot_time))
 
 if __name__ == '__main__':
     tf.app.run()
