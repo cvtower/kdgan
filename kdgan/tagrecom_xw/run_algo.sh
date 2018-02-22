@@ -52,6 +52,8 @@ python pretrain_gen.py \
   --gen_model_ckpt=${gen_model_ckpt} \
   --dataset=$dataset \
   --image_model=${image_model} \
+  --optimizer=sgd \
+  --gen_learning_rate=0.01 \
   --num_epoch=200
 exit
 
