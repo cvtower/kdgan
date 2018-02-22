@@ -68,14 +68,14 @@ def main(_):
         tn_tch.image_ph:tn_image_np,
         tn_tch.text_ph:tn_text_np,
       }
-      tn_soft_label_np, = sess.run([tn_tch.logits], feed_dict=feed_dict)
-      # print('soft labels:\t{}'.format(tn_soft_label_np.shape))
-      # print(np.argsort(-tn_soft_label_np[0,:])[:10])
+      tn_soft_logit_np, = sess.run([tn_tch.logits], feed_dict=feed_dict)
+      # print('soft labels:\t{}'.format(tn_soft_logit_np.shape))
+      # print(np.argsort(-tn_soft_logit_np[0,:])[:10])
 
       feed_dict = {
         tn_gen.image_ph:tn_image_np,
         tn_gen.hard_label_ph:tn_hard_label_np,
-        tn_gen.soft_label_ph:tn_soft_label_np,
+        tn_gen.soft_logit_ph:tn_soft_logit_np,
       }
       _, summary = sess.run([tn_gen.kd_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
