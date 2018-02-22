@@ -9,7 +9,7 @@ class TCH():
     self.is_training = is_training
 
     # None = batch_size
-    self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size))
+    self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size), name="tch_image")
     self.text_ph = tf.placeholder(tf.int64, shape=(None, None))
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
     self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
@@ -23,7 +23,13 @@ class TCH():
     # initializer = tf.random_uniform([vocab_size, flags.embedding_size], -0.1, 0.1)
     with tf.variable_scope(tch_scope) as scope:
       with slim.arg_scope([slim.fully_connected],
-          weights_regularizer=slim.l2_regularizer(flags.tch_weight_decay)):
+          weights_regularizer=slim.l2_regularizer(flags.image_weight_decay)):
+        image_embedding = self.image_ph
+        image_embedding = slim.dropout(image_embedding, flags.tch_keep_prob,
+            is_training=is_training)
+
+      with slim.arg_scope([slim.fully_connected],
+          weights_regularizer=slim.l2_regularizer(flags.text_weight_decay)):
         word_embedding = slim.variable('word_embedding',
             shape=[vocab_size, flags.embedding_size],
             # regularizer=slim.l2_regularizer(flags.tch_weight_decay),
@@ -31,9 +37,12 @@ class TCH():
         # word_embedding = tf.get_variable('word_embedding', initializer=initializer)
         text_embedding = tf.nn.embedding_lookup(word_embedding, self.text_ph)
         text_embedding = tf.reduce_mean(text_embedding, axis=-2)
-        combined_layer = tf.concat([text_embedding], 1)
-        self.logits = slim.fully_connected(combined_layer, flags.num_label,
-                  activation_fn=None)
+
+      combined_layer = tf.concat([text_embedding], 1)
+      # combined_layer = tf.concat([image_embedding, text_embedding], 1)
+
+      self.logits = slim.fully_connected(combined_layer, flags.num_label,
+          activation_fn=None)
 
       self.labels = tf.nn.softmax(self.logits)
 

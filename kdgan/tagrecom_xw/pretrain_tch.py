@@ -48,35 +48,38 @@ vd_image_np, vd_text_np, vd_label_np, _ = utils.get_valid_data(flags)
 def main(_):
   bst_hit = -np.inf
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
-  with tf.Session() as sess:
+  with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     start = time.time()
-    with slim.queues.QueueRunners(sess):
-      for batch_t in range(tn_num_batch):
-        vd_text_np_t, label_np_t = sess.run([tn_text_bt, tn_label_bt])
-        feed_dict = {tch_t.text_ph:vd_text_np_t, tch_t.hard_label_ph:label_np_t}
-        _, summary = sess.run([tch_t.pre_update, summary_op], feed_dict=feed_dict)
-        writer.add_summary(summary, batch_t)
+    for batch_t in range(tn_num_batch):
+      tn_image_np, tn_text_np, tn_label_np = sess.run([tn_image_bt, tn_text_bt, tn_label_bt])
+      feed_dict = {
+        tch_t.image_ph:tn_image_np,
+        tch_t.text_ph:tn_text_np,
+        tch_t.hard_label_ph:tn_label_np
+      }
+      _, summary = sess.run([tch_t.pre_update, summary_op], feed_dict=feed_dict)
+      writer.add_summary(summary, batch_t)
 
-        if (batch_t + 1) % eval_interval != 0:
-            continue
-        feed_dict = {
-          tch_v.image_ph:vd_image_np,
-          tch_v.text_ph:vd_text_np,
-        }
-        logit_np_v = sess.run(tch_v.logits, feed_dict=feed_dict)
-        hit = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
-
-        bst_hit = max(hit, bst_hit)
-        tot_time = time.time() - start
-        global_step = sess.run(tch_t.global_step)
-        avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
-        print('#%08d curhit=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-            (global_step, hit, bst_hit, tot_time, avg_time))
-
-        if hit < bst_hit:
+      if (batch_t + 1) % eval_interval != 0:
           continue
-        tch_t.saver.save(sess, flags.tch_model_ckpt)
+      feed_dict = {
+        tch_v.image_ph:vd_image_np,
+        tch_v.text_ph:vd_text_np,
+      }
+      logit_np_v = sess.run(tch_v.logits, feed_dict=feed_dict)
+      hit = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
+
+      bst_hit = max(hit, bst_hit)
+      tot_time = time.time() - start
+      global_step = sess.run(tch_t.global_step)
+      avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
+      print('#%08d curhit=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+          (global_step, hit, bst_hit, tot_time, avg_time))
+
+      if hit < bst_hit:
+        continue
+      tch_t.saver.save(utils.get_session(sess), flags.tch_model_ckpt)
   print('bsthit=%.4f' % (bst_hit))
 
 if __name__ == '__main__':

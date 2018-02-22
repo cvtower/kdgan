@@ -6,6 +6,8 @@ variant=basic
 dataset=yfcc10k
 image_model=vgg_16
 
+
+
 python pretrain_gen.py \
   --gen_model_ckpt=${checkpoint_dir}/gen_$variant.ckpt \
   --dataset=$dataset \
@@ -14,6 +16,8 @@ python pretrain_gen.py \
 # 386s best hit=0.7707
 exit
 
+
+
 python pretrain_tch.py \
   --tch_model_ckpt=${checkpoint_dir}/tch_$variant.ckpt \
   --dataset=$dataset \
@@ -21,6 +25,8 @@ python pretrain_tch.py \
   --num_epoch=200
 # 0232s best hit=0.9657
 exit
+
+
 
 python train_kdgan.py \
   --dataset=yfcc10k \
