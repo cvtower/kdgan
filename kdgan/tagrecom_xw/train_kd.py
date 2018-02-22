@@ -15,8 +15,7 @@ from tensorflow.contrib import slim
 
 tn_size = utils.get_tn_size(flags.dataset)
 tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
-# eval_interval = int(tn_size / flags.batch_size)
-eval_interval = 2
+eval_interval = int(tn_size / flags.batch_size)
 print('tn: #data=%d #batch=%d' % (tn_size, tn_num_batch))
 
 tn_gen = GEN(flags, is_training=True)
