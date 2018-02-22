@@ -9,7 +9,7 @@ class TCH():
     self.is_training = is_training
 
     # None = batch_size
-    self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size), name="tch_image")
+    self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size))
     self.text_ph = tf.placeholder(tf.int64, shape=(None, None))
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
     self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
@@ -32,7 +32,7 @@ class TCH():
           weights_regularizer=slim.l2_regularizer(flags.text_weight_decay)):
         word_embedding = slim.variable('word_embedding',
             shape=[vocab_size, flags.embedding_size],
-            # regularizer=slim.l2_regularizer(flags.tch_weight_decay),
+            # regularizer=slim.l2_regularizer(flags.text_weight_decay),
             initializer=tf.random_uniform_initializer(-0.1, 0.1))
         # word_embedding = tf.get_variable('word_embedding', initializer=initializer)
         text_embedding = tf.nn.embedding_lookup(word_embedding, self.text_ph)

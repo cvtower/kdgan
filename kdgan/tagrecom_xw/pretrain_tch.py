@@ -52,7 +52,7 @@ def main(_):
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     start = time.time()
-    for batch_t in range(tn_num_batch):
+    for tn_batch in range(tn_num_batch):
       tn_image_np, tn_text_np, tn_label_np = sess.run([tn_image_bt, tn_text_bt, tn_label_bt])
       feed_dict = {
         tn_tch.image_ph:tn_image_np,
@@ -60,9 +60,9 @@ def main(_):
         tn_tch.hard_label_ph:tn_label_np
       }
       _, summary = sess.run([tn_tch.pre_update, summary_op], feed_dict=feed_dict)
-      writer.add_summary(summary, batch_t)
+      writer.add_summary(summary, tn_batch)
 
-      if (batch_t + 1) % eval_interval != 0:
+      if (tn_batch + 1) % eval_interval != 0:
           continue
       feed_dict = {
         vd_tch.image_ph:vd_image_np,
