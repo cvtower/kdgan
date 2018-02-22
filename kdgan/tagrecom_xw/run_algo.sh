@@ -11,7 +11,6 @@ python pretrain_dis.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --num_epoch=500
-# 373s best hit=0.7690
 exit
 
 python pretrain_tch.py \
@@ -19,7 +18,6 @@ python pretrain_tch.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --num_epoch=500
-# 0232s best hit=0.9657
 exit
 
 python pretrain_gen.py \
@@ -27,7 +25,6 @@ python pretrain_gen.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --num_epoch=200
-# 386s best hit=0.7707
 exit
 
 python train_kdgan.py \

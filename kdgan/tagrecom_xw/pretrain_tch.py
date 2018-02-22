@@ -81,7 +81,8 @@ def main(_):
       if hit < bst_hit:
         continue
       tn_tch.saver.save(utils.get_session(sess), flags.tch_model_ckpt)
-  print('bsthit=%.4f' % (bst_hit))
+  tot_time = time.time() - start
+  print('bsthit=%.4f et=%.0fs' % (bst_hit, tot_time))
 
 if __name__ == '__main__':
   tf.app.run()
