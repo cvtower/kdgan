@@ -68,7 +68,7 @@ def main(_):
         tn_tch.image_ph:tn_image_np,
         tn_tch.text_ph:tn_text_np,
       }
-      tn_soft_logit_np, = sess.run([tn_tch.logits], feed_dict=feed_dict)
+      tn_soft_logit_np = sess.run(tn_tch.logits, feed_dict=feed_dict)
       # print('soft labels:\t{}'.format(tn_soft_logit_np.shape))
       # print(np.argsort(-tn_soft_logit_np[0,:])[:10])
 

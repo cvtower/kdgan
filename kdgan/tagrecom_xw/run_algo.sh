@@ -14,7 +14,8 @@ python train_kd.py \
   --tch_model_ckpt=${tch_model_ckpt} \
   --dataset=$dataset \
   --image_model=${image_model} \
-  --kd_soft_pct=0.3 \
+  --kd_model=distn \
+  --kd_soft_pct=0.0 \
   --temperature=3.0 \
   --num_epoch=200
 exit
