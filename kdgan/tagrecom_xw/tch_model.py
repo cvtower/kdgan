@@ -20,7 +20,6 @@ class TCH():
 
     self.tch_scope = tch_scope = 'tch'
     vocab_size = utils.get_vocab_size(flags.dataset)
-    hidden_size = 100
     # initializer = tf.random_uniform([vocab_size, flags.embedding_size], -0.1, 0.1)
     with tf.variable_scope(tch_scope) as scope:
       with slim.arg_scope([slim.fully_connected],
@@ -45,7 +44,6 @@ class TCH():
           biases_initializer=tf.zeros_initializer()):
         # combined_layer = tf.concat([text_embedding], 1)
         combined_layer = tf.concat([image_embedding, text_embedding], 1)
-        combined_layer = slim.fully_connected(combined_layer, hidden_size)
         self.logits = slim.fully_connected(combined_layer, flags.num_label,
             activation_fn=None)
 
