@@ -20,13 +20,13 @@ tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
 print('#batch=%d' % (tn_num_batch))
 eval_interval = int(tn_size / flags.batch_size)
 
-tch_t = TCH(flags, is_training=True)
+tn_tch = TCH(flags, is_training=True)
 scope = tf.get_variable_scope()
 scope.reuse_variables()
-tch_v = TCH(flags, is_training=False)
+vd_tch = TCH(flags, is_training=False)
 
-tf.summary.scalar(tch_t.learning_rate.name, tch_t.learning_rate)
-tf.summary.scalar(tch_t.pre_loss.name, tch_t.pre_loss)
+tf.summary.scalar(tn_tch.learning_rate.name, tn_tch.learning_rate)
+tf.summary.scalar(tn_tch.pre_loss.name, tn_tch.pre_loss)
 summary_op = tf.summary.merge_all()
 init_op = tf.global_variables_initializer()
 
@@ -54,32 +54,32 @@ def main(_):
     for batch_t in range(tn_num_batch):
       tn_image_np, tn_text_np, tn_label_np = sess.run([tn_image_bt, tn_text_bt, tn_label_bt])
       feed_dict = {
-        tch_t.image_ph:tn_image_np,
-        tch_t.text_ph:tn_text_np,
-        tch_t.hard_label_ph:tn_label_np
+        tn_tch.image_ph:tn_image_np,
+        tn_tch.text_ph:tn_text_np,
+        tn_tch.hard_label_ph:tn_label_np
       }
-      _, summary = sess.run([tch_t.pre_update, summary_op], feed_dict=feed_dict)
+      _, summary = sess.run([tn_tch.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, batch_t)
 
       if (batch_t + 1) % eval_interval != 0:
           continue
       feed_dict = {
-        tch_v.image_ph:vd_image_np,
-        tch_v.text_ph:vd_text_np,
+        vd_tch.image_ph:vd_image_np,
+        vd_tch.text_ph:vd_text_np,
       }
-      logit_np_v = sess.run(tch_v.logits, feed_dict=feed_dict)
-      hit = metric.compute_hit(logit_np_v, vd_label_np, flags.cutoff)
+      vd_logit_np = sess.run(vd_tch.logits, feed_dict=feed_dict)
+      hit = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)
 
       bst_hit = max(hit, bst_hit)
       tot_time = time.time() - start
-      global_step = sess.run(tch_t.global_step)
+      global_step = sess.run(tn_tch.global_step)
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
       print('#%08d curhit=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
           (global_step, hit, bst_hit, tot_time, avg_time))
 
       if hit < bst_hit:
         continue
-      tch_t.saver.save(utils.get_session(sess), flags.tch_model_ckpt)
+      tn_tch.saver.save(utils.get_session(sess), flags.tch_model_ckpt)
   print('bsthit=%.4f' % (bst_hit))
 
 if __name__ == '__main__':

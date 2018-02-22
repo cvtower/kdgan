@@ -38,8 +38,8 @@ class TCH():
         text_embedding = tf.nn.embedding_lookup(word_embedding, self.text_ph)
         text_embedding = tf.reduce_mean(text_embedding, axis=-2)
 
-      combined_layer = tf.concat([text_embedding], 1)
-      # combined_layer = tf.concat([image_embedding, text_embedding], 1)
+      # combined_layer = tf.concat([text_embedding], 1)
+      combined_layer = tf.concat([image_embedding, text_embedding], 1)
 
       self.logits = slim.fully_connected(combined_layer, flags.num_label,
           activation_fn=None)
