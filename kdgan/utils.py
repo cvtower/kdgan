@@ -243,20 +243,20 @@ def get_lr(flags,
     learning_rate,
     scope_name):
   decay_steps = int(tn_size * flags.num_epochs_per_decay / flags.batch_size)
-  if flags.learning_rate_decay_type == 'exponential':
-    name = '%s_exponential_decay_learning_rate' % scope_name
+  if flags.learning_rate_decay_type == 'exp':
+    name = '%s_exp_learning_rate' % scope_name
     learning_rate = tf.train.exponential_decay(learning_rate,
         global_step,
         decay_steps,
         flags.learning_rate_decay_factor,
         staircase=True,
         name=name)
-  elif flags.learning_rate_decay_type == 'fixed':
-    name = '%s_fixed_learning_rate' % scope_name
+  elif flags.learning_rate_decay_type == 'fix':
+    name = '%s_fix_learning_rate' % scope_name
     learning_rate = tf.constant(learning_rate,
         name=name)
-  elif flags.learning_rate_decay_type == 'polynomial':
-    name = '%s_polynomial_decay_learning_rate' % scope_name
+  elif flags.learning_rate_decay_type == 'ply':
+    name = '%s_ply_learning_rate' % scope_name
     learning_rate = tf.train.polynomial_decay(learning_rate,
         global_step,
         decay_steps,

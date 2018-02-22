@@ -56,26 +56,26 @@ class GEN():
       # pre train
       pre_losses = self.get_pre_losses(flags)
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % gen_scope)
-      pre_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
       # kd train
       kd_losses = self.get_kd_losses(flags)
       self.kd_loss = tf.add_n(kd_losses, name='%s_kd_loss' % gen_scope)
-      kd_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      kd_optimizer = utils.get_opt(flags, self.learning_rate)
       self.kd_update = kd_optimizer.minimize(self.kd_loss, global_step=global_step)
 
       # gan train
       gan_losses = self.get_gan_losses(flags)
       gan_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % gen_scope)
-      gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      gan_optimizer = utils.get_opt(flags, self.learning_rate)
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=global_step)
 
       # kdgan train
       kdgan_losses = self.get_kd_losses(flags) + self.get_gan_losses(flags)
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % gen_scope)
-      kdgan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
       self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
 
   def get_regularization_losses(self):

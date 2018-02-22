@@ -61,10 +61,10 @@ class DIS():
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = global_step = tf.Variable(0, trainable=False)
-      train_data_size = utils.get_tn_size(flags.dataset)
+      tn_size = utils.get_tn_size(flags.dataset)
       self.learning_rate = utils.get_lr(
           flags,
-          train_data_size,
+          tn_size,
           self.global_step,
           flags.dis_learning_rate,
           dis_scope)
@@ -72,14 +72,14 @@ class DIS():
       # pre train
       pre_losses = self.get_pre_losses()
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % dis_scope)
-      pre_optimizer = tf.train.AdamOptimizer(self.learning_rate)
+      pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
       # kdgan train
       sample_logits = tf.gather_nd(self.logits, self.sample_ph)
       kdgan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % dis_scope)
-      kdgan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
       self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
 
   def get_regularization_losses(self):
