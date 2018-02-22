@@ -53,7 +53,7 @@ python pretrain_gen.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --optimizer=sgd \
-  --gen_learning_rate=0.01 \
+  --gen_learning_rate=0.1 \
   --num_epoch=200
 exit
 

@@ -67,7 +67,6 @@ class GEN():
 
       # gan train
       gan_losses = self.get_gan_losses(flags)
-      gan_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % gen_scope)
       gan_optimizer = utils.get_opt(flags, self.learning_rate)
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=global_step)
