@@ -10,7 +10,7 @@ python pretrain_dis.py \
   --dis_model_ckpt=${checkpoint_dir}/dis_$variant.ckpt \
   --dataset=$dataset \
   --image_model=${image_model} \
-  --num_epoch=200
+  --num_epoch=500
 # 373s best hit=0.7690
 exit
 
@@ -18,7 +18,7 @@ python pretrain_tch.py \
   --tch_model_ckpt=${checkpoint_dir}/tch_$variant.ckpt \
   --dataset=$dataset \
   --image_model=${image_model} \
-  --num_epoch=200
+  --num_epoch=500
 # 0232s best hit=0.9657
 exit
 
