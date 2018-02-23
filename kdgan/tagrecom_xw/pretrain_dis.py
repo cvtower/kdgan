@@ -47,7 +47,7 @@ def main(_):
     sess.run(init_op)
     start = time.time()
     for tn_batch in range(tn_num_batch):
-      tn_image_np, tn_text_np, tn_label_np = yfcc100m.next_batch(sess)
+      tn_image_np, tn_text_np, tn_label_np = yfcc100m.next_batch(flags, sess)
       feed_dict = {
         tn_dis.image_ph:tn_image_np,
         tn_dis.text_ph:tn_text_np,

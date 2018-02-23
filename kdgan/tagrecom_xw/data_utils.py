@@ -26,7 +26,7 @@ class YFCC100M(object):
     bt_list = utils.generate_batch(ts_list, flags.batch_size)
     return bt_list
 
-  def next_batch(self, sess):
+  def next_batch(self, flags, sess):
     rand = random.random()
     tn_vd_border = 1.0 * flags.num_train / (flags.num_train + flags.num_valid)
     if rand < tn_vd_border:
