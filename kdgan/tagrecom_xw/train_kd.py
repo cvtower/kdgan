@@ -61,8 +61,6 @@ def main(_):
     tch_hit = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)
     print('tchhit=%.4f' % (tch_hit))
 
-    exit()
-
     start = time.time()
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_text_np, tn_hard_label_np = yfcc100m.next_batch(flags, sess)
