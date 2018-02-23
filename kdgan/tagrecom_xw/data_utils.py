@@ -28,7 +28,7 @@ class YFCC100M(object):
 
   def next_batch(self, flags, sess):
     rand = random.random()
-    tn_vd_border = 1.0 * flags.num_train / (flags.num_train + flags.num_valid)
+    tn_vd_border = 1.0 * flags.epk_train / (flags.epk_train + flags.epk_valid)
     if rand < tn_vd_border:
       image_bt, text_bt, label_bt = self.tn_image_bt, self.tn_text_bt, self.tn_label_bt
     else:
