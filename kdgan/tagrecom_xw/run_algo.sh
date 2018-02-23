@@ -13,7 +13,7 @@ python pretrain_dis.py \
   --dis_model_ckpt=${dis_model_ckpt} \
   --dataset=$dataset \
   --image_model=${image_model} \
-  --optimizer=sgd \
+  --optimizer=adam \
   --learning_rate_decay_type=fix \
   --gen_learning_rate=0.1 \
   --num_epoch=200
