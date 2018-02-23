@@ -1,6 +1,6 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
-checkpoint_dir=$kdgan_dir/checkpoints
-pretrained_dir=$checkpoint_dir/pretrained
+checkpoint_dir=${kdgan_dir}/checkpoints
+pretrained_dir=${checkpoint_dir}/pretrained
 
 variant=basic
 dataset=yfcc10k

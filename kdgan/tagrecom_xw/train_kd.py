@@ -4,6 +4,7 @@ from kdgan import utils
 from flags import flags
 from gen_model import GEN
 from tch_model import TCH
+import data_utils
 
 import math
 import os
@@ -36,12 +37,12 @@ for variable in tf.trainable_variables():
     num_params *= dim.value
   print('%-50s (%d params)' % (variable.name, num_params))
 
-tn_data_sources = utils.get_data_sources(flags, is_training=True, single_source=False)
-# tn_data_sources = utils.get_data_sources(flags, is_training=False, single_source=False)
-print('#tfrecord=%d for training' % (len(tn_data_sources)))
-tn_ts_list = utils.decode_tfrecord(flags, tn_data_sources, shuffle=True)
-tn_bt_list = utils.generate_batch(tn_ts_list, flags.batch_size)
-tn_user_bt, tn_image_bt, tn_text_bt, tn_label_bt, _ = tn_bt_list
+yfcc100m = data_utils.YFCC100M()
+for _ in range(100):
+  batch = yfcc100m.next_batch()
+  print(batch)
+exit()
+
 vd_image_np, vd_text_np, vd_label_np, _ = utils.get_valid_data(flags)
 
 def main(_):
