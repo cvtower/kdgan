@@ -20,6 +20,8 @@ python train_kd.py \
   --kd_model=distn \
   --kd_soft_pct=0.1 \
   --temperature=3.0 \
+  --epk_train=1.0 \
+  --epk_valid=0.0 \
   --num_epoch=200
 exit
 
@@ -30,8 +32,8 @@ python pretrain_tch.py \
   --optimizer=sgd \
   --learning_rate_decay_type=fix \
   --gen_learning_rate=0.1 \
-  --epk_train=1 \
-  --epk_valid=1 \
+  --epk_train=0.8 \
+  --epk_valid=0.2 \
   --num_epoch=200
 # bsthit=0.8340 et=731s
 exit
@@ -43,8 +45,8 @@ python pretrain_dis.py \
   --optimizer=sgd \
   --learning_rate_decay_type=fix \
   --gen_learning_rate=0.1 \
-  --epk_train=1 \
-  --epk_valid=1 \
+  --epk_train=0.8 \
+  --epk_valid=0.2 \
   --num_epoch=200
 # bsthit=0.8240 et=726s
 exit

@@ -43,6 +43,7 @@ for _ in range(100):
   print(batch)
 exit()
 
+yfcc100m = data_utils.YFCC100M(flags)
 vd_image_np, vd_text_np, vd_label_np, _ = utils.get_valid_data(flags)
 
 def main(_):
@@ -65,6 +66,8 @@ def main(_):
     vd_logit_np = sess.run(vd_tch.logits, feed_dict=feed_dict)
     tch_hit = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)
     print('tchhit=%.4f' % (tch_hit))
+
+    exit()
 
     start = time.time()
     for tn_batch in range(tn_num_batch):
