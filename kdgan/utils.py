@@ -270,7 +270,7 @@ def get_lr(flags,
 
 def get_opt(flags, learning_rate):
   if flags.optimizer == 'adam':
-    optimizer = tf.train.AdamOptimizer(learning_rate, epsilon=1e-16)
+    optimizer = tf.train.AdamOptimizer(learning_rate)
   elif flags.optimizer == 'rmsprop':
     optimizer = tf.train.RMSPropOptimizer(learning_rate)
   elif flags.optimizer == 'sgd':
