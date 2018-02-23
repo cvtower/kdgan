@@ -20,8 +20,6 @@ python train_kd.py \
   --kd_model=distn \
   --kd_soft_pct=0.1 \
   --temperature=3.0 \
-  --epk_train=1.0 \
-  --epk_valid=0.0 \
   --num_epoch=200
 exit
 
