@@ -27,7 +27,7 @@ python pretrain_tch.py \
   --tch_model_ckpt=${tch_model_ckpt} \
   --dataset=$dataset \
   --image_model=${image_model} \
-  --optimizer=sgd \
+  --optimizer=adam \
   --learning_rate_decay_type=fix \
   --gen_learning_rate=0.1 \
   --epk_train=0.8 \
