@@ -36,8 +36,8 @@ for variable in tf.trainable_variables():
     num_params *= dim.value
   print('%-50s (%d params)' % (variable.name, num_params))
 
-tn_data_sources = utils.get_data_sources(flags, is_training=True, single_source=False)
-# tn_data_sources = utils.get_data_sources(flags, is_training=False, single_source=False)
+tn_data_sources = utils.get_data_sources(flags, is_training=True, single=False)
+# tn_data_sources = utils.get_data_sources(flags, is_training=False, single=False)
 print('#tfrecord=%d' % (len(tn_data_sources)))
 
 tn_ts_list = utils.decode_tfrecord(flags, tn_data_sources, shuffle=True)

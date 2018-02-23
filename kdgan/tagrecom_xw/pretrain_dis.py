@@ -3,6 +3,7 @@ from kdgan import metric
 from kdgan import utils
 from flags import flags
 from dis_model import DIS
+import data_utils
 
 import os
 import time
@@ -36,14 +37,7 @@ for variable in tf.trainable_variables():
     num_params *= dim.value
   print('%-50s (%d params)' % (variable.name, num_params))
 
-tn_data_sources = utils.get_data_sources(flags, is_training=True, single_source=False)
-# tn_data_sources = utils.get_data_sources(flags, is_training=False, single_source=False)
-print('#tfrecord=%d' % (len(tn_data_sources)))
-
-tn_ts_list = utils.decode_tfrecord(flags, tn_data_sources, shuffle=True)
-tn_bt_list = utils.generate_batch(tn_ts_list, flags.batch_size)
-tn_user_bt, tn_image_bt, tn_text_bt, tn_label_bt, _ = tn_bt_list
-
+yfcc100m = data_utils.YFCC100M(flags)
 vd_image_np, vd_text_np, vd_label_np, _ = utils.get_valid_data(flags)
 
 def main(_):
@@ -53,7 +47,7 @@ def main(_):
     sess.run(init_op)
     start = time.time()
     for tn_batch in range(tn_num_batch):
-      tn_image_np, tn_text_np, tn_label_np = sess.run([tn_image_bt, tn_text_bt, tn_label_bt])
+      tn_image_np, tn_text_np, tn_label_np = yfcc100m.next_batch(sess)
       feed_dict = {
         tn_dis.image_ph:tn_image_np,
         tn_dis.text_ph:tn_text_np,

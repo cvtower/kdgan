@@ -123,7 +123,7 @@ def generate_batch_bak(model, ts_list, batch_size):
             num_threads=config.num_threads)
     return user_bt, image_bt, text_bt, label_bt, image_file_bt
 
-def get_data_sources(flags, is_training=True, single_source=False):
+def get_data_sources(flags, is_training=True, single=False):
   for (dirpath, dirnames, filenames) in os.walk(config.prerecord_dir):
     break
   marker = 'train'
@@ -135,7 +135,7 @@ def get_data_sources(flags, is_training=True, single_source=False):
       continue
     if filename.find(flags.model_name) < 0:
       continue
-    if single_source and (filename.find('000') < 0):
+    if single and (filename.find('000') < 0):
       continue
     filepath = path.join(config.prerecord_dir, filename)
     data_sources.append(filepath)

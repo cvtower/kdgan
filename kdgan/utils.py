@@ -76,7 +76,7 @@ def count_data_size(infile):
   data_size = len(data)
   return data_size
 
-def get_data_sources(flags, is_training=True, single_source=False):
+def get_data_sources(flags, is_training=True, single=False):
   precomputed_dir = get_precomputed_dir(flags.dataset)
   for (dirpath, dirnames, filenames) in os.walk(precomputed_dir):
     break
@@ -89,7 +89,7 @@ def get_data_sources(flags, is_training=True, single_source=False):
       continue
     if filename.find(flags.image_model) < 0:
       continue
-    if single_source and (filename.find('000') < 0):
+    if single and (filename.find('000') < 0):
       continue
     filepath = path.join(precomputed_dir, filename)
     data_sources.append(filepath)
