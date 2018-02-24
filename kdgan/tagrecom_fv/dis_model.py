@@ -59,7 +59,7 @@ class DIS():
         flags,
         train_data_size,
         global_step,
-        flags.learning_rate,
+        flags.dis_learning_rate,
         dis_scope)
 
     # pre train
