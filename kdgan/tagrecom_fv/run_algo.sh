@@ -1,16 +1,21 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
-checkpoint_dir=$kdgan_dir/checkpoints
-pretrained_dir=$checkpoint_dir/pretrained
-figure_data_dir=$kdgan_dir/figure_data
+checkpoint_dir=${kdgan_dir}/checkpoints
+pretrained_dir=${checkpoint_dir}/pretrained
+
+variant=basic
+dataset=yfcc10k
+image_model=vgg_16
+dis_model_ckpt=${checkpoint_dir}/dis_$variant.ckpt
+gen_model_ckpt=${checkpoint_dir}/gen_$variant.ckpt
+tch_model_ckpt=${checkpoint_dir}/tch_$variant.ckpt
 
 python pretrain_gen.py \
-  --dataset=yfcc10k \
-  --model_name=vgg_16 \
-  --image_model=vgg_16 \
-  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
-  --gen_figure_data=$figure_data_dir/gen_vgg_16.csv \
-  --feature_size=4096 \
-  --learning_rate=0.05 \
+  --dataset=$dataset \
+  --image_model=${image_model} \
+  --gen_model_ckpt=${gen_model_ckpt} \
+  --optimizer=sgd \
+  --learning_rate_decay_type=fix \
+  --gen_learning_rate=0.05 \
   --num_epoch=200
 exit
 
