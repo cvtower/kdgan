@@ -170,12 +170,6 @@ def main(_):
         # best_hit_v = hit_v
   print('bsthit=%.4f' % (best_hit_v))
 
-  utils.create_if_nonexist(os.path.dirname(flags.gan_figure_data))
-  fout = open(flags.gan_figure_data, 'w')
-  for epoch, hit_v in figure_data:
-    fout.write('%d\t%.4f\n' % (epoch, hit_v))
-  fout.close()
-
 if __name__ == '__main__':
   tf.app.run()
 

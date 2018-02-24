@@ -27,7 +27,7 @@ python train_gan.py \
   --optimizer=sgd \
   --learning_rate_decay_type=fix \
   --dis_learning_rate=0.05 \
-  --gen_learning_rate=0.05 \
+  --gen_learning_rate=0.01 \
   --num_epoch=200 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10
