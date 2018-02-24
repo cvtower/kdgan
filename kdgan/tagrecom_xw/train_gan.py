@@ -51,8 +51,9 @@ def main(_):
     sess.run(init_op)
     tn_dis.saver.restore(sess, flags.dis_model_ckpt)
     tn_gen.saver.restore(sess, flags.gen_model_ckpt)
-    init_prec = yfcceval.compute_prec(flags, sess, vd_gen)
-    print('init prec=%.4f' % (init_prec))
+    ini_gen = yfcceval.compute_prec(flags, sess, vd_gen)
+    ini_dis = yfcceval.compute_prec(flags, sess, vd_dis)
+    print('inigen=%.4f inidis=%.4f' % (ini_gen, ini_dis))
     exit()
     start = time.time()
     batch_d, batch_g = -1, -1
