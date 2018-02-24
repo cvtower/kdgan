@@ -26,7 +26,7 @@ python pretrain_dis.py \
   --dis_model_ckpt=${dis_model_ckpt} \
   --feature_size=4096 \
   --learning_rate=0.05 \
-  --num_epoch=200
+  --num_epoch=100
 exit
 
 python pretrain_gen.py \
