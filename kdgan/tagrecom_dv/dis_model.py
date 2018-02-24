@@ -50,7 +50,8 @@ class DIS():
         text_embedding = tf.reduce_mean(text_embedding, axis=-2)
         #self.logits = slim.fully_connected(text_embedding, flags.num_label,
                   #activation_fn=None)
-        self.combined_layer = tf.concat([net, text_embedding], 1)
+        # self.combined_layer = tf.concat([net, text_embedding], 1)
+        self.combined_layer = tf.concat([net], 1)
         self.logits =slim.fully_connected(self.combined_layer, flags.num_label,
                 activation_fn=None) 
         #"""
