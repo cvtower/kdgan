@@ -20,7 +20,6 @@ tf.app.flags.DEFINE_integer('cutoff', 3, '')
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
-tf.app.flags.DEFINE_string('image_model', None, '')
 # training
 tf.app.flags.DEFINE_integer('batch_size', 32, '')
 tf.app.flags.DEFINE_integer('num_epoch', 20, '')
@@ -29,7 +28,7 @@ tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.95, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 0.00001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 20.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exp', 'fix|ply')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 # dis model
 tf.app.flags.DEFINE_float('dis_weight_decay', 0.0, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
@@ -51,7 +50,7 @@ tf.app.flags.DEFINE_integer('num_positive', 1, '')
 tf.app.flags.DEFINE_string('gan_figure_data', None, '')
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_tn_size(flags.dataset)
+train_data_size = utils.get_train_data_size(flags.dataset)
 eval_interval = int(train_data_size / flags.batch_size)
 print('eval:\t#interval=%d' % (eval_interval))
 
@@ -104,7 +103,7 @@ def main(_):
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
-      hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
+      hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
       print('init hit=%.4f' % (hit_v))
 
       batch_d, batch_g = -1, -1
@@ -114,14 +113,13 @@ def main(_):
           num_batch_d = math.ceil(train_data_size / flags.batch_size)
           for _ in range(num_batch_d):
             batch_d += 1
-            image_np_d, text_np_d, label_dat_d = sess.run([image_bt_d, text_bt_d, label_bt_d])
+            image_np_d, label_dat_d = sess.run([image_bt_d, label_bt_d])
             feed_dict = {gen_t.image_ph:image_np_d}
             label_gen_d, = sess.run([gen_t.labels], feed_dict=feed_dict)
             sample_np_d, label_np_d = utils.gan_dis_sample(
                 flags, label_dat_d, label_gen_d)
             feed_dict = {
               dis_t.image_ph:image_np_d,
-              dis_t.text_ph:text_np_d,
               dis_t.sample_ph:sample_np_d,
               dis_t.dis_label_ph:label_np_d,
             }
@@ -134,14 +132,13 @@ def main(_):
           num_batch_g = math.ceil(train_data_size / flags.batch_size)
           for _ in range(num_batch_g):
             batch_g += 1
-            image_np_g, text_np_g, label_dat_g = sess.run([image_bt_g, text_bt_g, label_bt_g])
+            image_np_g, label_dat_g = sess.run([image_bt_g, label_bt_g])
             feed_dict = {gen_t.image_ph:image_np_g}
             label_gen_g, = sess.run([gen_t.labels], feed_dict=feed_dict)
             sample_np_g = utils.generate_label(
                 flags, label_dat_g, label_gen_g)
             feed_dict = {
               dis_t.image_ph:image_np_g,
-              dis_t.text_ph:text_np_g,
               dis_t.sample_ph:sample_np_g,
             }
             reward_np_g, = sess.run([dis_t.rewards], feed_dict=feed_dict)
@@ -154,22 +151,22 @@ def main(_):
                 feed_dict=feed_dict)
             writer.add_summary(summary_g, batch_g)
             
-            if (batch_g + 1) % eval_interval != 0:
-              continue
-            hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
-            tot_time = time.time() - start
-            print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
-            if hit_v <= best_hit_v:
-              continue
-            best_hit_v = hit_v
-            print('best hit=%.4f' % (best_hit_v))
-        # hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
-        # tot_time = time.time() - start
-        # print('#%03d curbst=%.4f %.0fs' % (epoch, hit_v, tot_time))
-        # figure_data.append((epoch, hit_v))
-        # if hit_v <= best_hit_v:
-        #   continue
-        # best_hit_v = hit_v
+            # if (batch_g + 1) % eval_interval != 0:
+            #   continue
+            # hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+            # tot_time = time.time() - start
+            # print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
+            # if hit_v <= best_hit_v:
+            #   continue
+            # best_hit_v = hit_v
+            # print('best hit=%.4f' % (best_hit_v))
+        hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+        tot_time = time.time() - start
+        print('#%03d curbst=%.4f %.0fs' % (epoch, hit_v, tot_time))
+        figure_data.append((epoch, hit_v))
+        if hit_v <= best_hit_v:
+          continue
+        best_hit_v = hit_v
   print('bsthit=%.4f' % (best_hit_v))
 
   utils.create_if_nonexist(os.path.dirname(flags.gan_figure_data))

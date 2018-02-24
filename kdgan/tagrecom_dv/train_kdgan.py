@@ -21,7 +21,6 @@ tf.app.flags.DEFINE_integer('cutoff', 3, '')
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
-tf.app.flags.DEFINE_string('image_model', None, '')
 # training
 tf.app.flags.DEFINE_integer('batch_size', 32, '')
 tf.app.flags.DEFINE_integer('num_epoch', 20, '')
@@ -50,10 +49,9 @@ tf.app.flags.DEFINE_integer('num_tch_epoch', 5, '')
 tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
 tf.app.flags.DEFINE_string('kdgan_figure_data', None, '')
-tf.app.flags.DEFINE_string('kdgan_model_ckpt', None, '')
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_tn_size(flags.dataset)
+train_data_size = utils.get_train_data_size(flags.dataset)
 eval_interval = int(train_data_size / flags.batch_size)
 print('eval:\t#interval=%d' % (eval_interval))
 num_batch_per_epoch = math.ceil(train_data_size / flags.batch_size)
@@ -126,14 +124,13 @@ def main(_):
         for dis_epoch in range(flags.num_dis_epoch):
           print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
           for _ in range(num_batch_per_epoch):
-            #continue
             batch_d += 1
             image_d, text_d, label_dat_d = sess.run([image_bt_d, text_bt_d, label_bt_d])
             
             feed_dict = {gen_t.image_ph:image_d}
             label_gen_d, = sess.run([gen_t.labels], feed_dict=feed_dict)
             # print('gen label', label_gen_d.shape)
-            feed_dict = {tch_t.text_ph:text_d, tch_t.image_ph:image_d}
+            feed_dict = {tch_t.text_ph:text_d}
             label_tch_d, = sess.run([tch_t.labels], feed_dict=feed_dict)
             # print('tch label', label_tch_d.shape)
 
@@ -142,7 +139,6 @@ def main(_):
             # print(sample_d.shape, label_d.shape)
 
             feed_dict = {
-              dis_t.text_ph: text_d,
               dis_t.image_ph:image_d,
               dis_t.sample_ph:sample_d,
               dis_t.dis_label_ph:label_d,
@@ -158,35 +154,23 @@ def main(_):
             batch_t += 1
             image_t, text_t, label_dat_t = sess.run([image_bt_t, text_bt_t, label_bt_t])
 
-            feed_dict = {tch_t.text_ph:text_t, tch_t.image_ph:image_t}
+            feed_dict = {tch_t.text_ph:text_t}
             label_tch_t, = sess.run([tch_t.labels], feed_dict=feed_dict)
             sample_t = utils.generate_label(flags, label_dat_t, label_tch_t)
             feed_dict = {
-              dis_t.text_ph: text_t,
               dis_t.image_ph:image_t,
               dis_t.sample_ph:sample_t,
             }
             reward_t, = sess.run([dis_t.rewards], feed_dict=feed_dict)
-            
-            feed_dict = {
-              gen_t.image_ph:image_t,
-            }
-            label_gen_g = sess.run(gen_t.logits, feed_dict = feed_dict)
-            #print(len(label_dat_t), len(label_dat_t[0]))
-            #exit()
+
             feed_dict = {
               tch_t.text_ph:text_t,
-              tch_t.image_ph: image_t,
               tch_t.sample_ph:sample_t,
               tch_t.reward_ph:reward_t,
-              tch_t.hard_label_ph:label_dat_t,
-              tch_t.soft_label_ph:label_gen_g,
             }
-
-            _, summary_t, tch_kdgan_loss = sess.run([tch_t.kdgan_update, tch_summary_op, tch_t.kdgan_loss], 
+            _, summary_t = sess.run([tch_t.kdgan_update, tch_summary_op], 
                 feed_dict=feed_dict)
             writer.add_summary(summary_t, batch_t)
-            #print("teacher kdgan loss:", tch_kdgan_loss)
 
         for gen_epoch in range(flags.num_gen_epoch):
           print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
@@ -194,7 +178,7 @@ def main(_):
             batch_g += 1
             image_g, text_g, label_dat_g = sess.run([image_bt_g, text_bt_g, label_bt_g])
 
-            feed_dict = {tch_t.text_ph:text_g, tch_t.image_ph: image_g}
+            feed_dict = {tch_t.text_ph:text_g}
             label_tch_g, = sess.run([tch_t.labels], feed_dict=feed_dict)
             # print('tch label {}'.format(label_tch_g.shape))
 
@@ -202,7 +186,6 @@ def main(_):
             label_gen_g, = sess.run([gen_t.labels], feed_dict=feed_dict)
             sample_g = utils.generate_label(flags, label_dat_g, label_gen_g)
             feed_dict = {
-              dis_t.text_ph:text_g,
               dis_t.image_ph:image_g,
               dis_t.sample_ph:sample_g,
             }
@@ -237,12 +220,7 @@ def main(_):
         if gen_hit <= best_hit_v:
           continue
         best_hit_v = gen_hit
-        print("epoch ", epoch+1, ":, new best validation hit:", best_hit_v, "saving...")
-        #gen_t.saver.save(sess, flags.kdgan_model_ckpt, global_step= epoch+1)
-        print("finish saving")
-
   print('best hit=%.4f' % (best_hit_v))
-  
 
   utils.create_if_nonexist(os.path.dirname(flags.kdgan_figure_data))
   fout = open(flags.kdgan_figure_data, 'w')

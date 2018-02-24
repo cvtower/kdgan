@@ -20,7 +20,6 @@ tf.app.flags.DEFINE_integer('cutoff', 3, '')
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
-tf.app.flags.DEFINE_string('image_model', None, '')
 # training
 tf.app.flags.DEFINE_integer('batch_size', 32, '')
 tf.app.flags.DEFINE_integer('num_epoch', 20, '')
@@ -29,7 +28,7 @@ tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.95, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 0.00001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 10.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exp', 'fix|ply')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 # dis model
 tf.app.flags.DEFINE_float('dis_weight_decay', 0.0, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
@@ -47,8 +46,8 @@ tf.app.flags.DEFINE_string('tch_model_ckpt', None, '')
 tf.app.flags.DEFINE_integer('num_tch_epoch', 5, '')
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_tn_size(flags.dataset)
-valid_data_size = utils.get_vd_size(flags.dataset)
+train_data_size = utils.get_train_data_size(flags.dataset)
+valid_data_size = utils.get_valid_data_size(flags.dataset)
 num_batch_t = int(flags.num_epoch * train_data_size / flags.batch_size)
 num_batch_v = int(valid_data_size / config.valid_batch_size)
 eval_interval = int(train_data_size / flags.batch_size)
@@ -90,9 +89,8 @@ def main(_):
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
       for batch_t in range(num_batch_t):
-        #image_np_t, label_np_t = sess.run([image_bt_t, label_bt_t])
-        text_np_t, image_np_t, label_np_t = sess.run([text_bt_v, image_bt_v, label_bt_v])
-        feed_dict = {dis_t.text_ph:text_np_t, dis_t.image_ph:image_np_t, dis_t.hard_label_ph:label_np_t}
+        image_np_t, label_np_t = sess.run([image_bt_t, label_bt_t])
+        feed_dict = {dis_t.image_ph:image_np_t, dis_t.hard_label_ph:label_np_t}
         _, summary = sess.run([dis_t.pre_update, summary_op], feed_dict=feed_dict)
         writer.add_summary(summary, batch_t)
 
@@ -101,10 +99,10 @@ def main(_):
 
         hit_v = []
         for batch_v in range(num_batch_v):
-          text_np_v, image_np_v, label_np_v = sess.run([text_bt_v, image_bt_v, label_bt_v])
-          feed_dict = {dis_v.text_ph:text_np_v, dis_v.image_ph:image_np_v}
+          image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
+          feed_dict = {dis_v.image_ph:image_np_v}
           logit_np_v, = sess.run([dis_v.logits], feed_dict=feed_dict)
-          hit_bt = metric.compute_prec(logit_np_v, label_np_v, flags.cutoff)
+          hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
           hit_v.append(hit_bt)
         hit_v = np.mean(hit_v)
 

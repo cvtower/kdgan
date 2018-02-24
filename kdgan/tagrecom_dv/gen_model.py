@@ -46,15 +46,14 @@ class GEN():
     self.saver = tf.train.Saver(save_dict)
 
     global_step = tf.Variable(0, trainable=False)
-    train_data_size = utils.get_tn_size(flags.dataset)
+    train_data_size = utils.get_train_data_size(flags.dataset)
     self.learning_rate = utils.get_lr(
         flags,
-        train_data_size,
         global_step,
-        #train_data_size,
+        train_data_size,
         flags.learning_rate,
-        #flags.learning_rate_decay_factor,
-        #flags.num_epochs_per_decay,
+        flags.learning_rate_decay_factor,
+        flags.num_epochs_per_decay,
         gen_scope)
 
     # pre train

@@ -20,7 +20,6 @@ tf.app.flags.DEFINE_integer('cutoff', 3, '')
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
-tf.app.flags.DEFINE_string('image_model', None, '')
 # training
 tf.app.flags.DEFINE_integer('batch_size', 32, '')
 tf.app.flags.DEFINE_integer('num_epoch', 20, '')
@@ -29,7 +28,7 @@ tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.95, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 0.00001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 10.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exp', 'fix|ply')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
 # dis model
 tf.app.flags.DEFINE_float('dis_weight_decay', 0.0, 'l2 coefficient')
 tf.app.flags.DEFINE_integer('num_dis_epoch', 10, '')
@@ -48,8 +47,8 @@ tf.app.flags.DEFINE_string('tch_model_ckpt', None, '')
 tf.app.flags.DEFINE_integer('num_tch_epoch', 5, '')
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_tn_size(flags.dataset)
-valid_data_size = utils.get_vd_size(flags.dataset)
+train_data_size = utils.get_train_data_size(flags.dataset)
+valid_data_size = utils.get_valid_data_size(flags.dataset)
 num_batch_t = int(flags.num_epoch * train_data_size / flags.batch_size)
 num_batch_v = int(valid_data_size / config.valid_batch_size)
 eval_interval = int(train_data_size / flags.batch_size)
@@ -116,7 +115,7 @@ def main(_):
           image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
           feed_dict = {gen_v.image_ph:image_np_v}
           logit_np_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
-          hit_bt = metric.compute_prec(logit_np_v, label_np_v, flags.cutoff)
+          hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
           hit_v.append(hit_bt)
         hit_v = np.mean(hit_v)
 
@@ -129,6 +128,12 @@ def main(_):
         print('#%03d curbst=%.4f time=%.0fs' % (epoch, hit_v, tot_time))
         gen_t.saver.save(sess, flags.gen_model_ckpt)
   print('bsthit=%.4f' % (best_hit_v))
+
+  utils.create_if_nonexist(os.path.dirname(flags.gen_figure_data))
+  fout = open(flags.gen_figure_data, 'w')
+  for epoch, hit_v, batch_t in figure_data:
+    fout.write('%d\t%.4f\t%d\n' % (epoch, hit_v, batch_t))
+  fout.close()
 
 if __name__ == '__main__':
   tf.app.run()
