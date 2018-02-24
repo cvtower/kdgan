@@ -14,7 +14,7 @@ python eval_model.py \
   --image_model=${image_model} \
   --feature_size=${feature_size} \
   --model_name=dis \
-  --model_ckpt=${kdgan_dir}/kdgan/checkpoints/dis_${image_model}.ckpt \
+  --model_ckpt=${kdgan_dir}/kdgan/checkpoints/dis_vgg_16.ckpt \
   --model_run=${runs_dir}/${train_dataset}_${test_dataset}_dis.run
 exit
 
