@@ -2,7 +2,8 @@ from kdgan import config
 from kdgan import metric
 from kdgan import utils
 from flags import flags
-from gen_model import GEN
+from dis_model import DIS
+import data_utils
 
 import os
 import time
@@ -15,18 +16,18 @@ from tensorflow.contrib import slim
 
 tn_size = utils.get_tn_size(flags.dataset)
 vd_size = utils.get_vd_size(flags.dataset)
+print('#tn_data=%d #vd_data=%d' % (tn_size, vd_size))
 tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
-vd_num_batch = int(vd_size / config.valid_batch_size)
-print('#tn_size=%d #vd_size=%d' % (tn_size, vd_size))
+print('#batch=%d' % (tn_num_batch))
 eval_interval = int(tn_size / flags.batch_size)
 
-tn_gen = GEN(flags, is_training=True)
+tn_dis = DIS(flags, is_training=True)
 scope = tf.get_variable_scope()
 scope.reuse_variables()
-vd_gen = GEN(flags, is_training=False)
+vd_dis = DIS(flags, is_training=False)
 
-tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate)
-tf.summary.scalar(tn_gen.pre_loss.name, tn_gen.pre_loss)
+tf.summary.scalar(tn_dis.learning_rate.name, tn_dis.learning_rate)
+tf.summary.scalar(tn_dis.pre_loss.name, tn_dis.pre_loss)
 summary_op = tf.summary.merge_all()
 init_op = tf.global_variables_initializer()
 
@@ -46,33 +47,30 @@ def main(_):
     sess.run(init_op)
     start = time.time()
     for tn_batch in range(tn_num_batch):
-      tn_image_np, tn_label_np = yfccdata.next_batch(flags, sess)
-      feed_dict = {tn_gen.image_ph:tn_image_np, tn_gen.hard_label_ph:tn_label_np}
-      _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
+      tn_image_np, tn_text_np, tn_label_np = yfccdata.next_batch(flags, sess)
+      feed_dict = {
+        tn_dis.image_ph:tn_image_np,
+        tn_dis.text_ph:tn_text_np,
+        tn_dis.hard_label_ph:tn_label_np
+      }
+      _, summary = sess.run([tn_dis.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
 
       if (tn_batch + 1) % eval_interval != 0:
           continue
-      prec = yfcceval.compute_prec(flags, sess, vd_gen)
+      prec = yfcceval.compute_prec(flags, sess, vd_dis)
       best_prec = max(prec, best_prec)
       tot_time = time.time() - start
-      global_step = sess.run(tn_gen.global_step)
+      global_step = sess.run(tn_dis.global_step)
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
       print('#%08d prec@%d=%.4f best=%.4f tot=%.0fs avg=%.2fs/epoch' % 
           (global_step, flags.cutoff, prec, best_prec, tot_time, avg_time))
 
       if prec < best_prec:
         continue
-      tn_gen.saver.save(utils.get_session(sess), flags.gen_model_ckpt)
+      tn_dis.saver.save(utils.get_session(sess), flags.dis_model_ckpt)
   tot_time = time.time() - start
   print('best@%d=%.4f et=%.0fs' % (flags.cutoff, best_prec, tot_time))
 
 if __name__ == '__main__':
   tf.app.run()
-
-
-
-
-
-
-

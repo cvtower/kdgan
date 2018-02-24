@@ -3,22 +3,23 @@ from kdgan import metric
 from kdgan import utils
 from flags import flags
 from gen_model import GEN
-
-import os
-import time
-
-import numpy as np
-import tensorflow as tf
+import data_utils
 
 from os import path
 from tensorflow.contrib import slim
+import os
+import time
+import numpy as np
+import tensorflow as tf
 
 tn_size = utils.get_tn_size(flags.dataset)
-vd_size = utils.get_vd_size(flags.dataset)
 tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
-vd_num_batch = int(vd_size / config.valid_batch_size)
-print('#tn_size=%d #vd_size=%d' % (tn_size, vd_size))
 eval_interval = int(tn_size / flags.batch_size)
+print('tn: #data=%d #batch=%d' % (tn_size, tn_num_batch))
+# exit()
+
+yfccdata = data_utils.YFCCDATA(flags)
+yfcceval = data_utils.YFCCEVAL(flags)
 
 tn_gen = GEN(flags, is_training=True)
 scope = tf.get_variable_scope()
@@ -35,9 +36,7 @@ for variable in tf.trainable_variables():
   for dim in variable.shape:
     num_params *= dim.value
   print('%-50s (%d params)' % (variable.name, num_params))
-
-yfccdata = data_utils.YFCCDATA(flags)
-yfcceval = data_utils.YFCCEVAL(flags)
+# exit()
 
 def main(_):
   best_prec = 0.0
@@ -46,8 +45,11 @@ def main(_):
     sess.run(init_op)
     start = time.time()
     for tn_batch in range(tn_num_batch):
-      tn_image_np, tn_label_np = yfccdata.next_batch(flags, sess)
-      feed_dict = {tn_gen.image_ph:tn_image_np, tn_gen.hard_label_ph:tn_label_np}
+      tn_image_np, _, tn_label_np = yfccdata.next_batch(flags, sess)
+      feed_dict = {
+        tn_gen.image_ph:tn_image_np,
+        tn_gen.hard_label_ph:tn_label_np
+      }
       _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
 
@@ -69,8 +71,6 @@ def main(_):
 
 if __name__ == '__main__':
   tf.app.run()
-
-
 
 
 
