@@ -49,7 +49,7 @@ class GEN():
     train_data_size = utils.get_tn_size(flags.dataset)
     self.learning_rate = utils.get_lr(
         flags,
-        train_data_size
+        train_data_size,
         global_step,
         flags.learning_rate,
         gen_scope)
