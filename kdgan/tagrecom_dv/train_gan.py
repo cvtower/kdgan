@@ -104,7 +104,7 @@ def main(_):
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
-      hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+      hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
       print('init hit=%.4f' % (hit_v))
 
       batch_d, batch_g = -1, -1
