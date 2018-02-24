@@ -57,7 +57,7 @@ class GEN():
       pre_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % gen_scope)
       # pre_optimizer = tf.train.GradientDescentOptimizer(self.dis_learning_rate)
-      pre_optimizer = utils.get_opt(flags, self.dis_learning_rate)
+      pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
       # kd train
