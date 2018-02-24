@@ -151,22 +151,22 @@ def main(_):
                 feed_dict=feed_dict)
             writer.add_summary(summary_g, batch_g)
             
-            # if (batch_g + 1) % eval_interval != 0:
-            #   continue
-            # hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
-            # tot_time = time.time() - start
-            # print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
-            # if hit_v <= best_hit_v:
-            #   continue
-            # best_hit_v = hit_v
-            # print('best hit=%.4f' % (best_hit_v))
-        hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
-        tot_time = time.time() - start
-        print('#%03d curbst=%.4f %.0fs' % (epoch, hit_v, tot_time))
-        figure_data.append((epoch, hit_v))
-        if hit_v <= best_hit_v:
-          continue
-        best_hit_v = hit_v
+            if (batch_g + 1) % eval_interval != 0:
+              continue
+            hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+            tot_time = time.time() - start
+            print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
+            if hit_v <= best_hit_v:
+              continue
+            best_hit_v = hit_v
+            print('best hit=%.4f' % (best_hit_v))
+        # hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
+        # tot_time = time.time() - start
+        # print('#%03d curbst=%.4f %.0fs' % (epoch, hit_v, tot_time))
+        # figure_data.append((epoch, hit_v))
+        # if hit_v <= best_hit_v:
+        #   continue
+        # best_hit_v = hit_v
   print('bsthit=%.4f' % (best_hit_v))
 
   utils.create_if_nonexist(os.path.dirname(flags.gan_figure_data))

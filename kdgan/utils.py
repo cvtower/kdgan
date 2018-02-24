@@ -173,7 +173,7 @@ def evaluate_image(flags, sess, gen_v, bt_list_v):
     feed_dict = {gen_v.image_ph:image_np_v}
     
     image_logit_v, = sess.run([gen_v.logits], feed_dict=feed_dict)
-    image_hit_bt = metric.compute_hit(image_logit_v, label_np_v, flags.cutoff)
+    image_hit_bt = metric.compute_prec(image_logit_v, label_np_v, flags.cutoff)
     image_hit_v.append(image_hit_bt)
   image_hit_v = np.mean(image_hit_v)
   return image_hit_v
