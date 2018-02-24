@@ -40,7 +40,7 @@ class YFCCEVAL(object):
   def __init__(self, flags):
     self.vd_image_np, self.vd_text_np, self.vd_label_np, _ = utils.get_valid_data(flags)
 
-  def compute_prec(self, flags, vd_model):
+  def compute_prec(self, flags, sess, vd_model):
     if hasattr(vd_model, 'text_ph'):
       feed_dict = {
         vd_model.image_ph:self.vd_image_np,

@@ -55,7 +55,7 @@ def main(_):
 
       if (tn_batch + 1) % eval_interval != 0:
           continue
-      prec = yfcceval.compute_prec(flags, vd_gen)
+      prec = yfcceval.compute_prec(flags, sess, vd_gen)
       best_prec = max(prec, best_prec)
       tot_time = time.time() - start
       global_step = sess.run(tn_tch.global_step)
