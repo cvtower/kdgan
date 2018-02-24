@@ -7,7 +7,7 @@ tf.app.flags.DEFINE_string('dataset', None, '')
 tf.app.flags.DEFINE_integer('num_label', 100, '')
 # model
 tf.app.flags.DEFINE_string('image_model', None, '')
-tf.app.flags.DEFINE_float('dis_keep_prob', 0.50, '')
+tf.app.flags.DEFINE_float('dis_keep_prob', 0.88, '')
 tf.app.flags.DEFINE_float('gen_keep_prob', 0.88, '')
 tf.app.flags.DEFINE_float('tch_keep_prob', 0.50, '')
 tf.app.flags.DEFINE_float('image_weight_decay', 0.00004, 'l2 coefficient')
