@@ -1,4 +1,4 @@
-kdgan_dir=$HOME/Projects/kdgan/kdgan
+kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
 pretrained_dir=$checkpoint_dir/pretrained
 figure_data_dir=$kdgan_dir/figure_data
