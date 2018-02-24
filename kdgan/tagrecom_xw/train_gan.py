@@ -54,6 +54,7 @@ def main(_):
     tn_gen.saver.restore(sess, flags.gen_model_ckpt)
     ini_gen = yfcceval.compute_prec(flags, sess, vd_gen)
     ini_dis = yfcceval.compute_prec(flags, sess, vd_dis)
+    print('ini_gen=%.4f ini_dis=%.4f' % (ini_gen, ini_dis))
     start = time.time()
     batch_d, batch_g = -1, -1
     for epoch in range(flags.num_epoch):
@@ -61,12 +62,9 @@ def main(_):
       for _ in range(num_batch_d):
         batch_d += 1
         image_np_d, text_np_d, label_dat_d = yfccdata_d.next_batch(flags, sess)
-        feed_dict = {
-          tn_gen.image_ph:image_np_d,
-        }
+        feed_dict = {tn_gen.image_ph:image_np_d,}
         label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
-        sample_np_d, label_np_d = utils.gan_dis_sample(
-            flags, label_dat_d, label_gen_d)
+        sample_np_d, label_np_d = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
         feed_dict = {
           tn_dis.image_ph:image_np_d,
           tn_dis.text_ph:text_np_d,
@@ -80,9 +78,7 @@ def main(_):
       for _ in range(num_batch_g):
         batch_g += 1
         image_np_g, text_np_g, label_dat_g = yfccdata_g.next_batch(flags, sess)
-        feed_dict = {
-          tn_gen.image_ph:image_np_g,
-        }
+        feed_dict = {tn_gen.image_ph:image_np_g,}
         label_gen_g, = sess.run([tn_gen.labels], feed_dict=feed_dict)
         sample_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
         feed_dict = {
