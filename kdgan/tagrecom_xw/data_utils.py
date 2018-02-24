@@ -41,10 +41,13 @@ class YFCCEVAL(object):
     self.vd_image_np, self.vd_text_np, self.vd_label_np, _ = utils.get_valid_data(flags)
 
   def compute_prec(self, flags, vd_model):
-    feed_dict = {
-      vd_model.image_ph:self.vd_image_np,
-      vd_model.text_ph:self.vd_text_np,
-    }
+    if hasattr(vd_model, 'text_ph'):
+      feed_dict = {
+        vd_model.image_ph:self.vd_image_np,
+        vd_model.text_ph:self.vd_text_np,
+      }
+    else:
+      feed_dict = {vd_model.image_ph:self.vd_image_np,}
     vd_logit_np = sess.run(vd_model.logits, feed_dict=feed_dict)
     prec = metric.compute_prec(vd_logit_np, self.vd_label_np, flags.cutoff)
     return prec
