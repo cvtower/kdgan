@@ -3,6 +3,7 @@ from kdgan import metric
 from kdgan import utils
 from flags import flags
 from gen_model import GEN
+import data_utils
 
 from os import path
 from tensorflow.contrib import slim
