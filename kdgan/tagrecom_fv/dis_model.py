@@ -23,13 +23,15 @@ class DIS():
 
     dis_scope = 'dis'
     model_scope = nets_factory.arg_scopes_map[flags.model_name]
+
     with tf.variable_scope(dis_scope) as scope:
-      with slim.arg_scope(model_scope(weight_decay=flags.dis_weight_decay)):
+      with slim.arg_scope([slim.fully_connected],
+          activation_fn=tf.nn.relu,
+          weights_regularizer=slim.l2_regularizer(flags.image_weight_decay),
+          biases_initializer=tf.zeros_initializer()):
         net = self.image_ph
-        net = slim.dropout(net, flags.dropout_keep_prob, 
-            is_training=is_training)
-        net = slim.fully_connected(net, flags.num_label,
-            activation_fn=None)
+        net = slim.dropout(net, flags.dis_keep_prob, is_training=is_training)
+        net = slim.fully_connected(net, flags.num_label, activation_fn=None)
         self.logits = net
 
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
