@@ -15,7 +15,7 @@ python pretrain_gen.py \
   --gen_model_ckpt=${gen_model_ckpt} \
   --optimizer=sgd \
   --learning_rate_decay_type=fix \
-  --gen_learning_rate=0.05 \
+  --gen_learning_rate=0.1 \
   --num_epoch=200
 exit
 
