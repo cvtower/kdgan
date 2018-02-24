@@ -9,6 +9,16 @@ dis_model_ckpt=${checkpoint_dir}/dis_$variant.ckpt
 gen_model_ckpt=${checkpoint_dir}/gen_$variant.ckpt
 tch_model_ckpt=${checkpoint_dir}/tch_$variant.ckpt
 
+python pretrain_gen.py \
+  --gen_model_ckpt=${gen_model_ckpt} \
+  --dataset=$dataset \
+  --image_model=${image_model} \
+  --optimizer=sgd \
+  --learning_rate_decay_type=fix \
+  --gen_learning_rate=0.1 \
+  --num_epoch=200
+exit
+
 python train_gan.py \
   --dis_model_ckpt=${dis_model_ckpt} \
   --gen_model_ckpt=${gen_model_ckpt} \
@@ -32,16 +42,6 @@ python pretrain_dis.py \
   --gen_learning_rate=0.1 \
   --epk_train=0.5 \
   --epk_valid=0.5 \
-  --num_epoch=200
-exit
-
-python pretrain_gen.py \
-  --gen_model_ckpt=${gen_model_ckpt} \
-  --dataset=$dataset \
-  --image_model=${image_model} \
-  --optimizer=sgd \
-  --learning_rate_decay_type=fix \
-  --gen_learning_rate=0.1 \
   --num_epoch=200
 exit
 

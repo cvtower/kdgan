@@ -10,9 +10,9 @@ gen_model_ckpt=${checkpoint_dir}/gen_$variant.ckpt
 tch_model_ckpt=${checkpoint_dir}/tch_$variant.ckpt
 
 python pretrain_gen.py \
+  --gen_model_ckpt=${gen_model_ckpt} \
   --dataset=$dataset \
   --image_model=${image_model} \
-  --gen_model_ckpt=${gen_model_ckpt} \
   --optimizer=sgd \
   --learning_rate_decay_type=fix \
   --gen_learning_rate=0.1 \
