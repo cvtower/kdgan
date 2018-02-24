@@ -30,9 +30,9 @@ python pretrain_dis.py \
   --optimizer=sgd \
   --learning_rate_decay_type=fix \
   --gen_learning_rate=0.1 \
-  --epk_train=0.9 \
-  --epk_valid=0.1 \
-  --num_epoch=100
+  --epk_train=0.5 \
+  --epk_valid=0.5 \
+  --num_epoch=200
 exit
 
 python pretrain_gen.py \
