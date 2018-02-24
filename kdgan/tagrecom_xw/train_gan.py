@@ -4,6 +4,7 @@ from kdgan import utils
 from flags import flags
 from dis_model import DIS
 from gen_model import GEN
+import data_utils
 
 import math
 import os
