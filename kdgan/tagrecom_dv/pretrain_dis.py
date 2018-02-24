@@ -104,7 +104,7 @@ def main(_):
           text_np_v, image_np_v, label_np_v = sess.run([text_bt_v, image_bt_v, label_bt_v])
           feed_dict = {dis_v.text_ph:text_np_v, dis_v.image_ph:image_np_v}
           logit_np_v, = sess.run([dis_v.logits], feed_dict=feed_dict)
-          hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
+          hit_bt = metric.compute_prec(logit_np_v, label_np_v, flags.cutoff)
           hit_v.append(hit_bt)
         hit_v = np.mean(hit_v)
 
