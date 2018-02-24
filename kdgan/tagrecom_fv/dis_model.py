@@ -22,8 +22,6 @@ class DIS():
     self.dis_label_ph = tf.placeholder(tf.float32, shape=(None,))
 
     dis_scope = 'dis'
-    model_scope = nets_factory.arg_scopes_map[flags.model_name]
-
     with tf.variable_scope(dis_scope) as scope:
       with slim.arg_scope([slim.fully_connected],
           activation_fn=tf.nn.relu,
