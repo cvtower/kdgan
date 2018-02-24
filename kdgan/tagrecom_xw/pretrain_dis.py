@@ -37,7 +37,7 @@ for variable in tf.trainable_variables():
     num_params *= dim.value
   print('%-50s (%d params)' % (variable.name, num_params))
 
-yfccdata = data_utils.YFCC100M(flags)
+yfccdata = data_utils.YFCCDATA(flags)
 yfcceval = data_utils.YFCCEVAL(flags)
 
 def main(_):
