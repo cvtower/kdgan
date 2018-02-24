@@ -41,8 +41,9 @@ class DIS():
           activation_fn=tf.nn.relu,
           weights_regularizer=slim.l2_regularizer(flags.dis_weight_decay),
           biases_initializer=tf.zeros_initializer()):
+        combined_layer = tf.concat([image_embedding], 1)
         # combined_layer = tf.concat([text_embedding], 1)
-        combined_layer = tf.concat([image_embedding, text_embedding], 1)
+        # combined_layer = tf.concat([image_embedding, text_embedding], 1)
         self.logits = slim.fully_connected(combined_layer, flags.num_label,
             activation_fn=None)
 
