@@ -156,7 +156,7 @@ def main(_):
             
             if (batch_g + 1) % eval_interval != 0:
               continue
-            hit_v = utils.evaluate(flags, sess, gen_v, bt_list_v)
+            hit_v = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
             tot_time = time.time() - start
             print('#%08d hit=%.4f %06ds' % (batch_g, hit_v, int(tot_time)))
             if hit_v <= best_hit_v:
