@@ -25,7 +25,7 @@ python pretrain_dis.py \
   --image_model=${image_model} \
   --optimizer=sgd \
   --learning_rate_decay_type=fix \
-  --gen_learning_rate=0.1 \
+  --dis_learning_rate=0.1 \
   --num_epoch=200
 exit
 
