@@ -41,7 +41,8 @@ for variable in tf.trainable_variables():
     num_params *= dim.value
   print('%-50s (%d params)' % (variable.name, num_params))
 
-yfccdata = data_utils.YFCCDATA(flags)
+yfccdata_d = data_utils.YFCCDATA(flags)
+yfccdata_g = data_utils.YFCCDATA(flags)
 yfcceval = data_utils.YFCCEVAL(flags)
 
 def main(_):
@@ -59,9 +60,12 @@ def main(_):
       num_batch_d = math.ceil(flags.num_dis_epoch * tn_size / flags.batch_size)
       for _ in range(num_batch_d):
         batch_d += 1
-        image_np_d, label_dat_d = sess.run([image_bt_d, label_bt_d])
-        feed_dict = {tn_gen.image_ph:image_np_d}
-        label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
+        image_np_d, text_np_d, label_dat_d = yfccdata_d.next_batch(flags, sess)
+        feed_dict = {
+          tn_gen.image_ph:image_np_d,
+          tn_gen.text_ph:text_np_d,
+        }
+        label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
         sample_np_d, label_np_d = utils.gan_dis_sample(
             flags, label_dat_d, label_gen_d)
         feed_dict = {
@@ -69,23 +73,24 @@ def main(_):
           tn_dis.sample_ph:sample_np_d,
           tn_dis.dis_label_ph:label_np_d,
         }
-        _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], 
-            feed_dict=feed_dict)
+        _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
         writer.add_summary(summary_d, batch_d)
       
       num_batch_g = math.ceil(flags.num_gen_epoch * tn_size / flags.batch_size)
       for _ in range(num_batch_g):
         batch_g += 1
-        image_np_g, label_dat_g = sess.run([image_bt_g, label_bt_g])
-        feed_dict = {tn_gen.image_ph:image_np_g}
+        image_np_g, text_np_g, label_dat_g = yfccdata_g.next_batch(flags, sess)
+        feed_dict = {
+          tn_gen.image_ph:image_np_g,
+          tn_gen.text_ph:text_np_g,
+        }
         label_gen_g, = sess.run([tn_gen.labels], feed_dict=feed_dict)
-        sample_np_g = utils.generate_label(
-            flags, label_dat_g, label_gen_g)
+        sample_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
         feed_dict = {
           tn_dis.image_ph:image_np_g,
           tn_dis.sample_ph:sample_np_g,
         }
-        reward_np_g, = sess.run([tn_dis.rewards], feed_dict=feed_dict)
+        reward_np_g = sess.run(tn_dis.rewards, feed_dict=feed_dict)
         feed_dict = {
           tn_gen.image_ph:image_np_g,
           tn_gen.sample_ph:sample_np_g,
