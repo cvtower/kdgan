@@ -22,7 +22,7 @@ class GEN():
     self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
 
     gen_scope = 'gen'
-    model_scope = nets_factory.arg_scopes_map[flags.model_name]
+    model_scope = nets_factory.arg_scopes_map[flags.image_model]
     with tf.variable_scope(gen_scope) as scope:
       with slim.arg_scope(model_scope(weight_decay=flags.image_weight_decay)):
         net = self.image_ph
