@@ -6,6 +6,7 @@ figure_data_dir=$kdgan_dir/figure_data
 python train_gan.py \
   --dataset=yfcc10k \
   --model_name=vgg_16 \
+  --image_model=vgg_16 \
   --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
   --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
   --gan_figure_data=$figure_data_dir/gan_vgg_16.csv \
