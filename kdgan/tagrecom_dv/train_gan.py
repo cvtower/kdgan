@@ -114,13 +114,14 @@ def main(_):
           num_batch_d = math.ceil(train_data_size / flags.batch_size)
           for _ in range(num_batch_d):
             batch_d += 1
-            image_np_d, label_dat_d = sess.run([image_bt_d, label_bt_d])
+            image_np_d, text_np_d, label_dat_d = sess.run([image_bt_d, text_bt_d, label_bt_d])
             feed_dict = {gen_t.image_ph:image_np_d}
             label_gen_d, = sess.run([gen_t.labels], feed_dict=feed_dict)
             sample_np_d, label_np_d = utils.gan_dis_sample(
                 flags, label_dat_d, label_gen_d)
             feed_dict = {
               dis_t.image_ph:image_np_d,
+              dis_t.text_ph:text_np_d,
               dis_t.sample_ph:sample_np_d,
               dis_t.dis_label_ph:label_np_d,
             }
@@ -133,13 +134,14 @@ def main(_):
           num_batch_g = math.ceil(train_data_size / flags.batch_size)
           for _ in range(num_batch_g):
             batch_g += 1
-            image_np_g, label_dat_g = sess.run([image_bt_g, label_bt_g])
+            image_np_g, text_np_g, label_dat_g = sess.run([image_bt_g, text_bt_g, label_bt_g])
             feed_dict = {gen_t.image_ph:image_np_g}
             label_gen_g, = sess.run([gen_t.labels], feed_dict=feed_dict)
             sample_np_g = utils.generate_label(
                 flags, label_dat_g, label_gen_g)
             feed_dict = {
               dis_t.image_ph:image_np_g,
+              dis_t.text_ph:text_np_g,
               dis_t.sample_ph:sample_np_g,
             }
             reward_np_g, = sess.run([dis_t.rewards], feed_dict=feed_dict)
