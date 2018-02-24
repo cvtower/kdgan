@@ -55,6 +55,7 @@ def main(_):
     ini_gen = yfcceval.compute_prec(flags, sess, vd_gen)
     ini_dis = yfcceval.compute_prec(flags, sess, vd_dis)
     print('ini_gen=%.4f ini_dis=%.4f' % (ini_gen, ini_dis))
+    exit()
     start = time.time()
     batch_d, batch_g = -1, -1
     for epoch in range(flags.num_epoch):
