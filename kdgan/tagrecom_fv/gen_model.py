@@ -26,10 +26,8 @@ class GEN():
     with tf.variable_scope(gen_scope) as scope:
       with slim.arg_scope(model_scope(weight_decay=flags.image_weight_decay)):
         net = self.image_ph
-        net = slim.dropout(net, flags.dropout_keep_prob, 
-            is_training=is_training)
-        net = slim.fully_connected(net, flags.num_label,
-            activation_fn=None)
+        net = slim.dropout(net, flags.gen_keep_prob, is_training=is_training)
+        net = slim.fully_connected(net, flags.num_label, activation_fn=None)
         self.logits = net
 
       self.labels = tf.nn.softmax(self.logits)
@@ -47,8 +45,7 @@ class GEN():
 
       global_step = tf.Variable(0, trainable=False)
       train_data_size = utils.get_tn_size(flags.dataset)
-      self.learning_rate = utils.get_lr(
-          flags,
+      self.learning_rate = utils.get_lr(flags,
           train_data_size,
           global_step,
           flags.dis_learning_rate,
