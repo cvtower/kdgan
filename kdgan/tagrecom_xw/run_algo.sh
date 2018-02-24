@@ -16,8 +16,8 @@ python train_gan.py \
   --image_model=${image_model} \
   --optimizer=sgd \
   --learning_rate_decay_type=fix \
-  --dis_learning_rate=0.01 \
-  --gen_learning_rate=0.01 \
+  --dis_learning_rate=0.05 \
+  --gen_learning_rate=0.05 \
   --num_epoch=200 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10
