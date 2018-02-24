@@ -80,12 +80,12 @@ class GEN():
       self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
 
   def get_kd_losses(self, flags):
-    hard_loss = flags.kd_lamda * tf.losses.sigmoid_cross_entropy(
-        self.hard_label_ph, self.logits)
+    hard_loss = tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits)
+    hard_loss *= (1.0 - flags.kd_soft_pct)
 
     smooth_labels = tf.nn.softmax(self.soft_label_ph / flags.temperature)
-    soft_loss = (1.0 - flags.kd_lamda) * tf.nn.l2_loss(
-        tf.nn.softmax(self.logits) - smooth_labels)
+    soft_loss = tf.nn.l2_loss(tf.nn.softmax(self.logits) - smooth_labels)
+    soft_loss *= flags.kd_soft_pct
 
     kd_losses = [hard_loss, soft_loss]
     return kd_losses
