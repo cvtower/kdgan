@@ -1,6 +1,8 @@
 # kdgan
 pip install -Ue .
 
+54 epk ~ 0.23
+
 # 商品入库
 url: http://admin-test.glbuyer.com/#/
 usr: rootAdmin

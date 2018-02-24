@@ -29,7 +29,7 @@ tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.95, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 0.00001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 20.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exp', 'fix|ply')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exp', 'exp|fix|ply')
 # dis model
 tf.app.flags.DEFINE_float('dis_weight_decay', 0.0, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
