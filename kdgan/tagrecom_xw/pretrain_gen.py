@@ -61,7 +61,7 @@ def main(_):
       global_step = sess.run(tn_gen.global_step)
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
       print('#%08d prec@%d=%.4f best=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-          (tn_batch, flags.cutoff, prec, best_prec, tot_time, avg_time))
+          (global_step, flags.cutoff, prec, best_prec, tot_time, avg_time))
 
       if prec < best_prec:
         continue
