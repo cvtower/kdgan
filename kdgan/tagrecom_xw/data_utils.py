@@ -1,4 +1,5 @@
 from kdgan import config
+from kdgan import metric
 from kdgan import utils
 
 import random
