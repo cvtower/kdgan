@@ -53,8 +53,6 @@ def main(_):
     tn_gen.saver.restore(sess, flags.gen_model_ckpt)
     ini_gen = yfcceval.compute_prec(flags, sess, vd_gen)
     ini_dis = yfcceval.compute_prec(flags, sess, vd_dis)
-    print('inigen=%.4f inidis=%.4f' % (ini_gen, ini_dis))
-    exit()
     start = time.time()
     batch_d, batch_g = -1, -1
     for epoch in range(flags.num_epoch):
@@ -100,23 +98,20 @@ def main(_):
           _, summary_g = sess.run([tn_gen.gan_update, gen_summary_op], 
               feed_dict=feed_dict)
           writer.add_summary(summary_g, batch_g)
-          
-          # if (batch_g + 1) % eval_interval != 0:
-          #   continue
-          # prec = utils.evaluate(flags, sess, vd_gen, bt_list_v)
-          # tot_time = time.time() - start
-          # print('#%08d hit=%.4f %06ds' % (batch_g, prec, int(tot_time)))
-          # if prec <= best_prec:
-          #   continue
-          # best_prec = prec
-          # print('best hit=%.4f' % (best_prec))
-      prec = utils.evaluate(flags, sess, vd_gen, bt_list_v)
-      tot_time = time.time() - start
-      print('#%03d curbst=%.4f %.0fs' % (epoch, prec, tot_time))
-      figure_data.append((epoch, prec))
-      if prec <= best_prec:
-        continue
-      best_prec = prec
+
+          if (batch_g + 1) % eval_interval != 0:
+              continue
+          prec = yfcceval.compute_prec(flags, sess, vd_gen)
+          best_prec = max(prec, best_prec)
+          tot_time = time.time() - start
+          global_step = sess.run(tn_gen.global_step)
+          avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
+          print('#%08d prec@%d=%.4f best=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+              (global_step, flags.cutoff, prec, best_prec, tot_time, avg_time))
+
+          if prec < best_prec:
+            continue
+          # save if necessary
   tot_time = time.time() - start
   print('best@%d=%.4f et=%.0fs' % (flags.cutoff, best_prec, tot_time))
 
