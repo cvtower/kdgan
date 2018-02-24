@@ -21,12 +21,12 @@ def compute_score(logits, labels, cutoff, normalize):
     score = np.mean(scores)
     return score
 
-def compute_hit(logits, labels, cutoff):
+def compute_prec(logits, labels, cutoff):
     def normalize(cutoff, num_label):
-        return min(cutoff, num_label)
-    hit = compute_score(logits, labels, cutoff, normalize)
-    # print('hit={0:.4f}'.format(hit))
-    return hit
+        return cutoff
+    prec = compute_score(logits, labels, cutoff, normalize)
+    # print('prec={0:.4f}'.format(prec))
+    return prec
 
 def compute_rec(logits, labels, cutoff):
     def normalize(cutoff, num_label):
@@ -58,8 +58,8 @@ def main():
     ], dtype=np.int32)
     cutoff = 2
 
-    # hit = compute_hit(logits, labels, cutoff)
-    # print('hit=%.4f' % (hit))
+    # prec = compute_hit(logits, labels, cutoff)
+    # print('prec=%.4f' % (prec))
 
     # rec = compute_rec(logits, labels, cutoff)
     # print('rec=%.4f' % (rec))

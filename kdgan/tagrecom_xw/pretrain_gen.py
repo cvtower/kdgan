@@ -17,22 +17,18 @@ eval_interval = int(tn_size / flags.batch_size)
 print('tn: #data=%d #batch=%d' % (tn_size, tn_num_batch))
 # exit()
 
-tn_data_sources = utils.get_data_sources(flags, is_training=True)
-print('tn: #tfrecord=%d' % (len(tn_data_sources)))
-tn_ts_list = utils.decode_tfrecord(flags, tn_data_sources, shuffle=True)
-tn_bt_list = utils.generate_batch(tn_ts_list, flags.batch_size)
-tn_user_bt, tn_image_bt, tn_text_bt, tn_label_bt, _ = tn_bt_list
-vd_image_np, vd_text_np, vd_label_np, _ = utils.get_valid_data(flags)
+yfccdata = data_utils.YFCCDATA(flags)
+yfcceval = data_utils.YFCCEVAL(flags)
 
 tn_gen = GEN(flags, is_training=True)
+scope = tf.get_variable_scope()
+scope.reuse_variables()
+vd_gen = GEN(flags, is_training=False)
+
 tf.summary.scalar(tn_gen.learning_rate.name, tn_gen.learning_rate)
 tf.summary.scalar(tn_gen.pre_loss.name, tn_gen.pre_loss)
 summary_op = tf.summary.merge_all()
 init_op = tf.global_variables_initializer()
-
-scope = tf.get_variable_scope()
-scope.reuse_variables()
-vd_gen = GEN(flags, is_training=False)
 
 for variable in tf.trainable_variables():
   num_params = 1
@@ -42,34 +38,40 @@ for variable in tf.trainable_variables():
 # exit()
 
 def main(_):
-  bst_hit = 0.0
+  best_prec = 0.0
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     start = time.time()
     for tn_batch in range(tn_num_batch):
-      tn_image_np, tn_label_np = sess.run([tn_image_bt, tn_label_bt])
-      feed_dict = {tn_gen.image_ph:tn_image_np, tn_gen.hard_label_ph:tn_label_np}
+      tn_image_np, _, tn_label_np = yfccdata.next_batch(flags, sess)
+      feed_dict = {
+        tn_gen.image_ph:tn_image_np,
+        tn_gen.hard_label_ph:tn_label_np
+      }
       _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
 
       if (tn_batch + 1) % eval_interval != 0:
           continue
-      feed_dict = {vd_gen.image_ph:vd_image_np}
-      vd_logit_np = sess.run(vd_gen.logits, feed_dict=feed_dict)
-      hit = metric.compute_hit(vd_logit_np, vd_label_np, flags.cutoff)
-      bst_hit = max(hit, bst_hit)
+      prec = yfcceval.compute_prec(flags, vd_gen)
+      best_prec = max(prec, best_prec)
       tot_time = time.time() - start
-      global_step = sess.run(tn_gen.global_step)
+      global_step = sess.run(tn_tch.global_step)
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
-      print('#%08d curhit=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-          (tn_batch, hit, bst_hit, tot_time, avg_time))
+      print('#%08d prec@%d=%.4f best=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+          (tn_batch, prec, flags.cutoff, best_prec, tot_time, avg_time))
 
-      if hit < bst_hit:
+      if prec < best_prec:
         continue
       tn_gen.saver.save(utils.get_session(sess), flags.gen_model_ckpt)
   tot_time = time.time() - start
-  print('bsthit=%.4f et=%.0fs' % (bst_hit, tot_time))
+  print('best@%d=%.4f et=%.0fs' % (flags.cutoff, best_prec, tot_time))
 
 if __name__ == '__main__':
   tf.app.run()
+
+
+
+
+
