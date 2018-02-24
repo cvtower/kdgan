@@ -63,13 +63,13 @@ def main(_):
         image_np_d, text_np_d, label_dat_d = yfccdata_d.next_batch(flags, sess)
         feed_dict = {
           tn_gen.image_ph:image_np_d,
-          tn_gen.text_ph:text_np_d,
         }
         label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
         sample_np_d, label_np_d = utils.gan_dis_sample(
             flags, label_dat_d, label_gen_d)
         feed_dict = {
           tn_dis.image_ph:image_np_d,
+          tn_dis.text_ph:text_np_d,
           tn_dis.sample_ph:sample_np_d,
           tn_dis.dis_label_ph:label_np_d,
         }
@@ -82,12 +82,12 @@ def main(_):
         image_np_g, text_np_g, label_dat_g = yfccdata_g.next_batch(flags, sess)
         feed_dict = {
           tn_gen.image_ph:image_np_g,
-          tn_gen.text_ph:text_np_g,
         }
         label_gen_g, = sess.run([tn_gen.labels], feed_dict=feed_dict)
         sample_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
         feed_dict = {
           tn_dis.image_ph:image_np_g,
+          tn_dis.text_ph:text_np_g,
           tn_dis.sample_ph:sample_np_g,
         }
         reward_np_g = sess.run(tn_dis.rewards, feed_dict=feed_dict)
