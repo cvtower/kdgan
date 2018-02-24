@@ -12,11 +12,10 @@ class DIS():
     self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size))
     self.text_ph = tf.placeholder(tf.int64, shape=(None, None))
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
-    self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
     # None = batch_size * sample_size
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
-    self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
+    self.dis_label_ph = tf.placeholder(tf.float32, shape=(None,))
 
     self.dis_scope = dis_scope = 'dis'
     vocab_size = utils.get_vocab_size(flags.dataset)
@@ -47,6 +46,10 @@ class DIS():
         self.logits = slim.fully_connected(combined_layer, flags.num_label,
             activation_fn=None)
 
+      reward_logits = self.logits
+      reward_logits = tf.sigmoid(reward_logits)
+      self.rewards = tf.gather_nd(reward_logits, self.sample_ph)
+
       self.labels = tf.nn.softmax(self.logits)
 
       if not is_training:
@@ -75,12 +78,11 @@ class DIS():
       pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
-      # kdgan train
-      sample_logits = tf.gather_nd(self.logits, self.sample_ph)
-      kdgan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
-      self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % dis_scope)
-      kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
-      self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
+      # gan train
+      gan_losses = self.get_gan_losses()
+      self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % dis_scope)
+      gan_optimizer = utils.get_opt(flags, self.learning_rate)
+      self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=global_step)
 
   def get_regularization_losses(self):
     regularization_losses = []
@@ -97,3 +99,17 @@ class DIS():
     pre_losses.extend(self.get_regularization_losses())
     print('%s #pre_losses wt regularization=%d' % (self.dis_scope, len(pre_losses)))
     return pre_losses
+
+  def get_gan_losses(self):
+    sample_logits = tf.gather_nd(self.logits, self.sample_ph)  
+    gan_losses = [tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits)]
+    gan_losses.extend(self.get_regularization_losses())
+    return gan_losses
+
+
+
+
+
+
+
+
