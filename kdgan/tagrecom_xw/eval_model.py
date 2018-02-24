@@ -54,10 +54,15 @@ def main(_):
   fout = open(flags.model_run, 'w')
   with tf.train.MonitoredTrainingSession() as sess:
     tn_model.saver.restore(sess, model_ckpt)
-    feed_dict = {
-      vd_model.image_ph:image_np,
-      vd_model.text_ph:text_np,
-    }
+    if hasattr(vd_model, 'text_ph'):
+      feed_dict = {
+        vd_model.image_ph:image_np,
+        vd_model.text_ph:text_np,
+      }
+    else:
+      feed_dict = {
+        vd_model.image_ph:image_np,
+      }
     logit_np = sess.run(vd_model.logits, feed_dict=feed_dict)
     for imgid, logit_np in zip(imgid_np, logit_np):
       sorted_labels = (-logit_np).argsort()
