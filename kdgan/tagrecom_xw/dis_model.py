@@ -58,13 +58,13 @@ class DIS():
       # pre train
       pre_losses = self.get_pre_losses()
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % dis_scope)
-      pre_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
       # gan train
       gan_losses = self.get_gan_losses()
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % dis_scope)
-      gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      gan_optimizer = utils.get_opt(flags, self.learning_rate)
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=global_step)
 
   def get_hard_loss(self):

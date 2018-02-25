@@ -65,14 +65,15 @@ class TCH():
       pre_losses.append(tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits))
       pre_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % tch_scope)
-      pre_optimizer = tf.train.AdamOptimizer(self.learning_rate)
+      # pre_optimizer = tf.train.AdamOptimizer(self.learning_rate)
+      pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
       # kdgan train
       sample_logits = tf.gather_nd(self.logits, self.sample_ph)
       kdgan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % tch_scope)
-      kdgan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
       self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
 
 
