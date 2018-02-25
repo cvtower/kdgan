@@ -44,12 +44,13 @@ class GEN():
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = global_step = tf.Variable(0, trainable=False)
-      train_data_size = utils.get_tn_size(flags.dataset)
+      tn_size = utils.get_tn_size(flags.dataset)
+      learning_rate = flags.gen_learning_rate
       self.learning_rate = utils.get_lr(
           flags,
-          train_data_size,
+          tn_size,
           global_step,
-          flags.gen_learning_rate,
+          learning_rate,
           gen_scope)
 
       # pre train
