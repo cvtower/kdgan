@@ -15,7 +15,7 @@ class GEN():
     # None = batch_size
     self.image_ph = tf.placeholder(tf.float32, shape=(None, flags.feature_size))
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
-    self.soft_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
+    self.soft_logit_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
     # None = batch_size * sample_size
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
@@ -53,14 +53,13 @@ class GEN():
       pre_losses.append(tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits))
       pre_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % gen_scope)
-      # pre_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
       pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
       # kd train
       kd_losses = self.get_kd_losses(flags)
       self.kd_loss = tf.add_n(kd_losses, name='%s_kd_loss' % gen_scope)
-      kd_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+      kd_optimizer = utils.get_opt(flags, self.learning_rate)
       self.kd_update = kd_optimizer.minimize(self.kd_loss, global_step=global_step)
 
       # gan train
@@ -76,15 +75,25 @@ class GEN():
       kdgan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
       self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
 
-  def get_kd_losses(self, flags):
+  def get_hard_loss(self):
     hard_loss = tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits)
-    hard_loss *= (1 - flags.kd_soft_pct)
+    return hard_loss
 
-    smooth_labels = tf.nn.softmax(self.soft_label_ph / flags.temperature)
-    soft_loss = tf.nn.l2_loss(tf.nn.softmax(self.logits) - smooth_labels)
-    soft_loss *= flags.kd_soft_pct
-
-    kd_losses = [hard_loss, soft_loss]
+  def get_kd_losses(self, flags):
+    kd_losses = []
+    if flags.kd_model == 'mimic':
+      soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits)
+      kd_losses.append(soft_loss)
+    elif flags.kd_model == 'distn':
+      hard_loss = self.get_hard_loss()
+      hard_loss *= (1.0 - flags.kd_soft_pct)
+      gen_logits = self.logits * (1.0 / flags.temperature)
+      tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
+      soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
+      soft_loss *= (pow(flags.temperature, 2.0) * flags.kd_soft_pct)
+      kd_losses.extend([hard_loss, soft_loss])
+    else:
+      raise ValueError('bad kd model %s', flags.kd_model)
     return kd_losses
 
   def get_gan_losses(self, flags):

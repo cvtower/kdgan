@@ -36,8 +36,22 @@ python pretrain_tch.py \
   --optimizer=sgd \
   --learning_rate_decay_type=exp \
   --tch_learning_rate=0.05 \
-  --epk_train=0.9 \
-  --epk_valid=0.1 \
+  --epk_train=0.95 \
+  --epk_valid=0.05 \
+  --num_epoch=100
+exit
+
+python train_kd.py \
+  --gen_model_ckpt=${gen_model_ckpt} \
+  --tch_model_ckpt=${tch_model_ckpt} \
+  --dataset=$dataset \
+  --image_model=${image_model} \
+  --optimizer=sgd \
+  --learning_rate_decay_type=fix \
+  --gen_learning_rate=0.1 \
+  --kd_model=distn \
+  --kd_soft_pct=0.1 \
+  --temperature=3.0 \
   --num_epoch=200
 exit
 
@@ -75,18 +89,6 @@ python train_kdgan.py \
   --num_tch_epoch=10
 # 12517s best hit=0.7973
 exit
-
-python train_kd.py \
-  --dataset=yfcc10k \
-  --model_name=vgg_16 \
-  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
-  --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
-  --feature_size=4096 \
-  --kd_lamda=0.9999 \
-  --temperature=10.0 \
-  --num_epoch=200
-exit
-
 
 
 
