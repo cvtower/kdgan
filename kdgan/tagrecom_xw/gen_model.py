@@ -46,12 +46,7 @@ class GEN():
       self.global_step = global_step = tf.Variable(0, trainable=False)
       tn_size = utils.get_tn_size(flags.dataset)
       learning_rate = flags.gen_learning_rate
-      self.learning_rate = utils.get_lr(
-          flags,
-          tn_size,
-          global_step,
-          learning_rate,
-          gen_scope)
+      self.learning_rate = utils.get_lr(flags, tn_size, global_step, learning_rate, gen_scope)
 
       # pre train
       pre_losses = []

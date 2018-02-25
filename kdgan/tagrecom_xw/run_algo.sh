@@ -36,6 +36,8 @@ python pretrain_tch.py \
   --optimizer=sgd \
   --learning_rate_decay_type=exp \
   --tch_learning_rate=0.05 \
+  --epk_train=0.9 \
+  --epk_valid=0.1 \
   --num_epoch=200
 exit
 

@@ -38,8 +38,8 @@ class TCH():
       with slim.arg_scope([slim.fully_connected],
           weights_regularizer=slim.l2_regularizer(flags.tch_weight_decay),
           biases_initializer=tf.zeros_initializer()):
-        cembed = tf.concat([tembed], 1)
-        # cembed = tf.concat([iembed, tembed], 1)
+        # cembed = tf.concat([tembed], 1)
+        cembed = tf.concat([iembed, tembed], 1)
         self.logits = slim.fully_connected(cembed, flags.num_label, activation_fn=None)
 
       self.labels = tf.nn.softmax(self.logits)
