@@ -19,7 +19,8 @@ vd_size = utils.get_vd_size(flags.dataset)
 tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
 vd_num_batch = int(vd_size / config.valid_batch_size)
 print('#tn_size=%d #vd_size=%d' % (tn_size, vd_size))
-eval_interval = int(tn_size / flags.batch_size)
+# eval_interval = int(tn_size / flags.batch_size)
+eval_interval = 1
 
 tn_gen = GEN(flags, is_training=True)
 tn_tch = TCH(flags, is_training=True)
@@ -76,7 +77,7 @@ def main(_):
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
       print('#%08d prec@%d=%.4f best=%.4f tot=%.0fs avg=%.2fs/epoch' % 
           (global_step, flags.cutoff, prec, best_prec, tot_time, avg_time))
-
+      time.sleep(0.1)
       if prec < best_prec:
         continue
       # save if necessary
