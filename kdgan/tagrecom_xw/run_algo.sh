@@ -47,8 +47,8 @@ python train_kd.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --optimizer=sgd \
-  --learning_rate_decay_type=fix \
-  --gen_learning_rate=0.1 \
+  --learning_rate_decay_type=exp \
+  --gen_learning_rate=0.05 \
   --kd_model=distn \
   --kd_soft_pct=0.1 \
   --temperature=3.0 \

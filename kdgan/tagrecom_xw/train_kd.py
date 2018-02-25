@@ -71,7 +71,7 @@ def main(_):
           continue
       prec = yfcceval.compute_prec(flags, sess, vd_gen)
       if prec > best_prec:
-        bst_epk = int((tn_batch * batch_size) / tn_size)
+        bst_epk = int(tn_batch * flags.batch_size / tn_size)
       best_prec = max(prec, best_prec)
       tot_time = time.time() - start
       global_step = sess.run(tn_gen.global_step)
