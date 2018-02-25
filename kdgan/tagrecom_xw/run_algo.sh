@@ -61,9 +61,10 @@ python train_kd.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --optimizer=sgd \
-  --learning_rate_decay_type=exp \
-  --gen_learning_rate=0.001 \
+  --learning_rate_decay_type=fix \
+  --gen_learning_rate=0.1 \
   --kd_model=mimic \
+  --kd_soft_pct=0.1 \
   --num_epoch=200
 exit
 
