@@ -52,13 +52,9 @@ class DIS():
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = global_step = tf.Variable(0, trainable=False)
-      train_data_size = utils.get_tn_size(flags.dataset)
-      self.learning_rate = utils.get_lr(
-          flags,
-          train_data_size,
-          global_step,
-          flags.dis_learning_rate,
-          dis_scope)
+      tn_size = utils.get_tn_size(flags.dataset)
+      learning_rate = flags.dis_learning_rate
+      self.learning_rate = utils.get_lr(flags, tn_size, global_step, learning_rate, dis_scope)
 
       # pre train
       pre_losses = []
