@@ -102,7 +102,7 @@ def main(_):
               feed_dict=feed_dict)
           writer.add_summary(summary_g, batch_g)
           
-          if (tn_batch + 1) % eval_interval != 0:
+          if (batch_g + 1) % eval_interval != 0:
               continue
           prec = yfcceval.compute_prec(flags, sess, vd_gen)
           best_prec = max(prec, best_prec)
