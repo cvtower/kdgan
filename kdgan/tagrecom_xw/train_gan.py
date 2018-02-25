@@ -46,7 +46,7 @@ yfccdata_g = data_utils.YFCCDATA(flags)
 yfcceval = data_utils.YFCCEVAL(flags)
 
 def main(_):
-  best_prec = 0.0
+  best_prec, bst_epk = 0.0, 0
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -97,12 +97,14 @@ def main(_):
         if (batch_g + 1) % eval_interval != 0:
             continue
         prec = yfcceval.compute_prec(flags, sess, vd_gen)
+        if prec > best_prec:
+          bst_epk = epoch
         best_prec = max(prec, best_prec)
         tot_time = time.time() - start
         global_step = sess.run(tn_gen.global_step)
         avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
-        print('#%08d@%d prec@%d=%.4f best=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-            (global_step, epoch, flags.cutoff, prec, best_prec, tot_time, avg_time))
+        print('#%08d@%d prec@%d=%.4f best@%d=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+            (global_step, epoch, flags.cutoff, prec, bst_epk, best_prec, tot_time, avg_time))
 
         if prec < best_prec:
           continue
