@@ -30,7 +30,6 @@ class DIS():
         net = slim.fully_connected(net, flags.num_label, activation_fn=None)
         self.logits = net
 
-      sample_logits = tf.gather_nd(self.logits, self.sample_ph)
       reward_logits = self.logits
       # reward_logits = 2 * (tf.sigmoid(reward_logits) - 0.5)
       # reward_logits -= tf.reduce_mean(reward_logits, 1, keep_dims=True)
@@ -88,6 +87,7 @@ class DIS():
     return pre_losses
 
   def get_gan_losses(self):
+    sample_logits = tf.gather_nd(self.logits, self.sample_ph)
     gan_losses = [tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits)]
     gan_losses.extend(self.get_regularization_losses())
     return gan_losses
