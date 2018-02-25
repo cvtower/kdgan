@@ -87,7 +87,7 @@ class DIS():
     print('#pre_losses wt regularization=%d' % (len(pre_losses)))
     return pre_losses
 
-  def get_gan_losses():
+  def get_gan_losses(self):
     gan_losses = [tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits)]
     gan_losses.extend(self.get_regularization_losses())
     return gan_losses
