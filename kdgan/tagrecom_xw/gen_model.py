@@ -82,7 +82,8 @@ class GEN():
   def get_kd_losses(self, flags):
     kd_losses = []
     if flags.kd_model == 'mimic':
-      soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits)
+      # soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits)
+      soft_loss = tf.losses.sigmoid_cross_entropy(self.soft_logit_ph, self.logits)
       kd_losses.append(soft_loss)
     elif flags.kd_model == 'distn':
       hard_loss = self.get_hard_loss()
