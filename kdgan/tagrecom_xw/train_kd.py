@@ -72,7 +72,7 @@ def main(_):
       prec = yfcceval.compute_prec(flags, sess, vd_gen)
       best_prec = max(prec, best_prec)
       tot_time = time.time() - start
-      global_step = sess.run(vd_gen.global_step)
+      global_step = sess.run(tn_gen.global_step)
       avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
       print('#%08d prec@%d=%.4f best=%.4f tot=%.0fs avg=%.2fs/epoch' % 
           (global_step, flags.cutoff, prec, best_prec, tot_time, avg_time))
