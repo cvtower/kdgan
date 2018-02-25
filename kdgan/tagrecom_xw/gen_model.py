@@ -61,7 +61,6 @@ class GEN():
 
       # gan train
       gan_losses = self.get_gan_losses(flags)
-      gan_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % gen_scope)
       gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=global_step)
@@ -115,5 +114,6 @@ class GEN():
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
     # gan_loss = -tf.reduce_mean(self.reward_ph * sample_logits)
     gan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
+    gan_losses.extend(self.get_regularization_losses())
     return gan_losses
 
