@@ -29,6 +29,16 @@ python pretrain_dis.py \
   --num_epoch=200
 exit
 
+python pretrain_tch.py \
+  --tch_model_ckpt=${tch_model_ckpt} \
+  --dataset=$dataset \
+  --image_model=${image_model} \
+  --optimizer=sgd \
+  --learning_rate_decay_type=exp \
+  --tch_learning_rate=0.05 \
+  --num_epoch=200
+exit
+
 python train_gan.py \
   --dis_model_ckpt=${dis_model_ckpt} \
   --gen_model_ckpt=${gen_model_ckpt} \
@@ -37,8 +47,8 @@ python train_gan.py \
   --image_weight_decay=0.0 \
   --optimizer=sgd \
   --learning_rate_decay_type=exp \
-  --dis_learning_rate=0.1 \
-  --num_epochs_per_decay=100.0 \
+  --dis_learning_rate=0.05 \
+  --num_epochs_per_decay=20.0 \
   --num_epoch=200 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10
@@ -75,16 +85,6 @@ python train_kd.py \
   --num_epoch=200
 exit
 
-
-python pretrain_tch.py \
-  --dataset=yfcc10k \
-  --model_name=vgg_16 \
-  --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
-  --tch_weight_decay=0.0 \
-  --learning_rate=0.01 \
-  --num_epoch=200
-# 0232s best hit=0.9657
-exit
 
 
 
