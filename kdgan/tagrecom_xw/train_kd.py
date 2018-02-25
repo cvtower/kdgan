@@ -57,7 +57,7 @@ def main(_):
       tn_image_np, tn_text_np, hard_label_np = yfccdata.next_batch(flags, sess)
 
       feed_dict = {tn_tch.image_ph:tn_image_np, tn_tch.text_ph:tn_text_np}
-      soft_logit_np, = sess.run(tn_tch.logits, feed_dict=feed_dict)
+      soft_logit_np = sess.run(tn_tch.logits, feed_dict=feed_dict)
 
       feed_dict = {
         tn_gen.image_ph:tn_image_np,
