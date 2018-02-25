@@ -37,7 +37,7 @@ python train_gan.py \
   --image_weight_decay=0.0 \
   --optimizer=sgd \
   --learning_rate_decay_type=exp \
-  --dis_learning_rate=0.05 \
+  --dis_learning_rate=0.1 \
   --num_epochs_per_decay=100.0 \
   --num_epoch=200 \
   --num_dis_epoch=20 \
