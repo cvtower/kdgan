@@ -48,7 +48,7 @@ class GEN():
       self.learning_rate = utils.get_lr(flags, tn_size, global_step, learning_rate, gen_scope)
 
       # pre train
-      pre_losses = self.get_pre_losses(flags)
+      pre_losses = self.get_pre_losses()
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % gen_scope)
       pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
@@ -60,13 +60,13 @@ class GEN():
       self.kd_update = kd_optimizer.minimize(self.kd_loss, global_step=global_step)
 
       # gan train
-      gan_losses = self.get_gan_losses(flags)
+      gan_losses = self.get_gan_losses()
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % gen_scope)
       gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=global_step)
 
       # kdgan train
-      kdgan_losses = self.get_kd_losses(flags) + self.get_gan_losses(flags)
+      kdgan_losses = self.get_kd_losses(flags) + self.get_gan_losses()
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % gen_scope)
       kdgan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
       self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
@@ -83,7 +83,7 @@ class GEN():
       regularization_losses.append(regularization_loss)
     return regularization_losses
 
-  def get_pre_losses(self, flags):
+  def get_pre_losses(self):
     pre_losses = [self.get_hard_loss()]
     print('#pre_losses wo regularization=%d' % (len(pre_losses)))
     pre_losses.extend(self.get_regularization_losses())
@@ -110,7 +110,7 @@ class GEN():
     kd_losses.append(soft_loss)
     return kd_losses
 
-  def get_gan_losses(self, flags):
+  def get_gan_losses(self):
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
     # gan_loss = -tf.reduce_mean(self.reward_ph * sample_logits)
     gan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
