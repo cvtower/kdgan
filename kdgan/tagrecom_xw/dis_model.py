@@ -57,15 +57,13 @@ class DIS():
       self.learning_rate = utils.get_lr(flags, tn_size, global_step, learning_rate, dis_scope)
 
       # pre train
-      pre_losses = self.get_pre_losses(flags)
+      pre_losses = self.get_pre_losses()
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % dis_scope)
       pre_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
       # gan train
-      gan_losses = []
-      gan_losses.append(tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits))
-      gan_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+      gan_losses = self.get_gan_losses()
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % dis_scope)
       gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
       self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=global_step)
@@ -82,10 +80,15 @@ class DIS():
       regularization_losses.append(regularization_loss)
     return regularization_losses
 
-  def get_pre_losses(self, flags):
+  def get_pre_losses(self):
     pre_losses = [self.get_hard_loss()]
     print('#pre_losses wo regularization=%d' % (len(pre_losses)))
     pre_losses.extend(self.get_regularization_losses())
     print('#pre_losses wt regularization=%d' % (len(pre_losses)))
     return pre_losses
+
+  def get_gan_losses():
+    gan_losses = [tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits)]
+    gan_losses.extend(self.get_regularization_losses())
+    return gan_losses
 
