@@ -20,7 +20,7 @@ class GEN():
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
     self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
 
-    gen_scope = 'gen'
+    self.gen_scope = gen_scope = 'gen'
     model_scope = nets_factory.arg_scopes_map[flags.image_model]
     with tf.variable_scope(gen_scope) as scope:
       with slim.arg_scope(model_scope(weight_decay=flags.image_weight_decay)):
@@ -48,9 +48,7 @@ class GEN():
       self.learning_rate = utils.get_lr(flags, tn_size, global_step, learning_rate, gen_scope)
 
       # pre train
-      pre_losses = []
-      pre_losses.append(tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits))
-      pre_losses.extend(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+      pre_losses = self.get_pre_losses(flags)
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % gen_scope)
       pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
@@ -77,6 +75,21 @@ class GEN():
   def get_hard_loss(self):
     hard_loss = tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits)
     return hard_loss
+
+  def get_regularization_losses(self):
+    regularization_losses = []
+    for regularization_loss in tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES):
+      if not regularization_loss.name.startswith(self.gen_scope):
+        continue
+      regularization_losses.append(regularization_loss)
+    return regularization_losses
+
+  def get_pre_losses(self, flags):
+    pre_losses = [self.get_hard_loss()]
+    print('#pre_losses wo regularization=%d' % (len(pre_losses)))
+    pre_losses.extend(self.get_regularization_losses())
+    print('#pre_losses wt regularization=%d' % (len(pre_losses)))
+    return pre_losses
 
   def get_kd_losses(self, flags):
     kd_losses = []
