@@ -92,7 +92,7 @@ class GEN():
       tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
       soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
       soft_loss *= pow(flags.temperature, 2.0)
-      soft_loss = -tf.nn.softmax_cross_entropy_with_logits(gen_logits, tch_logits)
+      soft_loss = -tf.nn.softmax_cross_entropy_with_logits(labels=gen_logits, logits=tch_logits)
       print(soft_loss.shape)
       exit()
       soft_loss *= flags.kd_soft_pct
