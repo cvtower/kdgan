@@ -50,7 +50,7 @@ python train_kd.py \
   --learning_rate_decay_type=fix \
   --gen_learning_rate=0.1 \
   --kd_model=distn \
-  --kd_soft_pct=0.9 \
+  --kd_soft_pct=0.3 \
   --temperature=3.0 \
   --num_epoch=200
 exit
