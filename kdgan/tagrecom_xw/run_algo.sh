@@ -34,11 +34,11 @@ python pretrain_tch.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --optimizer=sgd \
-  --learning_rate_decay_type=exp \
-  --tch_learning_rate=0.05 \
-  --epk_train=0.95 \
-  --epk_valid=0.05 \
-  --num_epoch=500
+  --learning_rate_decay_type=fix \
+  --tch_learning_rate=0.01 \
+  --epk_train=0.5 \
+  --epk_valid=0.5 \
+  --num_epoch=200
 exit
 
 python train_kd.py \
@@ -47,10 +47,10 @@ python train_kd.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --optimizer=sgd \
-  --learning_rate_decay_type=exp \
-  --gen_learning_rate=0.05 \
+  --learning_rate_decay_type=fix \
+  --gen_learning_rate=0.1 \
   --kd_model=distn \
-  --kd_soft_pct=0.3 \
+  --kd_soft_pct=0.1 \
   --temperature=3.0 \
   --num_epoch=200
 exit
@@ -80,6 +80,7 @@ python train_gan.py \
   --num_epoch=200 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10
+  # best@3=0.2953 et=13887s
 exit
 
 python train_kdgan.py \

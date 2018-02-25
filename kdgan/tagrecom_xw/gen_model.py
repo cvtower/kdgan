@@ -80,13 +80,13 @@ class GEN():
 
   def get_kd_losses(self, flags):
     kd_losses = []
+    hard_loss = self.get_hard_loss()
+    hard_loss *= (1.0 - flags.kd_soft_pct)
+    kd_losses.append(hard_loss)
     if flags.kd_model == 'mimic':
       # soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits)
       soft_loss = tf.losses.sigmoid_cross_entropy(self.soft_logit_ph, self.logits)
-      kd_losses.append(soft_loss)
     elif flags.kd_model == 'distn':
-      hard_loss = self.get_hard_loss()
-      hard_loss *= (1.0 - flags.kd_soft_pct)
       gen_logits = self.logits * (1.0 / flags.temperature)
       tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
 
@@ -99,9 +99,9 @@ class GEN():
       # soft_loss = -1.0 * tf.reduce_mean(tch_logits * tf.log(gen_logits))
 
       soft_loss *= flags.kd_soft_pct
-      kd_losses.extend([hard_loss, soft_loss])
     else:
       raise ValueError('bad kd model %s', flags.kd_model)
+    kd_losses.append(soft_loss)
     return kd_losses
 
   def get_gan_losses(self, flags):
