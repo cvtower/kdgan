@@ -3,10 +3,7 @@ from kdgan import config, utils
 from nets import nets_factory
 from nets import vgg
 
-
 from tensorflow.contrib import slim
-
-import keras
 import numpy as np
 import tensorflow as tf
 
@@ -95,11 +92,8 @@ class GEN():
 
       # soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
       # soft_loss *= pow(flags.temperature, 2.0)
-
-      print(tch_logits.shape, gen_logits.shape)
-      exit()
-      soft_loss = keras.losses.kullback_leibler_divergence(tch_logits, gen_logits)
-      # soft_loss = -tf.nn.softmax_cross_entropy_with_logits(labels=gen_logits, logits=tch_logits)
+      
+      soft_loss = -1.0 * tf.reduce_mean(tch_logits * tf.log(gen_logits))
 
       soft_loss *= flags.kd_soft_pct
       kd_losses.extend([hard_loss, soft_loss])
