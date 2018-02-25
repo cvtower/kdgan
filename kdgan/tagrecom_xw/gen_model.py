@@ -94,7 +94,7 @@ class GEN():
       # soft_loss *= pow(flags.temperature, 2.0)
       
       epsilon = tf.keras.backend.epsilon()
-      gen_logits = tf.clip_by_value(gen_logits, epsilon, 1.0)
+      # gen_logits = tf.clip_by_value(gen_logits, epsilon, 1.0)
       tch_logits = tf.clip_by_value(tch_logits, epsilon, 1.0)
       soft_loss = -1.0 * tf.reduce_mean(tch_logits * tf.log(gen_logits))
 
