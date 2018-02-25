@@ -49,10 +49,10 @@ def main(_):
     sess.run(init_op)
     tn_gen.saver.restore(sess, flags.gen_model_ckpt)
     tn_tch.saver.restore(sess, flags.tch_model_ckpt)
-    start = time.time()
-    hit_v = utils.evaluate(flags, sess, vd_gen, bt_list_v)
-    print('init hit=%.4f' % (hit_v))
+    init_prec = yfcceval.compute_prec(flags, sess, vd_gen)
+    print('init@%d=%.4f' % (flags.cutoff, init_prec))
 
+    start = time.time()
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_text_np, hard_label_np = yfccdata.next_batch(flags, sess)
 
