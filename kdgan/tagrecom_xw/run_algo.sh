@@ -34,10 +34,10 @@ python pretrain_tch.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --optimizer=sgd \
-  --learning_rate_decay_type=fix \
-  --tch_learning_rate=0.01 \
-  --epk_train=0.5 \
-  --epk_valid=0.5 \
+  --learning_rate_decay_type=exp \
+  --tch_learning_rate=0.05 \
+  --epk_train=0.95 \
+  --epk_valid=0.05 \
   --num_epoch=200
 exit
 
