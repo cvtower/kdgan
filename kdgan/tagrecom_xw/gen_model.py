@@ -96,8 +96,10 @@ class GEN():
       # soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
       # soft_loss *= pow(flags.temperature, 2.0)
 
-      # soft_loss = -tf.nn.softmax_cross_entropy_with_logits(labels=gen_logits, logits=tch_logits)
+      print(tch_logits.shape, gen_logits.shape)
+      exit()
       soft_loss = keras.losses.kullback_leibler_divergence(tch_logits, gen_logits)
+      # soft_loss = -tf.nn.softmax_cross_entropy_with_logits(labels=gen_logits, logits=tch_logits)
 
       soft_loss *= flags.kd_soft_pct
       kd_losses.extend([hard_loss, soft_loss])
