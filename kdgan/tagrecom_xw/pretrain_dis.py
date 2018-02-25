@@ -48,8 +48,8 @@ def main(_):
     sess.run(init_op)
     start = time.time()
     for tn_batch in range(tn_num_batch):
-      image_np_t, label_np_t = sess.run([image_bt_t, label_bt_t])
-      feed_dict = {tn_dis.image_ph:image_np_t, tn_dis.hard_label_ph:label_np_t}
+      tn_image_np, _, tn_label_np = yfccdata.next_batch(flags, sess)
+      feed_dict = {tn_dis.image_ph:tn_image_np, tn_dis.hard_label_ph:tn_label_np}
       _, summary = sess.run([tn_dis.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
 
