@@ -86,23 +86,23 @@ python train_gan.py \
 exit
 
 python train_kdgan.py \
-  --dataset=yfcc10k \
-  --model_name=vgg_16 \
-  --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
-  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
-  --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
-  --kdgan_figure_data=$figure_data_dir/kdgan_vgg_16.csv \
-  --feature_size=4096 \
-  --kd_lamda=0.9999 \
-  --temperature=10.0 \
-  --dis_weight_decay=0.0 \
-  --gen_weight_decay=0.0 \
-  --tch_weight_decay=0.0 \
+  --dis_model_ckpt=${dis_model_ckpt} \
+  --gen_model_ckpt=${gen_model_ckpt} \
+  --tch_model_ckpt=${tch_model_ckpt} \
+  --dataset=$dataset \
+  --model_name=${image_model} \
+  --optimizer=sgd \
+  --learning_rate_decay_type=exp \
+  --dis_learning_rate=0.05 \
+  --gen_learning_rate=0.01 \
+  --tch_learning_rate=0.01 \
+  --kd_model=distn \
+  --kd_soft_pct=0.1 \
+  --temperature=3.0 \
   --num_epoch=200 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10
-# 12517s best hit=0.7973
 exit
 
 

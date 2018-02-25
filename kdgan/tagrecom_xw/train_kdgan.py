@@ -47,38 +47,20 @@ tch_summary_op = tf.summary.merge([
 ])
 init_op = tf.global_variables_initializer()
 
+yfccdata_d = data_utils.YFCCDATA(flags)
+yfccdata_g = data_utils.YFCCDATA(flags)
+yfccdata_t = data_utils.YFCCDATA(flags)
+yfcceval = data_utils.YFCCEVAL(flags)
 
 def main(_):
-
-
-  data_sources_t = utils.get_data_sources(flags, is_training=True)
-  data_sources_v = utils.get_data_sources(flags, is_training=False)
-  print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(data_sources_t), len(data_sources_v)))
-  
-  ts_list_d = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-  bt_list_d = utils.generate_batch(ts_list_d, flags.batch_size)
-  user_bt_d, image_bt_d, text_bt_d, label_bt_d, file_bt_d = bt_list_d
-
-  ts_list_g = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-  bt_list_g = utils.generate_batch(ts_list_g, flags.batch_size)
-  user_bt_g, image_bt_g, text_bt_g, label_bt_g, file_bt_g = bt_list_g
-
-  ts_list_t = utils.decode_tfrecord(flags, data_sources_t, shuffle=True)
-  bt_list_t = utils.generate_batch(ts_list_t, flags.batch_size)
-  user_bt_t, image_bt_t, text_bt_t, label_bt_t, file_bt_t = bt_list_t
-
-  ts_list_v = utils.decode_tfrecord(flags, data_sources_v, shuffle=False)
-  bt_list_v = utils.generate_batch(ts_list_v, config.valid_batch_size)
-  
-  figure_data = []
-  best_hit_v = 0.0
-  start = time.time()
+  best_prec = 0.0
+  writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.Session() as sess:
     sess.run(init_op)
     dis_t.saver.restore(sess, flags.dis_model_ckpt)
     gen_t.saver.restore(sess, flags.gen_model_ckpt)
     tch_t.saver.restore(sess, flags.tch_model_ckpt)
-    writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
+    start = time.time()
     with slim.queues.QueueRunners(sess):
       gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
       tch_hit = utils.evaluate_text(flags, sess, tch_v, bt_list_v)
@@ -167,31 +149,7 @@ def main(_):
                 feed_dict=feed_dict)
             writer.add_summary(summary_g, batch_g)
 
-            # if (batch_g + 1) % eval_interval != 0:
-            #     continue
-            # gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
-            # tot_time = time.time() - start
-            # print('#%08d hit=%.4f %06ds' % (batch_g, gen_hit, int(tot_time)))
-            # if gen_hit <= best_hit_v:
-            #   continue
-            # best_hit_v = gen_hit
-            # print('best hit=%.4f' % (best_hit_v))
-        gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
-        tch_hit = utils.evaluate_text(flags, sess, tch_v, bt_list_v)
-
-        tot_time = time.time() - start
-        print('#%03d curgen=%.4f curtch=%.4f %.0fs' % (epoch, gen_hit, tch_hit, tot_time))
-        figure_data.append((epoch, gen_hit, tch_hit))
-        if gen_hit <= best_hit_v:
-          continue
-        best_hit_v = gen_hit
-  print('best hit=%.4f' % (best_hit_v))
-
-  utils.create_if_nonexist(os.path.dirname(flags.kdgan_figure_data))
-  fout = open(flags.kdgan_figure_data, 'w')
-  for epoch, gen_hit, tch_hit in figure_data:
-    fout.write('%d\t%.4f\t%.4f\n' % (epoch, gen_hit, tch_hit))
-  fout.close()
+  print('best hit=%.4f' % (best_prec))
 
 if __name__ == '__main__':
   tf.app.run()
