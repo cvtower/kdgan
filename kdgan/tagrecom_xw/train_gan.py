@@ -83,7 +83,7 @@ def main(_):
         num_batch_g = math.ceil(tn_size / flags.batch_size)
         for _ in range(num_batch_g):
           batch_g += 1
-          image_np_g, label_dat_g = yfccdata_g.next_batch(flags, sess)
+          image_np_g, _, label_dat_g = yfccdata_g.next_batch(flags, sess)
           feed_dict = {tn_gen.image_ph:image_np_g}
           label_gen_g, = sess.run([tn_gen.labels], feed_dict=feed_dict)
           sample_np_g = utils.generate_label(
