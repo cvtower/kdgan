@@ -47,7 +47,7 @@ python train_kd.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --optimizer=sgd \
-  --learning_rate_decay_type=exp \
+  --learning_rate_decay_type=fix \
   --gen_learning_rate=0.05 \
   --kd_model=distn \
   --kd_soft_pct=0.1 \
@@ -77,6 +77,7 @@ python train_gan.py \
   --optimizer=sgd \
   --learning_rate_decay_type=exp \
   --dis_learning_rate=0.05 \
+  --gen_learning_rate=0.01 \
   --num_epochs_per_decay=20.0 \
   --num_epoch=200 \
   --num_dis_epoch=20 \
