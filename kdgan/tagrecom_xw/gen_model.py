@@ -84,7 +84,8 @@ class GEN():
     hard_loss *= (1.0 - flags.kd_soft_pct)
     kd_losses.append(hard_loss)
     if flags.kd_model == 'mimic':
-      soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits)
+      # soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits)
+      soft_loss = tf.losses.mean_squared_error(self.soft_logit_ph, self.logits)
       soft_loss *= flags.kd_soft_pct
     elif flags.kd_model == 'distn':
       gen_logits = self.logits * (1.0 / flags.temperature)
