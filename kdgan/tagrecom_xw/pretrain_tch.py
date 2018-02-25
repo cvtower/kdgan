@@ -68,7 +68,7 @@ def main(_):
 
       if prec < best_prec:
         continue
-      tn_tch.saver.save(sess, flags.tch_model_ckpt)
+      tn_tch.saver.save(utils.get_session(sess), flags.tch_model_ckpt)
   tot_time = time.time() - start
   print('best@%d=%.4f et=%.0fs' % (flags.cutoff, best_prec, tot_time))
 
