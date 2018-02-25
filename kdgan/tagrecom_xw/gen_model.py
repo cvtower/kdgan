@@ -90,9 +90,9 @@ class GEN():
       hard_loss *= (1.0 - flags.kd_soft_pct)
       gen_logits = self.logits * (1.0 / flags.temperature)
       tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
-      # soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
-      # soft_loss *= pow(flags.temperature, 2.0)
-      soft_loss = tf.losses.sigmoid_cross_entropy(tch_logits, gen_logits)
+      soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
+      soft_loss *= pow(flags.temperature, 2.0)
+      # soft_loss = tf.losses.sigmoid_cross_entropy(tch_logits, gen_logits)
       soft_loss *= flags.kd_soft_pct
       kd_losses.extend([hard_loss, soft_loss])
     else:
