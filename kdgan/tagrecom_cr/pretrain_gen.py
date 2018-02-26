@@ -114,7 +114,7 @@ def main(_):
         # if (batch_t + 1) % eval_interval != 0:
         #     continue
 
-        hit_v = yfcceval.compute_prec(flags, sess, vd_gen)
+        hit_v = yfcceval.compute_prec(flags, sess, gen_v)
 
         figure_data.append((epoch, hit_v, batch_t))
 
