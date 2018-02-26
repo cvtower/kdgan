@@ -95,6 +95,7 @@ def main(_):
 
       num_batch_t = math.ceil(flags.num_tch_epoch * tn_size / flags.batch_size)
       for _ in range(num_batch_t):
+        continue
         batch_t += 1
         image_t, text_t, label_dat_t = yfccdata_t.next_batch(flags, sess)
 
