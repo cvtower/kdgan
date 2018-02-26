@@ -115,7 +115,7 @@ class GEN():
       gen_labels = tf.nn.softmax(gen_logits)
       tch_labels = tf.nn.softmax(tch_logits)
       # soft_loss = -1.0 * tf.reduce_mean(tf.log(gen_labels) * tch_labels)
-      soft_loss = tf.losses.sigmoid_cross_entropy(tch_labels, gen_logits)
+      soft_loss = tf.losses.sigmoid_cross_entropy(tch_labels, tf.log(gen_labels))
 
       soft_loss *= flags.kd_soft_pct
     else:
