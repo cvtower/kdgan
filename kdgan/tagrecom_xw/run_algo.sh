@@ -92,7 +92,7 @@ python train_kdgan.py \
   --gen_model_ckpt=${gen_model_ckpt} \
   --tch_model_ckpt=${tch_model_ckpt} \
   --dataset=$dataset \
-  --model_name=${image_model} \
+  --image_model=${image_model} \
   --optimizer=sgd \
   --learning_rate_decay_type=exp \
   --dis_learning_rate=0.05 \

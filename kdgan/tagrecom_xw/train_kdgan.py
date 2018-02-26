@@ -5,6 +5,7 @@ from flags import flags
 from dis_model import DIS
 from gen_model import GEN
 from tch_model import TCH
+import data_utils
 
 import math
 import os
