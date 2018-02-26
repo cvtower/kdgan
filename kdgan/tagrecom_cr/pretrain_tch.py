@@ -73,7 +73,7 @@ def main(_):
       num_params *= dim.value
     print('%-50s (%d params)' % (variable.name, num_params))
 
-  data_sources_t = utils.get_data_sources(flags, is_training=True, single_source=True)
+  data_sources_t = utils.get_data_sources(flags, is_training=True, single=True)
   data_sources_v = utils.get_data_sources(flags, is_training=False)
   print('tn: #tfrecord=%d\nvd: #tfrecord=%d' % (len(data_sources_t), len(data_sources_v)))
 
