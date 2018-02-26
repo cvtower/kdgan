@@ -119,8 +119,8 @@ def main(_):
         image_g, text_g, label_dat_g = yfccdata_g.next_batch(flags, sess)
 
         feed_dict = {tn_tch.image_ph:image_g, tn_tch.text_ph:text_g}
-        label_tch_g = sess.run(tn_tch.labels, feed_dict=feed_dict)
-        # print('tch label {}'.format(label_tch_g.shape))
+        logit_tch_g = sess.run(tn_tch.logits, feed_dict=feed_dict)
+        # print('tch label {}'.format(logit_tch_g.shape))
 
         feed_dict = {tn_gen.image_ph:image_g}
         label_gen_g = sess.run(tn_gen.labels, feed_dict=feed_dict)
@@ -131,7 +131,7 @@ def main(_):
         feed_dict = {
           tn_gen.image_ph:image_g,
           tn_gen.hard_label_ph:label_dat_g,
-          tn_gen.soft_label_ph:label_tch_g,
+          tn_gen.soft_logit_ph:logit_tch_g,
           tn_gen.sample_ph:sample_g,
           tn_gen.reward_ph:reward_g,
         }
