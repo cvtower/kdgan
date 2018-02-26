@@ -54,7 +54,7 @@ yfccdata_t = data_utils.YFCCDATA(flags)
 yfcceval = data_utils.YFCCEVAL(flags)
 
 def main(_):
-  best_prec = 0.0
+  best_prec, bst_epk = 0.0, 0
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -67,90 +67,91 @@ def main(_):
     ini_gen = yfcceval.compute_prec(flags, sess, vd_gen)
     ini_tch = yfcceval.compute_prec(flags, sess, vd_tch)
     print('ini dis=%.4f gen=%.4f tch=%.4f' % (ini_dis, ini_gen, ini_tch))
-    exit()
 
     batch_d, batch_g, batch_t = -1, -1, -1
     for epoch in range(flags.num_epoch):
-      for dis_epoch in range(flags.num_dis_epoch):
-        print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
-        for _ in range(num_batch_per_epoch):
-          batch_d += 1
-          image_d, text_d, label_dat_d = sess.run([image_bt_d, text_bt_d, label_bt_d])
-          
-          feed_dict = {tn_gen.image_ph:image_d}
-          label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
-          # print('gen label', label_gen_d.shape)
-          feed_dict = {tn_tch.text_ph:text_d}
-          label_tch_d, = sess.run([tn_tch.labels], feed_dict=feed_dict)
-          # print('tch label', label_tch_d.shape)
+      num_batch_d = math.ceil(flags.num_dis_epoch * tn_size / flags.batch_size)
+      for _ in range(num_batch_d):
+        batch_d += 1
+        image_d, text_d, label_dat_d = yfccdata_d.next_batch(flags, sess)
+        
+        feed_dict = {tn_gen.image_ph:image_d}
+        label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
+        # print('gen label', label_gen_d.shape)
+        feed_dict = {tn_tch.image_ph:image_d, tn_tch.text_ph:text_d}
+        label_tch_d = sess.run(tn_tch.labels, feed_dict=feed_dict)
+        # print('tch label', label_tch_d.shape)
 
-          sample_d, label_d = utils.kdgan_dis_sample(flags, 
-              label_dat_d, label_gen_d, label_tch_d)
-          # print(sample_d.shape, label_d.shape)
+        sample_d, label_d = utils.kdgan_dis_sample(flags, label_dat_d, label_gen_d, label_tch_d)
+        # print(sample_d.shape, label_d.shape)
 
-          feed_dict = {
-            tn_dis.image_ph:image_d,
-            tn_dis.sample_ph:sample_d,
-            tn_dis.dis_label_ph:label_d,
-          }
-          _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], 
-              feed_dict=feed_dict)
-          writer.add_summary(summary_d, batch_d)
+        feed_dict = {
+          tn_dis.image_ph:image_d,
+          tn_dis.sample_ph:sample_d,
+          tn_dis.dis_label_ph:label_d,
+        }
+        _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
+        writer.add_summary(summary_d, batch_d)
 
-      for tch_epoch in range(flags.num_tch_epoch):
-        print('epoch %03d tch_epoch %03d' % (epoch, tch_epoch))
-        for _ in range(num_batch_per_epoch):
+      num_batch_t = math.ceil(flags.num_tch_epoch * tn_size / flags.batch_size)
+      for _ in range(num_batch_t):
+        batch_t += 1
+        image_t, text_t, label_dat_t = yfccdata_t.next_batch(flags, sess)
+
+        feed_dict = {tn_tch.image_ph:image_t, tn_tch.text_ph:text_t}
+        label_tch_t = sess.run(tn_tch.labels, feed_dict=feed_dict)
+        sample_t = utils.generate_label(flags, label_dat_t, label_tch_t)
+        feed_dict = {tn_dis.image_ph:image_t, tn_dis.sample_ph:sample_t}
+        reward_t = sess.run(tn_dis.rewards, feed_dict=feed_dict)
+
+        feed_dict = {
+          tn_tch.text_ph:text_t,
+          tn_tch.sample_ph:sample_t,
+          tn_tch.reward_ph:reward_t,
+        }
+        _, summary_t = sess.run([tn_tch.kdgan_update, tch_summary_op], feed_dict=feed_dict)
+        writer.add_summary(summary_t, batch_t)
+
+      num_batch_g = math.ceil(flags.num_gen_epoch * tn_size / flags.batch_size)
+      for _ in range(num_batch_g):
+        batch_g += 1
+        image_g, text_g, label_dat_g = yfccdata_g.next_batch(flags, sess)
+
+        feed_dict = {tn_tch.image_ph:image_g, tn_tch.text_ph:text_g}
+        label_tch_g = sess.run(tn_tch.labels, feed_dict=feed_dict)
+        # print('tch label {}'.format(label_tch_g.shape))
+
+        feed_dict = {tn_gen.image_ph:image_g}
+        label_gen_g = sess.run(tn_gen.labels, feed_dict=feed_dict)
+        sample_g = utils.generate_label(flags, label_dat_g, label_gen_g)
+        feed_dict = {tn_dis.image_ph:image_g, tn_dis.sample_ph:sample_g}
+        reward_g = sess.run(tn_dis.rewards, feed_dict=feed_dict)
+
+        feed_dict = {
+          tn_gen.image_ph:image_g,
+          tn_gen.hard_label_ph:label_dat_g,
+          tn_gen.soft_label_ph:label_tch_g,
+          tn_gen.sample_ph:sample_g,
+          tn_gen.reward_ph:reward_g,
+        }
+        _, summary_g = sess.run([tn_gen.kdgan_update, gen_summary_op], feed_dict=feed_dict)
+        writer.add_summary(summary_g, batch_g)
+
+        if (batch_g + 1) % eval_interval != 0:
+            continue
+        prec = yfcceval.compute_prec(flags, sess, vd_gen)
+        if prec > best_prec:
+          bst_epk = epoch
+        best_prec = max(prec, best_prec)
+        tot_time = time.time() - start
+        global_step = sess.run(tn_gen.global_step)
+        avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
+        print('#%08d@%d prec@%d=%.4f best@%d=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+            (global_step, epoch, flags.cutoff, prec, bst_epk, best_prec, tot_time, avg_time))
+
+        if prec < best_prec:
           continue
-          batch_t += 1
-          image_t, text_t, label_dat_t = sess.run([image_bt_t, text_bt_t, label_bt_t])
-
-          feed_dict = {tn_tch.text_ph:text_t}
-          label_tch_t, = sess.run([tn_tch.labels], feed_dict=feed_dict)
-          sample_t = utils.generate_label(flags, label_dat_t, label_tch_t)
-          feed_dict = {
-            tn_dis.image_ph:image_t,
-            tn_dis.sample_ph:sample_t,
-          }
-          reward_t, = sess.run([tn_dis.rewards], feed_dict=feed_dict)
-
-          feed_dict = {
-            tn_tch.text_ph:text_t,
-            tn_tch.sample_ph:sample_t,
-            tn_tch.reward_ph:reward_t,
-          }
-          _, summary_t = sess.run([tn_tch.kdgan_update, tch_summary_op], 
-              feed_dict=feed_dict)
-          writer.add_summary(summary_t, batch_t)
-
-      for gen_epoch in range(flags.num_gen_epoch):
-        print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
-        for _ in range(num_batch_per_epoch):
-          batch_g += 1
-          image_g, text_g, label_dat_g = sess.run([image_bt_g, text_bt_g, label_bt_g])
-
-          feed_dict = {tn_tch.text_ph:text_g}
-          label_tch_g, = sess.run([tn_tch.labels], feed_dict=feed_dict)
-          # print('tch label {}'.format(label_tch_g.shape))
-
-          feed_dict = {tn_gen.image_ph:image_g}
-          label_gen_g, = sess.run([tn_gen.labels], feed_dict=feed_dict)
-          sample_g = utils.generate_label(flags, label_dat_g, label_gen_g)
-          feed_dict = {
-            tn_dis.image_ph:image_g,
-            tn_dis.sample_ph:sample_g,
-          }
-          reward_g, = sess.run([tn_dis.rewards], feed_dict=feed_dict)
-
-          feed_dict = {
-            tn_gen.image_ph:image_g,
-            tn_gen.hard_label_ph:label_dat_g,
-            tn_gen.soft_label_ph:label_tch_g,
-            tn_gen.sample_ph:sample_g,
-            tn_gen.reward_ph:reward_g,
-          }
-          _, summary_g = sess.run([tn_gen.kdgan_update, gen_summary_op], 
-              feed_dict=feed_dict)
-          writer.add_summary(summary_g, batch_g)
+        # save if necessary
   tot_time = time.time() - start
   print('best@%d=%.4f et=%.0fs' % (flags.cutoff, best_prec, tot_time))
 
