@@ -53,6 +53,7 @@ python train_kd.py \
   --kd_soft_pct=0.1 \
   --temperature=3.0 \
   --num_epoch=200
+  # kd_soft_pct=0.0 best@120=0.2880
 exit
 
 python train_kd.py \
