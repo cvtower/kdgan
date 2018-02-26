@@ -4,6 +4,7 @@ from kdgan import utils
 from dis_model import DIS
 from gen_model import GEN
 from tch_model import TCH
+import data_utils
 
 import math
 import os
@@ -21,6 +22,7 @@ tf.app.flags.DEFINE_integer('cutoff', 3, '')
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
+tf.app.flags.DEFINE_string('image_model', None, '')
 # training
 tf.app.flags.DEFINE_integer('batch_size', 32, '')
 tf.app.flags.DEFINE_integer('num_epoch', 20, '')
@@ -29,7 +31,7 @@ tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.95, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 0.00001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 10.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exp', 'fix|ply')
 # dis model
 tf.app.flags.DEFINE_float('dis_weight_decay', 0.0, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
@@ -51,7 +53,7 @@ tf.app.flags.DEFINE_integer('num_positive', 1, '')
 tf.app.flags.DEFINE_string('kdgan_figure_data', None, '')
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_train_data_size(flags.dataset)
+train_data_size = utils.get_tn_size(flags.dataset)
 eval_interval = int(train_data_size / flags.batch_size)
 print('eval:\t#interval=%d' % (eval_interval))
 num_batch_per_epoch = math.ceil(train_data_size / flags.batch_size)
@@ -64,6 +66,8 @@ scope.reuse_variables()
 dis_v = DIS(flags, is_training=False)
 gen_v = GEN(flags, is_training=False)
 tch_v = TCH(flags, is_training=False)
+
+yfcceval = data_utils.YFCCEVAL(flags)
 
 def main(_):
   for variable in tf.trainable_variables():
@@ -115,8 +119,8 @@ def main(_):
     tch_t.saver.restore(sess, flags.tch_model_ckpt)
     writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     with slim.queues.QueueRunners(sess):
-      gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
-      tch_hit = utils.evaluate_text(flags, sess, tch_v, bt_list_v)
+      gen_hit = yfcceval.compute_prec(flags, sess, gen_v)
+      tch_hit = yfcceval.compute_prec(flags, sess, tch_v)
       print('hit gen=%.4f tch=%.4f' % (gen_hit, tch_hit))
 
       batch_d, batch_g, batch_t = -1, -1, -1
@@ -202,24 +206,24 @@ def main(_):
                 feed_dict=feed_dict)
             writer.add_summary(summary_g, batch_g)
 
-            # if (batch_g + 1) % eval_interval != 0:
-            #     continue
-            # gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
-            # tot_time = time.time() - start
-            # print('#%08d hit=%.4f %06ds' % (batch_g, gen_hit, int(tot_time)))
-            # if gen_hit <= best_hit_v:
-            #   continue
-            # best_hit_v = gen_hit
-            # print('best hit=%.4f' % (best_hit_v))
-        gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
-        tch_hit = utils.evaluate_text(flags, sess, tch_v, bt_list_v)
+            if (batch_g + 1) % eval_interval != 0:
+                continue
+            gen_hit = yfcceval.compute_prec(flags, sess, gen_v)
+            tot_time = time.time() - start
+            print('#%08d hit=%.4f %06ds' % (batch_g, gen_hit, int(tot_time)))
+            if gen_hit <= best_hit_v:
+              continue
+            best_hit_v = gen_hit
+            print('best hit=%.4f' % (best_hit_v))
+        # gen_hit = utils.evaluate_image(flags, sess, gen_v, bt_list_v)
+        # tch_hit = utils.evaluate_text(flags, sess, tch_v, bt_list_v)
 
-        tot_time = time.time() - start
-        print('#%03d curgen=%.4f curtch=%.4f %.0fs' % (epoch, gen_hit, tch_hit, tot_time))
-        figure_data.append((epoch, gen_hit, tch_hit))
-        if gen_hit <= best_hit_v:
-          continue
-        best_hit_v = gen_hit
+        # tot_time = time.time() - start
+        # print('#%03d curgen=%.4f curtch=%.4f %.0fs' % (epoch, gen_hit, tch_hit, tot_time))
+        # figure_data.append((epoch, gen_hit, tch_hit))
+        # if gen_hit <= best_hit_v:
+        #   continue
+        # best_hit_v = gen_hit
   print('best hit=%.4f' % (best_hit_v))
 
   utils.create_if_nonexist(os.path.dirname(flags.kdgan_figure_data))
