@@ -8,6 +8,7 @@ python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --convergence_rate_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_cr.p \
   --dataset_dir=$HOME/Projects/data/mnist \
   --dis_model_name=lenet \
   --gen_model_name=mlp \
@@ -15,7 +16,7 @@ python train_kdgan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
+  --num_epoch=20 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10 \
@@ -37,7 +38,7 @@ python train_gan.py \
   --optimizer=adam \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
-  --num_epoch=20 \
+  --num_epoch=200 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_negative=20 \
