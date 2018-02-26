@@ -49,6 +49,7 @@ class GEN():
 
       # pre train
       pre_losses = self.get_pre_losses()
+      print('#pre_losses wo regularization=%d' % (len(pre_losses)))
       pre_losses.extend(self.get_regularization_losses())
       print('#pre_losses wt regularization=%d' % (len(pre_losses)))
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % gen_scope)
@@ -57,12 +58,14 @@ class GEN():
 
       # kd train
       kd_losses = self.get_kd_losses(flags)
+      print('#kd_losses wo regularization=%d' % (len(kd_losses)))
       self.kd_loss = tf.add_n(kd_losses, name='%s_kd_loss' % gen_scope)
       kd_optimizer = utils.get_opt(flags, self.learning_rate)
       self.kd_update = kd_optimizer.minimize(self.kd_loss, global_step=global_step)
 
       # gan train
       gan_losses = self.get_gan_losses()
+      print('#gan_losses wo regularization=%d' % (len(gan_losses)))
       gan_losses.extend(self.get_regularization_losses())
       print('#gan_losses wt regularization=%d' % (len(gan_losses)))
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % gen_scope)
@@ -71,6 +74,7 @@ class GEN():
 
       # kdgan train
       kdgan_losses = self.get_kdgan_losses(flags)
+      print('#kdgan_losses wo regularization=%d' % (len(kdgan_losses)))
       kdgan_losses.extend(self.get_regularization_losses())
       print('#kdgan_losses wt regularization=%d' % (len(kdgan_losses)))
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % gen_scope)
@@ -91,7 +95,6 @@ class GEN():
 
   def get_pre_losses(self):
     pre_losses = [self.get_hard_loss()]
-    print('#pre_losses wo regularization=%d' % (len(pre_losses)))
     return pre_losses
 
   def get_kd_losses(self, flags):
@@ -111,22 +114,20 @@ class GEN():
 
       gen_labels = tf.nn.softmax(gen_logits)
       tch_labels = tf.nn.softmax(tch_logits)
-      soft_loss = -1.0 * tf.reduce_mean(tf.log(gen_labels) * tch_labels)
+      # soft_loss = -1.0 * tf.reduce_mean(tf.log(gen_labels) * tch_labels)
+      soft_loss = tf.losses.sigmoid_cross_entropy(tch_labels, gen_logits)
 
       soft_loss *= flags.kd_soft_pct
     else:
       raise ValueError('bad kd model %s', flags.kd_model)
     kd_losses.append(soft_loss)
-    print('#kd_losses wo regularization=%d' % (len(kd_losses)))
     return kd_losses
 
   def get_gan_losses(self):
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
     gan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
-    print('#gan_losses wo regularization=%d' % (len(gan_losses)))
     return gan_losses
 
   def get_kdgan_losses(self, flags):
     kdgan_losses = self.get_kd_losses(flags) + self.get_gan_losses()
-    print('#kdgan_losses wo regularization=%d' % (len(kdgan_losses)))
     return kdgan_losses
