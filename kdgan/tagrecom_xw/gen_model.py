@@ -109,8 +109,8 @@ class GEN():
       # soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
       # soft_loss *= pow(flags.temperature, 2.0)
 
-      gen_labels = tf.softmax(gen_logits)
-      tch_labels = tf.softmax(tch_logits)
+      gen_labels = tf.nn.softmax(gen_logits)
+      tch_labels = tf.nn.softmax(tch_logits)
       soft_loss = -1.0 * tf.reduce_mean(tf.log(gen_labels) * tch_labels)
 
       soft_loss *= flags.kd_soft_pct
