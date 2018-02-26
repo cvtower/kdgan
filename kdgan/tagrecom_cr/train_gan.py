@@ -3,6 +3,7 @@ from kdgan import metric
 from kdgan import utils
 from dis_model import DIS
 from gen_model import GEN
+import data_utils
 
 import math
 import os
@@ -20,6 +21,7 @@ tf.app.flags.DEFINE_integer('cutoff', 3, '')
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
+tf.app.flags.DEFINE_string('image_model', None, '')
 # training
 tf.app.flags.DEFINE_integer('batch_size', 32, '')
 tf.app.flags.DEFINE_integer('num_epoch', 20, '')
@@ -28,7 +30,7 @@ tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.95, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 0.00001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 20.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exp', 'fix|ply')
 # dis model
 tf.app.flags.DEFINE_float('dis_weight_decay', 0.0, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
@@ -60,6 +62,8 @@ scope = tf.get_variable_scope()
 scope.reuse_variables()
 dis_v = DIS(flags, is_training=False)
 gen_v = GEN(flags, is_training=False)
+
+yfcceval = data_utils.YFCCEVAL(flags)
 
 def main(_):
   for variable in tf.trainable_variables():

@@ -2,6 +2,7 @@ from kdgan import config
 from kdgan import metric
 from kdgan import utils
 from dis_model import DIS
+import data_utils
 
 import os
 import time
@@ -20,6 +21,7 @@ tf.app.flags.DEFINE_integer('cutoff', 3, '')
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
+tf.app.flags.DEFINE_string('image_model', None, '')
 # training
 tf.app.flags.DEFINE_integer('batch_size', 32, '')
 tf.app.flags.DEFINE_integer('num_epoch', 20, '')
@@ -28,7 +30,7 @@ tf.app.flags.DEFINE_float('learning_rate', 0.01, '')
 tf.app.flags.DEFINE_float('learning_rate_decay_factor', 0.95, '')
 tf.app.flags.DEFINE_float('end_learning_rate', 0.00001, '')
 tf.app.flags.DEFINE_float('num_epochs_per_decay', 10.0, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'fixed|polynomial')
+tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exp', 'fix|ply')
 # dis model
 tf.app.flags.DEFINE_float('dis_weight_decay', 0.0, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
@@ -53,6 +55,8 @@ num_batch_v = int(valid_data_size / config.valid_batch_size)
 eval_interval = int(train_data_size / flags.batch_size)
 print('tn:\t#batch=%d\nvd:\t#batch=%d\neval:\t#interval=%d' % (
     num_batch_t, num_batch_v, eval_interval))
+
+yfcceval = data_utils.YFCCEVAL(flags)
 
 def main(_):
   dis_t = DIS(flags, is_training=True)
@@ -97,14 +101,7 @@ def main(_):
         if (batch_t + 1) % eval_interval != 0:
             continue
 
-        hit_v = []
-        for batch_v in range(num_batch_v):
-          image_np_v, label_np_v = sess.run([image_bt_v, label_bt_v])
-          feed_dict = {dis_v.image_ph:image_np_v}
-          logit_np_v, = sess.run([dis_v.logits], feed_dict=feed_dict)
-          hit_bt = metric.compute_hit(logit_np_v, label_np_v, flags.cutoff)
-          hit_v.append(hit_bt)
-        hit_v = np.mean(hit_v)
+        hit_v = yfcceval.compute_prec(flags, sess, gen_v)
 
         tot_time = time.time() - start
         print('#%08d hit=%.4f %06ds' % (batch_t, hit_v, int(tot_time)))
