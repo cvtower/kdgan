@@ -1,13 +1,6 @@
 # kdgan
 pip install -Ue .
 
-54 epk ~ 0.23
-
-# 商品入库
-url: http://admin-test.glbuyer.com/#/
-usr: rootAdmin
-pwd: 12345678
-
 remote.unimelb.edu.au/student
 ssh xiaojie@10.100.229.246 # cpu
 ssh xiaojie@10.100.228.181 # gpu xw
