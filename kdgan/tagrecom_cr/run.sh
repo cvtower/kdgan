@@ -75,6 +75,7 @@ exit
 python pretrain_tch.py \
   --dataset=yfcc10k \
   --model_name=vgg_16 \
+  --image_model=vgg_16 \
   --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
   --tch_weight_decay=0.0 \
   --learning_rate=0.01 \
