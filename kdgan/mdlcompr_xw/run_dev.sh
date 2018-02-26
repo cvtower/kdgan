@@ -1,6 +1,5 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
-checkpoint_dir=${kdgan_dir}/checkpoints
-pickle_dir=${kdgan_dir}/pickles
+checkpoint_dir=$kdgan_dir/checkpoints
 train_size=50
 batch_size=5
 
@@ -8,7 +7,6 @@ python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
-  --convergence_rate_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_cr.p \
   --dataset_dir=$HOME/Projects/data/mnist \
   --dis_model_name=lenet \
   --gen_model_name=mlp \
@@ -16,7 +14,7 @@ python train_kdgan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=20 \
+  --num_epoch=200 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10 \
@@ -29,20 +27,19 @@ exit
 
 
 python train_gan.py \
-  --dis_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_dis \
-  --gen_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_gen \
-  --convergence_rate_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan_cr.p \
+  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --dataset_dir=$HOME/Projects/data/mnist \
   --dis_model_name=lenet \
   --gen_model_name=mlp \
   --optimizer=adam \
-  --train_size=${train_size} \
-  --batch_size=${batch_size} \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
   --num_epoch=200 \
   --num_dis_epoch=20 \
-  --num_gen_epoch=10 \
+  --num_gen_epoch=2 \
   --num_negative=20 \
-  --num_positive=2
+  --num_positive=5
 exit
 
 

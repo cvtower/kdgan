@@ -12,7 +12,6 @@ from os import path
 from tensorflow.contrib import slim
 import math
 import os
-import pickle
 import time
 import numpy as np
 import tensorflow as tf
@@ -70,7 +69,6 @@ vd_tch = TCH(flags, tch_mnist.test, is_training=False)
 
 def main(_):
   bst_gen_acc, bst_tch_acc, bst_eph = 0.0, 0.0, 0
-  acc_list = []
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -144,7 +142,7 @@ def main(_):
             tn_tch.reward_ph:reward_t,
           }
 
-          if flags.kdgan_model != config.kdgan_odgan_flag:
+          if flags.kdgan_model != config.kdgan_ow_flag:
             feed_dict = {vd_gen.image_ph:image_t}
             soft_logit_t = sess.run(vd_gen.logits, feed_dict=feed_dict)
             feed_dict = {
@@ -204,7 +202,7 @@ def main(_):
             vd_gen.hard_label_ph:gen_mnist.test.labels,
           }
           gen_acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
-          acc_list.append(gen_acc)
+
           if gen_acc > bst_gen_acc:
             bst_gen_acc = max(gen_acc, bst_gen_acc)
             bst_eph = epoch
@@ -222,9 +220,6 @@ def main(_):
   bst_eph += 1
   print('#mnist=%d kdgan_%s@%d=%.2f et=%.0fs' % 
       (tn_size, flags.kdgan_model, bst_eph, bst_gen_acc, tot_time))
-
-  utils.create_pardir(flags.convergence_rate_p)
-  pickle.dump(acc_list, open(flags.convergence_rate_p, 'wb'))
 
 if __name__ == '__main__':
     tf.app.run()

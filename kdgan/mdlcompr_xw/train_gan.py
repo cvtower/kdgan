@@ -11,7 +11,6 @@ from os import path
 from tensorflow.contrib import slim
 import math
 import os
-import pickle
 import time
 import numpy as np
 import tensorflow as tf
@@ -62,7 +61,6 @@ vd_gen = GEN(flags, gen_mnist.test, is_training=False)
 
 def main(_):
   bst_acc = 0.0
-  acc_list = []
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -138,7 +136,7 @@ def main(_):
             vd_gen.hard_label_ph:gen_mnist.test.labels,
           }
           acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
-          acc_list.append(acc)
+
           bst_acc = max(acc, bst_acc)
           tot_time = time.time() - start
           global_step = sess.run(tn_gen.global_step)
@@ -150,9 +148,6 @@ def main(_):
             continue
           # save gen parameters if necessary
   print('#mnist=%d bstacc=%.4f' % (tn_size, bst_acc))
-
-  utils.create_pardir(flags.convergence_rate_p)
-  pickle.dump(acc_list, open(flags.convergence_rate_p, 'wb'))
 
 if __name__ == '__main__':
     tf.app.run()
