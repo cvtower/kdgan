@@ -99,7 +99,7 @@ def main(_):
         if (batch_t + 1) % eval_interval != 0:
             continue
 
-        hit_v = yfcceval.compute_prec(flags, sess, gen_v)
+        hit_v = yfcceval.compute_prec(flags, sess, tch_v)
 
         tot_time = time.time() - start
         print('#%08d hit=%.4f %06ds' % (batch_t, hit_v, int(tot_time)))
