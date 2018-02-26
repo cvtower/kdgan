@@ -52,7 +52,7 @@ tf.app.flags.DEFINE_integer('num_positive', 1, '')
 tf.app.flags.DEFINE_string('gan_figure_data', None, '')
 flags = tf.app.flags.FLAGS
 
-train_data_size = utils.get_train_data_size(flags.dataset)
+train_data_size = utils.get_tn_size(flags.dataset)
 eval_interval = int(train_data_size / flags.batch_size)
 print('eval:\t#interval=%d' % (eval_interval))
 
