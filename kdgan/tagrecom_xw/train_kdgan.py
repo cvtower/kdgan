@@ -105,6 +105,7 @@ def main(_):
         reward_t = sess.run(tn_dis.rewards, feed_dict=feed_dict)
 
         feed_dict = {
+          tn_tch.image_ph:image_t,
           tn_tch.text_ph:text_t,
           tn_tch.sample_ph:sample_t,
           tn_tch.reward_ph:reward_t,
