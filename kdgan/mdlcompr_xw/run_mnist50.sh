@@ -114,7 +114,7 @@ python train_kdgan.py \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10 \
-  --kdgan_model=ow \
+  --kdgan_model=odgan \
   --num_negative=20 \
   --num_positive=5 \
   --kd_model=mimic \

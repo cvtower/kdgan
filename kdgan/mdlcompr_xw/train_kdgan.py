@@ -142,7 +142,7 @@ def main(_):
             tn_tch.reward_ph:reward_t,
           }
 
-          if flags.kdgan_model != config.kdgan_ow_flag:
+          if flags.kdgan_model != config.kdgan_odgan_flag:
             feed_dict = {vd_gen.image_ph:image_t}
             soft_logit_t = sess.run(vd_gen.logits, feed_dict=feed_dict)
             feed_dict = {
