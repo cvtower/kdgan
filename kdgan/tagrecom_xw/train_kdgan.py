@@ -64,9 +64,8 @@ def main(_):
 
     ini_dis = yfcceval.compute_prec(flags, sess, vd_dis)
     ini_gen = yfcceval.compute_prec(flags, sess, vd_gen)
-    ini_gen = yfcceval.compute_prec(flags, sess, vd_tch
-
-    print()
+    ini_tch = yfcceval.compute_prec(flags, sess, vd_tch)
+    print('ini dis=%.4f gen=%.4f tch=%.4f' % (ini_dis, ini_gen, ini_tch))
     exit()
 
     batch_d, batch_g, batch_t = -1, -1, -1
