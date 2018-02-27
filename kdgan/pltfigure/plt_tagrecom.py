@@ -31,10 +31,10 @@ def plot_yfcc10k_cr():
   kdgan_prec_np = data_utils.smooth_prec(kdgan_prec_np, flags.num_epoch)
 
   fig, ax = plt.subplots(1)
-  ax.plot(epoch_np, gen_prec_np, color='m', label='irgan')
-  ax.plot(epoch_np, tch_prec_np, color='g', label='kdgan')
-  ax.plot(epoch_np, gan_prec_np, color='r', label='irgan')
-  ax.plot(epoch_np, kdgan_prec_np, color='b', label='kdgan')
+  ax.plot(epoch_np, gen_prec_np, color='m', label='classifier')
+  ax.plot(epoch_np, tch_prec_np, color='g', label='teacher')
+  ax.plot(epoch_np, gan_prec_np, color='r', label='kdgan0.0')
+  ax.plot(epoch_np, kdgan_prec_np, color='b', label='kdgan1.0')
   ax.legend(loc='lower right')
   fig.savefig(flags.epsfile, format='eps', bbox_inches='tight')
 
