@@ -3,7 +3,7 @@ checkpoint_dir=${kdgan_dir}/checkpoints
 pretrained_dir=${checkpoint_dir}/pretrained
 pickle_dir=${kdgan_dir}/pickles
 
-num_epoch=2
+num_epoch=200
 gen_model_ckpt=${checkpoint_dir}/gen_vgg_16.ckpt
 dis_model_ckpt=${checkpoint_dir}/dis_vgg_16.ckpt
 tch_model_ckpt=${checkpoint_dir}/tagrecom_yfcc10k_tch.ckpt
