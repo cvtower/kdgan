@@ -9,4 +9,4 @@ dst_yfcc_dir=$HOME/${pickle_dir}
 scp ${cz_server}:${src_yfcc_dir}/tagrecom_yfcc10k_gan@200.p ${dst_yfcc_dir}
 scp ${xw_server}:${src_yfcc_dir}/tagrecom_yfcc10k_kdgan@200.p ${dst_yfcc_dir}
 scp ${xw_server}:${src_yfcc_dir}/tagrecom_yfcc10k_gen@200.p ${dst_yfcc_dir}
-scp ${xw_server}:${src_yfcc_dir}/tagrecom_yfcc10k_gen@200.p ${dst_yfcc_dir}
+scp ${xw_server}:${src_yfcc_dir}/tagrecom_yfcc10k_tch@200.p ${dst_yfcc_dir}
