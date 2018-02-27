@@ -19,7 +19,8 @@ python pretrain_gen.py \
   --gen_model_p=${gen_model_p} \
   --dataset=$dataset \
   --image_model=${image_model} \
-  --gen_learning_rate=0.05 \
+  --optimizer=sgd \
+  --gen_learning_rate=0.001 \
   --num_epoch=${num_epoch}
 exit
 
@@ -37,7 +38,7 @@ python pretrain_tch.py \
   --dataset=$dataset \
   --image_model=${image_model} \
   --text_weight_decay=0.0 \
-  --tch_learning_rate=0.01 \
+  --tch_learning_rate=0.5 \
   --num_epoch=${num_epoch}
 exit
 
