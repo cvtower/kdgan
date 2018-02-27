@@ -1,7 +1,14 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
-checkpoint_dir=$kdgan_dir/checkpoints
-pretrained_dir=$checkpoint_dir/pretrained
-figure_data_dir=$kdgan_dir/figure_data
+checkpoint_dir=${kdgan_dir}/checkpoints
+pretrained_dir=${checkpoint_dir}/pretrained
+pickle_dir=${kdgan_dir}/pickles
+
+num_epoch=2
+tch_model_ckpt=${checkpoint_dir}/tagrecom_yfcc10k_tch.ckpt
+tch_model_p=${pickle_dir}/tagrecom_yfcc10k_tch@${num_epoch}.p
+
+dataset=yfcc10k
+image_model=vgg_16
 
 python train_kdgan.py \
   --dataset=yfcc10k \
@@ -72,18 +79,16 @@ python pretrain_dis.py \
   --feature_size=4096 \
   --learning_rate=0.05 \
   --num_epoch=200
-# 373s best hit=0.7690
 exit
 
 python pretrain_tch.py \
-  --dataset=yfcc10k \
-  --model_name=vgg_16 \
-  --image_model=vgg_16 \
-  --tch_model_ckpt=$checkpoint_dir/tch.ckpt \
-  --tch_weight_decay=0.0 \
-  --learning_rate=0.01 \
-  --num_epoch=200
-# 0232s best hit=0.9657
+  --tch_model_ckpt=${tch_model_ckpt} \
+  --tch_model_p=${tch_model_p} \
+  --dataset=$dataset \
+  --image_model=${image_model} \
+  --text_weight_decay=0.0 \
+  --tch_learning_rate=0.01 \
+  --num_epoch=${num_epoch}
 exit
 
 

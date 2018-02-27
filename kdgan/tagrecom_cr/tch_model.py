@@ -21,7 +21,7 @@ class TCH():
     # initializer = tf.random_uniform([vocab_size, flags.embedding_size], -0.1, 0.1)
     with tf.variable_scope(tch_scope) as scope:
       with slim.arg_scope([slim.fully_connected],
-          weights_regularizer=slim.l2_regularizer(flags.tch_weight_decay)):
+          weights_regularizer=slim.l2_regularizer(flags.text_weight_decay)):
         word_embedding = slim.variable('word_embedding',
             shape=[vocab_size, flags.embedding_size],
             # regularizer=slim.l2_regularizer(flags.tch_weight_decay),
@@ -45,12 +45,12 @@ class TCH():
       save_dict[variable.name] = variable
     self.saver = tf.train.Saver(save_dict)
 
-    global_step = tf.Variable(0, trainable=False)
+    self.global_step = global_step = tf.Variable(0, trainable=False)
     tn_size = utils.get_tn_size(flags.dataset)
     self.learning_rate = utils.get_lr(flags, 
         tn_size,
         global_step,
-        flags.learning_rate,
+        flags.tch_learning_rate,
         tch_scope)
 
     # pre train

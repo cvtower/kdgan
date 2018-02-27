@@ -1,21 +1,21 @@
 import tensorflow as tf
 
 # evaluation
-tf.app.flags.DEFINE_integer('cutoff', 1, '')
+tf.app.flags.DEFINE_integer('cutoff', 3, '')
 # dataset
 tf.app.flags.DEFINE_string('dataset', None, '')
 tf.app.flags.DEFINE_integer('num_label', 100, '')
 # model
 tf.app.flags.DEFINE_string('image_model', None, '')
+tf.app.flags.DEFINE_integer('feature_size', 4096, '')
+tf.app.flags.DEFINE_integer('embedding_size', 10, '')
 tf.app.flags.DEFINE_float('image_keep_prob', 5e-1, '')
-tf.app.flags.DEFINE_float('image_weight_decay', 1e-4, 'l2 coefficient')
-tf.app.flags.DEFINE_float('text_weight_decay', 0e-4, 'l2 coefficient')
-tf.app.flags.DEFINE_float('tch_weight_decay', 0e-4, 'l2 coefficient')
+tf.app.flags.DEFINE_float('image_weight_decay', 5e-5, 'l2 coefficient')
+tf.app.flags.DEFINE_float('text_weight_decay', 1e-5, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('tch_model_ckpt', None, '')
-tf.app.flags.DEFINE_integer('feature_size', 4096, '')
-tf.app.flags.DEFINE_integer('embedding_size', 10, '')
+tf.app.flags.DEFINE_string('tch_model_p', None, '')
 # optimization
 tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')

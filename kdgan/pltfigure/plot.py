@@ -1,16 +1,10 @@
 from kdgan import config
+from kdgan import utils
 
-from os import path
+import pickle
 import matplotlib.pyplot as plt
 import numpy as np
-
-def read_data(filepath):
-  data = [0.1]
-  with open(filepath) as fin:
-    for line in fin.readlines():
-      fields = line.strip().split('\t')
-      data.append(float(fields[1]))
-  return data
+from os import path
 
 def test():
   gan_filepath = 'gan_vgg_16.csv'
@@ -38,7 +32,6 @@ def test():
   
   fig.savefig('gan_kdgan.eps', format='eps', bbox_inches='tight')
 
-def main():
   filepath = path.join(config.logs_dir, 'mdlcompr_check_kd.txt')
   fin = open(filepath)
   line = fin.readline()
@@ -63,6 +56,20 @@ def main():
   ax.plot(batches, kd_data, color='b', label=kd_label)
   ax.legend(loc='lower right')
   fig.savefig('sl_kd.eps', format='eps', bbox_inches='tight')
+
+def main():
+  name = 'tagrecom_yfcc10k_tch@2'
+  tagrecom_yfcc10k_tch_p = path.join(config.pickle_dir, '%s.p' % name)
+  prec_list = pickle.load(open(tagrecom_yfcc10k_tch_p, 'rb'))
+  batches = list(range(1, 1 + len(prec_list)))
+
+  fig, ax = plt.subplots(1)
+  ax.plot(batches, prec_list, color='r', label=name)
+  ax.legend(loc='lower right')
+
+  tagrecom_yfcc10k_tch_eps = path.join(config.picture_dir, '%s.eps' % name)
+  utils.create_pardir(tagrecom_yfcc10k_tch_eps)
+  fig.savefig(tagrecom_yfcc10k_tch_eps, format='eps', bbox_inches='tight')
 
 if __name__ == '__main__':
   main()
