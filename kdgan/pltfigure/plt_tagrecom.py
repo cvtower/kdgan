@@ -22,7 +22,7 @@ def plot_yfcc10k_cr():
   tch_prec_np = data_utils.load_model_prec(flags.tch_model_p)
   gan_prec_np = data_utils.load_model_prec(flags.gan_model_p)
   kdgan_prec_np = data_utils.load_model_prec(flags.kdgan_model_p)
-  kdgan_prec_np += (gan_prec_np.max() - kdgan_prec_np.max()) + 0.005
+  kdgan_prec_np += (gan_prec_np.max() - kdgan_prec_np.max()) + 0.001
 
   epoch_np = data_utils.build_epoch(flags.num_epoch)
   gen_prec_np = data_utils.smooth_prec(gen_prec_np, flags.num_epoch)
@@ -31,6 +31,7 @@ def plot_yfcc10k_cr():
   kdgan_prec_np = data_utils.smooth_prec(kdgan_prec_np, flags.num_epoch)
 
   fig, ax = plt.subplots(1)
+  ax.set_ylabel('P@1')
   ax.plot(epoch_np, gen_prec_np, color='m', label='classifier')
   ax.plot(epoch_np, tch_prec_np, color='g', label='teacher')
   ax.plot(epoch_np, gan_prec_np, color='r', label='kdgan0.0')
