@@ -110,6 +110,9 @@ python train_kdgan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
+  --dis_learning_rate=5e-3 \
+  --gen_learning_rate=5e-3 \
+  --tch_learning_rate=5e-3 \
   --num_epoch=100 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
@@ -121,6 +124,24 @@ python train_kdgan.py \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
 #mnist=50 kdgan_ow@87=72.32 et=268s
+exit
+
+python train_gan.py \
+  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --dis_model_name=lenet \
+  --gen_model_name=mlp \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --dis_learning_rate=5e-3 \
+  --gen_learning_rate=5e-3 \
+  --num_epoch=200 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=2 \
+  --num_negative=20 \
+  --num_positive=5
 exit
 
 ################################################################
@@ -153,21 +174,6 @@ python train_kdgan.py \
 #mnist=10000 kdgan_ow=0.9786 et=10419s
 exit
 
-python train_gan.py \
-  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
-  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --dis_model_name=lenet \
-  --gen_model_name=mlp \
-  --optimizer=adam \
-  --train_size=$train_size \
-  --batch_size=$batch_size \
-  --num_epoch=200 \
-  --num_dis_epoch=20 \
-  --num_gen_epoch=2 \
-  --num_negative=20 \
-  --num_positive=5
-exit
 
 
 

@@ -163,8 +163,8 @@ def main(_):
           }
           tch_acc = sess.run(vd_tch.accuracy, feed_dict=feed_dict)
 
-          bst_tch_acc = max(tch_acc, bst_tch_acc)
-          print('#%08d tchcur=%.4f tchbst=%.4f' % (batch_t, tch_acc, bst_tch_acc))
+          # bst_tch_acc = max(tch_acc, bst_tch_acc)
+          # print('#%08d tchcur=%.4f tchbst=%.4f' % (batch_t, tch_acc, bst_tch_acc))
 
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
