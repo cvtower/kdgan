@@ -3,7 +3,7 @@ checkpoint_dir=${kdgan_dir}/checkpoints
 pretrained_dir=${checkpoint_dir}/pretrained
 pickle_dir=${kdgan_dir}/pickles
 
-num_epoch=200
+num_epoch=2
 gen_model_ckpt=${checkpoint_dir}/gen_vgg_16.ckpt
 dis_model_ckpt=${checkpoint_dir}/dis_vgg_16.ckpt
 tch_model_ckpt=${checkpoint_dir}/tagrecom_yfcc10k_tch.ckpt
@@ -54,7 +54,7 @@ python train_gan.py \
   --image_weight_decay=0.0 \
   --dis_learning_rate=0.05 \
   --gen_learning_rate=0.05 \
-  --num_epoch=200 \
+  --num_epoch=${num_epoch} \
   --num_dis_epoch=20 \
   --num_gen_epoch=10
 # best hit=0.7817
@@ -72,7 +72,7 @@ python train_kdgan.py \
   --dis_learning_rate=0.05 \
   --gen_learning_rate=0.01 \
   --tch_learning_rate=0.01 \
-  --num_epoch=200 \
+  --num_epoch=${num_epoch} \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10
