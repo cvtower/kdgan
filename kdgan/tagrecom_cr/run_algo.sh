@@ -11,12 +11,15 @@ tch_model_ckpt=${checkpoint_dir}/tagrecom_yfcc10k_tch.ckpt
 gen_model_p=${pickle_dir}/tagrecom_yfcc10k_gen@${num_epoch}.p
 tch_model_p=${pickle_dir}/tagrecom_yfcc10k_tch@${num_epoch}.p
 
+gan_model_p=${pickle_dir}/tagrecom_yfcc10k_gan@${num_epoch}.p
+kdgan_model_p=${pickle_dir}/tagrecom_yfcc10k_kdgan@${num_epoch}.p
+
 dataset=yfcc10k
 image_model=vgg_16
 
 python pretrain_gen.py \
   --gen_model_ckpt=${gen_model_ckpt} \
-  --gen_model_p=${gen_model_p} \
+  --learning_curve_p=${gen_model_p} \
   --dataset=$dataset \
   --image_model=${image_model} \
   --optimizer=sgd \
@@ -34,7 +37,7 @@ exit
 
 python pretrain_tch.py \
   --tch_model_ckpt=${tch_model_ckpt} \
-  --tch_model_p=${tch_model_p} \
+  --learning_curve_p=${tch_model_p} \
   --dataset=$dataset \
   --image_model=${image_model} \
   --text_weight_decay=0.0 \
@@ -45,6 +48,7 @@ exit
 python train_gan.py \
   --dis_model_ckpt=${dis_model_ckpt} \
   --gen_model_ckpt=${gen_model_ckpt} \
+  --learning_curve_p=${gan_model_p} \
   --dataset=$dataset \
   --image_model=${image_model} \
   --image_weight_decay=0.0 \
@@ -60,6 +64,7 @@ python train_kdgan.py \
   --dis_model_ckpt=${dis_model_ckpt} \
   --gen_model_ckpt=${gen_model_ckpt} \
   --tch_model_ckpt=${tch_model_ckpt} \
+  --learning_curve_p=${kdgan_model_p} \
   --dataset=$dataset \
   --image_model=${image_model} \
   --image_weight_decay=0.0 \

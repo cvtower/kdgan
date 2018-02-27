@@ -48,6 +48,7 @@ yfcceval = data_utils.YFCCEVAL(flags)
 
 def main(_):
   best_prec = 0.0
+  prec_list = []
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -96,9 +97,10 @@ def main(_):
         _, summary_g = sess.run([tn_gen.gan_update, gen_summary_op], feed_dict=feed_dict)
         writer.add_summary(summary_g, batch_g)
 
+        prec = yfcceval.compute_prec(flags, sess, vd_gen)
+        prec_list.append(prec)
         if (batch_g + 1) % eval_interval != 0:
             continue
-        prec = yfcceval.compute_prec(flags, sess, vd_gen)
         best_prec = max(prec, best_prec)
         tot_time = time.time() - start
         global_step = sess.run(tn_gen.global_step)
@@ -118,6 +120,8 @@ def main(_):
   tot_time = time.time() - start
   print('best@%d=%.4f et=%.0fs' % (flags.cutoff, best_prec, tot_time))
 
+  utils.create_pardir(flags.learning_curve_p)
+  pickle.dump(prec_list, open(flags.learning_curve_p, 'wb'))
 
 if __name__ == '__main__':
   tf.app.run()
