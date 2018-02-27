@@ -21,15 +21,13 @@ class GEN():
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
     self.reward_ph = tf.placeholder(tf.float32, shape=(None,))
 
-    gen_scope = 'gen'
-    model_scope = nets_factory.arg_scopes_map[flags.model_name]
+    self.gen_scope = gen_scope = 'gen'
+    model_scope = nets_factory.arg_scopes_map[flags.image_model]
     with tf.variable_scope(gen_scope) as scope:
-      with slim.arg_scope(model_scope(weight_decay=flags.gen_weight_decay)):
+      with slim.arg_scope(model_scope(weight_decay=flags.image_weight_decay)):
         net = self.image_ph
-        net = slim.dropout(net, flags.dropout_keep_prob, 
-            is_training=is_training)
-        net = slim.fully_connected(net, flags.num_label,
-            activation_fn=None)
+        net = slim.dropout(net, flags.image_keep_prob, is_training=is_training)
+        net = slim.fully_connected(net, flags.num_label, activation_fn=None)
         self.logits = net
 
     self.labels = tf.nn.softmax(self.logits)
@@ -45,12 +43,12 @@ class GEN():
       save_dict[variable.name] = variable
     self.saver = tf.train.Saver(save_dict)
 
-    global_step = tf.Variable(0, trainable=False)
+    self.global_step = global_step = tf.Variable(0, trainable=False)
     tn_size = utils.get_tn_size(flags.dataset)
     self.learning_rate = utils.get_lr(flags, 
         tn_size,
         global_step,
-        flags.learning_rate,
+        flags.gen_learning_rate,
         gen_scope)
 
     # pre train
@@ -81,12 +79,12 @@ class GEN():
     self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
 
   def get_kd_losses(self, flags):
-    hard_loss = flags.kd_lamda * tf.losses.sigmoid_cross_entropy(
-        self.hard_label_ph, self.logits)
+    hard_loss = tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits)
+    hard_loss *= (1.0 - flags.kd_soft_pct)
 
     smooth_labels = tf.nn.softmax(self.soft_label_ph / flags.temperature)
-    soft_loss = (1.0 - flags.kd_lamda) * tf.nn.l2_loss(
-        tf.nn.softmax(self.logits) - smooth_labels)
+    soft_loss = tf.nn.l2_loss(tf.nn.softmax(self.logits) - smooth_labels)
+    soft_loss *= flags.kd_soft_pct
 
     kd_losses = [hard_loss, soft_loss]
     return kd_losses

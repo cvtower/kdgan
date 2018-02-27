@@ -19,7 +19,7 @@ python pretrain_gen.py \
   --gen_model_p=${gen_model_p} \
   --dataset=$dataset \
   --image_model=${image_model} \
-  --learning_rate=0.05 \
+  --gen_learning_rate=0.05 \
   --num_epoch=${num_epoch}
 exit
 

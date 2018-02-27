@@ -14,6 +14,7 @@ tf.app.flags.DEFINE_float('image_weight_decay', 5e-5, 'l2 coefficient')
 tf.app.flags.DEFINE_float('text_weight_decay', 1e-5, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
+tf.app.flags.DEFINE_string('gen_model_p', None, '')
 tf.app.flags.DEFINE_string('tch_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('tch_model_p', None, '')
 # optimization
@@ -35,8 +36,8 @@ tf.app.flags.DEFINE_float('num_epochs_per_decay', 1e1, '')
 tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exp', 'exp|fix|ply')
 tf.app.flags.DEFINE_string('optimizer', 'adam', 'adam|rmsprop|sgd')
 # kdgan
-tf.app.flags.DEFINE_float('kd_soft_pct', 0.3, '')
-tf.app.flags.DEFINE_float('temperature', 3.0, '')
+tf.app.flags.DEFINE_float('kd_soft_pct', 1e-4, '')
+tf.app.flags.DEFINE_float('temperature', 1e1, '')
 tf.app.flags.DEFINE_string('kd_model', 'mimic', 'mimic|distn')
 tf.app.flags.DEFINE_string('kdgan_model', 'odgan', 'odgan|mdgan')
 

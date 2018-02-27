@@ -59,6 +59,7 @@ def test():
 
 def main():
   name = 'tagrecom_yfcc10k_tch@2'
+  name = 'tagrecom_yfcc10k_gen@200'
   tagrecom_yfcc10k_tch_p = path.join(config.pickle_dir, '%s.p' % name)
   prec_list = pickle.load(open(tagrecom_yfcc10k_tch_p, 'rb'))
   batches = list(range(1, 1 + len(prec_list)))

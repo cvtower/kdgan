@@ -13,10 +13,10 @@ import time
 import numpy as np
 import tensorflow as tf
 
-tn_size = utils.get_tn_size(flags.dataset)
-tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
-eval_interval = int(tn_size / flags.batch_size)
-print('#tn_size=%d #tn_num_batch=%d' % (tn_size, tn_num_batch))
+tn_data_size = utils.get_tn_size(flags.dataset)
+tn_num_batch = int(flags.num_epoch * tn_data_size / flags.batch_size)
+eval_interval = int(tn_data_size / flags.batch_size)
+print('#tn_size=%d #tn_batch=%d' % (tn_data_size, tn_num_batch))
 
 tn_tch = TCH(flags, is_training=True)
 scope = tf.get_variable_scope()
@@ -57,7 +57,7 @@ def main(_):
       best_prec = max(prec, best_prec)
       tot_time = time.time() - start
       global_step = sess.run(tn_tch.global_step)
-      avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
+      avg_time = (tot_time / global_step) * (tn_data_size / flags.batch_size)
       print('#%08d prec@%d=%.4f best=%.4f tot=%.0fs avg=%.2fs/epoch' % 
           (global_step, flags.cutoff, prec, best_prec, tot_time, avg_time))
 
