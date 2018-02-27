@@ -13,7 +13,7 @@ def smooth_prec(prec_np, num_epoch):
   for i in range(num_epoch):
     start = i * epk_batch
     end = (i + 1) * epk_batch
-    prec = prec_np[start:end]
+    prec = prec_np[start:end].mean()
     prec_list.append(prec)
   prec_np = np.asarray(prec_list)
   return prec_np

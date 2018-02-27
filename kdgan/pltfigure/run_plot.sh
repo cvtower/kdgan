@@ -10,7 +10,7 @@ kdgan_model_p=${pickle_dir}/tagrecom_yfcc10k_kdgan@${num_epoch}.p
 python plt_tagrecom.py \
   --gan_model_p=${gan_model_p} \
   --kdgan_model_p=${kdgan_model_p} \
-  --num_epoch=20 \
+  --num_epoch=${num_epoch} \
   --epsfile=${picture_dir}/tagrecom_yfcc10k_gan_vs_kdgan@${num_epoch}.eps
 exit
 
