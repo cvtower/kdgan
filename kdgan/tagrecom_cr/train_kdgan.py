@@ -15,9 +15,9 @@ import tensorflow as tf
 from os import path
 from tensorflow.contrib import slim
 
-tn_size = utils.get_tn_size(flags.dataset)
-eval_interval = int(tn_size / flags.batch_size)
-print('#tn_size=%d' % (tn_size))
+tn_data_size = utils.get_tn_size(flags.dataset)
+eval_interval = int(tn_data_size / flags.batch_size)
+print('#tn_size=%d' % (tn_data_size))
 
 tn_dis = DIS(flags, is_training=True)
 tn_gen = GEN(flags, is_training=True)
