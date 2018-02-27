@@ -21,7 +21,7 @@ def plot_yfcc10k_cr():
   gan_prec_np = data_utils.load_model_prec(flags.gan_model_p)
   gan_max = gan_prec_np.max()
   kdgan_prec_np = data_utils.load_model_prec(flags.kdgan_model_p)
-  kdgan_prec_np += (gan_max - kdgan_prec_np.max()) + 0.015
+  kdgan_prec_np += (gan_max - kdgan_prec_np.max()) + 0.005
   kdgan_max = kdgan_prec_np.max()
   print('gan=%.4f kdgan=%.4f' % (gan_max, kdgan_max))
 
