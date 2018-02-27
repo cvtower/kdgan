@@ -3,12 +3,43 @@ checkpoint_dir=${kdgan_dir}/checkpoints
 pretrained_dir=${checkpoint_dir}/pretrained
 pickle_dir=${kdgan_dir}/pickles
 
-num_epoch=2
+num_epoch=200
+gen_model_ckpt=${checkpoint_dir}/gen_vgg_16.ckpt
+dis_model_ckpt=${checkpoint_dir}/dis_vgg_16.ckpt
 tch_model_ckpt=${checkpoint_dir}/tagrecom_yfcc10k_tch.ckpt
+
+gen_model_p=${pickle_dir}/tagrecom_yfcc10k_gen@${num_epoch}.p
 tch_model_p=${pickle_dir}/tagrecom_yfcc10k_tch@${num_epoch}.p
 
 dataset=yfcc10k
 image_model=vgg_16
+
+python pretrain_gen.py \
+  --gen_model_ckpt=${gen_model_ckpt} \
+  --gen_model_p=${gen_model_p} \
+  --dataset=$dataset \
+  --image_model=${image_model} \
+  --learning_rate=0.05 \
+  --num_epoch=${num_epoch}
+exit
+
+python pretrain_dis.py \
+  --dis_model_ckpt=${dis_model_ckpt} \
+  --dataset=$dataset \
+  --image_model=${image_model} \
+  --learning_rate=0.05 \
+  --num_epoch=${num_epoch}
+exit
+
+python pretrain_tch.py \
+  --tch_model_ckpt=${tch_model_ckpt} \
+  --tch_model_p=${tch_model_p} \
+  --dataset=$dataset \
+  --image_model=${image_model} \
+  --text_weight_decay=0.0 \
+  --tch_learning_rate=0.01 \
+  --num_epoch=${num_epoch}
+exit
 
 python train_kdgan.py \
   --dataset=yfcc10k \
@@ -48,18 +79,6 @@ python train_gan.py \
 # best hit=0.7817
 exit
 
-python pretrain_gen.py \
-  --dataset=yfcc10k \
-  --model_name=vgg_16 \
-  --image_model=vgg_16 \
-  --gen_model_ckpt=$checkpoint_dir/gen_vgg_16.ckpt \
-  --gen_figure_data=$figure_data_dir/gen_vgg_16.csv \
-  --feature_size=4096 \
-  --learning_rate=0.05 \
-  --num_epoch=200
-# 386s best hit=0.7707
-exit
-
 python train_kd.py \
   --dataset=yfcc10k \
   --model_name=vgg_16 \
@@ -71,25 +90,6 @@ python train_kd.py \
   --num_epoch=200
 exit
 
-python pretrain_dis.py \
-  --dataset=yfcc10k \
-  --model_name=vgg_16 \
-  --image_model=vgg_16 \
-  --dis_model_ckpt=$checkpoint_dir/dis_vgg_16.ckpt \
-  --feature_size=4096 \
-  --learning_rate=0.05 \
-  --num_epoch=200
-exit
-
-python pretrain_tch.py \
-  --tch_model_ckpt=${tch_model_ckpt} \
-  --tch_model_p=${tch_model_p} \
-  --dataset=$dataset \
-  --image_model=${image_model} \
-  --text_weight_decay=0.0 \
-  --tch_learning_rate=0.01 \
-  --num_epoch=${num_epoch}
-exit
 
 
 

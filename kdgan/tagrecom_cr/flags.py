@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 # evaluation
-tf.app.flags.DEFINE_integer('cutoff', 3, '')
+tf.app.flags.DEFINE_integer('cutoff', 1, '')
 # dataset
 tf.app.flags.DEFINE_string('dataset', None, '')
 tf.app.flags.DEFINE_integer('num_label', 100, '')
