@@ -22,14 +22,12 @@ class DIS():
     self.dis_label_ph = tf.placeholder(tf.float32, shape=(None,))
 
     dis_scope = 'dis'
-    model_scope = nets_factory.arg_scopes_map[flags.model_name]
+    model_scope = nets_factory.arg_scopes_map[flags.image_model]
     with tf.variable_scope(dis_scope) as scope:
-      with slim.arg_scope(model_scope(weight_decay=flags.dis_weight_decay)):
+      with slim.arg_scope(model_scope(weight_decay=flags.image_weight_decay)):
         net = self.image_ph
-        net = slim.dropout(net, flags.dropout_keep_prob, 
-            is_training=is_training)
-        net = slim.fully_connected(net, flags.num_label,
-            activation_fn=None)
+        net = slim.dropout(net, flags.image_keep_prob, is_training=is_training)
+        net = slim.fully_connected(net, flags.num_label, activation_fn=None)
         self.logits = net
 
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
@@ -58,7 +56,7 @@ class DIS():
     self.learning_rate = utils.get_lr(flags, 
         tn_size,
         global_step,
-        flags.learning_rate,
+        flags.dis_learning_rate,
         dis_scope)
     
     # pre train
