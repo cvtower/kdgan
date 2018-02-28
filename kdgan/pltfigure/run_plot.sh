@@ -15,14 +15,17 @@ python plt_tagrecom.py \
   --gan_model_p=${gan_model_p} \
   --kdgan_model_p=${kdgan_model_p} \
   --num_epoch=${num_epoch} \
-  --epsfile=${picture_dir}/tagrecom_yfcc10k_gan_vs_kdgan@${num_epoch}.eps
+  --epsfile=${picture_dir}/tagrecom_yfcc10k_cr@${num_epoch}.eps
 exit
 
-num_epoch=200
-python plot.py \
-  --gen_model_p=${gen_model_p} \
-  --tch_model_p=${tch_model_p} \
-  --epsfile=${picture_dir}/tagrecom_yfcc10k_gen_vs_tch@${num_epoch}.eps
+train_size=50
+gan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan@${num_epoch}.p
+kdgan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan@${num_epoch}.p
+python plt_mdlcompr.py \
+  --gan_model_p=${gan_model_p} \
+  --kdgan_model_p=${kdgan_model_p} \
+  --num_epoch=${num_epoch} \
+  --epsfile=${picture_dir}/mdlcompr_mnist${train_size}_cr@${num_epoch}.eps
 exit
 
 

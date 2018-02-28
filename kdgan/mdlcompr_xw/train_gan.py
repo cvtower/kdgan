@@ -7,13 +7,14 @@ from dis_model import DIS
 from gen_model import GEN
 import data_utils
 
-from os import path
-from tensorflow.contrib import slim
 import math
 import os
+import pickle
 import time
 import numpy as np
 import tensorflow as tf
+from os import path
+from tensorflow.contrib import slim
 
 dis_mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,

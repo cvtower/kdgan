@@ -173,16 +173,16 @@ python train_kdgan.py \
   --gen_learning_rate=5e-4 \
   --tch_learning_rate=5e-4 \
   --num_epoch=${num_epoch} \
-  --num_dis_epoch=20 \
-  --num_gen_epoch=10 \
-  --num_tch_epoch=10 \
+  --num_dis_epoch=40 \
+  --num_gen_epoch=20 \
+  --num_tch_epoch=20 \
   --kdgan_model=odgan \
   --num_negative=20 \
   --num_positive=5 \
   --kd_model=mimic \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1 \
-  --learning_curve_p=kdgan_model_p \
+  --learning_curve_p=${kdgan_model_p} \
   --collect_data=True
 exit
 
@@ -195,14 +195,14 @@ python train_gan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --dis_learning_rate=1e-3 \
+  --dis_learning_rate=5e-3 \
   --gen_learning_rate=1e-3 \
   --num_epoch=${num_epoch} \
   --num_dis_epoch=10 \
   --num_gen_epoch=5 \
   --num_negative=20 \
   --num_positive=5 \
-  --learning_curve_p=gan_model_p \
+  --learning_curve_p=${gan_model_p} \
   --collect_data=True
 exit
 
