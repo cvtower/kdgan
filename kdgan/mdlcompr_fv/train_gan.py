@@ -1,79 +1,44 @@
 from kdgan import config
 from kdgan import metric
 from kdgan import utils
+from flags import flags
+from data_utils import AffineGenerator
 from dis_model import DIS
 from gen_model import GEN
 import data_utils
 
-from os import path
-from tensorflow.contrib import slim
-from tensorflow.examples.tutorials.mnist import input_data
 import math
 import os
+import pickle
 import time
 import numpy as np
 import tensorflow as tf
+from os import path
+from tensorflow.contrib import slim
 
-# dataset
-tf.app.flags.DEFINE_string('dataset_dir', None, '')
-tf.app.flags.DEFINE_integer('channels', 1, '')
-tf.app.flags.DEFINE_integer('image_size', 28, '')
-tf.app.flags.DEFINE_integer('num_label', 10, '')
-tf.app.flags.DEFINE_integer('train_size', 60000, '')
-tf.app.flags.DEFINE_integer('valid_size', 0, '')
-# model
-tf.app.flags.DEFINE_float('dis_keep_prob', 0.88, '')
-tf.app.flags.DEFINE_float('gen_keep_prob', 0.88, '')
-tf.app.flags.DEFINE_float('tch_keep_prob', 0.50, '')
-tf.app.flags.DEFINE_float('kd_hard_pct', 0.7, '')
-tf.app.flags.DEFINE_float('temperature', 3.0, '')
-tf.app.flags.DEFINE_string('dis_checkpoint_dir', None, '')
-tf.app.flags.DEFINE_string('dis_model_name', None, '')
-tf.app.flags.DEFINE_string('gen_checkpoint_dir', None, '')
-tf.app.flags.DEFINE_string('tch_checkpoint_dir', None, '')
-tf.app.flags.DEFINE_string('tch_model_name', None, '')
-tf.app.flags.DEFINE_string('preprocessing_name', None, '')
-# optimization
-tf.app.flags.DEFINE_float('dis_weight_decay', 0.00004, 'l2 coefficient')
-tf.app.flags.DEFINE_float('gen_weight_decay', 0.00004, 'l2 coefficient')
-tf.app.flags.DEFINE_float('dis_opt_epsilon', 1e-6, '')
-tf.app.flags.DEFINE_float('gen_opt_epsilon', 1e-6, '')
-tf.app.flags.DEFINE_float('clip_norm', 10.0, '')
-tf.app.flags.DEFINE_float('adam_beta1', 0.9, '')
-tf.app.flags.DEFINE_float('adam_beta2', 0.999, '')
-tf.app.flags.DEFINE_float('rmsprop_momentum', 0.0, '')
-tf.app.flags.DEFINE_float('rmsprop_decay', 0.9, '')
-tf.app.flags.DEFINE_integer('batch_size', 128, '')
-tf.app.flags.DEFINE_integer('num_epoch', 200, '')
-tf.app.flags.DEFINE_integer('num_dis_epoch', 10, '')
-tf.app.flags.DEFINE_integer('num_gen_epoch', 5, '')
-tf.app.flags.DEFINE_integer('num_negative', 10, '')
-tf.app.flags.DEFINE_integer('num_positive', 10, '')
-tf.app.flags.DEFINE_string('optimizer', 'adam', 'adam|rmsprop|sgd')
-# learning rate
-tf.app.flags.DEFINE_float('dis_learning_rate', 1e-2, '')
-tf.app.flags.DEFINE_float('dis_learning_rate_decay_factor', 0.94, '')
-tf.app.flags.DEFINE_float('dis_num_epochs_per_decay', 80.0, '')
-tf.app.flags.DEFINE_float('gen_learning_rate', 1e-2, '')
-tf.app.flags.DEFINE_float('gen_learning_rate_decay_factor', 0.94, '')
-tf.app.flags.DEFINE_float('gen_num_epochs_per_decay', 40.0, '')
-tf.app.flags.DEFINE_float('end_learning_rate', 0.0001, '')
-tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exponential', 'exponential|fixed|polynomial')
-flags = tf.app.flags.FLAGS
-
-mnist = data_utils.read_data_sets(flags.dataset_dir,
+dis_mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,
     train_size=flags.train_size,
     valid_size=flags.valid_size,
     reshape=True)
-print('tn size=%d vd size=%d' % (mnist.train.num_examples, mnist.test.num_examples))
-tn_num_batch = int(flags.num_epoch * mnist.train.num_examples / flags.batch_size)
+dis_datagen = AffineGenerator(dis_mnist)
+gen_mnist = data_utils.read_data_sets(flags.dataset_dir,
+    one_hot=True,
+    train_size=flags.train_size,
+    valid_size=flags.valid_size,
+    reshape=True)
+gen_datagen = AffineGenerator(gen_mnist)
+
+tn_size = int((dis_mnist.train.num_examples + gen_mnist.train.num_examples) / 2)
+vd_size = int((dis_mnist.test.num_examples + gen_mnist.test.num_examples) / 2)
+print('tn size=%d vd size=%d' % (tn_size, vd_size))
+tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
 print('tn #batch=%d' % (tn_num_batch))
-eval_interval = int(mnist.train.num_examples / flags.batch_size)
+eval_interval = int(tn_size / flags.batch_size)
 print('ev #interval=%d' % (eval_interval))
 
-tn_dis = DIS(flags, mnist.train, is_training=True)
-tn_gen = GEN(flags, mnist.train, is_training=True)
+tn_dis = DIS(flags, dis_mnist.train, is_training=True)
+tn_gen = GEN(flags, gen_mnist.train, is_training=True)
 dis_summary_op = tf.summary.merge([
   tf.summary.scalar(tn_dis.learning_rate.name, tn_dis.learning_rate),
   tf.summary.scalar(tn_dis.gan_loss.name, tn_dis.gan_loss),
@@ -86,45 +51,51 @@ init_op = tf.global_variables_initializer()
 
 scope = tf.get_variable_scope()
 scope.reuse_variables()
-vd_dis = DIS(flags, mnist.test, is_training=False)
-vd_gen = GEN(flags, mnist.test, is_training=False)
+vd_dis = DIS(flags, dis_mnist.test, is_training=False)
+vd_gen = GEN(flags, gen_mnist.test, is_training=False)
+
+# for variable in tf.trainable_variables():
+#   num_params = 1
+#   for dim in variable.shape:
+#     num_params *= dim.value
+#   print('%-50s (%d params)' % (variable.name, num_params))
 
 def main(_):
-  dis_model_ckpt = utils.get_latest_ckpt(flags.dis_checkpoint_dir)
-  gen_model_ckpt = utils.get_latest_ckpt(flags.gen_checkpoint_dir)
-
-  # for variable in tf.trainable_variables():
-  #   num_params = 1
-  #   for dim in variable.shape:
-  #     num_params *= dim.value
-  #   print('%-50s (%d params)' % (variable.name, num_params))
-
-  bst_gen_acc = -np.inf
-  start = time.time()
+  bst_acc = 0.0
+  acc_list = []
+  writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
-    writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
     sess.run(init_op)
-    tn_dis.saver.restore(sess, dis_model_ckpt)
-    tn_gen.saver.restore(sess, gen_model_ckpt)
-    dis_acc = metric.eval_mdlcompr(sess, vd_dis, mnist)
-    gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
-    print('init dis_acc=%.4f' % (dis_acc))
-    print('init gen_acc=%.4f' % (gen_acc))
+    tn_dis.saver.restore(sess, flags.dis_model_ckpt)
+    tn_gen.saver.restore(sess, flags.gen_model_ckpt)
+
+    feed_dict = {
+      vd_dis.image_ph:dis_mnist.test.images,
+      vd_dis.hard_label_ph:dis_mnist.test.labels,
+    }
+    ini_dis = sess.run(vd_dis.accuracy, feed_dict=feed_dict)
+    feed_dict = {
+      vd_gen.image_ph:gen_mnist.test.images,
+      vd_gen.hard_label_ph:gen_mnist.test.labels,
+    }
+    ini_gen = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
+    print('ini dis=%.4f ini gen=%.4f' % (ini_dis, ini_gen))
     # exit()
-    tot_time = time.time() - start
+
+    start = time.time()
     batch_d, batch_g = -1, -1
-    no_impr_patience = init_patience = flags.num_gen_epoch
     for epoch in range(flags.num_epoch):
       for dis_epoch in range(flags.num_dis_epoch):
         # print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
-        num_batch_d = math.ceil(mnist.train.num_examples / flags.batch_size)
-        for _ in range(num_batch_d):
+        num_batch_d = math.ceil(tn_size / flags.batch_size)
+        for image_np_d, label_dat_d in dis_datagen.generate(batch_size=flags.batch_size):
+        # for _ in range(num_batch_d):
+        #   image_np_d, label_dat_d = dis_mnist.train.next_batch(flags.batch_size)
           batch_d += 1
-          image_np_d, label_dat_d = mnist.train.next_batch(flags.batch_size)
           feed_dict = {tn_gen.image_ph:image_np_d}
           label_gen_d, = sess.run([tn_gen.labels], feed_dict=feed_dict)
           # print('label_dat_d={} label_gen_d={}'.format(label_dat_d.shape, label_gen_d.shape))
-          sample_np_d, label_np_d = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
+          sample_np_d, label_np_d = utils.gan_dis_sample_dev(flags, label_dat_d, label_gen_d)
           feed_dict = {
             tn_dis.image_ph:image_np_d,
             tn_dis.sample_ph:sample_np_d,
@@ -135,10 +106,11 @@ def main(_):
 
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
-        num_batch_g = math.ceil(mnist.train.num_examples / flags.batch_size)
-        for _ in range(num_batch_g):
+        num_batch_g = math.ceil(tn_size / flags.batch_size)
+        for image_np_g, label_dat_g in gen_datagen.generate(batch_size=flags.batch_size):
+        # for _ in range(num_batch_g):
+        #   image_np_g, label_dat_g = gen_mnist.train.next_batch(flags.batch_size)
           batch_g += 1
-          image_np_g, label_dat_g = mnist.train.next_batch(flags.batch_size)
           feed_dict = {tn_gen.image_ph:image_np_g}
           label_gen_g, = sess.run([tn_gen.labels], feed_dict=feed_dict)
           sample_np_g = utils.generate_label(flags, label_dat_g, label_gen_g)
@@ -158,23 +130,42 @@ def main(_):
           }
           _, summary_g = sess.run([tn_gen.gan_update, gen_summary_op], feed_dict=feed_dict)
           writer.add_summary(summary_g, batch_g)
-          
-          if (batch_g + 1) % eval_interval != 0:
-            continue
-          tot_time = time.time() - start
-          gen_acc = metric.eval_mdlcompr(sess, vd_gen, mnist)
-          print('#%08d curacc=%.4f %.0fs' % (batch_g, gen_acc, tot_time))
 
-          if gen_acc < bst_gen_acc:
-            no_impr_patience -= 1
-            if no_impr_patience == 0:
-              no_impr_patience = init_patience
-              # sess.run([tn_dis.lr_update, tn_gen.lr_update])
+
+          if flags.collect_data:
+            feed_dict = {
+              vd_gen.image_ph:gen_mnist.test.images,
+              vd_gen.hard_label_ph:gen_mnist.test.labels,
+            }
+            acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
+            acc_list.append(acc)
+            if (batch_g + 1) % eval_interval != 0:
+              continue
+          else:
+            if (batch_g + 1) % eval_interval != 0:
+              continue
+            feed_dict = {
+              vd_gen.image_ph:gen_mnist.test.images,
+              vd_gen.hard_label_ph:gen_mnist.test.labels,
+            }
+            acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
+
+          bst_acc = max(acc, bst_acc)
+          tot_time = time.time() - start
+          global_step = sess.run(tn_gen.global_step)
+          avg_time = (tot_time / global_step) * (tn_size / flags.batch_size)
+          print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
+              (batch_g, acc, bst_acc, tot_time, avg_time))
+
+          if acc <= bst_acc:
             continue
-          bst_gen_acc = gen_acc
-          global_step, = sess.run([tn_gen.global_step])
-          print('#%08d bstacc=%.4f %.0fs' % (global_step, bst_gen_acc, tot_time))
-  print('bstacc=%.4f' % (bst_gen_acc))
+          # save gen parameters if necessary
+  tot_time = time.time() - start
+  print('#mnist=%d bstacc=%.4f et=%.0fs' % (tn_size, bst_acc, tot_time))
+
+  if flags.collect_data:
+    utils.create_pardir(flags.learning_curve_p)
+    pickle.dump(acc_list, open(flags.learning_curve_p, 'wb'))
 
 if __name__ == '__main__':
     tf.app.run()
