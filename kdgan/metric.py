@@ -147,8 +147,10 @@ def eval_tagrecom(logits, labels, name, cutoff):
     label_bt = labels[batch, :]
     label_bt = np.nonzero(label_bt)[0]
     prediction_bt = predictions[batch, :]
+    sorted_label_bt = [int(p in label_bt) for p in prediction_bt]
     print(prediction_bt)
     print(label_bt)
+    print(sorted_label_bt)
     exit()
 
 ################################################################
