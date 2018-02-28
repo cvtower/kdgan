@@ -162,6 +162,11 @@ if __name__ == '__main__':
 
 
 
+      # scores = yfcceval.compute_score(flags, sess, vd_gen)
+      # p3, p5, f3, f5, ndcg3, ndcg5, ap, rr = scores
+      # print('p3=%.4f p5=%.4f f3=%.4f f5=%.4f ndcg3=%.4f ndcg5=%.4f ap=%.4f rr=%.4f' % 
+      #     (p3, p5, f3, f5, ndcg3, ndcg5, ap, rr))
+
 
 
 
