@@ -1,5 +1,6 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=$kdgan_dir/checkpoints
+pickle_dir=${kdgan_dir}/pickles
 
 cz_server=xiaojie@10.100.228.149 # cz
 xw_server=xiaojie@10.100.228.181 # xw
