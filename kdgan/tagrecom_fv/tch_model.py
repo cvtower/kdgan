@@ -88,12 +88,14 @@ class TCH():
 
   def get_pre_losses(self):
     pre_losses = [self.get_hard_loss()]
-    print('#pre_losses wo regularization=%d' % (len(pre_losses)))
+    # print('#pre_losses wo regularization=%d' % (len(pre_losses)))
     return pre_losses
 
   def get_kdgan_losses(self, flags):
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
-    kdgan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
-    print('#kdgan_losses wo regularization=%d' % (len(kdgan_losses)))
+    gan_loss = tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)
+    gan_loss *= flags.intelltch_weight
+    kdgan_losses = [gan_loss]
+    # print('#kdgan_losses wo regularization=%d' % (len(kdgan_losses)))
     return kdgan_losses
 
