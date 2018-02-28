@@ -138,20 +138,19 @@ def getScorer(name):
     k = 0
   return mapping[elems[0]](k)
 
-def eval_tagrecom(logits, labels, name, cutoff):
-  scorer = getScorer(name)
+def eval_tagrecom(logits, labels, cutoff):
+  p3_scorer = getScorer('P@3')
   predictions = np.argsort(-logits, axis=1)
   batch_size, _ = labels.shape
-  scores = []
+  p3 = []
   for batch in range(batch_size):
     label_bt = labels[batch, :]
     label_bt = np.nonzero(label_bt)[0]
     prediction_bt = predictions[batch, :]
     sorted_label_bt = [int(p in label_bt) for p in prediction_bt]
-    print(prediction_bt)
-    print(label_bt)
-    print(sorted_label_bt)
-    exit()
+    p3.append(p3_scorer.score(sorted_label_bt))
+  p3 = np.mean(p3)
+  return p3
 
 ################################################################
 #
