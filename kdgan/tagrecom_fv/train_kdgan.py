@@ -101,7 +101,7 @@ def main(_):
         feed_dict = {tn_tch.image_ph:image_t, tn_tch.text_ph:text_t}
         label_tch_t = sess.run(tn_tch.labels, feed_dict=feed_dict)
         sample_t = utils.generate_label(flags, label_dat_t, label_tch_t)
-        feed_dict = {tn_dis.image_ph:image_t, tn_dis.sample_ph:sample_t}
+        feed_dict = {tn_dis.image_ph:image_t, tn_dis.tch_sample_ph:sample_t}
         reward_t = sess.run(tn_dis.tch_rewards, feed_dict=feed_dict)
 
         feed_dict = {
@@ -125,7 +125,7 @@ def main(_):
         feed_dict = {tn_gen.image_ph:image_g}
         label_gen_g = sess.run(tn_gen.labels, feed_dict=feed_dict)
         sample_g = utils.generate_label(flags, label_dat_g, label_gen_g)
-        feed_dict = {tn_dis.image_ph:image_g, tn_dis.sample_ph:sample_g}
+        feed_dict = {tn_dis.image_ph:image_g, tn_dis.gen_sample_ph:sample_g}
         reward_g = sess.run(tn_dis.gen_rewards, feed_dict=feed_dict)
 
         feed_dict = {
