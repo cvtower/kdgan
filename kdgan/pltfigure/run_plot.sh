@@ -19,9 +19,13 @@ python plt_tagrecom.py \
 exit
 
 train_size=50
+gen_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gen@${num_epoch}.p
+tch_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_tch@${num_epoch}.p
 gan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan@${num_epoch}.p
 kdgan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan@${num_epoch}.p
 python plt_mdlcompr.py \
+  --gen_model_p=${gen_model_p} \
+  --tch_model_p=${tch_model_p} \
   --gan_model_p=${gan_model_p} \
   --kdgan_model_p=${kdgan_model_p} \
   --num_epoch=${num_epoch} \

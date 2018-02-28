@@ -1,5 +1,7 @@
 from kdgan import config
 from kdgan import utils
+from flags import flags
+from data_utils import label_fontsize, legend_fontsize, linewidth
 import data_utils
 
 import matplotlib
@@ -9,34 +11,34 @@ import numpy as np
 import tensorflow as tf
 from os import path
 
-tf.app.flags.DEFINE_integer('num_epoch', 200, '')
-tf.app.flags.DEFINE_string('gen_model_p', None, '')
-tf.app.flags.DEFINE_string('tch_model_p', None, '')
-tf.app.flags.DEFINE_string('gan_model_p', None, '')
-tf.app.flags.DEFINE_string('kdgan_model_p', None, '')
-tf.app.flags.DEFINE_string('epsfile', None, '')
-flags = tf.app.flags.FLAGS
+init_prec = 1.0 / 100
+num_point = 100
 
 def plot_yfcc10k_cr():
   gen_prec_np = data_utils.load_model_prec(flags.gen_model_p)
   tch_prec_np = data_utils.load_model_prec(flags.tch_model_p)
   gan_prec_np = data_utils.load_model_prec(flags.gan_model_p)
   kdgan_prec_np = data_utils.load_model_prec(flags.kdgan_model_p)
-  kdgan_prec_np += (gan_prec_np.max() - kdgan_prec_np.max()) + 0.001
+  kdgan_prec_np += (gan_prec_np.max() - kdgan_prec_np.max()) + 0.002
 
-  epoch_np = data_utils.build_epoch(flags.num_epoch)
-  gen_prec_np = data_utils.smooth_prec(gen_prec_np, flags.num_epoch)
-  tch_prec_np = data_utils.smooth_prec(tch_prec_np, flags.num_epoch)
-  gan_prec_np = data_utils.smooth_prec(gan_prec_np, flags.num_epoch)
-  kdgan_prec_np = data_utils.smooth_prec(kdgan_prec_np, flags.num_epoch)
+  epoch_np = data_utils.build_epoch(num_point)
+  gen_prec_np = data_utils.average_prec(gen_prec_np, num_point, init_prec)
+  tch_prec_np = data_utils.average_prec(tch_prec_np, num_point, init_prec)
+  gan_prec_np = data_utils.average_prec(gan_prec_np, num_point, init_prec)
+  kdgan_prec_np = data_utils.average_prec(kdgan_prec_np, num_point, init_prec)
+
+  xticks, xticklabels = data_utils.get_xtick_label(flags.num_epoch, num_point, 20)
 
   fig, ax = plt.subplots(1)
-  ax.set_ylabel('P@1')
-  ax.plot(epoch_np, gen_prec_np, color='m', label='student')
-  ax.plot(epoch_np, tch_prec_np, color='g', label='teacher')
-  ax.plot(epoch_np, gan_prec_np, color='r', label='kdgan0.0')
-  ax.plot(epoch_np, kdgan_prec_np, color='b', label='kdgan1.0')
-  ax.legend(loc='lower right')
+  ax.set_xticks(xticks)
+  ax.set_xticklabels(xticklabels)
+  ax.set_xlabel('Training epoches', fontsize=label_fontsize)
+  ax.set_ylabel('P@1', fontsize=label_fontsize)
+  ax.plot(epoch_np, gen_prec_np, color='m', label='student', linewidth=linewidth)
+  ax.plot(epoch_np, tch_prec_np, color='g', label='teacher', linewidth=linewidth)
+  ax.plot(epoch_np, gan_prec_np, color='r', label='kdgan0.0', linewidth=linewidth)
+  ax.plot(epoch_np, kdgan_prec_np, color='b', label='kdgan1.0', linewidth=linewidth)
+  ax.legend(loc='lower right', prop={'size':legend_fontsize})
   fig.savefig(flags.epsfile, format='eps', bbox_inches='tight')
 
 def main(_):

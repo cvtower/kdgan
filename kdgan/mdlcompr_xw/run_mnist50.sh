@@ -155,8 +155,8 @@ exit
 
 num_epoch=200
 pickle_dir=${kdgan_dir}/pickles
-gen_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan@${num_epoch}.p
-tch_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan@${num_epoch}.p
+gen_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gen@${num_epoch}.p
+tch_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_tch@${num_epoch}.p
 gan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan@${num_epoch}.p
 kdgan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan@${num_epoch}.p
 
