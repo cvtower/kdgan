@@ -77,18 +77,18 @@ def main(_):
         
         feed_dict = {tn_gen.image_ph:image_d}
         label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
-        # print('gen label', label_gen_d.shape)
+        sample_gen_d, gen_label_d = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
+
         feed_dict = {tn_tch.image_ph:image_d, tn_tch.text_ph:text_d}
         label_tch_d = sess.run(tn_tch.labels, feed_dict=feed_dict)
-        # print('tch label', label_tch_d.shape)
-
-        sample_d, label_d = utils.kdgan_dis_sample(flags, label_dat_d, label_gen_d, label_tch_d)
-        # print(sample_d.shape, label_d.shape)
+        sample_tch_d, tch_label_d = utils.gan_dis_sample(flags, label_dat_d, label_tch_d)
 
         feed_dict = {
           tn_dis.image_ph:image_d,
-          tn_dis.sample_ph:sample_d,
-          tn_dis.dis_label_ph:label_d,
+          tn_dis.gen_sample_ph:sample_gen_d,
+          tn_dis.gen_label_ph:gen_label_d,
+          tn_dis.tch_sample_ph:sample_tch_d,
+          tn_dis.tch_label_ph:tch_label_d,
         }
         _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
         writer.add_summary(summary_d, batch_d)

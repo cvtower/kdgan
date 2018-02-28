@@ -60,7 +60,7 @@ class DIS():
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=global_step)
 
       # gan train
-      gan_losses = self.get_gan_losses()
+      gan_losses = self.get_gan_losses(flags)
       gan_losses.extend(self.get_regularization_losses())
       print('#gan_losses wt regularization=%d' % (len(gan_losses)))
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % dis_scope)
@@ -89,7 +89,7 @@ class DIS():
     gan_loss = tf.losses.sigmoid_cross_entropy(label_ph, sample_logits)
     return gan_loss
 
-  def get_gan_losses(self):
+  def get_gan_losses(self, flags):
     gen_gan_loss = self.get_gan_loss(self.gen_sample_ph, self.gen_label_ph)
     gen_gan_loss *= (1.0 - flags.intelltch_weight)
     tch_gan_loss = self.get_gan_loss(self.tch_sample_ph, self.tch_label_ph)
