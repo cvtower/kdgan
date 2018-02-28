@@ -197,7 +197,7 @@ def main(_):
           }
           sess.run(tn_gen.kdgan_update, feed_dict=feed_dict)
           
-          if flags.collect_data:
+          if flags.collect_cr_data:
             feed_dict = {
               vd_gen.image_ph:gen_mnist.test.images,
               vd_gen.hard_label_ph:gen_mnist.test.labels,
@@ -233,9 +233,9 @@ def main(_):
   print('#mnist=%d kdgan_%s@%d=%.2f et=%.0fs' % 
       (tn_size, flags.kdgan_model, bst_eph, bst_gen_acc, tot_time))
 
-  if flags.collect_data:
-    utils.create_pardir(flags.learning_curve_p)
-    pickle.dump(acc_list, open(flags.learning_curve_p, 'wb'))
+  if flags.collect_cr_data:
+    utils.create_pardir(flags.all_learning_curve_p)
+    pickle.dump(acc_list, open(flags.all_learning_curve_p, 'wb'))
 
 if __name__ == '__main__':
     tf.app.run()

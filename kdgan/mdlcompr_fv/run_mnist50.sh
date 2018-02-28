@@ -106,10 +106,12 @@ python train_kd.py \
 #mnist=50 noisy@232=62.18 iniacc=52.09 et=15s
 exit
 
+epk_kdgan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_default.p
 python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --epk_kdgan_model_p=${epk_kdgan_model_p} \
   --dataset_dir=$HOME/Projects/data/mnist \
   --dis_model_name=lenet \
   --gen_model_name=mlp \
@@ -159,10 +161,10 @@ exit
 
 num_epoch=200
 pickle_dir=${kdgan_dir}/pickles
-gen_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gen@${num_epoch}.p
-tch_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_tch@${num_epoch}.p
-gan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan@${num_epoch}.p
-kdgan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan@${num_epoch}.p
+all_gen_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gen@${num_epoch}.p
+all_tch_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_tch@${num_epoch}.p
+all_gan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan@${num_epoch}.p
+all_kdgan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan@${num_epoch}.p
 
 python pretrain_gen.py \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
@@ -172,8 +174,8 @@ python pretrain_gen.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200 \
-  --learning_curve_p=${gen_model_p} \
-  --collect_data=True
+  --all_learning_curve_p=${all_gen_model_p} \
+  --collect_cr_data=True
 exit
 
 python pretrain_tch.py \
@@ -184,8 +186,8 @@ python pretrain_tch.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200 \
-  --learning_curve_p=${tch_model_p} \
-  --collect_data=True
+  --all_learning_curve_p=${all_tch_model_p} \
+  --collect_cr_data=True
 exit
 
 python train_kdgan.py \
@@ -212,8 +214,8 @@ python train_kdgan.py \
   --kd_model=mimic \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1 \
-  --learning_curve_p=${kdgan_model_p} \
-  --collect_data=True
+  --all_learning_curve_p=${all_kdgan_model_p} \
+  --collect_cr_data=True
 exit
 
 python train_gan.py \
@@ -232,8 +234,8 @@ python train_gan.py \
   --num_gen_epoch=5 \
   --num_negative=20 \
   --num_positive=5 \
-  --learning_curve_p=${gan_model_p} \
-  --collect_data=True
+  --all_learning_curve_p=${all_gan_model_p} \
+  --collect_cr_data=True
 exit
 
 

@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-tf.app.flags.DEFINE_boolean('collect_data', False, '')
+tf.app.flags.DEFINE_boolean('collect_cr_data', False, '')
 # dataset
 tf.app.flags.DEFINE_integer('channels', 1, '')
 tf.app.flags.DEFINE_integer('image_size', 28, '')
@@ -22,7 +22,7 @@ tf.app.flags.DEFINE_float('tch_weight_decay', 0.00004, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('tch_model_ckpt', None, '')
-tf.app.flags.DEFINE_string('learning_curve_p', None, '')
+tf.app.flags.DEFINE_string('all_learning_curve_p', None, '')
 # optimization
 tf.app.flags.DEFINE_integer('num_epoch', 200, '')
 tf.app.flags.DEFINE_integer('num_dis_epoch', 20, '')

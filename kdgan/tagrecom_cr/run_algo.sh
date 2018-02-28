@@ -19,7 +19,7 @@ image_model=vgg_16
 
 python pretrain_gen.py \
   --gen_model_ckpt=${gen_model_ckpt} \
-  --learning_curve_p=${gen_model_p} \
+  --all_learning_curve_p=${gen_model_p} \
   --dataset=$dataset \
   --image_model=${image_model} \
   --optimizer=sgd \
@@ -37,7 +37,7 @@ exit
 
 python pretrain_tch.py \
   --tch_model_ckpt=${tch_model_ckpt} \
-  --learning_curve_p=${tch_model_p} \
+  --all_learning_curve_p=${tch_model_p} \
   --dataset=$dataset \
   --image_model=${image_model} \
   --text_weight_decay=0.0 \
@@ -48,7 +48,7 @@ exit
 python train_gan.py \
   --dis_model_ckpt=${dis_model_ckpt} \
   --gen_model_ckpt=${gen_model_ckpt} \
-  --learning_curve_p=${gan_model_p} \
+  --all_learning_curve_p=${gan_model_p} \
   --dataset=$dataset \
   --image_model=${image_model} \
   --image_weight_decay=0.0 \
@@ -64,7 +64,7 @@ python train_kdgan.py \
   --dis_model_ckpt=${dis_model_ckpt} \
   --gen_model_ckpt=${gen_model_ckpt} \
   --tch_model_ckpt=${tch_model_ckpt} \
-  --learning_curve_p=${kdgan_model_p} \
+  --all_learning_curve_p=${kdgan_model_p} \
   --dataset=$dataset \
   --image_model=${image_model} \
   --image_weight_decay=0.0 \

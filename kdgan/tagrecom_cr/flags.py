@@ -15,7 +15,7 @@ tf.app.flags.DEFINE_float('text_weight_decay', 1e-5, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('tch_model_ckpt', None, '')
-tf.app.flags.DEFINE_string('learning_curve_p', None, '')
+tf.app.flags.DEFINE_string('all_learning_curve_p', None, '')
 # optimization
 tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')

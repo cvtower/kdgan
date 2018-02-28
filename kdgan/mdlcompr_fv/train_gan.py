@@ -132,7 +132,7 @@ def main(_):
           writer.add_summary(summary_g, batch_g)
 
 
-          if flags.collect_data:
+          if flags.collect_cr_data:
             feed_dict = {
               vd_gen.image_ph:gen_mnist.test.images,
               vd_gen.hard_label_ph:gen_mnist.test.labels,
@@ -163,9 +163,9 @@ def main(_):
   tot_time = time.time() - start
   print('#mnist=%d bstacc=%.4f et=%.0fs' % (tn_size, bst_acc, tot_time))
 
-  if flags.collect_data:
-    utils.create_pardir(flags.learning_curve_p)
-    pickle.dump(acc_list, open(flags.learning_curve_p, 'wb'))
+  if flags.collect_cr_data:
+    utils.create_pardir(flags.all_learning_curve_p)
+    pickle.dump(acc_list, open(flags.all_learning_curve_p, 'wb'))
 
 if __name__ == '__main__':
     tf.app.run()

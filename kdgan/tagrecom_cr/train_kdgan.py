@@ -165,8 +165,8 @@ def main(_):
   tot_time = time.time() - start
   print('best@%d=%.4f et=%.0fs' % (flags.cutoff, best_prec, tot_time))
 
-  utils.create_pardir(flags.learning_curve_p)
-  pickle.dump(prec_list, open(flags.learning_curve_p, 'wb'))
+  utils.create_pardir(flags.all_learning_curve_p)
+  pickle.dump(prec_list, open(flags.all_learning_curve_p, 'wb'))
 
 if __name__ == '__main__':
   tf.app.run()

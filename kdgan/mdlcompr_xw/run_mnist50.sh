@@ -168,8 +168,8 @@ python pretrain_gen.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200 \
-  --learning_curve_p=${gen_model_p} \
-  --collect_data=True
+  --all_learning_curve_p=${gen_model_p} \
+  --collect_cr_data=True
 exit
 
 python pretrain_tch.py \
@@ -180,8 +180,8 @@ python pretrain_tch.py \
   --train_size=$train_size \
   --batch_size=$batch_size \
   --num_epoch=200 \
-  --learning_curve_p=${tch_model_p} \
-  --collect_data=True
+  --all_learning_curve_p=${tch_model_p} \
+  --collect_cr_data=True
 exit
 
 python train_kdgan.py \
@@ -208,8 +208,8 @@ python train_kdgan.py \
   --kd_model=mimic \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1 \
-  --learning_curve_p=${kdgan_model_p} \
-  --collect_data=True
+  --all_learning_curve_p=${kdgan_model_p} \
+  --collect_cr_data=True
 exit
 
 python train_gan.py \
@@ -228,8 +228,8 @@ python train_gan.py \
   --num_gen_epoch=5 \
   --num_negative=20 \
   --num_positive=5 \
-  --learning_curve_p=${gan_model_p} \
-  --collect_data=True
+  --all_learning_curve_p=${gan_model_p} \
+  --collect_cr_data=True
 exit
 
 

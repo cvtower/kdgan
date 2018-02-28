@@ -70,7 +70,9 @@ vd_tch = TCH(flags, tch_mnist.test, is_training=False)
 
 def main(_):
   bst_gen_acc, bst_tch_acc, bst_eph = 0.0, 0.0, 0
-  acc_list = []
+  epk_acc_list = []
+  if flags.collect_cr_data:
+    all_acc_list = []
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -183,13 +185,13 @@ def main(_):
           }
           sess.run(tn_gen.kdgan_update, feed_dict=feed_dict)
           
-          if flags.collect_data:
+          if flags.collect_cr_data:
             feed_dict = {
               vd_gen.image_ph:gen_mnist.test.images,
               vd_gen.hard_label_ph:gen_mnist.test.labels,
             }
             acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
-            acc_list.append(acc)
+            all_acc_list.append(acc)
             if (batch_g + 1) % eval_interval != 0:
               continue
           else:
@@ -201,6 +203,7 @@ def main(_):
             }
             acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
 
+          epk_acc_list.append(acc)
           if acc > bst_gen_acc:
             bst_gen_acc = max(acc, bst_gen_acc)
             bst_eph = epoch
@@ -218,9 +221,12 @@ def main(_):
   bst_eph += 1
   print('#mnist=%d kdgan@%d=%.2f et=%.0fs' % (tn_size, bst_eph, bst_gen_acc, tot_time))
 
-  if flags.collect_data:
-    utils.create_pardir(flags.learning_curve_p)
-    pickle.dump(acc_list, open(flags.learning_curve_p, 'wb'))
+  if flags.collect_cr_data:
+    utils.create_pardir(flags.all_learning_curve_p)
+    pickle.dump(all_acc_list, open(flags.all_learning_curve_p, 'wb'))
+
+  utils.create_pardir(flags.epk_learning_curve_p)
+  pickle.dump(epk_acc_list, open(flags.epk_learning_curve_p, 'wb'))
 
 if __name__ == '__main__':
     tf.app.run()
