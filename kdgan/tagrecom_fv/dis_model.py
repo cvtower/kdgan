@@ -18,8 +18,10 @@ class DIS():
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
     # None = batch_size * sample_size
-    self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
-    self.dis_label_ph = tf.placeholder(tf.float32, shape=(None,))
+    self.gen_sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
+    self.gen_label_ph = tf.placeholder(tf.float32, shape=(None,))
+    self.tch_sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
+    self.tch_label_ph = tf.placeholder(tf.float32, shape=(None,))
 
     self.dis_scope = dis_scope = 'dis'
     model_scope = nets_factory.arg_scopes_map[flags.image_model]
@@ -30,14 +32,8 @@ class DIS():
         net = slim.fully_connected(net, flags.num_label, activation_fn=None)
         self.logits = net
 
-      reward_logits = self.logits
-      # reward_logits = 2 * (tf.sigmoid(reward_logits) - 0.5)
-      # reward_logits -= tf.reduce_mean(reward_logits, 1, keep_dims=True)
-      # reward_logits -= tf.reduce_mean(reward_logits, 1, keep_dims=True)
-      # reward_logits = 2 * (tf.sigmoid(reward_logits) - 0.5)
-      reward_logits = tf.sigmoid(reward_logits)
-      # reward_logits -= tf.reduce_mean(reward_logits, 1, keep_dims=True)
-      self.rewards = tf.gather_nd(reward_logits, self.sample_ph)
+      self.gen_rewards = self.get_rewards(self.gen_sample_ph)
+      self.tch_rewards = self.get_rewards(self.tch_sample_ph)
 
       if not is_training:
         return
@@ -85,12 +81,25 @@ class DIS():
 
   def get_pre_losses(self):
     pre_losses = [self.get_hard_loss()]
-    print('#pre_losses wo regularization=%d' % (len(pre_losses)))
+    # print('#pre_losses wo regularization=%d' % (len(pre_losses)))
     return pre_losses
 
+  def get_gan_loss(self, sample_ph, label_ph):
+    sample_logits = tf.gather_nd(self.logits, sample_ph)
+    gan_loss = tf.losses.sigmoid_cross_entropy(label_ph, sample_logits)
+    return gan_loss
+
   def get_gan_losses(self):
-    sample_logits = tf.gather_nd(self.logits, self.sample_ph)
-    gan_losses = [tf.losses.sigmoid_cross_entropy(self.dis_label_ph, sample_logits)]
-    print('#gan_losses wo regularization=%d' % (len(gan_losses)))
+    gen_gan_loss = self.get_gan_loss(self.gen_sample_ph, self.gen_label_ph)
+    gen_gan_loss *= (1.0 - flags.intelltch_weight)
+    tch_gan_loss = self.get_gan_loss(self.tch_sample_ph, self.tch_label_ph)
+    tch_gan_loss *= flags.intelltch_weight
+    gan_losses = [gen_gan_loss, tch_gan_loss]
+    # print('#gan_losses wo regularization=%d' % (len(gan_losses)))
     return gan_losses
+
+  def get_rewards(self, sample_ph):
+    reward_logits = tf.sigmoid(self.logits)
+    rewards = tf.gather_nd(reward_logits, sample_ph)
+    return rewards
 
