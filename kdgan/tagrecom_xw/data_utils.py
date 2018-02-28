@@ -63,8 +63,8 @@ class YFCCEVAL(object):
 
   def compute_score(self, flags, sess, vd_model):
     vd_logit_np = self.get_vd_logit_np(sess, vd_model)
-    p3 = metric.eval_tagrecom(vd_logit_np, self.vd_label_np, flags.cutoff)
-    return p3
+    scores = metric.eval_tagrecom(vd_logit_np, self.vd_label_np, flags.cutoff)
+    return scores
 
 
 

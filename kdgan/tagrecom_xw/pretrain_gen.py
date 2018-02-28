@@ -56,8 +56,14 @@ def main(_):
           continue
       scores = yfcceval.compute_score(flags, sess, vd_gen)
       p3, p5, f3, f5, ndcg3, ndcg5, ap, rr = scores
-      print(scores)
       print(type(p3))
+      print(type(p5))
+      print(type(f3))
+      print(type(f5))
+      print(type(ndcg3))
+      print(type(ndcg5))
+      print(type(ap))
+      print(type(rr))
       exit()
       # print('p3=%.4f p5=%.4f f3=%.4f f5=%.4f ndcg3=%.4f ndcg5=%.4f ap=%.4f rr=%.4f' % 
       #     (p3, p5, f3, f5, ndcg3, ndcg5, ap, rr))
