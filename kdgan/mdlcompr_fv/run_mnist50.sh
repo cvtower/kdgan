@@ -6,6 +6,10 @@ batch_size=5
 cz_server=xiaojie@10.100.228.149 # cz
 xw_server=xiaojie@10.100.228.181 # xw
 
+dis_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_dis
+gen_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_gen
+tch_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_tch
+
 # scp ${cz_server}:${checkpoint_dir}/mdlcompr_mnist${train_size}* ${checkpoint_dir}
 
 # mac
@@ -24,34 +28,34 @@ xw_server=xiaojie@10.100.228.181 # xw
 # scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.meta ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
 
 python pretrain_gen.py \
-  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --gen_model_ckpt=${gen_model_ckpt} \
   --dataset_dir=$HOME/Projects/data/mnist \
   --gen_model_name=mlp \
   --optimizer=adam \
-  --train_size=$train_size \
-  --batch_size=$batch_size \
+  --train_size=${train_size} \
+  --batch_size=${batch_size} \
   --num_epoch=200
 #mnist=50 bstacc=0.5209 et=5s
 exit
 
 python pretrain_tch.py \
-  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --tch_model_ckpt=${tch_model_ckpt} \
   --dataset_dir=$HOME/Projects/data/mnist \
   --tch_model_name=lenet \
   --optimizer=adam \
-  --train_size=$train_size \
-  --batch_size=$batch_size \
+  --train_size=${train_size} \
+  --batch_size=${batch_size} \
   --num_epoch=200
 #mnist=50 bstacc=0.6343 et=21s
 exit
 
 python pretrain_dis.py \
-  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --dis_model_ckpt=${dis_model_ckpt} \
   --dataset_dir=$HOME/Projects/data/mnist \
   --dis_model_name=lenet \
   --optimizer=adam \
-  --train_size=$train_size \
-  --batch_size=$batch_size \
+  --train_size=${train_size} \
+  --batch_size=${batch_size}\
   --num_epoch=200
 #mnist=50 bstacc=0.6294 et=20s
 exit

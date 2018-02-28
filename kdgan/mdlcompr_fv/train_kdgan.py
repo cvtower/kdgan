@@ -102,23 +102,20 @@ def main(_):
         for image_d, label_dat_d in dis_datagen.generate(batch_size=flags.batch_size):
           batch_d += 1
 
-          # feed_dict = {tn_gen.image_ph:image_d}
-          # label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
-          # sample_gen_d, dis_label_gen = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
-          # feed_dict = {
-          #   tn_dis.image_ph:image_d,
-          #   tn_dis.sample_ph:sample_gen_d,
-          #   tn_dis.dis_label_ph:dis_label_gen,
-          # }
-          # sess.run(tn_dis.gan_update, feed_dict=feed_dict)
+          feed_dict = {tn_gen.image_ph:image_d}
+          label_gen_d = sess.run(tn_gen.labels, feed_dict=feed_dict)
+          sample_gen_d, gen_label_d = utils.gan_dis_sample(flags, label_dat_d, label_gen_d)
 
           feed_dict = {tn_tch.image_ph:image_d}
           label_tch_d = sess.run(tn_tch.labels, feed_dict=feed_dict)
-          sample_tch_d, dis_label_tch = utils.gan_dis_sample(flags, label_dat_d, label_tch_d)
+          sample_tch_d, tch_label_d = utils.gan_dis_sample(flags, label_dat_d, label_tch_d)
+          
           feed_dict = {
             tn_dis.image_ph:image_d,
-            tn_dis.sample_ph:sample_tch_d,
-            tn_dis.dis_label_ph:dis_label_tch,
+            tn_dis.gen_sample_ph:sample_gen_d,
+            tn_dis.gen_label_ph:gen_label_d,
+            tn_dis.tch_sample_ph:sample_tch_d,
+            tn_dis.tch_label_ph:tch_label_d,
           }
           sess.run(tn_dis.gan_update, feed_dict=feed_dict)
 
@@ -134,26 +131,15 @@ def main(_):
           sample_t = utils.generate_label(flags, label_dat_t, label_tch_t)
           feed_dict = {
             tn_dis.image_ph:image_t,
-            tn_dis.sample_ph:sample_t,
+            tn_dis.tch_sample_ph:sample_t,
           }
-          reward_t = sess.run(tn_dis.rewards, feed_dict=feed_dict)
+          reward_t = sess.run(tn_dis.tch_rewards, feed_dict=feed_dict)
 
           feed_dict = {
             tn_tch.image_ph:image_t,
             tn_tch.sample_ph:sample_t,
             tn_tch.reward_ph:reward_t,
           }
-
-          if flags.kdgan_model != config.kdgan_odgan_flag:
-            feed_dict = {vd_gen.image_ph:image_t}
-            soft_logit_t = sess.run(vd_gen.logits, feed_dict=feed_dict)
-            feed_dict = {
-              tn_tch.image_ph:image_t,
-              tn_tch.sample_ph:sample_t,
-              tn_tch.reward_ph:reward_t,
-              tn_tch.hard_label_ph:label_dat_t,
-              tn_tch.soft_logit_ph:soft_logit_t,
-            }
 
           sess.run(tn_tch.kdgan_update, feed_dict=feed_dict)
 
@@ -181,9 +167,9 @@ def main(_):
           sample_g = utils.generate_label(flags, label_dat_g, label_gen_g)
           feed_dict = {
             tn_dis.image_ph:image_g,
-            tn_dis.sample_ph:sample_g,
+            tn_dis.dis_sample_ph:sample_g,
           }
-          reward_g = sess.run(tn_dis.rewards, feed_dict=feed_dict)
+          reward_g = sess.run(tn_dis.gen_rewards, feed_dict=feed_dict)
 
           feed_dict = {vd_tch.image_ph:image_g}
           soft_logit_g = sess.run(vd_tch.logits, feed_dict=feed_dict)
