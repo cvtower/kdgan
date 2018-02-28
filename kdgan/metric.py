@@ -173,14 +173,14 @@ def eval_tagrecom(logits, labels, cutoff):
     ndcg5.append(ndcg5_scorer.score(sorted_label_bt))
     ap.append(ap_scorer.score(sorted_label_bt))
     rr.append(rr_scorer.score(sorted_label_bt))
-  p3 = np.mean(p3)
-  p5 = np.mean(p5)
-  f3 = np.mean(f3)
-  f3 = np.mean(f3)
-  ndcg3 = np.mean(ndcg3)
-  ndcg5 = np.mean(ndcg5)
-  ap = np.mean(ap)
-  rr = np.mean(rr)
+  p3 = float(np.mean(p3))
+  p5 = float(np.mean(p5))
+  f3 = float(np.mean(f3))
+  f3 = float(np.mean(f3))
+  ndcg3 = float(np.mean(ndcg3))
+  ndcg5 = float(np.mean(ndcg5))
+  ap = float(np.mean(ap))
+  rr = float(np.mean(rr))
   return p3, p5, f3, f5, ndcg3, ndcg5, ap, rr
 
 ################################################################
