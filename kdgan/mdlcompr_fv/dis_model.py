@@ -52,12 +52,16 @@ class DIS():
 
       # pre train
       pre_losses = self.get_pre_losses()
+      pre_losses.extend(self.get_regularization_losses())
+      print('#pre_losses wt regularization=%d' % (len(pre_losses)))
       self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % dis_scope)
       pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
 
       # gan train
       gan_losses = self.get_gan_losses(flags)
+      gan_losses.extend(self.get_regularization_losses())
+      print('#gan_losses wt regularization=%d' % (len(gan_losses)))
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % dis_scope)
       gan_optimizer = utils.get_opt(flags, self.learning_rate)
       # gan_optimizer = tf.train.AdamOptimizer(self.learning_rate)
@@ -74,9 +78,7 @@ class DIS():
 
   def get_pre_losses(self):
     pre_losses = [tf.losses.softmax_cross_entropy(self.hard_label_ph, self.logits)]
-    print('#pre_losses=%d' % (len(pre_losses)))
-    pre_losses.extend(self.get_regularization_losses())
-    print('#pre_losses=%d' % (len(pre_losses)))
+    print('#pre_losses wo regularization=%d' % (len(pre_losses)))
     return pre_losses
 
   def get_gan_loss(self, sample_ph, label_ph):
@@ -90,7 +92,7 @@ class DIS():
     tch_gan_loss = self.get_gan_loss(self.tch_sample_ph, self.tch_label_ph)
     tch_gan_loss *= flags.intelltch_weight
     gan_losses = [gen_gan_loss, tch_gan_loss]
-    gan_losses.extend(self.get_regularization_losses())
+    print('#gan_losses wo regularization=%d' % (len(gan_losses)))
     return gan_losses
 
   def get_rewards(self, sample_ph):
