@@ -5,11 +5,12 @@ from flags import flags
 from gen_model import GEN
 import data_utils
 
-from os import path
-from tensorflow.contrib import slim
+import pickle
 import time
 import numpy as np
 import tensorflow as tf
+from os import path
+from tensorflow.contrib import slim
 
 mnist = data_utils.read_data_sets(flags.dataset_dir,
     one_hot=True,
@@ -45,6 +46,7 @@ init_op = tf.global_variables_initializer()
 
 def main(_):
   bst_acc = 0.0
+  acc_list = []
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -55,13 +57,23 @@ def main(_):
       _, summary = sess.run([tn_gen.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
 
-      if (tn_batch + 1) % eval_interval != 0:
-        continue
-      feed_dict = {
-        vd_gen.image_ph:mnist.test.images,
-        vd_gen.hard_label_ph:mnist.test.labels,
-      }
-      acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
+      if flags.collect_data:
+        feed_dict = {
+          vd_gen.image_ph:mnist.test.images,
+          vd_gen.hard_label_ph:mnist.test.labels,
+        }
+        acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
+        acc_list.append(acc)
+        if (tn_batch + 1) % eval_interval != 0:
+          continue
+      else:
+        if (tn_batch + 1) % eval_interval != 0:
+          continue
+        feed_dict = {
+          vd_gen.image_ph:mnist.test.images,
+          vd_gen.hard_label_ph:mnist.test.labels,
+        }
+        acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
 
       bst_acc = max(acc, bst_acc)
       tot_time = time.time() - start
@@ -75,6 +87,10 @@ def main(_):
       tn_gen.saver.save(utils.get_session(sess), flags.gen_model_ckpt)
   tot_time = time.time() - start
   print('#mnist=%d bstacc=%.4f et=%.0fs' % (tn_size, bst_acc, tot_time))
+
+  if flags.collect_data:
+    utils.create_pardir(flags.learning_curve_p)
+    pickle.dump(acc_list, open(flags.learning_curve_p, 'wb'))
 
 if __name__ == '__main__':
   tf.app.run()

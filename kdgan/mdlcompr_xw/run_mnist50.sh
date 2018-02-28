@@ -155,8 +155,34 @@ exit
 
 num_epoch=200
 pickle_dir=${kdgan_dir}/pickles
+gen_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan@${num_epoch}.p
+tch_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan@${num_epoch}.p
 gan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan@${num_epoch}.p
 kdgan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan@${num_epoch}.p
+
+python pretrain_gen.py \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --gen_model_name=mlp \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --num_epoch=200 \
+  --learning_curve_p=${gen_model_p} \
+  --collect_data=True
+exit
+
+python pretrain_tch.py \
+  --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --tch_model_name=lenet \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --num_epoch=200 \
+  --learning_curve_p=${tch_model_p} \
+  --collect_data=True
+exit
 
 python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
