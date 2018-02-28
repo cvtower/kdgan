@@ -140,17 +140,48 @@ def getScorer(name):
 
 def eval_tagrecom(logits, labels, cutoff):
   p3_scorer = getScorer('P@3')
+  p5_scorer = getScorer('P@5')
+  r3_scorer = getScorer('R@3')
+  r5_scorer = getScorer('R@5')
+  ndcg3_scorer = getScorer('NDCG2@3')
+  ndcg5_scorer = getScorer('NDCG2@5')
+  ap_scorer = getScorer('AP')
+  rr_scorer = getScorer('RR')
+
   predictions = np.argsort(-logits, axis=1)
   batch_size, _ = labels.shape
-  p3 = []
+  p3, p5, f3, f5, ndcg3, ndcg5, ap, rr = [], [], [], [], [], [], [], []
   for batch in range(batch_size):
     label_bt = labels[batch, :]
     label_bt = np.nonzero(label_bt)[0]
     prediction_bt = predictions[batch, :]
     sorted_label_bt = [int(p in label_bt) for p in prediction_bt]
-    p3.append(p3_scorer.score(sorted_label_bt))
+    p3_bt = p3_scorer.score(sorted_label_bt)
+    p5_bt = p5_scorer.score(sorted_label_bt)
+    r3_bt = r3_scorer.score(sorted_label_bt)
+    r5_bt = r5_scorer.score(sorted_label_bt)
+    f3_bt, f5_bt = 0.0, 0.0
+    if (p3_bt + r3_bt) != 0.0:
+      f3_bt = 2 * p3_bt * r3_bt / (p3_bt + r3_bt)
+    if (p5_bt + r5_bt) != 0.0:
+      f5_bt = 2 * p5_bt * r5_bt / (p5_bt + r5_bt)
+    p3.append(p3_bt)
+    p5.append(p5_bt)
+    f3.append(f3_bt)
+    f5.append(f5_bt)
+    ndcg3.append(ndcg3_scorer.score(sorted_label_bt))
+    ndcg5.append(ndcg5_scorer.score(sorted_label_bt))
+    ap.append(ap_scorer.score(sorted_label_bt))
+    rr.append(rr_scorer.score(sorted_label_bt))
   p3 = np.mean(p3)
-  return p3
+  p5 = np.mean(p5)
+  f3 = np.mean(f3)
+  f3 = np.mean(f3)
+  ndcg3 = np.mean(ndcg3)
+  ndcg5 = np.mean(ndcg5)
+  ap = np.mean(ap)
+  rr = np.mean(rr)
+  return p3, p5, f3, f5, ndcg3, ndcg5, ap, rr
 
 ################################################################
 #

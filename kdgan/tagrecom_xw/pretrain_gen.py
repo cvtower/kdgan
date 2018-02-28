@@ -54,8 +54,12 @@ def main(_):
 
       if (tn_batch + 1) % eval_interval != 0:
           continue
-      prec = yfcceval.compute_score(flags, sess, vd_gen)
+      scores = yfcceval.compute_score(flags, sess, vd_gen)
+      p3, p5, f3, f5, ndcg3, ndcg5, ap, rr = scores
+      print('p3=%.4f p5=%.4f f3=%.4f f5=%.4f ndcg3=%.4f ndcg5=%.4f ap=%.4f rr=%.4f' % 
+          (p3, p5, f3, f5, ndcg3, ndcg5, ap, rr))
       # prec = yfcceval.compute_prec(flags, sess, vd_gen)
+      prec = p3
       best_prec = max(prec, best_prec)
       tot_time = time.time() - start
       global_step = sess.run(tn_gen.global_step)
