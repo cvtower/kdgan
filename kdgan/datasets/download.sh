@@ -1,5 +1,5 @@
-server=xiaojie@10.100.228.181 # xw
-server=xiaojie@10.100.228.149 # cz
+cz_server=xiaojie@10.100.228.149 # cz
+xw_server=xiaojie@10.100.228.181 # xw
 
 # scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/gen_vgg_16.eval .
 

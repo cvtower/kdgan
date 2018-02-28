@@ -3,22 +3,25 @@ checkpoint_dir=$kdgan_dir/checkpoints
 train_size=50
 batch_size=5
 
-# scp xiaojie@10.100.228.149:${checkpoint_dir}/mdlcompr_mnist${train_size}* ${checkpoint_dir}
+cz_server=xiaojie@10.100.228.149 # cz
+xw_server=xiaojie@10.100.228.181 # xw
+
+# scp ${cz_server}:${checkpoint_dir}/mdlcompr_mnist${train_size}* ${checkpoint_dir}
 
 # mac
-# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.data-00000-of-00001 ${checkpoint_dir}
-# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.index ${checkpoint_dir}
-# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.meta ${checkpoint_dir}
-# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.data-00000-of-00001 ${checkpoint_dir}
-# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.index ${checkpoint_dir}
-# scp xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.meta ${checkpoint_dir}
+# scp ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.data-00000-of-00001 ${checkpoint_dir}
+# scp ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.index ${checkpoint_dir}
+# scp ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_gen.meta ${checkpoint_dir}
+# scp ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.data-00000-of-00001 ${checkpoint_dir}
+# scp ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.index ${checkpoint_dir}
+# scp ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_mnist${train_size}_dis.meta ${checkpoint_dir}
 
-# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.data-00000-of-00001 xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
-# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.index xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
-# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.meta xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
-# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.data-00000-of-00001 xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
-# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.index xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
-# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.meta xiaojie@10.100.228.149:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.data-00000-of-00001 ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.index ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_gen.meta ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.data-00000-of-00001 ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.index ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+# scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.meta ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
 
 python pretrain_gen.py \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
@@ -110,9 +113,9 @@ python train_kdgan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --dis_learning_rate=5e-3 \
-  --gen_learning_rate=5e-3 \
-  --tch_learning_rate=5e-3 \
+  --dis_learning_rate=1e-3 \
+  --gen_learning_rate=5e-4 \
+  --tch_learning_rate=5e-4 \
   --num_epoch=100 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
