@@ -41,7 +41,7 @@ class YFCCEVAL(object):
   def __init__(self, flags):
     self.vd_image_np, self.vd_text_np, self.vd_label_np, _ = utils.get_valid_data(flags)
 
-  def compute_prec(self, flags, sess, vd_model):
+  def get_vd_logit_np(self, sess, vd_model):
     if hasattr(vd_model, 'image_ph') and hasattr(vd_model, 'text_ph'):
       feed_dict = {
         vd_model.image_ph:self.vd_image_np,
@@ -54,9 +54,16 @@ class YFCCEVAL(object):
     else:
       feed_dict = {}
     vd_logit_np = sess.run(vd_model.logits, feed_dict=feed_dict)
+    return vd_logit_np
+
+  def compute_prec(self, flags, sess, vd_model):
+    vd_logit_np = self.get_vd_logit_np(sess, vd_model)
     prec = metric.compute_prec(vd_logit_np, self.vd_label_np, flags.cutoff)
     return prec
 
+  def compute_score(self, flags, sess, vd_model):
+    vd_logit_np = self.get_vd_logit_np(sess, vd_model)
+    p3 = eval_tagrecom(vd_logit_np, vd_label_np, 'P@3', flags.cutoff)
 
 
 
