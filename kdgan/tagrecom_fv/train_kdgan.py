@@ -95,7 +95,6 @@ def main(_):
 
       num_batch_t = math.ceil(flags.num_tch_epoch * tn_size / flags.batch_size)
       for _ in range(num_batch_t):
-        continue
         batch_t += 1
         image_t, text_t, label_dat_t = yfccdata_t.next_batch(flags, sess)
 
@@ -103,7 +102,7 @@ def main(_):
         label_tch_t = sess.run(tn_tch.labels, feed_dict=feed_dict)
         sample_t = utils.generate_label(flags, label_dat_t, label_tch_t)
         feed_dict = {tn_dis.image_ph:image_t, tn_dis.sample_ph:sample_t}
-        reward_t = sess.run(tn_dis.rewards, feed_dict=feed_dict)
+        reward_t = sess.run(tn_dis.tch_rewards, feed_dict=feed_dict)
 
         feed_dict = {
           tn_tch.image_ph:image_t,
@@ -127,7 +126,7 @@ def main(_):
         label_gen_g = sess.run(tn_gen.labels, feed_dict=feed_dict)
         sample_g = utils.generate_label(flags, label_dat_g, label_gen_g)
         feed_dict = {tn_dis.image_ph:image_g, tn_dis.sample_ph:sample_g}
-        reward_g = sess.run(tn_dis.rewards, feed_dict=feed_dict)
+        reward_g = sess.run(tn_dis.gen_rewards, feed_dict=feed_dict)
 
         feed_dict = {
           tn_gen.image_ph:image_g,
@@ -141,6 +140,10 @@ def main(_):
 
         if (batch_g + 1) % eval_interval != 0:
             continue
+        scores = yfcceval.compute_score(flags, sess, vd_gen)
+        p3, p5, f3, f5, ndcg3, ndcg5, ap, rr = scores
+        print('p3=%.4f p5=%.4f f3=%.4f f5=%.4f ndcg3=%.4f ndcg5=%.4f ap=%.4f rr=%.4f' % 
+            (p3, p5, f3, f5, ndcg3, ndcg5, ap, rr))
         prec = yfcceval.compute_prec(flags, sess, vd_gen)
         if prec > best_prec:
           bst_epk = epoch
@@ -160,12 +163,6 @@ def main(_):
 if __name__ == '__main__':
   tf.app.run()
 
-
-
-      # scores = yfcceval.compute_score(flags, sess, vd_gen)
-      # p3, p5, f3, f5, ndcg3, ndcg5, ap, rr = scores
-      # print('p3=%.4f p5=%.4f f3=%.4f f5=%.4f ndcg3=%.4f ndcg5=%.4f ap=%.4f rr=%.4f' % 
-      #     (p3, p5, f3, f5, ndcg3, ndcg5, ap, rr))
 
 
 
