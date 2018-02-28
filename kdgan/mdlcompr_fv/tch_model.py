@@ -50,12 +50,16 @@ class TCH():
       # self.lr_update = tf.assign(self.learning_rate, self.learning_rate * flags.learning_rate_decay_factor)
 
       pre_losses = self.get_pre_losses()
+      pre_losses.extend(self.get_regularization_losses())
+      print('#pre_losses wt regularization=%d' % (len(pre_losses)))
       self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % tch_scope)
       pre_optimizer = utils.get_opt(flags, self.learning_rate)
       self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
 
       # kdgan train
       kdgan_losses = self.get_kdgan_losses(flags)
+      kdgan_losses.extend(self.get_regularization_losses())
+      print('#kdgan_losses wt regularization=%d' % (len(kdgan_losses)))
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % tch_scope)
       kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
       self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=self.global_step)
@@ -74,9 +78,7 @@ class TCH():
 
   def get_pre_losses(self):
     pre_losses = [self.get_hard_loss()]
-    print('#pre_losses=%d' % (len(pre_losses)))
-    pre_losses.extend(self.get_regularization_losses())
-    print('#pre_losses=%d' % (len(pre_losses)))
+    print('#pre_losses wo regularization=%d' % (len(pre_losses)))
     return pre_losses
 
   def get_kd_losses(self, flags):
@@ -105,18 +107,15 @@ class TCH():
       kd_losses.append(soft_loss)
     else:
       raise ValueError('bad kd model %s', flags.kd_model)
-    print('#kd_losses=%d' % (len(kd_losses)))
-    # kd_losses.extend(self.get_regularization_losses())
-    # print('#kd_losses=%d' % (len(kd_losses)))
+    print('#kd_losses wo regularization=%d' % (len(kd_losses)))
     return kd_losses
 
   def get_kdgan_losses(self, flags):
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
-    # kdgan_losses = -tf.reduce_mean(self.reward_ph * sample_logits)
-    kdgan_losses = [tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)]
-    kdgan_losses.extend(self.get_regularization_losses())
-    if flags.kdgan_model != config.kdgan_odgan_flag:
-      kdgan_losses.extend(self.get_kd_losses(flags))
+    gan_loss = tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)
+    gan_loss *= flags.intelltch_weight
+    kdgan_losses = [gan_loss]
+    print('#kdgan_losses wo regularization=%d' % (len(kdgan_losses)))
     return kdgan_losses
 
 

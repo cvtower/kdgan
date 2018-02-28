@@ -38,7 +38,7 @@ tf.app.flags.DEFINE_string('optimizer', 'adam', 'adam|rmsprop|sgd')
 tf.app.flags.DEFINE_float('kd_soft_pct', 0.3, '')
 tf.app.flags.DEFINE_float('temperature', 3.0, '')
 tf.app.flags.DEFINE_string('kd_model', 'mimic', 'mimic|distn')
-tf.app.flags.DEFINE_float('privilege_weight', 0.5, '')
+tf.app.flags.DEFINE_float('intelltch_weight', 0.5, '')
 tf.app.flags.DEFINE_float('distilled_weight', 1.0, '')
 
 flags = tf.app.flags.FLAGS
