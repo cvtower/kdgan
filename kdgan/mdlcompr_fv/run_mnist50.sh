@@ -106,12 +106,12 @@ python train_kd.py \
 #mnist=50 noisy@232=62.18 iniacc=52.09 et=15s
 exit
 
-epk_kdgan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_default.p
+epk_learning_curve_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_default.p
 python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
   --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
-  --epk_kdgan_model_p=${epk_kdgan_model_p} \
+  --epk_learning_curve_p=${epk_learning_curve_p} \
   --dataset_dir=$HOME/Projects/data/mnist \
   --dis_model_name=lenet \
   --gen_model_name=mlp \
