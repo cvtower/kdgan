@@ -176,7 +176,7 @@ def eval_tagrecom(logits, labels, cutoff):
   p3 = float(np.mean(p3))
   p5 = float(np.mean(p5))
   f3 = float(np.mean(f3))
-  f3 = float(np.mean(f3))
+  f5 = float(np.mean(f5))
   ndcg3 = float(np.mean(ndcg3))
   ndcg5 = float(np.mean(ndcg5))
   ap = float(np.mean(ap))
