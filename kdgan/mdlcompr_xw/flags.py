@@ -21,7 +21,7 @@ tf.app.flags.DEFINE_float('tch_weight_decay', 0.00004, 'l2 coefficient')
 tf.app.flags.DEFINE_string('dis_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('tch_model_ckpt', None, '')
-tf.app.flags.DEFINE_string('tch_model_p', None, '')
+tf.app.flags.DEFINE_string('learning_curve_p', None, '')
 # optimization
 tf.app.flags.DEFINE_integer('num_epoch', 200, '')
 tf.app.flags.DEFINE_integer('num_dis_epoch', 20, '')
@@ -42,5 +42,6 @@ tf.app.flags.DEFINE_float('noisy_ratio', 0.005, '')
 tf.app.flags.DEFINE_float('noisy_sigma', 0.005, '')
 tf.app.flags.DEFINE_string('kd_model', 'mimic', 'mimic|distn|noisy')
 tf.app.flags.DEFINE_string('kdgan_model', 'odgan', 'odgan|mdgan')
+tf.app.flags.DEFINE_boolean('collect_data', False, '')
 
 flags = tf.app.flags.FLAGS

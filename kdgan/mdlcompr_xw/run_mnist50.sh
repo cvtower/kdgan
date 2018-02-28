@@ -138,11 +138,11 @@ python train_gan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --dis_learning_rate=5e-3 \
-  --gen_learning_rate=5e-3 \
+  --dis_learning_rate=1e-3 \
+  --gen_learning_rate=1e-3 \
   --num_epoch=200 \
   --num_dis_epoch=20 \
-  --num_gen_epoch=2 \
+  --num_gen_epoch=10 \
   --num_negative=20 \
   --num_positive=5
 exit
@@ -152,6 +152,11 @@ exit
 # backup
 #
 ################################################################
+
+num_epoch=200
+pickle_dir=${kdgan_dir}/pickles
+gan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan@${num_epoch}.p
+kdgan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan@${num_epoch}.p
 
 python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
@@ -164,19 +169,42 @@ python train_kdgan.py \
   --optimizer=adam \
   --train_size=$train_size \
   --batch_size=$batch_size \
-  --num_epoch=200 \
+  --dis_learning_rate=1e-3 \
+  --gen_learning_rate=5e-4 \
+  --tch_learning_rate=5e-4 \
+  --num_epoch=${num_epoch} \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10 \
-  --kdgan_model=tw \
+  --kdgan_model=odgan \
   --num_negative=20 \
   --num_positive=5 \
   --kd_model=mimic \
-  --kd_soft_pct=0.3 \
-  --temperature=3.0
-#mnist=10000 kdgan_ow=0.9786 et=10419s
+  --noisy_ratio=0.1 \
+  --noisy_sigma=0.1 \
+  --learning_curve_p=kdgan_model_p \
+  --collect_data=True
 exit
 
+python train_gan.py \
+  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
+  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --dis_model_name=lenet \
+  --gen_model_name=mlp \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --dis_learning_rate=1e-3 \
+  --gen_learning_rate=1e-3 \
+  --num_epoch=${num_epoch} \
+  --num_dis_epoch=10 \
+  --num_gen_epoch=5 \
+  --num_negative=20 \
+  --num_positive=5 \
+  --learning_curve_p=gan_model_p \
+  --collect_data=True
+exit
 
 
 

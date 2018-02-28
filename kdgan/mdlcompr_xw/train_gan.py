@@ -61,6 +61,7 @@ vd_gen = GEN(flags, gen_mnist.test, is_training=False)
 
 def main(_):
   bst_acc = 0.0
+  acc_list = []
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -128,14 +129,25 @@ def main(_):
           }
           _, summary_g = sess.run([tn_gen.gan_update, gen_summary_op], feed_dict=feed_dict)
           writer.add_summary(summary_g, batch_g)
-          
-          if (batch_g + 1) % eval_interval != 0:
-            continue
-          feed_dict = {
-            vd_gen.image_ph:gen_mnist.test.images,
-            vd_gen.hard_label_ph:gen_mnist.test.labels,
-          }
-          acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
+
+
+          if flags.collect_data:
+            feed_dict = {
+              vd_gen.image_ph:gen_mnist.test.images,
+              vd_gen.hard_label_ph:gen_mnist.test.labels,
+            }
+            acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
+            acc_list.append(acc)
+            if (batch_g + 1) % eval_interval != 0:
+              continue
+          else:
+            if (batch_g + 1) % eval_interval != 0:
+              continue
+            feed_dict = {
+              vd_gen.image_ph:gen_mnist.test.images,
+              vd_gen.hard_label_ph:gen_mnist.test.labels,
+            }
+            acc = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
 
           bst_acc = max(acc, bst_acc)
           tot_time = time.time() - start
@@ -147,7 +159,12 @@ def main(_):
           if acc <= bst_acc:
             continue
           # save gen parameters if necessary
-  print('#mnist=%d bstacc=%.4f' % (tn_size, bst_acc))
+  tot_time = time.time() - start
+  print('#mnist=%d bstacc=%.4f et=%.0fs' % (tn_size, bst_acc, tot_time))
+
+  if flags.collect_data:
+    utils.create_pardir(flags.learning_curve_p)
+    pickle.dump(acc_list, open(flags.learning_curve_p, 'wb'))
 
 if __name__ == '__main__':
     tf.app.run()
