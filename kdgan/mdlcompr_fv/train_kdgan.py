@@ -167,7 +167,7 @@ def main(_):
           sample_g = utils.generate_label(flags, label_dat_g, label_gen_g)
           feed_dict = {
             tn_dis.image_ph:image_g,
-            tn_dis.dis_sample_ph:sample_g,
+            tn_dis.gen_sample_ph:sample_g,
           }
           reward_g = sess.run(tn_dis.gen_rewards, feed_dict=feed_dict)
 
