@@ -9,7 +9,7 @@ gen_model_p=${pickle_dir}/tagrecom_yfcc10k_gen@${num_epoch}.p
 tch_model_p=${pickle_dir}/tagrecom_yfcc10k_tch@${num_epoch}.p
 gan_model_p=${pickle_dir}/tagrecom_yfcc10k_gan@${num_epoch}.p
 kdgan_model_p=${pickle_dir}/tagrecom_yfcc10k_kdgan@${num_epoch}.p
-python plt_tagrecom.py \
+python plot_tr_cr.py \
   --gen_model_p=${gen_model_p} \
   --tch_model_p=${tch_model_p} \
   --gan_model_p=${gan_model_p} \
@@ -23,7 +23,7 @@ gen_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gen@${num_epoch}.p
 tch_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_tch@${num_epoch}.p
 gan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gan@${num_epoch}.p
 kdgan_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan@${num_epoch}.p
-python plt_mdlcompr.py \
+python plot_mc_cr.py \
   --gen_model_p=${gen_model_p} \
   --tch_model_p=${tch_model_p} \
   --gan_model_p=${gan_model_p} \
