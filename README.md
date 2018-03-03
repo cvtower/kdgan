@@ -6,6 +6,7 @@ ssh xiaojie@10.100.229.246 # cpu
 ssh xiaojie@10.100.228.149 # gpu cz
 ssh xiaojie@10.100.228.181 # gpu xw
 
+# bank
 5217291828507288
 
 # text classification
