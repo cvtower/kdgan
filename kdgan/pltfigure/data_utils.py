@@ -2,7 +2,7 @@ import numpy as np
 import pickle
 
 label_size = 17
-legend_size = 17
+legend_size = 16
 tick_size = 15
 line_width = 2
 marker_size = 8

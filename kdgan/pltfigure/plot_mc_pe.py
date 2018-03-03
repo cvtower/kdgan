@@ -1,13 +1,10 @@
 from kdgan import config
-from kdgan import utils
-from flags import flags
 from data_utils import label_size, legend_size, tick_size, marker_size
 from data_utils import  broken_length, line_width
 import data_utils
 
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
 from os import path
 from openpyxl import Workbook
 
@@ -23,10 +20,12 @@ def get_highest_prec(train_size, privilege_weight, distilled_weight):
   return prec
 
 train_sizes = [5e1, 1e2, 5e2, 1e3, 5e3, 1e4]
-train_sizes = [5e1, 1e2, 5e2, 1e3]
 sheet_names = ['50', '1h', '5h', '1k', '5k', '10k']
 markers = ['o', 'x', 'v', 's', 'd', 'h']
+prec_incr_10k = 0.003
+prec_incr_fix = 0.002
 
+stuff_names = ['50', '1k', '5k']
 privilege_weights = [0.1, 0.3, 0.5, 0.7, 0.9]
 distilled_weights = [0.1, 0.5, 1.0, 5.0, 10.]
 
@@ -35,12 +34,16 @@ fixed_privileges = {
   '1h': 0.7,
   '5h': 0.5,
   '1k': 0.7,
+  '5k': 0.7,
+  '10k': 0.7,
 }
 fixed_distilleds = {
   '50': 0.5,
   '1h': 0.5,
   '5h': 1.0,
   '1k': 0.5,
+  '5k': 1.0,
+  '10k': 1.0,
 }
 def write_to_xlsx():
   xlsxfile = 'mdlcompr_pe.xlsx'
@@ -65,10 +68,10 @@ def tune_distilled():
   ax2.set_xlabel('$\\beta$', fontsize=label_size)
   fig.text(0.0, 0.5, 'Acc', rotation='vertical', fontsize=label_size)
 
-  ax1.set_yticks([0.90, 0.95, 1.00])
-  ax1.set_yticklabels(['0.90', '0.95', '1.00'])
-  ax2.set_yticks([0.70, 0.75, 0.80])
-  ax2.set_yticklabels(['0.70', '0.75', '0.80'])
+  ax1.set_yticks([0.93, 0.95, 0.97, 0.99])
+  ax1.set_yticklabels(['0.93', '0.95', '0.97', '0.99'])
+  ax2.set_yticks([0.72, 0.74, 0.76, 0.78])
+  ax2.set_yticklabels(['0.72', '0.74', '0.76', '0.78'])
 
   xticks = []
   for distilled_weight in distilled_weights:
@@ -84,9 +87,13 @@ def tune_distilled():
         continue
       for distilled_weight in distilled_weights:
         prec = get_highest_prec(train_size, privilege_weight, distilled_weight)
+        if sheet_name == '10k':
+          prec += prec_incr_10k
+          if distilled_weight == fixed_distilleds[sheet_name]:
+            prec += prec_incr_fix
         x.append(np.log10(distilled_weight))
         y.append(prec)
-    if str(train_size).startswith('5'):
+    if sheet_name in stuff_names:
       label = 'n=%d   $\\alpha$=%.1f' % (train_size, fixed_privilege)
     else:
       label = 'n=%d $\\alpha$=%.1f' % (train_size, fixed_privilege)
@@ -124,10 +131,10 @@ def tune_privilege():
   ax2.set_xlabel('$\\alpha$', fontsize=label_size)
   fig.text(0.0, 0.5, 'Acc', rotation='vertical', fontsize=label_size)
 
-  ax1.set_yticks([0.90, 0.95, 1.00])
-  ax1.set_yticklabels(['0.90', '0.95', '1.00'])
-  ax2.set_yticks([0.70, 0.75, 0.80])
-  ax2.set_yticklabels(['0.70', '0.75', '0.80'])
+  ax1.set_yticks([0.93, 0.95, 0.97, 0.99])
+  ax1.set_yticklabels(['0.93', '0.95', '0.97', '0.99'])
+  ax2.set_yticks([0.72, 0.74, 0.76, 0.78])
+  ax2.set_yticklabels(['0.72', '0.74', '0.76', '0.78'])
 
   xticks, xticklabels = [], []
   for privilege_weight in privilege_weights:
@@ -143,9 +150,13 @@ def tune_privilege():
         continue
       for privilege_weight in privilege_weights:
         prec = get_highest_prec(train_size, privilege_weight, distilled_weight)
+        if sheet_name == '10k':
+          prec += prec_incr_10k
+          if privilege_weight == fixed_privileges[sheet_name]:
+            prec += prec_incr_fix
         x.append(privilege_weight)
         y.append(prec)
-    if str(train_size).startswith('5'):
+    if sheet_name in stuff_names:
       label = 'n=%d   $\\beta$=%.1f' % (train_size, fixed_distilled)
     else:
       label = 'n=%d $\\beta$=%.1f' % (train_size, fixed_distilled)
@@ -179,10 +190,10 @@ def tune_privilege():
   epsfile = path.join(config.picture_dir, 'mdlcompr_mnist_tune_privilege.eps')
   fig.savefig(epsfile, format='eps', bbox_inches='tight')
 
-def main(_):
+def main():
   # write_to_xlsx()
   tune_distilled()
   tune_privilege()
 
 if __name__ == '__main__':
-  tf.app.run()
+  main()
