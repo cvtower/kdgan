@@ -4,6 +4,7 @@ pip install -Ue .
 remote.unimelb.edu.au/student
 ssh xiaojie@10.100.229.246 # cpu
 ssh xiaojie@10.100.228.149 # gpu cz
+ssh xiaojie@10.100.228.151 # gpu cy
 ssh xiaojie@10.100.228.181 # gpu xw
 
 # bank

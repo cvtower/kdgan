@@ -113,11 +113,8 @@ class TCH():
   def get_kdgan_losses(self, flags):
     sample_logits = tf.gather_nd(self.logits, self.sample_ph)
     gan_loss = tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)
-    gan_loss *= (1 - flags.gamma)
+    gan_loss *= flags.intelltch_weight
     kdgan_losses = [gan_loss]
-    for kd_loss in self.get_kd_losses(flags):
-      kd_loss *= flags.gamma
-      kdgan_losses.append(kd_loss)
     print('#kdgan_losses wo regularization=%d' % (len(kdgan_losses)))
     return kdgan_losses
 

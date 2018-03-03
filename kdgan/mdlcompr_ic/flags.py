@@ -43,8 +43,7 @@ tf.app.flags.DEFINE_float('temperature', 3.0, '')
 tf.app.flags.DEFINE_float('noisy_ratio', 0.005, '')
 tf.app.flags.DEFINE_float('noisy_sigma', 0.005, '')
 tf.app.flags.DEFINE_string('kd_model', 'mimic', 'mimic|distn|noisy')
-tf.app.flags.DEFINE_float('alpha', 0.5, '')
-tf.app.flags.DEFINE_float('beta', 0.5, '')
-tf.app.flags.DEFINE_float('gamma', 0.0, '')
+tf.app.flags.DEFINE_float('intelltch_weight', 0.5, '')
+tf.app.flags.DEFINE_float('distilled_weight', 1.0, '')
 
 flags = tf.app.flags.FLAGS

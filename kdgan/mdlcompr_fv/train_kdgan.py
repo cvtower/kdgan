@@ -137,10 +137,14 @@ def main(_):
           }
           reward_t = sess.run(tn_dis.tch_rewards, feed_dict=feed_dict)
 
+          feed_dict = {vd_gen.image_ph:image_t}
+          soft_logit_t = sess.run(vd_gen.logits, feed_dict=feed_dict)
           feed_dict = {
             tn_tch.image_ph:image_t,
             tn_tch.sample_ph:sample_t,
             tn_tch.reward_ph:reward_t,
+            tn_tch.hard_label_ph:label_dat_t,
+            tn_tch.soft_logit_ph:soft_logit_t,
           }
 
           sess.run(tn_tch.kdgan_update, feed_dict=feed_dict)
