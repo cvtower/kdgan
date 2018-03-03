@@ -11,14 +11,15 @@ tch_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_tch
 
 # scp ${cz_server}:${checkpoint_dir}/mdlcompr_mnist${train_size}* ${checkpoint_dir}
 
-train_size=50
-batch_size=5
-for intelltch_weight in 0.1 0.3 0.5 0.7 0.9
+tune() {
+  for alpha in 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9
 do
-  for distilled_weight in 0.1 0.5 1.0 5.0 10.0
-  do
+for beta in 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+do
+for gamma in 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+do
 
-epk_learning_curve_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_${intelltch_weight}_${distilled_weight}.p
+epk_learning_curve_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_${alpha}_${beta}_${gamma}.p
 python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
@@ -47,8 +48,14 @@ python train_kdgan.py \
   --intelltch_weight=${intelltch_weight} \
   --distilled_weight=${distilled_weight}
 
-  done
 done
+done
+done
+
+}
+
+train_size=50
+batch_size=5
 
 
 train_size=500

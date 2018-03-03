@@ -1,5 +1,6 @@
 # pip install --ignore-installed --upgrade tensorflow
-# pip install --ignore-installed --upgrade tensorflow-gpu==1.4.1
+# pip install --ignore-installed --upgrade tensorflow-gpu==1.4.1 # cz
+# pip install --ignore-installed --upgrade tensorflow-gpu==1.1.0 # cy
 
 beautifulsoup4==4.6.0
 brokenaxes==0.3.1

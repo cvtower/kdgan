@@ -3,13 +3,14 @@ checkpoint_dir=$kdgan_dir/checkpoints
 pickle_dir=${kdgan_dir}/pickles
 
 cz_server=xiaojie@10.100.228.149 # cz
-xw_server=xiaojie@10.100.228.181 # xw
+cy_server=xiaojie@10.100.228.151 # xy
 
 dis_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_dis
 gen_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_gen
 tch_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_tch
 
-# scp ${cz_server}:${checkpoint_dir}/mdlcompr_mnist${train_size}* ${checkpoint_dir}
+# scp ${cz_server}:${checkpoint_dir}/mdlcompr_mnist* ${checkpoint_dir}
+# scp ${checkpoint_dir}/mdlcompr_mnist* ${cy_server}:${checkpoint_dir}
 
 train_size=50
 batch_size=5
