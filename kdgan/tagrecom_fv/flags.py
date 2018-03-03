@@ -38,7 +38,8 @@ tf.app.flags.DEFINE_string('optimizer', 'adam', 'adam|rmsprop|sgd')
 tf.app.flags.DEFINE_float('kd_soft_pct', 0.3, '')
 tf.app.flags.DEFINE_float('temperature', 3.0, '')
 tf.app.flags.DEFINE_string('kd_model', 'mimic', 'mimic|distn')
-tf.app.flags.DEFINE_float('intelltch_weight', 0.5, '')
-tf.app.flags.DEFINE_float('distilled_weight', 1.0, '')
+tf.app.flags.DEFINE_float('alpha', 0.5, '')
+tf.app.flags.DEFINE_float('beta', 0.5, '')
+tf.app.flags.DEFINE_float('gamma', 0.0, '')
 
 flags = tf.app.flags.FLAGS
