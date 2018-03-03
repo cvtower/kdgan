@@ -1,7 +1,7 @@
 from kdgan import config
 from kdgan import utils
 from flags import flags
-from data_utils import label_fontsize, legend_fontsize, linewidth
+from data_utils import label_size, legend_size, tick_size, linewidth
 import data_utils
 
 import matplotlib
@@ -32,13 +32,14 @@ def main(_):
   fig, ax = plt.subplots(1)
   ax.set_xticks(xticks)
   ax.set_xticklabels(xticklabels)
-  ax.set_xlabel('Training epoches', fontsize=label_fontsize)
-  ax.set_ylabel('P@1', fontsize=label_fontsize)
-  ax.plot(epoch_np, gen_prec_np, color='m', label='student', linewidth=linewidth)
-  ax.plot(epoch_np, tch_prec_np, color='g', label='teacher', linewidth=linewidth)
-  ax.plot(epoch_np, gan_prec_np, color='r', label='kdgan0.0', linewidth=linewidth)
-  ax.plot(epoch_np, kdgan_prec_np, color='b', label='kdgan1.0', linewidth=linewidth)
-  ax.legend(loc='lower right', prop={'size':legend_fontsize})
+  ax.set_xlabel('Training epoches', fontsize=legend_size)
+  ax.set_ylabel('P@1', fontsize=legend_size)
+  ax.plot(epoch_np, gen_prec_np, label='student', linewidth=linewidth)
+  ax.plot(epoch_np, tch_prec_np, label='teacher', linewidth=linewidth)
+  ax.plot(epoch_np, gan_prec_np, label='kdgan0.0', linewidth=linewidth)
+  ax.plot(epoch_np, kdgan_prec_np, label='kdgan1.0', linewidth=linewidth)
+  ax.legend(loc='lower right', prop={'size':legend_size})
+  plt.tick_params(axis='both', which='major', labelsize=tick_size)
   fig.savefig(flags.epsfile, format='eps', bbox_inches='tight')
 
 if __name__ == '__main__':

@@ -6,6 +6,8 @@ ssh xiaojie@10.100.229.246 # cpu
 ssh xiaojie@10.100.228.149 # gpu cz
 ssh xiaojie@10.100.228.181 # gpu xw
 
+5217291828507288
+
 # text classification
 git reset --hard 7c0564610815732283cc968c387d4b000fa38a68
 

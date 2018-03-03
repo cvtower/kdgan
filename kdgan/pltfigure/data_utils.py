@@ -1,9 +1,12 @@
 import numpy as np
 import pickle
 
-label_fontsize = 16
-legend_fontsize = 16
-linewidth = 4
+label_size = 17
+legend_size = 17
+tick_size = 15
+line_width = 2
+marker_size = 8
+broken_length = 0.015
 
 def load_model_prec(model_p):
   prec_list = pickle.load(open(model_p, 'rb'))
