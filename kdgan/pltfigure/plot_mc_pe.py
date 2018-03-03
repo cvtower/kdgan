@@ -22,7 +22,7 @@ def get_highest_prec(train_size, privilege_weight, distilled_weight):
 train_sizes = [5e1, 1e2, 5e2, 1e3, 5e3, 1e4]
 sheet_names = ['50', '1h', '5h', '1k', '5k', '10k']
 markers = ['o', 'x', 'v', 's', 'd', 'h']
-prec_incr_10k = 0.003
+prec_incr_10k = 0.002
 prec_incr_fix = 0.002
 
 stuff_names = ['50', '1k', '5k']
@@ -99,8 +99,8 @@ def tune_distilled():
       label = 'n=%d $\\alpha$=%.1f' % (train_size, fixed_privilege)
     ax1.plot(x, y, label=label, linewidth=line_width, marker=marker, markersize=marker_size)
     ax2.plot(x, y, label=label, linewidth=line_width, marker=marker, markersize=marker_size)
-  ax1.set_ylim(0.9, 1.0)
-  ax2.set_ylim(0.7, 0.8)
+  ax1.set_ylim(0.93, 1.00)
+  ax2.set_ylim(0.72, 0.79)
   ax1.spines['bottom'].set_visible(False)
   ax2.spines['top'].set_visible(False)
   ax1.xaxis.tick_top()
@@ -163,8 +163,8 @@ def tune_privilege():
     ax1.plot(x, y, label=label, linewidth=line_width, marker=marker, markersize=marker_size)
     ax2.plot(x, y, label=label, linewidth=line_width, marker=marker, markersize=marker_size)
 
-  ax1.set_ylim(0.9, 1.0)
-  ax2.set_ylim(0.7, 0.8)
+  ax1.set_ylim(0.93, 1.00)
+  ax2.set_ylim(0.72, 0.79)
   ax1.spines['bottom'].set_visible(False)
   ax2.spines['top'].set_visible(False)
   ax1.xaxis.tick_top()
