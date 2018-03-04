@@ -1,3 +1,4 @@
+cy_server=xiaojie@10.100.228.151 # cy
 cz_server=xiaojie@10.100.228.149 # cz
 xw_server=xiaojie@10.100.228.181 # xw
 
@@ -30,12 +31,26 @@ train_size=50
 #
 ################################################################
 
-scp ${cz_server}:${src_yfcc_dir}/mdlcompr_mnist*_kdgan_*.p ${dst_yfcc_dir}
-scp ${xw_server}:${src_yfcc_dir}/mdlcompr_mnist*_kdgan_*.p ${dst_yfcc_dir}
+# scp ${cz_server}:${src_yfcc_dir}/mdlcompr_mnist*_kdgan_*.p ${dst_yfcc_dir}
+# scp ${xw_server}:${src_yfcc_dir}/mdlcompr_mnist*_kdgan_*.p ${dst_yfcc_dir}
 
+download() {
+  train_size=$1
+  for alpha in 0.1 0.3 0.5 0.7 0.9
+  do
+    for beta in 0.1 0.3 0.5 0.7 0.9
+    do
+      for gamma in 0.1 0.3 0.5 0.7 0.9
+      do
+        epk_learning_curve_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_${alpha}_${beta}_${gamma}.p
+        scp ${cy_server}:${epk_learning_curve_p} ../pickles/
+      done
+    done
+  done
+}
 
-
-
+train_size=50
+download ${train_size}
 
 
 

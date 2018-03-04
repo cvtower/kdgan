@@ -3,7 +3,8 @@ from data_utils import label_size, legend_size, tick_size, marker_size
 from data_utils import  broken_length, line_width
 import data_utils
 
-import matplotlib.pyplot as plt
+import argparse
+# import matplotlib.pyplot as plt
 import numpy as np
 from os import path
 from openpyxl import Workbook
@@ -11,23 +12,23 @@ from openpyxl import Workbook
 init_prec = 3.0 / 10
 num_point = 50
 
-def get_highest_prec(train_size, privilege_weight, distilled_weight):
-  template = 'mdlcompr_mnist%d_kdgan_%.1f_%.1f.p'
-  filename = template % (train_size, privilege_weight, distilled_weight)
+def get_highest_prec(train_size, a, b, g):
+  template = 'mdlcompr_mnist%d_kdgan_%.1f_%.1f_%.1f.p'
+  filename = template % (train_size, a, b, g)
   filepath = path.join(config.pickle_dir, filename)
   prec_np = data_utils.load_model_prec(filepath)
   prec = prec_np.max()
   return prec
 
 train_sizes = [5e1, 1e2, 5e2, 1e3, 5e3, 1e4]
+train_sizes = [5e1]
 sheet_names = ['50', '1h', '5h', '1k', '5k', '10k']
 markers = ['o', 'x', 'v', 's', 'd', 'h']
 prec_incr_10k = 0.002
 prec_incr_fix = 0.002
 
 stuff_names = ['50', '1k', '5k']
-privilege_weights = [0.1, 0.3, 0.5, 0.7, 0.9]
-distilled_weights = [0.1, 0.5, 1.0, 5.0, 10.]
+alpha = beta = gamma = [0.1, 0.3, 0.5, 0.7, 0.9]
 
 fixed_privileges = {
   '50': 0.7,
@@ -52,14 +53,16 @@ def write_to_xlsx():
     wb.create_sheet(sheet_name)
     ws = wb[sheet_name]
     row = 1
-    for privilege_weight in privilege_weights:
-      for distilled_weight in distilled_weights:
-        prec = get_highest_prec(train_size, privilege_weight, distilled_weight)
-        ws['A%d' % row].value = train_size
-        ws['B%d' % row].value = privilege_weight
-        ws['C%d' % row].value = distilled_weight
-        ws['D%d' % row].value = prec
-        row += 1
+    for a in alpha:
+      for b in beta:
+        for g in gamma:
+          prec = get_highest_prec(train_size, a, b, g)
+          ws['A%d' % row].value = train_size
+          ws['B%d' % row].value = a
+          ws['C%d' % row].value = b
+          ws['D%d' % row].value = g
+          ws['E%d' % row].value = prec
+          row += 1
   wb.save(filename=xlsxfile)
 
 def tune_distilled():
@@ -191,9 +194,17 @@ def tune_privilege():
   fig.savefig(epsfile, format='eps', bbox_inches='tight')
 
 def main():
-  # write_to_xlsx()
-  tune_distilled()
-  tune_privilege()
+  parser = argparse.ArgumentParser()
+  parser.add_argument('task', type=str)
+  args = parser.parse_args()
+
+  if args.task == 'xlsx':
+    write_to_xlsx()
+  elif args.task == 'plot':
+    tune_distilled()
+    tune_privilege()
+  else:
+    pass
 
 if __name__ == '__main__':
   main()

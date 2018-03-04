@@ -11,11 +11,11 @@ cy_server=xiaojie@10.100.228.151 # xy
 tune() {
   train_size=$1
   batch_size=$2
-  for alpha in 0.1 0.3 0.5 0.7 0.9
+  for alpha in 0.0 0.2 0.4 0.6 0.8 1.0 # 0.1 0.3 0.5 0.7 0.9
   do
-    for beta in 0.1 0.3 0.5 0.7 0.9
+    for beta in 0.0 0.2 0.4 0.6 0.8 1.0
     do
-      for gamma in 0.1 0.3 0.5 0.7 0.9
+      for gamma in 0.0 0.2 0.4 0.6 0.8 1.0
       do
         dis_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_dis
         gen_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_gen
