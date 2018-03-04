@@ -38,7 +38,7 @@ tune() {
           --dis_learning_rate=1e-3 \
           --gen_learning_rate=5e-4 \
           --tch_learning_rate=5e-4 \
-          --num_epoch=100 \
+          --num_epoch=60 \
           --num_dis_epoch=20 \
           --num_gen_epoch=10 \
           --num_tch_epoch=10 \
