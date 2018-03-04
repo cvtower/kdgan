@@ -17,34 +17,29 @@ do
     for gamma in 0.1 0.3 0.5 0.7 0.9
     do
       epk_learning_curve_p=${pickle_dir}/tagrecom_yfcc10k_kdgan_${alpha}_${beta}_${gamma}.p
+      python train_kdgan.py \
+        --dis_model_ckpt=${dis_model_ckpt} \
+        --gen_model_ckpt=${gen_model_ckpt} \
+        --tch_model_ckpt=${tch_model_ckpt} \
+        --epk_learning_curve_p=${epk_learning_curve_p} \
+        --dataset=$dataset \
+        --image_model=${image_model} \
+        --optimizer=sgd \
+        --learning_rate_decay_type=exp \
+        --dis_learning_rate=0.05 \
+        --gen_learning_rate=0.01 \
+        --tch_learning_rate=0.01 \
+        --kd_model=mimic \
+        --kd_soft_pct=0.1 \
+        --temperature=3.0 \
+        --num_epoch=50 \
+        --num_dis_epoch=20 \
+        --num_gen_epoch=10 \
+        --num_tch_epoch=10 \
+        --alpha=$alpha \
+        --beta=$beta \
+        --gamma=$gamma
     done
   done
 done
-
-epk_learning_curve_p=${pickle_dir}/tagrecom_yfcc10k_kdgan_basic.p
-python train_kdgan.py \
-  --dis_model_ckpt=${dis_model_ckpt} \
-  --gen_model_ckpt=${gen_model_ckpt} \
-  --tch_model_ckpt=${tch_model_ckpt} \
-  --epk_learning_curve_p=${epk_learning_curve_p} \
-  --dataset=$dataset \
-  --image_model=${image_model} \
-  --optimizer=sgd \
-  --learning_rate_decay_type=exp \
-  --dis_learning_rate=0.05 \
-  --gen_learning_rate=0.01 \
-  --tch_learning_rate=0.01 \
-  --kd_model=distn \
-  --kd_soft_pct=0.1 \
-  --temperature=3.0 \
-  --num_epoch=2 \
-  --num_dis_epoch=20 \
-  --num_gen_epoch=10 \
-  --num_tch_epoch=10 \
-  --alpha=$alpha \
-  --beta=$beta \
-  --gamma=$gamma
-exit
-
-
 
