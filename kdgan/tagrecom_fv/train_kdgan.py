@@ -94,6 +94,7 @@ def main(_):
         _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
         writer.add_summary(summary_d, batch_d)
 
+      exit()
       num_batch_t = math.ceil(flags.num_tch_epoch * tn_size / flags.batch_size)
       for _ in range(num_batch_t):
         batch_t += 1

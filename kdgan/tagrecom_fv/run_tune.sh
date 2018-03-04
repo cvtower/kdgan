@@ -37,7 +37,7 @@ python train_kdgan.py \
   --kd_model=distn \
   --kd_soft_pct=0.1 \
   --temperature=3.0 \
-  --num_epoch=200 \
+  --num_epoch=2 \
   --num_dis_epoch=20 \
   --num_gen_epoch=10 \
   --num_tch_epoch=10 \
