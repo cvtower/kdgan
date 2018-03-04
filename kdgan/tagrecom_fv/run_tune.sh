@@ -17,6 +17,7 @@ do
     for gamma in 0.0 0.2 0.4 0.6 0.8 1.0
     do
       epk_learning_curve_p=${pickle_dir}/tagrecom_yfcc10k_kdgan_${alpha}_${beta}_${gamma}.p
+      echo ${epk_learning_curve_p}
       python train_kdgan.py \
         --dis_model_ckpt=${dis_model_ckpt} \
         --gen_model_ckpt=${gen_model_ckpt} \
