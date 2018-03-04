@@ -10,11 +10,11 @@ dis_model_ckpt=${checkpoint_dir}/dis_$variant.ckpt
 gen_model_ckpt=${checkpoint_dir}/gen_$variant.ckpt
 tch_model_ckpt=${checkpoint_dir}/tch_$variant.ckpt
 
-for alpha in 0.1 0.3 0.5 0.7 0.9
+for alpha in 0.0 0.2 0.4 0.6 0.8 1.0 # 0.1 0.3 0.5 0.7 0.9
 do
-  for beta in 0.1 0.3 0.5 0.7 0.9
+  for beta in 0.0 0.2 0.4 0.6 0.8 1.0
   do
-    for gamma in 0.1 0.3 0.5 0.7 0.9
+    for gamma in 0.0 0.2 0.4 0.6 0.8 1.0
     do
       epk_learning_curve_p=${pickle_dir}/tagrecom_yfcc10k_kdgan_${alpha}_${beta}_${gamma}.p
       python train_kdgan.py \
