@@ -131,9 +131,9 @@ class GEN():
   def get_kdgan_losses(self, flags):
     kdgan_losses = []
     for gan_loss in self.get_gan_losses():
-      gan_loss *= (1.0 - flags.intelltch_weight)
+      gan_loss *= flags.beta
       kdgan_losses.append(gan_loss)
     for kd_loss in self.get_kd_losses(flags):
-      kd_loss *= flags.distilled_weight
+      kd_loss *= (1.0 - flags.beta)
       kdgan_losses.append(kd_loss)
     return kdgan_losses

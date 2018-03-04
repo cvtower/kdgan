@@ -91,9 +91,9 @@ class DIS():
 
   def get_gan_losses(self, flags):
     gen_gan_loss = self.get_gan_loss(self.gen_sample_ph, self.gen_label_ph)
-    gen_gan_loss *= (1.0 - flags.intelltch_weight)
+    gen_gan_loss *= (1.0 - flags.alpha)
     tch_gan_loss = self.get_gan_loss(self.tch_sample_ph, self.tch_label_ph)
-    tch_gan_loss *= flags.intelltch_weight
+    tch_gan_loss *= flags.alpha
     gan_losses = [gen_gan_loss, tch_gan_loss]
     # print('#gan_losses wo regularization=%d' % (len(gan_losses)))
     return gan_losses

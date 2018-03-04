@@ -104,12 +104,16 @@ def main(_):
         feed_dict = {tn_dis.image_ph:image_t, tn_dis.tch_sample_ph:sample_t}
         reward_t = sess.run(tn_dis.tch_rewards, feed_dict=feed_dict)
 
+        feed_dict = {vd_gen.image_ph:image_t}
+        soft_logit_t = sess.run(vd_gen.logits, feed_dict=feed_dict)
         feed_dict = {
           tn_tch.image_ph:image_t,
-          tn_tch.text_ph:text_t,
           tn_tch.sample_ph:sample_t,
           tn_tch.reward_ph:reward_t,
+          tn_tch.hard_label_ph:label_dat_t,
+          tn_tch.soft_logit_ph:soft_logit_t,
         }
+        
         _, summary_t = sess.run([tn_tch.kdgan_update, tch_summary_op], feed_dict=feed_dict)
         writer.add_summary(summary_t, batch_t)
 
