@@ -94,7 +94,6 @@ def main(_):
         _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
         writer.add_summary(summary_d, batch_d)
 
-      exit()
       num_batch_t = math.ceil(flags.num_tch_epoch * tn_size / flags.batch_size)
       for _ in range(num_batch_t):
         batch_t += 1
@@ -110,6 +109,7 @@ def main(_):
         soft_logit_t = sess.run(vd_gen.logits, feed_dict=feed_dict)
         feed_dict = {
           tn_tch.image_ph:image_t,
+          tn_tch.text_ph:text_t,
           tn_tch.sample_ph:sample_t,
           tn_tch.reward_ph:reward_t,
           tn_tch.hard_label_ph:label_dat_t,
