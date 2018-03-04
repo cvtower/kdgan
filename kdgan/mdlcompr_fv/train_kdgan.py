@@ -223,7 +223,7 @@ def main(_):
   tot_time = time.time() - start
   bst_gen_acc *= 100
   bst_eph += 1
-  print('#mnist=%d kdgan@%d=%.2f et=%.0fs' % (tn_size, bst_eph, bst_gen_acc, tot_time))
+  print('#mnist=%d best@%d=%.2f et=%.0fs' % (tn_size, bst_eph, bst_gen_acc, tot_time))
 
   if flags.collect_cr_data:
     utils.create_pardir(flags.all_learning_curve_p)
