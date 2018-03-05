@@ -34,12 +34,13 @@ class GEN():
       if not is_training:
         return
 
-      save_dict = {}
+      save_dict, var_list = {}, []
       for variable in tf.trainable_variables():
         if not variable.name.startswith(gen_scope):
           continue
         print('%-50s added to GEN saver' % variable.name)
         save_dict[variable.name] = variable
+        var_list.append(variable)
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = global_step = tf.Variable(0, trainable=False)
@@ -79,7 +80,14 @@ class GEN():
       print('#kdgan_losses wt regularization=%d' % (len(kdgan_losses)))
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % gen_scope)
       kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
-      self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
+      # self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
+      grads_and_vars = kdgan_optimizer.compute_gradients(self.kdgan_loss, var_list)
+      capped_grads_and_vars = [
+        (tf.clip_grad_norms(gv[0], max_norm=10), gv[1])
+        for gv in grads_and_vars
+      ]
+      self.kdgan_update = kdgan_optimizer.apply_gradients(capped_grads_and_vars,
+          global_step=global_step)
 
   def get_hard_loss(self):
     hard_loss = tf.losses.sigmoid_cross_entropy(self.hard_label_ph, self.logits)
