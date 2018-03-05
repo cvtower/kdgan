@@ -34,12 +34,13 @@ class GEN():
       if not is_training:
         return
 
-      save_dict = {}
+      save_dict, var_list = {}, []
       for variable in tf.trainable_variables():
         if not variable.name.startswith(gen_scope):
           continue
         print('%-50s added to GEN saver' % variable.name)
         save_dict[variable.name] = variable
+        var_list.append(variable)
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = global_step = tf.Variable(0, trainable=False)
