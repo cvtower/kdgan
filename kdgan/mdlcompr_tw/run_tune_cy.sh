@@ -51,6 +51,22 @@ tune() {
   done
 }
 
-train_size=10000
-batch_size=100
+train_size=50
+batch_size=5
+tune ${train_size} ${batch_size}
+
+train_size=100
+batch_size=10
+tune ${train_size} ${batch_size}
+
+train_size=500
+batch_size=10
+tune ${train_size} ${batch_size}
+
+train_size=1000
+batch_size=50
+tune ${train_size} ${batch_size}
+
+train_size=5000
+batch_size=50
 tune ${train_size} ${batch_size}
