@@ -72,7 +72,10 @@ class TCH():
       kdgan_losses = self.get_kdgan_losses(flags)
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % tch_scope)
       kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
-      self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
+      # self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
+      gvs = kdgan_optimizer.compute_gradients(self.kdgan_loss, var_list)
+      cgvs = [(tf.clip_by_norm(gv[0], config.max_norm), gv[1]) for gv in gvs]
+      self.kdgan_update = kdgan_optimizer.apply_gradients(cgvs, global_step=global_step)
 
   def get_regularization_losses(self):
     regularization_losses = []
