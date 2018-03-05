@@ -36,11 +36,11 @@ train_size=50
 
 download() {
   train_size=$1
-  for alpha in 0.1 0.3 0.5 0.7 0.9
+  for alpha in 0.0 0.2 0.4 0.6 0.8 1.0
   do
-    for beta in 0.1 0.3 0.5 0.7 0.9
+    for beta in 0.0 0.2 0.4 0.6 0.8 1.0
     do
-      for gamma in 0.1 0.3 0.5 0.7 0.9
+      for gamma in 0.0 0.2 0.4 0.6 0.8 1.0
       do
         epk_learning_curve_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_${alpha}_${beta}_${gamma}.p
         scp ${cy_server}:${epk_learning_curve_p} ../pickles/

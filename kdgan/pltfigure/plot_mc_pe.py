@@ -28,7 +28,8 @@ prec_incr_10k = 0.002
 prec_incr_fix = 0.002
 
 stuff_names = ['50', '1k', '5k']
-alpha = beta = gamma = [0.1, 0.3, 0.5, 0.7, 0.9]
+alpha = beta = gamma = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+alpha = [0.4]
 
 fixed_privileges = {
   '50': 0.7,
