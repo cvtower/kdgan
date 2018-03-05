@@ -48,12 +48,13 @@ class TCH():
       if not is_training:
         return
 
-      save_dict = {}
+      save_dict, var_list = {}, []
       for variable in tf.trainable_variables():
         if not variable.name.startswith(tch_scope):
           continue
         print('%-50s added to TCH saver' % variable.name)
         save_dict[variable.name] = variable
+        var_list.append(variable)
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = global_step = tf.Variable(0, trainable=False)
@@ -73,7 +74,14 @@ class TCH():
       kdgan_losses = self.get_kdgan_losses(flags)
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % tch_scope)
       kdgan_optimizer = utils.get_opt(flags, self.learning_rate)
-      self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
+      # self.kdgan_update = kdgan_optimizer.minimize(self.kdgan_loss, global_step=global_step)
+      grads_and_vars = opt.compute_gradients(self.kdgan_loss, var_list)
+      capped_grads_and_vars = [
+        (tf.clip_grad_norms(gv[0], max_norm=10), gv[1])
+        for gv in grads_and_vars
+      ]
+      self.kdgan_update = kdgan_optimizer.apply_gradients(capped_grads_and_vars,
+          global_step=global_step)
 
   def get_regularization_losses(self):
     regularization_losses = []

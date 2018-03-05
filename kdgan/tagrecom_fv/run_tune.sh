@@ -44,3 +44,28 @@ do
   done
 done
 
+exit
+epk_learning_curve_p=${pickle_dir}/tagrecom_yfcc10k_kdgan_dev.p
+echo ${epk_learning_curve_p}
+python train_kdgan.py \
+--dis_model_ckpt=${dis_model_ckpt} \
+--gen_model_ckpt=${gen_model_ckpt} \
+--tch_model_ckpt=${tch_model_ckpt} \
+--epk_learning_curve_p=${epk_learning_curve_p} \
+--dataset=$dataset \
+--image_model=${image_model} \
+--optimizer=sgd \
+--learning_rate_decay_type=exp \
+--dis_learning_rate=0.05 \
+--gen_learning_rate=0.01 \
+--tch_learning_rate=0.01 \
+--kd_model=mimic \
+--kd_soft_pct=0.1 \
+--temperature=3.0 \
+--num_epoch=50 \
+--num_dis_epoch=20 \
+--num_gen_epoch=10 \
+--num_tch_epoch=10 \
+--alpha=0.0 \
+--beta=0.0 \
+--gamma=0.2
