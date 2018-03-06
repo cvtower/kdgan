@@ -14,8 +14,7 @@ for intelltch_weight in 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
 do
   for distilled_weight in 0.125 0.250 0.500 1.000 2.000 4.000 8.000
   do
-    prefix=tagrecom_yfcc10k_kdgan
-    epk_learning_curve_p=${pickle_dir}/${prefix}_${intelltch_weight}_${distilled_weight}.p
+    epk_learning_curve_p=${pickle_dir}/tagrecom_yfcc10k_kdgan_${intelltch_weight}_${distilled_weight}.p
     echo ${epk_learning_curve_p}
     python train_kdgan.py \
       --dis_model_ckpt=${dis_model_ckpt} \
