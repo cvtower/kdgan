@@ -20,7 +20,6 @@ tune() {
     tch_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_tch
     epk_learning_curve_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_${intelltch_weight}_${distilled_weight}.p
     echo ${epk_learning_curve_p}
-    continue
     python train_kdgan.py \
       --dis_model_ckpt=${dis_model_ckpt} \
       --gen_model_ckpt=${gen_model_ckpt} \
@@ -36,7 +35,7 @@ tune() {
       --dis_learning_rate=1e-3 \
       --gen_learning_rate=5e-4 \
       --tch_learning_rate=5e-4 \
-      --num_epoch=100 \
+      --num_epoch=60 \
       --num_dis_epoch=20 \
       --num_gen_epoch=10 \
       --num_tch_epoch=10 \
