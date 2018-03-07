@@ -37,7 +37,6 @@ do
       --num_tch_epoch=10 \
       --intelltch_weight=${intelltch_weight} \
       --distilled_weight=${distilled_weight} 
-    exit
   done
 done
 

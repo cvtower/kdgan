@@ -56,6 +56,7 @@ yfcceval = data_utils.YFCCEVAL(flags)
 
 def main(_):
   best_prec, bst_epk = 0.0, 0
+  epk_score_list = []
   writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
@@ -142,6 +143,7 @@ def main(_):
         if (batch_g + 1) % eval_interval != 0:
             continue
         scores = yfcceval.compute_score(flags, sess, vd_gen)
+        epk_score_list.append(scores)
         p3, p5, f3, f5, ndcg3, ndcg5, ap, rr = scores
         print('p3=%.4f p5=%.4f f3=%.4f f5=%.4f ndcg3=%.4f ndcg5=%.4f ap=%.4f rr=%.4f' % 
             (p3, p5, f3, f5, ndcg3, ndcg5, ap, rr))
@@ -162,7 +164,7 @@ def main(_):
   print('best@%d=%.4f et=%.0fs' % (flags.cutoff, best_prec, tot_time))
 
   utils.create_pardir(flags.epk_learning_curve_p)
-  pickle.dump(epk_acc_list, open(flags.epk_learning_curve_p, 'wb'))
+  pickle.dump(epk_score_list, open(flags.epk_learning_curve_p, 'wb'))
 
 if __name__ == '__main__':
   tf.app.run()
