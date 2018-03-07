@@ -31,13 +31,13 @@ do
       --kd_model=mimic \
       --kd_soft_pct=0.1 \
       --temperature=3.0 \
-      --num_epoch=60 \
+      --num_epoch=1 \
       --num_dis_epoch=20 \
       --num_gen_epoch=10 \
       --num_tch_epoch=10 \
       --intelltch_weight=${intelltch_weight} \
       --distilled_weight=${distilled_weight} 
-
+    exit
   done
 done
 

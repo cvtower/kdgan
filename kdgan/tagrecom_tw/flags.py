@@ -16,6 +16,7 @@ tf.app.flags.DEFINE_string('gen_model_ckpt', None, '')
 tf.app.flags.DEFINE_string('tch_model_ckpt', None, '')
 tf.app.flags.DEFINE_integer('feature_size', 4096, '')
 tf.app.flags.DEFINE_integer('embedding_size', 10, '')
+tf.app.flags.DEFINE_string('epk_learning_curve_p', None, '')
 # optimization
 tf.app.flags.DEFINE_integer('num_negative', 1, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')

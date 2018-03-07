@@ -9,6 +9,7 @@ import data_utils
 
 import math
 import os
+import pickle
 import time
 import numpy as np
 import tensorflow as tf
@@ -159,6 +160,9 @@ def main(_):
         # save if necessary
   tot_time = time.time() - start
   print('best@%d=%.4f et=%.0fs' % (flags.cutoff, best_prec, tot_time))
+
+  utils.create_pardir(flags.epk_learning_curve_p)
+  pickle.dump(epk_acc_list, open(flags.epk_learning_curve_p, 'wb'))
 
 if __name__ == '__main__':
   tf.app.run()
