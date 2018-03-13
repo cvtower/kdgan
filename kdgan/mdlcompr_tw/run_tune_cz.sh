@@ -21,6 +21,10 @@ tune() {
     gen_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_gen
     tch_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_tch
     epk_learning_curve_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_${intelltch_weight}_${distilled_weight}.p
+    if [ -e ${epk_learning_curve_p} ]
+    then
+      continue
+    fi
     echo ${epk_learning_curve_p}
     python train_kdgan.py \
       --dis_model_ckpt=${dis_model_ckpt} \
