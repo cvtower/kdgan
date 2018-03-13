@@ -11,9 +11,11 @@ cy_server=xiaojie@10.100.228.151 # xy
 tune() {
   train_size=$1
   batch_size=$2
-  for intelltch_weight in 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
+  intelltch_weights=$3
+  distilled_weights=$4
+  for intelltch_weight in ${intelltch_weights[*]}
   do
-    for distilled_weight in 0.125 0.250 0.500 1.000 2.000 4.000 8.000
+    for distilled_weight in ${distilled_weights[*]}
     do
     dis_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_dis
     gen_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_gen
@@ -52,4 +54,17 @@ tune() {
 
 train_size=10000
 batch_size=100
-tune ${train_size} ${batch_size}
+intelltch_weights=(0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0)
+distilled_weights=(0.125 0.250 0.500 1.000 2.000 4.000 8.000)
+# tune ${train_size} ${batch_size} ${intelltch_weights} ${distilled_weights}
+
+train_size=5000
+batch_size=50
+intelltch_weights=(1.0 0.9 0.8 0.7 0.6)
+distilled_weights=(8.000 4.000 2.000 1.000 0.500 0.250 0.125)
+tune ${train_size} ${batch_size} ${intelltch_weights} ${distilled_weights}
+
+
+
+
+
