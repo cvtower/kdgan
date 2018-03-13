@@ -16,7 +16,6 @@ python plot_tr_cr.py \
   --kdgan_model_p=${kdgan_model_p} \
   --num_epoch=${num_epoch} \
   --epsfile=${picture_dir}/tagrecom_yfcc10k_cr@${num_epoch}.eps
-exit
 
 train_size=50
 gen_model_p=${pickle_dir}/mdlcompr_mnist${train_size}_gen@${num_epoch}.p

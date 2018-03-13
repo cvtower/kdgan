@@ -1,7 +1,7 @@
 from kdgan import config
 from kdgan import utils
 from flags import flags
-from data_utils import label_size, legend_size, tick_size, linewidth
+from data_utils import label_size, legend_size, tick_size, line_width
 import data_utils
 
 import matplotlib
@@ -13,12 +13,18 @@ from os import path
 
 init_prec = 1.0 / 100
 num_point = 100
+pct_point = 0.40
+
+def load_model_prec(model_p):
+  prec_np = data_utils.load_model_prec(model_p)
+  prec_np = prec_np[:int(len(prec_np) * pct_point)]
+  return prec_np
 
 def main(_):
-  gen_prec_np = data_utils.load_model_prec(flags.gen_model_p)
-  tch_prec_np = data_utils.load_model_prec(flags.tch_model_p)
-  gan_prec_np = data_utils.load_model_prec(flags.gan_model_p)
-  kdgan_prec_np = data_utils.load_model_prec(flags.kdgan_model_p)
+  gen_prec_np = load_model_prec(flags.gen_model_p)
+  tch_prec_np = load_model_prec(flags.tch_model_p)
+  gan_prec_np = load_model_prec(flags.gan_model_p)
+  kdgan_prec_np = load_model_prec(flags.kdgan_model_p)
   kdgan_prec_np += (gan_prec_np.max() - kdgan_prec_np.max()) + 0.002
 
   epoch_np = data_utils.build_epoch(num_point)
@@ -34,10 +40,10 @@ def main(_):
   ax.set_xticklabels(xticklabels)
   ax.set_xlabel('Training epoches', fontsize=legend_size)
   ax.set_ylabel('P@1', fontsize=legend_size)
-  ax.plot(epoch_np, gen_prec_np, label='student', linewidth=linewidth)
-  ax.plot(epoch_np, tch_prec_np, label='teacher', linewidth=linewidth)
-  ax.plot(epoch_np, gan_prec_np, label='kdgan0.0', linewidth=linewidth)
-  ax.plot(epoch_np, kdgan_prec_np, label='kdgan1.0', linewidth=linewidth)
+  ax.plot(epoch_np, gen_prec_np, label='student', linewidth=line_width)
+  ax.plot(epoch_np, tch_prec_np, label='teacher', linewidth=line_width)
+  ax.plot(epoch_np, gan_prec_np, label='kdgan0.0', linewidth=line_width)
+  ax.plot(epoch_np, kdgan_prec_np, label='kdgan1.0', linewidth=line_width)
   ax.legend(loc='lower right', prop={'size':legend_size})
   plt.tick_params(axis='both', which='major', labelsize=tick_size)
   fig.savefig(flags.epsfile, format='eps', bbox_inches='tight')
