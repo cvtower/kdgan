@@ -60,7 +60,7 @@ distilled_weights=(0.125 0.250 0.500 1.000 2.000 4.000 8.000)
 
 train_size=5000
 batch_size=50
-intelltch_weights=(1.0 0.9 0.8 0.7)
+intelltch_weights=(1.0 0.9 0.8 0.7 0.6 0.5)
 distilled_weights=(8.000 4.000 2.000 1.000 0.500 0.250 0.125)
 tune ${train_size} ${batch_size} ${intelltch_weights} ${distilled_weights}
 

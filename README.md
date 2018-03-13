@@ -7,6 +7,11 @@ ssh xiaojie@10.100.228.151 # gpu cy
 ssh xiaojie@10.100.228.149 # gpu cz
 ssh xiaojie@10.100.228.181 # gpu xw
 
+################################################################
+# memo
+################################################################
+
+
 # backup
 ssh xiaojie@10.100.228.28 # gpu yz
 ssh xiaojiewang@10.100.228.28 # gpu yz # initialpassword
