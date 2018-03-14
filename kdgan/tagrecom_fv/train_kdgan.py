@@ -168,6 +168,8 @@ def main(_):
   tot_time = time.time() - start
   print('best@%d=%.4f et=%.0fs' % (flags.cutoff, best_prec, tot_time))
 
+  if flags.epk_learning_curve_p == None:
+    return
   utils.create_pardir(flags.epk_learning_curve_p)
   pickle.dump(epk_score_list, open(flags.epk_learning_curve_p, 'wb'))
 

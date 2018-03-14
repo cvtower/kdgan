@@ -98,7 +98,7 @@ python train_kdgan.py \
   --dis_learning_rate=0.05 \
   --gen_learning_rate=0.01 \
   --tch_learning_rate=0.01 \
-  --kd_model=distn \
+  --kd_model=mimic \
   --kd_soft_pct=0.1 \
   --temperature=3.0 \
   --num_epoch=200 \
