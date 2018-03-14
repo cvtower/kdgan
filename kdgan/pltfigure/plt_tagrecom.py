@@ -5,6 +5,7 @@ import data_utils
 
 import argparse
 import itertools
+import math
 import matplotlib
 import os
 import pickle
@@ -135,6 +136,9 @@ def tune():
   filename = 'tagrecom_yfcc10k_alpha.eps'
   plot_tune('$\\alpha$', alphas, a_p3, a_f3, a_ndcg3, a_ap, a_rr, au_min, au_max, ad_min, ad_max, filename)
 
+  b_x = []
+  for beta in betas:
+    b_x.append(math.log(beta, 2))
   b_p3, b_f3, b_ndcg3, b_ap, b_rr = [], [], [], [], []
   with open(beta_file) as fin:
     for line in fin.readlines():
@@ -147,7 +151,7 @@ def tune():
   bu_min, bu_max = 0.775, 0.900
   bd_min, bd_max = 0.300, 0.425
   filename = 'tagrecom_yfcc10k_beta.eps'
-  plot_tune('$\\beta$', betas, b_p3, b_f3, b_ndcg3, b_ap, b_rr, bu_min, bu_max, bd_min, bd_max, filename)
+  plot_tune('log $\\beta$', b_x, b_p3, b_f3, b_ndcg3, b_ap, b_rr, bu_min, bu_max, bd_min, bd_max, filename)
 
 
 parser = argparse.ArgumentParser()
