@@ -16,6 +16,9 @@ import tensorflow as tf
 from os import path
 from tensorflow.contrib import slim
 
+print('alpha=%.8f beta=%.8f gamma=%.8f' % (flags.intelltch_weight, flags.distilled_weight, flags.intellstd_weight))
+exit()
+
 tn_size = utils.get_tn_size(flags.dataset)
 eval_interval = int(tn_size / flags.batch_size)
 print('#tn_size=%d' % (tn_size))

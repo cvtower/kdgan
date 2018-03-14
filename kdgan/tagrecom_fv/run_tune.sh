@@ -16,28 +16,28 @@ for intellstd_weight in 1e-0 1e-1 1e-2 1e-3 1e-4 1e-5 1e-6 1e-7
 do
   epk_learning_curve_p=${pickle_dir}/tagrecom_yfcc10k_kdgan_${intelltch_weight}_${distilled_weight}_${intellstd_weight}.p
   echo ${epk_learning_curve_p}
-  # python train_kdgan.py \
-  #   --dis_model_ckpt=${dis_model_ckpt} \
-  #   --gen_model_ckpt=${gen_model_ckpt} \
-  #   --tch_model_ckpt=${tch_model_ckpt} \
-  #   --epk_learning_curve_p=${epk_learning_curve_p} \
-  #   --dataset=$dataset \
-  #   --image_model=${image_model} \
-  #   --optimizer=sgd \
-  #   --learning_rate_decay_type=exp \
-  #   --dis_learning_rate=0.05 \
-  #   --gen_learning_rate=0.01 \
-  #   --tch_learning_rate=0.01 \
-  #   --kd_model=mimic \
-  #   --kd_soft_pct=0.1 \
-  #   --temperature=3.0 \
-  #   --num_epoch=60 \
-  #   --num_dis_epoch=20 \
-  #   --num_gen_epoch=10 \
-  #   --num_tch_epoch=10 \
-  #   --intelltch_weight=${intelltch_weight} \
-  #   --distilled_weight=${distilled_weight} \
-  #   --intellstd_weight=${intellstd_weight}
+  python train_kdgan.py \
+    --dis_model_ckpt=${dis_model_ckpt} \
+    --gen_model_ckpt=${gen_model_ckpt} \
+    --tch_model_ckpt=${tch_model_ckpt} \
+    --epk_learning_curve_p=${epk_learning_curve_p} \
+    --dataset=$dataset \
+    --image_model=${image_model} \
+    --optimizer=sgd \
+    --learning_rate_decay_type=exp \
+    --dis_learning_rate=0.05 \
+    --gen_learning_rate=0.01 \
+    --tch_learning_rate=0.01 \
+    --kd_model=mimic \
+    --kd_soft_pct=0.1 \
+    --temperature=3.0 \
+    --num_epoch=60 \
+    --num_dis_epoch=20 \
+    --num_gen_epoch=10 \
+    --num_tch_epoch=10 \
+    --intelltch_weight=${intelltch_weight} \
+    --distilled_weight=${distilled_weight} \
+    --intellstd_weight=${intellstd_weight}
 done
 exit
 
