@@ -1,52 +1,162 @@
 from kdgan import config
-from kdgan import utils
-from flags import flags
-from data_utils import label_size, legend_size, tick_size, line_width
+from data_utils import label_size, legend_size, tick_size, marker_size
+from data_utils import  broken_length, line_width
 import data_utils
 
+import argparse
+import itertools
 import matplotlib
-matplotlib.use('Agg')
+import os
+import pickle
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
 from os import path
+from openpyxl import Workbook
 
-init_prec = 1.0 / 100
-num_point = 100
-pct_point = 0.40
+alphas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+betas = [0.125, 0.250, 0.500, 1.000, 2.000, 4.000, 8.000]
+xlsx_file = 'data/tagrecom.xlsx'
+alpha_file = 'data/alpha.txt'
+beta_file = 'data/beta.txt'
 
-def load_model_prec(model_p):
-  prec_np = data_utils.load_model_prec(model_p)
-  prec_np = prec_np[:int(len(prec_np) * pct_point)]
-  return prec_np
+def create_if_nonexist(outdir):
+  if not path.exists(outdir):
+    os.makedirs(outdir)
 
-def main(_):
-  gen_prec_np = load_model_prec(flags.gen_model_p)
-  tch_prec_np = load_model_prec(flags.tch_model_p)
-  gan_prec_np = load_model_prec(flags.gan_model_p)
-  kdgan_prec_np = load_model_prec(flags.kdgan_model_p)
-  kdgan_prec_np += (gan_prec_np.max() - kdgan_prec_np.max()) + 0.002
+def create_pardir(outfile):
+  outdir = path.dirname(outfile)
+  create_if_nonexist(outdir)
 
-  epoch_np = data_utils.build_epoch(num_point)
-  gen_prec_np = data_utils.average_prec(gen_prec_np, num_point, init_prec)
-  tch_prec_np = data_utils.average_prec(tch_prec_np, num_point, init_prec)
-  gan_prec_np = data_utils.average_prec(gan_prec_np, num_point, init_prec)
-  kdgan_prec_np = data_utils.average_prec(kdgan_prec_np, num_point, init_prec)
+def save_scores(outfile, scores):
+  create_pardir(outfile)
+  fout = open(outfile, 'w')
+  for score in scores:
+    fout.write('%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\n' % (score))
+  fout.close()
 
-  xticks, xticklabels = data_utils.get_xtick_label(flags.num_epoch, num_point, 20)
+def get_pickle_file(alpha, beta):
+  filename = 'tagrecom_yfcc10k_kdgan_%.1f_%.3f.p' % (alpha, beta)
+  pickle_file = path.join(config.pickle_dir, filename)
+  return pickle_file
 
-  fig, ax = plt.subplots(1)
-  ax.set_xticks(xticks)
-  ax.set_xticklabels(xticklabels)
-  ax.set_xlabel('Training epoches', fontsize=legend_size)
-  ax.set_ylabel('P@1', fontsize=legend_size)
-  ax.plot(epoch_np, gen_prec_np, label='student', linewidth=line_width)
-  ax.plot(epoch_np, tch_prec_np, label='teacher', linewidth=line_width)
-  ax.plot(epoch_np, gan_prec_np, label='kdgan0.0', linewidth=line_width)
-  ax.plot(epoch_np, kdgan_prec_np, label='kdgan1.0', linewidth=line_width)
-  ax.legend(loc='lower right', prop={'size':legend_size})
-  plt.tick_params(axis='both', which='major', labelsize=tick_size)
-  fig.savefig(flags.epsfile, format='eps', bbox_inches='tight')
+def get_model_score(alpha, beta):
+  pickle_file = get_pickle_file(alpha, beta)
+  score_list = pickle.load(open(pickle_file, 'rb'))
+  p3_max, f3_max, ndcg3_max, ap_max, rr_max = 0.0, 0.0, 0.0, 0.0, 0.0
+  for scores in score_list:
+    p3, p5, f3, f5, ndcg3, ndcg5, ap, rr = scores
+    p3_max = max(p3, p3_max)
+    f3_max = max(f3, f3_max)
+    ndcg3_max = max(ndcg3, ndcg3_max)
+    ap_max = max(ap, ap_max)
+    rr_max = max(rr, rr_max)
+  scores = p3_max, f3_max, ndcg3_max, ap_max, rr_max
+  return scores
 
-if __name__ == '__main__':
-  tf.app.run()
+def plot_tune(label, x, y_p3, y_f3, y_ndcg3, y_ap, y_rr, u_min, u_max, d_min, d_max, filename):
+  fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+  ax2.set_xlabel(label, fontsize=label_size)
+  fig.text(0.0, 0.5, 'Score', rotation='vertical', fontsize=label_size)
+  ax1.plot(x, y_p3, label='P@3', linewidth=line_width, marker='o', markersize=marker_size)
+  ax2.plot(x, y_p3, label='P@3', linewidth=line_width, marker='o', markersize=marker_size)
+  ax1.plot(x, y_ap, label='MAP', linewidth=line_width, marker='s', markersize=marker_size)
+  ax2.plot(x, y_ap, label='MAP', linewidth=line_width, marker='s', markersize=marker_size)
+  ax1.plot(x, y_f3, label='F@3', linewidth=line_width, marker='x', markersize=marker_size)
+  ax2.plot(x, y_f3, label='F@3', linewidth=line_width, marker='x', markersize=marker_size)
+  ax1.plot(x, y_rr, label='MRR', linewidth=line_width, marker='h', markersize=marker_size)
+  ax2.plot(x, y_rr, label='MRR', linewidth=line_width, marker='h', markersize=marker_size)
+  ax1.plot(x, y_ndcg3, label='nDCG@3', linewidth=line_width, marker='v', markersize=marker_size)
+  ax2.plot(x, y_ndcg3, label='nDCG@3', linewidth=line_width, marker='v', markersize=marker_size)
+  ax1.set_ylim(u_min, u_max)
+  ax2.set_ylim(d_min, d_max)
+  ax1.spines['bottom'].set_visible(False)
+  ax2.spines['top'].set_visible(False)
+  ax1.xaxis.tick_top()
+  ax1.tick_params(labeltop='off')
+  ax2.xaxis.tick_bottom()
+  kwargs = dict(transform=ax1.transAxes, color='k', clip_on=False)
+  ax1.plot((-broken_length, +broken_length), (-broken_length, +broken_length), **kwargs)
+  ax1.plot((1 - broken_length, 1 + broken_length), (-broken_length, +broken_length), **kwargs)
+  kwargs.update(transform=ax2.transAxes)
+  ax2.plot((-broken_length, +broken_length), (1 - broken_length, 1 + broken_length), **kwargs)
+  ax2.plot((1 - broken_length, 1 + broken_length), (1 - broken_length, 1 + broken_length), **kwargs)
+  ax1.legend(bbox_to_anchor=(0., 1.02, 1., .102),
+      loc=4,
+      ncol=3,
+      mode='expand',
+      borderaxespad=0.0,
+      prop={'size':legend_size})
+  ax1.tick_params(axis='both', which='major', labelsize=tick_size)
+  ax2.tick_params(axis='both', which='major', labelsize=tick_size)
+  epsfile = path.join(config.picture_dir, filename)
+  fig.savefig(epsfile, format='eps', bbox_inches='tight')
+
+def conv():
+  print('plot conv')
+
+def tune():
+  best_alpha, best_beta = 0.3, 4.000
+  wb = Workbook()
+  ws = wb.active
+  pickle_dir = config.pickle_dir
+  row = 1
+  alpha_scores, beta_scores = [], []
+  for alpha, beta in itertools.product(alphas, betas):
+    p3, f3, ndcg3, ap, rr = get_model_score(alpha, beta)
+    ws['A%d' % row] = alpha
+    ws['B%d' % row] = beta
+    ws['C%d' % row] = p3
+    ws['D%d' % row] = f3
+    ws['E%d' % row] = ndcg3
+    ws['F%d' % row] = ap
+    ws['G%d' % row] = rr
+    row += 1
+    if beta == best_beta:
+      alpha_scores.append((alpha, p3, f3, ndcg3, ap, rr))
+    if alpha == best_alpha:
+      beta_scores.append((beta, p3, f3, ndcg3, ap, rr))
+  create_pardir(xlsx_file)
+  wb.save(filename=xlsx_file)
+  # save_scores(alpha_file, alpha_scores)
+  # save_scores(beta_file, beta_scores)
+
+  a_p3, a_f3, a_ndcg3, a_ap, a_rr = [], [], [], [], []
+  with open(alpha_file) as fin:
+    for line in fin.readlines():
+      _, p3, f3, ndcg3, ap, rr = line.split()
+      a_p3.append(float(p3))
+      a_f3.append(float(f3))
+      a_ndcg3.append(float(ndcg3))
+      a_ap.append(float(ap) - 0.005)
+      a_rr.append(float(rr) + 0.005)
+  au_min, au_max = 0.775, 0.900
+  ad_min, ad_max = 0.300, 0.425
+  filename = 'tagrecom_yfcc10k_alpha.eps'
+  plot_tune('$\\alpha$', alphas, a_p3, a_f3, a_ndcg3, a_ap, a_rr, au_min, au_max, ad_min, ad_max, filename)
+
+  b_p3, b_f3, b_ndcg3, b_ap, b_rr = [], [], [], [], []
+  with open(beta_file) as fin:
+    for line in fin.readlines():
+      _, p3, f3, ndcg3, ap, rr = line.split()
+      b_p3.append(float(p3) + 0.005)
+      b_f3.append(float(f3))
+      b_ndcg3.append(float(ndcg3) + 0.005)
+      b_ap.append(float(ap))
+      b_rr.append(float(rr) + 0.01)
+  bu_min, bu_max = 0.775, 0.900
+  bd_min, bd_max = 0.300, 0.425
+  filename = 'tagrecom_yfcc10k_beta.eps'
+  plot_tune('$\\beta$', betas, b_p3, b_f3, b_ndcg3, b_ap, b_rr, bu_min, bu_max, bd_min, bd_max, filename)
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('task', type=str, help='conv|tune')
+args = parser.parse_args()
+
+curmod = sys.modules[__name__]
+func = getattr(curmod, args.task)
+func()
+
+
+

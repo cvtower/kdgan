@@ -8,7 +8,7 @@ pypkg_dir = path.dirname(kdgan_dir)
 # print('config pypkg_dir:%s' % (pypkg_dir))
 checkpoint_dir = path.join(kdgan_dir, 'checkpoints')
 pickle_dir = path.join(kdgan_dir, 'pickles')
-picture_dir = path.join(kdgan_dir, 'pictures')
+picture_dir = path.join(kdgan_dir, 'pltfigure/pictures')
 
 home_dir = path.expanduser('~')
 proj_dir = path.join(home_dir, 'Projects')
