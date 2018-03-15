@@ -115,26 +115,14 @@ gamma() {
   done
 }
 
-train_size=100
-batch_size=10
-intelltch_weight=0.9
+train_size=50
+batch_size=5
+intelltch_weight=0.3
+distilled_weight=4.000
+gamma ${train_size} ${batch_size} ${intelltch_weight} ${distilled_weight}
+
+train_size=10000
+batch_size=100
+intelltch_weight=0.8
 distilled_weight=2.000
-gamma ${train_size} ${batch_size} ${intelltch_weight} ${distilled_weight}
-
-train_size=500
-batch_size=10
-intelltch_weight=0.5
-distilled_weight=2.000
-gamma ${train_size} ${batch_size} ${intelltch_weight} ${distilled_weight}
-
-train_size=1000
-batch_size=50
-intelltch_weight=0.9
-distilled_weight=0.250
-gamma ${train_size} ${batch_size} ${intelltch_weight} ${distilled_weight}
-
-train_size=5000
-batch_size=50
-intelltch_weight=0.6
-distilled_weight=0.250
 gamma ${train_size} ${batch_size} ${intelltch_weight} ${distilled_weight}
