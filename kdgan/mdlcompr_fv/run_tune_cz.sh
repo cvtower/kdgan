@@ -75,18 +75,16 @@ gamma() {
   distilled_weight=$4
   for intellstd_weight in 1e-0 1e-1 1e-2 1e-3 1e-4 1e-5 1e-6 1e-7
   do
-    epk_learning_curve_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_${intelltch_weight}_${distilled_weight}_${intellstd_weight}.p
-    echo ${epk_learning_curve_p}
 
     dis_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_dis
     gen_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_gen
     tch_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_tch
-    epk_learning_curve_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_${intelltch_weight}_${distilled_weight}.p
+    epk_learning_curve_p=${pickle_dir}/mdlcompr_mnist${train_size}_kdgan_${intelltch_weight}_${distilled_weight}_${intellstd_weight}.p
+    echo ${epk_learning_curve_p}
     if [ -e ${epk_learning_curve_p} ]
     then
       continue
     fi
-    echo ${epk_learning_curve_p}
     python train_kdgan.py \
       --dis_model_ckpt=${dis_model_ckpt} \
       --gen_model_ckpt=${gen_model_ckpt} \
