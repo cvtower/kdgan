@@ -1,5 +1,7 @@
-import numpy as np
+import os
 import pickle
+import numpy as np
+from os import path
 
 label_size = 17
 legend_size = 16
@@ -7,6 +9,14 @@ tick_size = 15
 line_width = 2
 marker_size = 8
 broken_length = 0.015
+
+def create_if_nonexist(outdir):
+  if not path.exists(outdir):
+    os.makedirs(outdir)
+
+def create_pardir(outfile):
+  outdir = path.dirname(outfile)
+  create_if_nonexist(outdir)
 
 def load_model_prec(model_p):
   prec_list = pickle.load(open(model_p, 'rb'))

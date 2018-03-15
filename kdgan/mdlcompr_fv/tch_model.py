@@ -50,6 +50,7 @@ class TCH():
       # self.lr_update = tf.assign(self.learning_rate, self.learning_rate * flags.learning_rate_decay_factor)
 
       pre_losses = self.get_pre_losses()
+      print('#pre_losses wo regularization=%d' % (len(pre_losses)))
       pre_losses.extend(self.get_regularization_losses())
       print('#pre_losses wt regularization=%d' % (len(pre_losses)))
       self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % tch_scope)
@@ -58,6 +59,7 @@ class TCH():
 
       # kdgan train
       kdgan_losses = self.get_kdgan_losses(flags)
+      print('#kdgan_losses wo regularization=%d' % (len(kdgan_losses)))
       kdgan_losses.extend(self.get_regularization_losses())
       print('#kdgan_losses wt regularization=%d' % (len(kdgan_losses)))
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % tch_scope)
@@ -78,7 +80,6 @@ class TCH():
 
   def get_pre_losses(self):
     pre_losses = [self.get_hard_loss()]
-    print('#pre_losses wo regularization=%d' % (len(pre_losses)))
     return pre_losses
 
   def get_kd_losses(self, flags):
@@ -107,7 +108,6 @@ class TCH():
       kd_losses.append(soft_loss)
     else:
       raise ValueError('bad kd model %s', flags.kd_model)
-    print('#kd_losses wo regularization=%d' % (len(kd_losses)))
     return kd_losses
 
   def get_kdgan_losses(self, flags):
@@ -115,7 +115,9 @@ class TCH():
     gan_loss = tf.losses.sigmoid_cross_entropy(self.reward_ph, sample_logits)
     gan_loss *= flags.intelltch_weight
     kdgan_losses = [gan_loss]
-    print('#kdgan_losses wo regularization=%d' % (len(kdgan_losses)))
+    for kd_loss in self.get_kd_losses(flags):
+      kd_loss *= flags.intellstd_weight
+      kdgan_losses.append(kd_loss)
     return kdgan_losses
 
 

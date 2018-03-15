@@ -17,17 +17,9 @@ from openpyxl import Workbook
 
 alphas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 betas = [0.125, 0.250, 0.500, 1.000, 2.000, 4.000, 8.000]
-xlsx_file = 'data/tagrecom.xlsx'
-alpha_file = 'data/alpha.txt'
-beta_file = 'data/beta.txt'
-
-def create_if_nonexist(outdir):
-  if not path.exists(outdir):
-    os.makedirs(outdir)
-
-def create_pardir(outfile):
-  outdir = path.dirname(outfile)
-  create_if_nonexist(outdir)
+xlsxfile = 'data/tagrecom.xlsx'
+alphafile = 'data/tagrecom_yfcc10k_alpha.txt'
+betafile = 'data/tagrecom_yfcc10k_beta.txt'
 
 def save_scores(outfile, scores):
   create_pardir(outfile)
@@ -117,13 +109,13 @@ def tune():
       alpha_scores.append((alpha, p3, f3, ndcg3, ap, rr))
     if alpha == best_alpha:
       beta_scores.append((beta, p3, f3, ndcg3, ap, rr))
-  create_pardir(xlsx_file)
-  wb.save(filename=xlsx_file)
-  # save_scores(alpha_file, alpha_scores)
-  # save_scores(beta_file, beta_scores)
+  create_pardir(xlsxfile)
+  wb.save(filename=xlsxfile)
+  # save_scores(alphafile, alpha_scores)
+  # save_scores(betafile, beta_scores)
 
   a_p3, a_f3, a_ndcg3, a_ap, a_rr = [], [], [], [], []
-  with open(alpha_file) as fin:
+  with open(alphafile) as fin:
     for line in fin.readlines():
       _, p3, f3, ndcg3, ap, rr = line.split()
       a_p3.append(float(p3))
@@ -140,7 +132,7 @@ def tune():
   for beta in betas:
     b_x.append(math.log(beta, 2))
   b_p3, b_f3, b_ndcg3, b_ap, b_rr = [], [], [], [], []
-  with open(beta_file) as fin:
+  with open(betafile) as fin:
     for line in fin.readlines():
       _, p3, f3, ndcg3, ap, rr = line.split()
       b_p3.append(float(p3) + 0.005)

@@ -45,5 +45,6 @@ tf.app.flags.DEFINE_float('noisy_sigma', 0.005, '')
 tf.app.flags.DEFINE_string('kd_model', 'mimic', 'mimic|distn|noisy')
 tf.app.flags.DEFINE_float('intelltch_weight', 0.5, '')
 tf.app.flags.DEFINE_float('distilled_weight', 1.0, '')
+tf.app.flags.DEFINE_float('intellstd_weight', 0.0, '')
 
 flags = tf.app.flags.FLAGS

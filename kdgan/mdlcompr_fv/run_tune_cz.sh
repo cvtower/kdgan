@@ -66,9 +66,33 @@ train_size=5000
 batch_size=50
 intelltch_weights=(1.0 0.9 0.8 0.7 0.6 0.5)
 distilled_weights=(8.000 4.000 2.000 1.000 0.500 0.250 0.125)
-tune ${train_size} ${batch_size} ${intelltch_weights} ${distilled_weights}
+# tune ${train_size} ${batch_size} ${intelltch_weights} ${distilled_weights}
 
-
-
+train_size=50
+batch_size=5
+python train_kdgan.py \
+  --dis_model_ckpt=${dis_model_ckpt} \
+  --gen_model_ckpt=${gen_model_ckpt} \
+  --tch_model_ckpt=${tch_model_ckpt} \
+  --epk_learning_curve_p=${epk_learning_curve_p} \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --dis_model_name=lenet \
+  --gen_model_name=mlp \
+  --tch_model_name=lenet \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --dis_learning_rate=1e-3 \
+  --gen_learning_rate=5e-4 \
+  --tch_learning_rate=5e-4 \
+  --num_epoch=60 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=10 \
+  --num_tch_epoch=10 \
+  --num_negative=20 \
+  --num_positive=5 \
+  --kd_model=mimic \
+  --noisy_ratio=0.1 \
+  --noisy_sigma=0.1 
 
 
