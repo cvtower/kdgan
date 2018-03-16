@@ -59,6 +59,11 @@ def main(_):
     tn_tch.saver.restore(sess, flags.tch_model_ckpt)
     ini_gen = metric.eval_mdlcompr(sess, vd_gen, mnist)
     ini_tch = metric.eval_mdlcompr(sess, vd_tch, mnist)
+    # print('ini_gen=%.4f ini_tch=%.4f' % (ini_gen, ini_tch))
+    fout = open('std-tch.txt', 'a+')
+    fout.write('%05d\t%.4f\t%.4f\n' % (flags.train_size, ini_gen, ini_tch))
+    fout.close()
+    exit()
 
     start = time.time()
     # for tn_batch in range(tn_num_batch):

@@ -3,6 +3,19 @@ checkpoint_dir=$kdgan_dir/checkpoints
 train_size=50
 batch_size=5
 
+rm std-tch.txt
+for train_size in 50 100 500 1000 5000 10000
+do
+  python train_kd.py \
+    --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
+    --tch_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_tch \
+    --dataset_dir=$HOME/Projects/data/mnist \
+    --gen_model_name=mlp \
+    --tch_model_name=lenet \
+    --train_size=${train_size}
+done
+exit
+
 python train_kdgan.py \
   --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
