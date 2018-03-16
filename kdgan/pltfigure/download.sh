@@ -36,6 +36,7 @@ scp ${cy_server}:${src_yfcc_dir}/mdlcompr_mnist*_kdgan_*.p ${dst_yfcc_dir}
 scp ${cz_server}:${src_yfcc_dir}/mdlcompr_mnist*_kdgan_*.p ${dst_yfcc_dir}
 
 scp ${xw_server}:${src_yfcc_dir}/tagrecom_yfcc10k_kdgan_*.p ${dst_yfcc_dir}
+scp ${xw_server}:${src_yfcc_dir}/mdlcompr_mnist*_kdgan_*.p ${dst_yfcc_dir}
 
 
 

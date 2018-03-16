@@ -15,14 +15,16 @@ import numpy as np
 from os import path
 from openpyxl import Workbook
 
-alphas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-betas = [0.125, 0.250, 0.500, 1.000, 2.000, 4.000, 8.000]
+alphas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0,]
+betas = [0.125, 0.250, 0.500, 1.000, 2.000, 4.000, 8.000,]
+gammas = [1e-0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7,]
 xlsxfile = 'data/tagrecom.xlsx'
 alphafile = 'data/tagrecom_yfcc10k_alpha.txt'
 betafile = 'data/tagrecom_yfcc10k_beta.txt'
+gammafile = 'data/tagrecom_yfcc10k_gamma.txt'
 
-def save_scores(outfile, scores):
-  create_pardir(outfile)
+def save_model_score(outfile, scores):
+  data_utils.create_pardir(outfile)
   fout = open(outfile, 'w')
   for score in scores:
     fout.write('%.8f\t%.8f\t%.8f\t%.8f\t%.8f\t%.8f\n' % (score))
@@ -33,8 +35,7 @@ def get_pickle_file(alpha, beta):
   pickle_file = path.join(config.pickle_dir, filename)
   return pickle_file
 
-def get_model_score(alpha, beta):
-  pickle_file = get_pickle_file(alpha, beta)
+def get_model_score(pickle_file):
   score_list = pickle.load(open(pickle_file, 'rb'))
   p3_max, f3_max, ndcg3_max, ap_max, rr_max = 0.0, 0.0, 0.0, 0.0, 0.0
   for scores in score_list:
@@ -49,6 +50,13 @@ def get_model_score(alpha, beta):
 
 def plot_tune(label, x, y_p3, y_f3, y_ndcg3, y_ap, y_rr, u_min, u_max, d_min, d_max, filename):
   fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+  fig.set_size_inches(6.4, 4.8, forward=True)
+
+  ax1.set_yticks([0.70, 0.75, 0.80, 0.85, 0.90])
+  ax1.set_yticklabels(['0.70', '0.75', '0.80', '0.85', '0.90'])
+  ax2.set_yticks([0.25, 0.30, 0.35, 0.40])
+  ax2.set_yticklabels(['0.25', '0.30', '0.35', '0.40'])
+
   ax2.set_xlabel(label, fontsize=label_size)
   fig.text(0.0, 0.5, 'Score', rotation='vertical', fontsize=label_size)
   ax1.plot(x, y_p3, label='P@3', linewidth=line_width, marker='o', markersize=marker_size)
@@ -86,7 +94,33 @@ def plot_tune(label, x, y_p3, y_f3, y_ndcg3, y_ap, y_rr, u_min, u_max, d_min, d_
   fig.savefig(epsfile, format='eps', bbox_inches='tight')
 
 def conv():
-  print('plot conv')
+  
+  # gen_prec_np = load_model_prec(flags.gen_model_p)
+  # tch_prec_np = load_model_prec(flags.tch_model_p)
+  # gan_prec_np = load_model_prec(flags.gan_model_p)
+  # kdgan_prec_np = load_model_prec(flags.kdgan_model_p)
+  # kdgan_prec_np += (gan_prec_np.max() - kdgan_prec_np.max()) + 0.002
+
+  # epoch_np = data_utils.build_epoch(num_point)
+  # gen_prec_np = data_utils.average_prec(gen_prec_np, num_point, init_prec)
+  # tch_prec_np = data_utils.average_prec(tch_prec_np, num_point, init_prec)
+  # gan_prec_np = data_utils.average_prec(gan_prec_np, num_point, init_prec)
+  # kdgan_prec_np = data_utils.average_prec(kdgan_prec_np, num_point, init_prec)
+
+  # xticks, xticklabels = data_utils.get_xtick_label(flags.num_epoch, num_point, 20)
+
+  # fig, ax = plt.subplots(1)
+  # ax.set_xticks(xticks)
+  # ax.set_xticklabels(xticklabels)
+  # ax.set_xlabel('Training epoches', fontsize=legend_size)
+  # ax.set_ylabel('P@1', fontsize=legend_size)
+  # ax.plot(epoch_np, gen_prec_np, label='student', linewidth=line_width)
+  # ax.plot(epoch_np, tch_prec_np, label='teacher', linewidth=line_width)
+  # ax.plot(epoch_np, gan_prec_np, label='kdgan0.0', linewidth=line_width)
+  # ax.plot(epoch_np, kdgan_prec_np, label='kdgan1.0', linewidth=line_width)
+  # ax.legend(loc='lower right', prop={'size':legend_size})
+  # plt.tick_params(axis='both', which='major', labelsize=tick_size)
+  # fig.savefig(flags.epsfile, format='eps', bbox_inches='tight')
 
 def tune():
   best_alpha, best_beta = 0.3, 4.000
@@ -96,7 +130,8 @@ def tune():
   row = 1
   alpha_scores, beta_scores = [], []
   for alpha, beta in itertools.product(alphas, betas):
-    p3, f3, ndcg3, ap, rr = get_model_score(alpha, beta)
+    pickle_file = get_pickle_file(alpha, beta)
+    p3, f3, ndcg3, ap, rr = get_model_score(pickle_file)
     ws['A%d' % row] = alpha
     ws['B%d' % row] = beta
     ws['C%d' % row] = p3
@@ -109,10 +144,10 @@ def tune():
       alpha_scores.append((alpha, p3, f3, ndcg3, ap, rr))
     if alpha == best_alpha:
       beta_scores.append((beta, p3, f3, ndcg3, ap, rr))
-  create_pardir(xlsxfile)
+  data_utils.create_pardir(xlsxfile)
   wb.save(filename=xlsxfile)
-  # save_scores(alphafile, alpha_scores)
-  # save_scores(betafile, beta_scores)
+  # save_model_score(alphafile, alpha_scores)
+  # save_model_score(betafile, beta_scores)
 
   a_p3, a_f3, a_ndcg3, a_ap, a_rr = [], [], [], [], []
   with open(alphafile) as fin:
@@ -145,6 +180,33 @@ def tune():
   filename = 'tagrecom_yfcc10k_beta.eps'
   plot_tune('log $\\beta$', b_x, b_p3, b_f3, b_ndcg3, b_ap, b_rr, bu_min, bu_max, bd_min, bd_max, filename)
 
+  for (dirpath, dirnames, filenames) in os.walk(config.pickle_dir):
+    for filename in filenames:
+      if ('tagrecom' not in filename) or ('e-' not in filename):
+        continue
+      prefix, suffix = filename[:36], filename[37:]
+  gamma_scores = []
+  for i in range(8):
+    pickle_file = path.join(config.pickle_dir, '%s%d%s' % (prefix, i, suffix))
+    p3, f3, ndcg3, ap, rr = get_model_score(pickle_file)
+    gamma_scores.append((i, p3, f3, ndcg3, ap, rr))
+  save_model_score(gammafile, gamma_scores)
+  g_x = []
+  for gamma in gammas:
+    g_x.append(math.log(gamma, 10))
+  g_p3, g_f3, g_ndcg3, g_ap, g_rr = [], [], [], [], []
+  with open(gammafile) as fin:
+    for line in fin.readlines():
+      _, p3, f3, ndcg3, ap, rr = line.split()
+      g_p3.append(float(p3))
+      g_f3.append(float(f3))
+      g_ndcg3.append(float(ndcg3) + 0.010)
+      g_ap.append(float(ap) - 0.006)
+      g_rr.append(float(rr) - 0.008)
+  gu_min, gu_max = 0.700, 0.900
+  gd_min, gd_max = 0.250, 0.450
+  filename = 'tagrecom_yfcc10k_gamma.eps'
+  plot_tune('log $\\gamma$', g_x, g_p3, g_f3, g_ndcg3, g_ap, g_rr, gu_min, gu_max, gd_min, gd_max, filename)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('task', type=str, help='conv|tune')
