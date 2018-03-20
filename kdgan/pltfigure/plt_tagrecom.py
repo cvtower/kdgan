@@ -72,8 +72,8 @@ def plot_tune(label, x, y_p3, y_f3, y_ndcg3, y_ap, y_rr,
   ax2.plot(x, y_f3, label='F@3', linewidth=line_width, marker='x', markersize=marker_size)
   ax1.plot(x, y_rr, label='MRR', linewidth=line_width, marker='h', markersize=marker_size)
   ax2.plot(x, y_rr, label='MRR', linewidth=line_width, marker='h', markersize=marker_size)
-  ax1.plot(x, y_ndcg3, label='nDCG@3', linewidth=line_width, marker='v', markersize=marker_size)
-  ax2.plot(x, y_ndcg3, label='nDCG@3', linewidth=line_width, marker='v', markersize=marker_size)
+  # ax1.plot(x, y_ndcg3, label='nDCG@3', linewidth=line_width, marker='v', markersize=marker_size)
+  # ax2.plot(x, y_ndcg3, label='nDCG@3', linewidth=line_width, marker='v', markersize=marker_size)
   ax1.set_ylim(u_min, u_max)
   ax2.set_ylim(d_min, d_max)
   ax1.spines['bottom'].set_visible(False)
@@ -89,7 +89,7 @@ def plot_tune(label, x, y_p3, y_f3, y_ndcg3, y_ap, y_rr,
   ax2.plot((1 - broken_length, 1 + broken_length), (1 - broken_length, 1 + broken_length), **kwargs)
   ax1.legend(bbox_to_anchor=(0., 1.02, 1., .102),
       loc=4,
-      ncol=3,
+      ncol=4,
       mode='expand',
       borderaxespad=0.0,
       prop={'size':legend_size})
@@ -226,8 +226,8 @@ def tune():
       g_p3.append(float(p3))
       g_f3.append(float(f3))
       g_ndcg3.append(float(ndcg3) + 0.010)
-      g_ap.append(float(ap) - 0.006)
-      g_rr.append(float(rr) - 0.008)
+      g_ap.append(float(ap))
+      g_rr.append(float(rr) + 0.004)
   gu_min, gu_max = 0.700, 0.900
   gd_min, gd_max = 0.250, 0.450
   filename = 'tagrecom_yfcc10k_gamma.eps'
