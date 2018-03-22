@@ -8,9 +8,9 @@ ssh xiaojie@10.100.228.149 # gpu cz
 ssh xiaojie@10.100.228.181 # gpu xw
 
 ################################################################
-# memo
+# todo
 ################################################################
-
+https://github.com/tflearn/tflearn/blob/master/examples/images/convnet_cifar10.py
 
 # backup
 ssh xiaojie@10.100.228.28 # gpu yz
@@ -98,11 +98,7 @@ python eval_image_classifier.py \
 
 # cifar 10
 http://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html#43494641522d3130
-https://github.com/tensorflow/models/tree/master/official/resnet
 https://github.com/BIGBALLON/cifar-10-cnn
-https://github.com/tensorflow/models/tree/master/tutorials/image/cifar10
-https://github.com/shmsw25/cifar10-classification
-https://github.com/ethereon/caffe-tensorflow
 
 # mnist
 https://github.com/clintonreece/keras-cloud-ml-engine
@@ -114,5 +110,9 @@ http://www.pythonexample.com/user/vamsiramakrishnan
 # gan trick
 https://github.com/gitlimlab/SSGAN-Tensorflow
 
-
-https://github.com/xiaojiew1/kdgan/tree/bb88661286b092f3576bf2a7b58344ea503452f8/kdgan/mdlcompr/trials
+# backup
+https://github.com/tensorflow/models/tree/master/official/resnet
+https://github.com/BIGBALLON/cifar-10-cnn
+https://github.com/tensorflow/models/tree/master/tutorials/image/cifar10
+https://github.com/shmsw25/cifar10-classification
+https://github.com/ethereon/caffe-tensorflow

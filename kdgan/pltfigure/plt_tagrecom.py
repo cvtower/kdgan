@@ -139,7 +139,7 @@ def conv():
   tagfeat_prec_np = data_utils.get_horizontal_np(epoch_np, 0.2560)
   ax.plot(epoch_np, tagfeat_prec_np, label='TagFeat', linestyle='--', linewidth=line_width)
 
-  ax.plot(epoch_np, gan_prec_np, label='SAGAN', color='r', linewidth=line_width)
+  ax.plot(epoch_np, gan_prec_np, label='GAN', color='r', linewidth=line_width)
   ax.plot(epoch_np, kdgan_prec_np, label='KDGAN', color='b', linewidth=line_width)
   ax.legend(loc='lower right', prop={'size':legend_size})
   plt.tick_params(axis='both', which='major', labelsize=tick_size)
