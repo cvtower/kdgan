@@ -56,7 +56,7 @@ with tf.Session() as sess:
   pre_update = tf.train.GradientDescentOptimizer(0.1).minimize(pre_loss)
 
   for tn_batch in range(tn_num_batch):
-    tn_image_np, tn_label_np = cifar.train.next_batch(flags.batch_size)
+    tn_image_np, tn_label_np = cifar.train.next_batch(batch_size)
     feed_dict = {
       image_ph:tn_image_np,
       hard_label_ph:tn_label_np,
