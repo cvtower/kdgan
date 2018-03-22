@@ -8,7 +8,16 @@ from keras.layers import Conv2D, Dense, Flatten, InputLayer, MaxPooling2D
 from keras.objectives import categorical_crossentropy
 from keras.regularizers import l2
 
+num_epoch = 10
+batch_size = 128
 weight_decay  = 0.0001
+
+cifar = data_utils.CIFAR()
+tn_data_size = cifar.train.num_examples
+tn_num_batch = int( * tn_data_size / flags.batch_size)
+print('train #data=%d #batch=%d' % (tn_data_size, tn_num_batch))
+eval_interval = int(max(tn_data_size / batch_size, 1.0))
+
 
 with tf.Session() as sess:
   K.set_session(sess)
@@ -45,5 +54,12 @@ with tf.Session() as sess:
   pre_loss = tf.add_n(pre_losses)
   pre_update = tf.train.GradientDescentOptimizer(0.1).minimize(pre_loss)
 
-
+  for tn_batch in range(tn_num_batch):
+    tn_image_np, tn_label_np = cifar.train.next_batch(flags.batch_size)
+    feed_dict = {
+      image_ph:tn_image_np,
+      hard_label_ph:tn_label_np,
+      K.learning_phase(): 1,
+    }
+    sess.run(pre_update, feed_dict=feed_dict)
 
