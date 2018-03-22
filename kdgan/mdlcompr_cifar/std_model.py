@@ -26,10 +26,7 @@ class STD():
           num_classes=flags.num_label,
           weight_decay=flags.std_weight_decay,
           is_training=is_training)
-      # assert flags.image_size==network_fn.default_image_size
-      # net = tf.reshape(image_ph, [-1, flags.image_size, flags.image_size, flags.channels])
-      # logits, _ = network_fn(net, dropout_keep_prob=keep_prob)
-      logits, _ = network_fn(image_ph, dropout_keep_prob=keep_prob)
+      logits, _ = network_fn(self.image_ph, dropout_keep_prob=keep_prob)
 
       self.labels = tf.nn.softmax(self.logits)
       
