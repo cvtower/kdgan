@@ -15,7 +15,7 @@ weight_decay  = 0.0001
 
 cifar = data_utils.CIFAR()
 tn_data_size = cifar.train.num_examples
-tn_num_batch = int( * tn_data_size / flags.batch_size)
+tn_num_batch = int(num_epoch * tn_data_size / batch_size)
 print('train #data=%d #batch=%d' % (tn_data_size, tn_num_batch))
 eval_interval = int(max(tn_data_size / batch_size, 1.0))
 
