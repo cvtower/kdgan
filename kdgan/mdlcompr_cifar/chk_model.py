@@ -22,5 +22,4 @@ model.add(Dense(10, activation = 'softmax', kernel_initializer='he_normal'))
 labels = model.output
 print(type(labels))
 losses = model.losses
-for loss in losses:
-  print(type(loss))
+print(len(losses))
