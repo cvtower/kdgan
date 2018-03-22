@@ -10,6 +10,6 @@ python pretrain_std.py \
   --optimizer=adam \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
-  --num_epoch=20
+  --num_epoch=200
 #cifar=50 bstacc=0.6536
 exit
