@@ -2,7 +2,7 @@ import tensorflow as tf
 
 tf.app.flags.DEFINE_boolean('collect_cr_data', False, '')
 # dataset
-tf.app.flags.DEFINE_integer('channels', 1, '')
+tf.app.flags.DEFINE_integer('channels', 3, '')
 tf.app.flags.DEFINE_integer('image_size', 32, '')
 tf.app.flags.DEFINE_integer('num_label', 10, '')
 tf.app.flags.DEFINE_integer('train_size', 60000, '')

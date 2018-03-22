@@ -11,8 +11,8 @@ class STD():
     self.is_training = is_training
     
     # None = batch_size
-    num_feature = flags.image_size * flags.image_size * flags.channels
-    self.image_ph = tf.placeholder(tf.float32, shape=(None, num_feature))
+    image_shape = (None, flags.image_size, flags.image_size, flags.channels)
+    self.image_ph = tf.placeholder(tf.float32, shape=image_shape)
     self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
     self.soft_logit_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
 
@@ -22,9 +22,9 @@ class STD():
 
     self.std_scope = std_scope # = 'std'
     with tf.variable_scope(std_scope):
-      network_fn = nets_factory.get_network_fn(model_name,
+      network_fn = nets_factory.get_network_fn(flags.std_model_name,
           num_classes=flags.num_label,
-          weight_decay=weight_decay,
+          weight_decay=flags.std_weight_decay,
           is_training=is_training)
       # assert flags.image_size==network_fn.default_image_size
       # net = tf.reshape(image_ph, [-1, flags.image_size, flags.image_size, flags.channels])
