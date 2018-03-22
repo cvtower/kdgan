@@ -25,6 +25,12 @@ model.add(Dense(84, activation = 'relu', kernel_initializer='he_normal', kernel_
 model.add(Dense(10, activation = 'softmax', kernel_initializer='he_normal', kernel_regularizer=l2(weight_decay) ))
 
 labels = model.output
-print(type(labels))
+print('label type', type(labels))
 losses = model.losses
-print(len(losses))
+for loss in losses:
+  print('loss type', type(loss))
+
+
+
+
+
