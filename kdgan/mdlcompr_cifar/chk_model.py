@@ -1,4 +1,5 @@
 from kdgan import config
+from kdgan import utils
 
 import keras
 import tensorflow as tf
