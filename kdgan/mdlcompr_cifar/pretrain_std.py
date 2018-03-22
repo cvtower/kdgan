@@ -46,7 +46,7 @@ def main(_):
       _, summary = sess.run([tn_std.pre_update, summary_op], feed_dict=feed_dict)
       writer.add_summary(summary, tn_batch)
       
-      if (tn_batch + 1) % eval_interval != 0:
+      if ((tn_batch + 1) % eval_interval != 0) and (tn_batch != (tn_num_batch - 1)):
         continue
       feed_dict = {
         vd_std.image_ph:cifar.valid.images,
