@@ -26,8 +26,7 @@ class STD():
           num_classes=flags.num_label,
           weight_decay=flags.std_weight_decay,
           is_training=is_training)
-      logits, _ = network_fn(self.image_ph, dropout_keep_prob=flags.std_keep_prob)
-
+      self.logits, _ = network_fn(self.image_ph, dropout_keep_prob=flags.std_keep_prob)
       self.labels = tf.nn.softmax(self.logits)
       
       if not is_training:
