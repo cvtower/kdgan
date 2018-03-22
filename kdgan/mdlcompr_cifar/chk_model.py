@@ -33,8 +33,8 @@ with tf.Session() as sess:
   labels = model.output
   print('label', type(labels), labels.shape)
   reg_losses = model.losses
-  for loss in losses:
-    print('loss', type(loss), loss.shape)
+  for reg_loss in reg_losses:
+    print('reg_loss', type(reg_loss), reg_loss.shape)
 
   hard_loss = tf.reduce_mean(categorical_crossentropy(labels, hard_label_ph))
   print('hard_loss', type(hard_loss), hard_loss.shape)
@@ -45,5 +45,5 @@ with tf.Session() as sess:
   pre_loss = tf.add_n(pre_losses)
   pre_update = tf.train.GradientDescentOptimizer(0.1).minimize(pre_loss)
 
-  
+
 
