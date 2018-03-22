@@ -25,11 +25,12 @@ model.add(Dense(84, activation = 'relu', kernel_initializer='he_normal', kernel_
 model.add(Dense(10, activation = 'softmax', kernel_initializer='he_normal', kernel_regularizer=l2(weight_decay) ))
 
 labels = model.output
-print('label type', type(labels))
+print('label', type(labels), label.shape)
 losses = model.losses
 for loss in losses:
-  print('loss type', type(loss))
+  print('loss', type(loss), loss, loss.shape)
 
+# loss = tf.reduce_mean(categorical_crossentropy(labels, preds))
 
 
 
