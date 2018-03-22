@@ -55,6 +55,8 @@ with tf.Session() as sess:
   pre_loss = tf.add_n(pre_losses)
   pre_update = tf.train.GradientDescentOptimizer(0.1).minimize(pre_loss)
 
+  init_op = tf.global_variables_initializer()
+  sess.run(init_op)
   for tn_batch in range(tn_num_batch):
     tn_image_np, tn_label_np = cifar.train.next_batch(batch_size)
     feed_dict = {
