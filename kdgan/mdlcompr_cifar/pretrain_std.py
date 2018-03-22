@@ -48,8 +48,8 @@ def main(_):
       if (tn_batch + 1) % eval_interval != 0:
         continue
       feed_dict = {
-        vd_std.image_ph:cifar.test.images,
-        vd_std.hard_label_ph:cifar.test.labels,
+        vd_std.image_ph:cifar.valid.images,
+        vd_std.hard_label_ph:cifar.valid.labels,
       }
       acc = sess.run(vd_std.accuracy, feed_dict=feed_dict)
 
