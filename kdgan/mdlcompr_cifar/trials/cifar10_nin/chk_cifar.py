@@ -112,8 +112,8 @@ with sess.as_default():
     if (tn_batch + 1) % 100 != 0:
       continue
     feed_dict = {
-      image_ph:test_x,
-      hard_label_ph:test_y,
+      image_ph:test_x[0:5000,],
+      hard_label_ph:test_y[0:5000,],
       K.learning_phase(): 0,
     }
     acc = sess.run(accuracy, feed_dict=feed_dict)
