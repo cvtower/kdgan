@@ -43,7 +43,7 @@ with tf.Session() as sess:
 
   labels = model.output
   print('label', type(labels), labels.shape)
-  accuracy = categorical_accuracy(hard_label_ph, labels)
+  accuracy = tf.reduce_mean(categorical_accuracy(hard_label_ph, labels))
 
   reg_losses = model.losses
   for reg_loss in reg_losses:
