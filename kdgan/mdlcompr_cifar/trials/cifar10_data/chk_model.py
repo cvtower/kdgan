@@ -39,9 +39,11 @@ def train():
     isum = tf.reduce_sum(images)
     lsum = tf.reduce_sum(labels)
     with tf.train.MonitoredTrainingSession() as mon_sess:
-       for i in range(1000):
-          print(mon_sess.run([isum, lsum]))
-
+      start_time = time.time()
+      for i in range(1000):
+        res = mon_sess.run([isum, lsum])
+      end_time = time.time()
+      print('%.4fs' % (start_time - end_time))
 
 def main(argv=None):  # pylint: disable=unused-argument
   cifar10.maybe_download_and_extract()
