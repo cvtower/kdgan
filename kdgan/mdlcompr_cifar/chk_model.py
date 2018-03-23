@@ -10,7 +10,7 @@ from keras.metrics import categorical_accuracy
 from keras.objectives import categorical_crossentropy
 from keras.regularizers import l2
 
-num_epoch = 10
+num_epoch = 200
 batch_size = 128
 weight_decay  = 0.0001
 
