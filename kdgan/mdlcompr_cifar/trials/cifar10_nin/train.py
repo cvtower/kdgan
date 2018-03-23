@@ -52,13 +52,10 @@ def train(num_iterations):
         Train CNN
     '''
     for i in range(num_iterations):
-        randidx = np.random.randint(len(train_x), size=_BATCH_SIZE)
-        batch_xs = train_x[randidx]
-        batch_ys = train_y[randidx]
-        print(batch_xs.shape, batch_ys.shape)
-        tn_image_np, tn_label_np = cifar.train.next_batch(_BATCH_SIZE)
-        print(tn_image_np.shape, tn_label_np.shape)
-        exit()
+        # randidx = np.random.randint(len(train_x), size=_BATCH_SIZE)
+        # batch_xs = train_x[randidx]
+        # batch_ys = train_y[randidx]
+        batch_xs, batch_ys = cifar.train.next_batch(_BATCH_SIZE)
 
         start_time = time()
         i_global, _ = sess.run([global_step, optimizer], feed_dict={x: batch_xs, y: batch_ys})
