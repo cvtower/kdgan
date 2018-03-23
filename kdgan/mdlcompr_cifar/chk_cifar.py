@@ -68,11 +68,10 @@ train_size = x_train.shape[0]
 
 with sess.as_default():
   for tn_batch in range(10000):
-    start = (tn_batch * batch_size) % train_size
-    end = min(start + batch_size, train_size)
+    randidx = np.random.randint(self._num_examples, size=batch_size)
     feed_dict = {
-      image_ph:x_train[start:end,:,:,:],
-      hard_label_ph:y_train[start:end,:],
+      image_ph:x_train[randidx],
+      hard_label_ph:y_train[randidx],
       K.learning_phase(): 1,
     }
     # res = sess.run(pre_update, feed_dict=feed_dict)
