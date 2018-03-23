@@ -33,8 +33,9 @@ def train():
     with tf.device('/cpu:0'):
       images, labels = cifar10.distorted_inputs()
 
-    print(type(images), type(labels))
-
+    # speed = tf.reduce_sum(images) + tf.reduce_sum(labels)
+    print('images', type(images), images.shape)
+    print('labels', type(labels), labels.shape)
 
 def main(argv=None):  # pylint: disable=unused-argument
   cifar10.maybe_download_and_extract()
