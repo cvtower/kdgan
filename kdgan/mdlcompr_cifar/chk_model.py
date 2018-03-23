@@ -77,4 +77,6 @@ with tf.Session() as sess:
       K.learning_phase(): 0,
     }
     acc = sess.run(accuracy, feed_dict=feed_dict)
-    print('#batch=%d acc=%.4f' % (tn_num_batch, acc))
+    print(type(acc))
+    exit()
+    # print('#batch=%d acc=%.4f' % (tn_num_batch, acc))
