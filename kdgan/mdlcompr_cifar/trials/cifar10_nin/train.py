@@ -4,43 +4,29 @@ from sklearn.metrics import confusion_matrix
 from time import time
 
 from include.data import get_data_set
-# from include.model import model
 from include.model import model
 
-from utils import progress_bar
 
+train_x, train_y, train_l = get_data_set()
+test_x, test_y, test_l = get_data_set("test")
 
-x, y, output, global_step, y_pred_cls, keep_prob = model()
+x, y, output, global_step, y_pred_cls = model()
 
 _IMG_SIZE = 32
 _NUM_CHANNELS = 3
 _BATCH_SIZE = 128
 _CLASS_SIZE = 10
-_ITERATION = 20000
-_EPOCH = 161
-# _SAVE_PATH = "./tensorboard/cifar-10/"
-_SAVE_PATH = "./tensorboard/aug-decay-RMS2/"
+_ITERATION = 10000
+_SAVE_PATH = "./tensorboard/cifar-10/"
 
-train_x, train_y, train_l, mu, std = get_data_set(cifar=10, whitten=False)
-test_x, test_y, test_l, mu, std = get_data_set(name="test", mu=mu, std=std, cifar=10, whitten=False)
 
-print (train_x)
-print (test_x)
 loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=output, labels=y))
-steps_per_epoch = len(train_x) / _BATCH_SIZE
-boundaries = [steps_per_epoch * _epoch for _epoch in [81, 122]]
-values = [0.1, 0.01, 0.001]
-learning_rate = tf.train.piecewise_constant(global_step, boundaries, values)
-l2 = tf.add_n([tf.nn.l2_loss(var) for var in tf.trainable_variables()])
-weight_decay = 0.0001
-optimizer = tf.train.RMSPropOptimizer(learning_rate=1e-4).minimize(loss + l2 * weight_decay, global_step=global_step)
-# optimizer = tf.train.RMSPropOptimizer(learning_rate=1e-4).minimize(loss, global_step=global_step)
-# optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9, name='Momentum', use_nesterov=True).minimize(loss + l2 * weight_decay, global_step=global_step)
+optimizer = tf.train.RMSPropOptimizer(learning_rate=1e-3).minimize(loss, global_step=global_step)
 
-correct_prediction = tf.equal(y_pred_cls, tf.argmax(y, dimension=1))
+
+correct_prediction = tf.equal(y_pred_cls, tf.argmax(y, axis=1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 tf.summary.scalar("Accuracy/train", accuracy)
-tf.summary.scalar("Loss", loss)
 
 
 merged = tf.summary.merge_all()
@@ -59,62 +45,36 @@ except:
     sess.run(tf.global_variables_initializer())
 
 
-def train(num_epoch):
+def train(num_iterations):
     '''
         Train CNN
     '''
-    global train_x
-    global train_y
+    for i in range(num_iterations):
+        randidx = np.random.randint(len(train_x), size=_BATCH_SIZE)
+        batch_xs = train_x[randidx]
+        batch_ys = train_y[randidx]
 
-    epoch_size = len(train_x)
-    for i in range(num_epoch):
-        print ('Epoch: %d' % i)
-        randidx = np.arange(epoch_size)
-        np.random.shuffle(randidx)
-        print (epoch_size)
+        start_time = time()
+        i_global, _ = sess.run([global_step, optimizer], feed_dict={x: batch_xs, y: batch_ys})
+        duration = time() - start_time
 
-        train_x = train_x[randidx]
-        train_y = train_y[randidx]
+        if (i_global % 10 == 0) or (i == num_iterations - 1):
+            _loss, batch_acc = sess.run([loss, accuracy], feed_dict={x: batch_xs, y: batch_ys})
+            msg = "Global Step: {0:>6}, accuracy: {1:>6.1%}, loss = {2:.2f} ({3:.1f} examples/sec, {4:.2f} sec/batch)"
+            print(msg.format(i_global, batch_acc, _loss, _BATCH_SIZE / duration, duration))
 
-        if (epoch_size % _BATCH_SIZE == 0):
-            num_iterations = epoch_size / _BATCH_SIZE
-        else:
-            num_iterations = int(epoch_size / _BATCH_SIZE) + 1
+        if (i_global % 100 == 0) or (i == num_iterations - 1):
+            data_merged, global_1 = sess.run([merged, global_step], feed_dict={x: batch_xs, y: batch_ys})
+            acc = predict_test()
 
-        train_loss = 0
-        for j in range(num_iterations):
-            if (j < num_iterations - 1):
-                batch_xs = train_x[j * _BATCH_SIZE:(j + 1) * _BATCH_SIZE]
-                batch_ys = train_y[j * _BATCH_SIZE:(j + 1) * _BATCH_SIZE]
-            else:
-                batch_xs = train_x[j * _BATCH_SIZE:epoch_size]
-                batch_ys = train_y[j * _BATCH_SIZE:epoch_size]
+            summary = tf.Summary(value=[
+                tf.Summary.Value(tag="Accuracy/test", simple_value=acc),
+            ])
+            train_writer.add_summary(data_merged, global_1)
+            train_writer.add_summary(summary, global_1)
 
-            start_time = time()
-            i_global, _ = sess.run([global_step, optimizer], feed_dict={x: batch_xs, y: batch_ys, keep_prob: 0.5})
-            duration = time() - start_time
-
-            if (i_global % 10 == 0) or (j == num_iterations - 1):
-                _loss, batch_acc, _learning_rate = sess.run([loss, accuracy, learning_rate], feed_dict={x: batch_xs, y: batch_ys, keep_prob: 0.5})
-                # msg = "Global Step: {0:>6}, accuracy: {1:>6.1%}, loss = {2:.2f} ({3:.1f} examples/sec, {4:.2f} sec/batch)"
-                # print(msg.format(i_global, batch_acc, _loss, _BATCH_SIZE / duration, duration))
-                train_loss = train_loss + _loss
-                progress_bar(j, num_iterations, 'Loss: %.3f | Acc: %.3f%% '
-                             % (train_loss / (j + 1), batch_acc))
-
-            # if (i_global % 100 == 0) or (i == num_iterations - 1):
-            if (j == num_iterations - 1):
-                data_merged, global_1 = sess.run([merged, global_step], feed_dict={x: batch_xs, y: batch_ys, keep_prob: 1.0})
-                acc = predict_test()
-
-                summary = tf.Summary(value=[
-                    tf.Summary.Value(tag="Accuracy/test", simple_value=acc),
-                ])
-                train_writer.add_summary(data_merged, global_1)
-                train_writer.add_summary(summary, global_1)
-
-                saver.save(sess, save_path=_SAVE_PATH, global_step=global_step)
-                print("Saved checkpoint.")
+            saver.save(sess, save_path=_SAVE_PATH, global_step=global_step)
+            print("Saved checkpoint.")
 
 
 def predict_test(show_confusion_matrix=False):
@@ -127,11 +87,11 @@ def predict_test(show_confusion_matrix=False):
         j = min(i + _BATCH_SIZE, len(test_x))
         batch_xs = test_x[i:j, :]
         batch_ys = test_y[i:j, :]
-        predicted_class[i:j] = sess.run(y_pred_cls, feed_dict={x: batch_xs, y: batch_ys, keep_prob: 1.0})
+        predicted_class[i:j] = sess.run(y_pred_cls, feed_dict={x: batch_xs, y: batch_ys})
         i = j
 
     correct = (np.argmax(test_y, axis=1) == predicted_class)
-    acc = correct.mean() * 100
+    acc = correct.mean()*100
     correct_numbers = correct.sum()
     print("Accuracy on Test-Set: {0:.2f}% ({1} / {2})".format(acc, correct_numbers, len(test_x)))
 
@@ -147,8 +107,7 @@ def predict_test(show_confusion_matrix=False):
 
 
 if _ITERATION != 0:
-    # train(_ITERATION)
-    train(_EPOCH)
+    train(_ITERATION)
 
 
 sess.close()
