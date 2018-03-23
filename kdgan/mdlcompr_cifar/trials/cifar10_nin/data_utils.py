@@ -120,7 +120,7 @@ def load_batch(fpath, label_key='labels'):
       d = d_decoded
   data = d['data']
   labels = d[label_key]
-  data = data.reshape(data.shape[0], 3, 32, 32)
+  # data = data.reshape(data.shape[0], 3, 32, 32)
   return data, labels
 
 # keras/datasets/cifar10.py
@@ -128,12 +128,12 @@ def load_data():
   cifar_ext = config.cifar_ext
 
   num_train_samples = 50000
-  train_images = np.empty((num_train_samples, 3, 32, 32), dtype='uint8')
+  train_images = np.empty((num_train_samples, 32 * 32 * 3), dtype='uint8')
   train_labels = np.empty((num_train_samples,), dtype='uint8')
 
   for i in range(1, 6):
     fpath = path.join(cifar_ext, 'data_batch_' + str(i))
-    (train_images[(i - 1) * 10000: i * 10000, :, :, :],
+    (train_images[(i - 1) * 10000: i * 10000, :],
      train_labels[(i - 1) * 10000: i * 10000]) = load_batch(fpath)
 
   fpath = path.join(cifar_ext, 'test_batch')
@@ -141,10 +141,6 @@ def load_data():
 
   train_labels = np.reshape(train_labels, (len(train_labels), 1))
   valid_labels = np.reshape(valid_labels, (len(valid_labels), 1))
-
-  if keras.backend.image_data_format() == 'channels_last':
-    train_images = train_images.transpose(0, 2, 3, 1)
-    valid_images = valid_images.transpose(0, 2, 3, 1)
 
   train = DataSet(train_images, train_labels)
   valid = DataSet(valid_images, valid_labels)
