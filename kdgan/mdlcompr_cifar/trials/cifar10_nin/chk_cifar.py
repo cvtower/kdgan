@@ -6,14 +6,19 @@ import numpy as np
 import tensorflow as tf
 from keras import backend as K
 from keras.models import Sequential
+from keras.initializers import RandomNormal  
+from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, Dense, Flatten, MaxPooling2D
 from keras.layers import InputLayer, Reshape
+from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D, AveragePooling2D
+from keras.layers.normalization import BatchNormalization
 from keras.metrics import categorical_accuracy
 from keras.objectives import categorical_crossentropy
 from keras.regularizers import l2
 
 batch_size = 128
-weight_decay  = 0.0001
+weight_decay = 0.0001
+dropout = 0.5
 
 import tensorflow as tf
 sess = tf.Session()
@@ -27,15 +32,44 @@ hard_label_ph = tf.placeholder(tf.float32, shape=(None, 10))
 model = Sequential()
 model.add(InputLayer(input_tensor=image_ph, input_shape=(None, 32 * 32 * 3)))
 model.add(Reshape((32, 32, 3)))
-model.add(Conv2D(6, (5, 5), padding='valid', activation = 'relu', kernel_initializer='he_normal', input_shape=(32,32,3)))
-model.add(MaxPooling2D((2, 2), strides=(2, 2)))
-model.add(Conv2D(16, (5, 5), padding='valid', activation = 'relu', kernel_initializer='he_normal'))
-model.add(MaxPooling2D((2, 2), strides=(2, 2)))
-model.add(Flatten())
-model.add(Dense(120, activation = 'relu', kernel_initializer='he_normal'))
-model.add(Dense(84, activation = 'relu', kernel_initializer='he_normal'))
-model.add(Dense(10, activation = 'softmax', kernel_initializer='he_normal'))
+model.add(Conv2D(192, (5, 5), padding='same', kernel_regularizer=keras.regularizers.l2(weight_decay), kernel_initializer="he_normal"))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Conv2D(160, (1, 1), padding='same', kernel_regularizer=keras.regularizers.l2(weight_decay), kernel_initializer="he_normal"))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Conv2D(96, (1, 1), padding='same', kernel_regularizer=keras.regularizers.l2(weight_decay), kernel_initializer="he_normal"))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(3, 3),strides=(2,2),padding = 'same'))
 
+model.add(Dropout(dropout))
+
+model.add(Conv2D(192, (5, 5), padding='same', kernel_regularizer=keras.regularizers.l2(weight_decay), kernel_initializer="he_normal"))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Conv2D(192, (1, 1),padding='same', kernel_regularizer=keras.regularizers.l2(weight_decay), kernel_initializer="he_normal"))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Conv2D(192, (1, 1),padding='same', kernel_regularizer=keras.regularizers.l2(weight_decay), kernel_initializer="he_normal"))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(3, 3),strides=(2,2),padding = 'same'))
+
+model.add(Dropout(dropout))
+
+model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=keras.regularizers.l2(weight_decay), kernel_initializer="he_normal"))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Conv2D(192, (1, 1), padding='same', kernel_regularizer=keras.regularizers.l2(weight_decay), kernel_initializer="he_normal"))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Conv2D(10, (1, 1), padding='same', kernel_regularizer=keras.regularizers.l2(weight_decay), kernel_initializer="he_normal"))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+
+model.add(GlobalAveragePooling2D())
+model.add(Activation('softmax'))
 labels = model.output
 print('label', type(labels), labels.shape)
 accuracy = tf.reduce_mean(categorical_accuracy(hard_label_ph, labels))
@@ -52,7 +86,7 @@ pre_losses.extend(reg_losses)
 
 pre_loss = tf.add_n(pre_losses)
 # pre_update = tf.train.GradientDescentOptimizer(0.05).minimize(pre_loss)
-pre_update = tf.train.GradientDescentOptimizer(0.05).minimize(hard_loss)
+pre_update = tf.train.GradientDescentOptimizer(0.1).minimize(hard_loss)
 
 init_op = tf.global_variables_initializer()
 sess.run(init_op)
