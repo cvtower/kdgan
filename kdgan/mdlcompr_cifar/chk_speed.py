@@ -20,6 +20,7 @@ hard_label_ph = tf.placeholder(tf.float32, shape=(None, 10))
 isum = tf.reduce_sum(image_ph)
 lsum = tf.reduce_sum(hard_label_ph)
 
+sess = tf.Session()
 with sess.as_default():
   start_time = time.time()
   for tn_batch in range(1000):
