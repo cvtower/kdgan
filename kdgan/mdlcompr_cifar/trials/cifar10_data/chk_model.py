@@ -33,9 +33,14 @@ def train():
     with tf.device('/cpu:0'):
       images, labels = cifar10.distorted_inputs()
 
-    # speed = tf.reduce_sum(images) + tf.reduce_sum(labels)
     print('images', type(images), images.shape)
     print('labels', type(labels), labels.shape)
+
+    isum = tf.add(tf.reduce_sum(images), tf.reduce_sum(labels))
+    with tf.train.MonitoredTrainingSession() as mon_sess:
+       for i in range(1000):
+          print(mon_sess.run(isum))
+
 
 def main(argv=None):  # pylint: disable=unused-argument
   cifar10.maybe_download_and_extract()
