@@ -56,7 +56,7 @@ def train(num_iterations):
         batch_xs = train_x[randidx]
         batch_ys = train_y[randidx]
         print(batch_xs.shape, batch_ys.shape)
-        tn_image_np, tn_label_np = cifar.train.next_batch(batch_size)
+        tn_image_np, tn_label_np = cifar.train.next_batch(_BATCH_SIZE)
         print(tn_image_np.shape, tn_label_np.shape)
         exit()
 
