@@ -6,6 +6,7 @@ import tensorflow as tf
 from keras import backend as K
 from keras.models import Sequential
 from keras.layers import Conv2D, Dense, Flatten, InputLayer, MaxPooling2D
+from keras.metrics import categorical_accuracy
 from keras.objectives import categorical_crossentropy
 from keras.regularizers import l2
 
@@ -42,6 +43,8 @@ with tf.Session() as sess:
 
   labels = model.output
   print('label', type(labels), labels.shape)
+  accuracy = categorical_accuracy(hard_label_ph, labels)
+
   reg_losses = model.losses
   for reg_loss in reg_losses:
     print('reg_loss', type(reg_loss), reg_loss.shape)
@@ -64,5 +67,14 @@ with tf.Session() as sess:
       hard_label_ph:tn_label_np,
       K.learning_phase(): 1,
     }
-    sess.run(pre_update, feed_dict=feed_dict)
+    res = sess.run(pre_update, feed_dict=feed_dict)
 
+    if ((tn_batch + 1) % eval_interval != 0) and (tn_batch != (tn_num_batch - 1)):
+      continue
+    feed_dict = {
+      image_ph:cifar.valid.images,
+      hard_label_ph:cifar.valid.labels,
+      K.learning_phase(): 0,
+    }
+    acc = sess.run(accuracy, feed_dict=feed_dict)
+    print('#batch=%d acc=%.4f' % (tn_num_batch, acc))
