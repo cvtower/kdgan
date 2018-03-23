@@ -2,6 +2,7 @@ from kdgan import config
 import data_utils
 
 import keras
+import numpy as np
 import tensorflow as tf
 from keras import backend as K
 from keras.models import Sequential
