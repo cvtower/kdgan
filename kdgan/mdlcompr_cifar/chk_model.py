@@ -64,7 +64,8 @@ with tf.Session() as sess:
       hard_label_ph:tn_label_np,
       K.learning_phase(): 1,
     }
-    res = sess.run(pre_update, feed_dict=feed_dict)
+    # res = sess.run(pre_update, feed_dict=feed_dict)
+    pre_update.run(feed_dict=feed_dict)
 
     if ((tn_batch + 1) % eval_interval != 0) and (tn_batch != (tn_num_batch - 1)):
       continue
@@ -72,9 +73,9 @@ with tf.Session() as sess:
     feed_dict = {
       image_ph:tn_image_np,
       hard_label_ph:tn_label_np,
-      K.learning_phase(): 0,
     }
-    acc = sess.run(accuracy, feed_dict=feed_dict)
+    # acc = sess.run(accuracy, feed_dict=feed_dict)
+    acc = accuracy.eval(feed_dict=feed_dict)
     print('#batch=%d acc=%.4f' % (tn_batch, acc))
 
     # feed_dict = {
