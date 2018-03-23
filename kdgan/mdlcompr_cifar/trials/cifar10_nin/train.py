@@ -2,10 +2,12 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import confusion_matrix
 from time import time
+import data_utils
 
 from include.data import get_data_set
 from include.model import model
 
+cifar = data_utils.CIFAR()
 
 train_x, train_y, train_l = get_data_set()
 test_x, test_y, test_l = get_data_set("test")
@@ -53,6 +55,9 @@ def train(num_iterations):
         randidx = np.random.randint(len(train_x), size=_BATCH_SIZE)
         batch_xs = train_x[randidx]
         batch_ys = train_y[randidx]
+        print(batch_xs.shape, batch_ys.shape)
+        exit()
+        # tn_image_np, tn_label_np = cifar.train.next_batch(batch_size)
 
         start_time = time()
         i_global, _ = sess.run([global_step, optimizer], feed_dict={x: batch_xs, y: batch_ys})
