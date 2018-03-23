@@ -69,7 +69,7 @@ train_size = x_train.shape[0]
 
 with sess.as_default():
   for tn_batch in range(10000):
-    randidx = np.random.randint(self._num_examples, size=batch_size)
+    randidx = np.random.randint(train_size, size=batch_size)
     feed_dict = {
       image_ph:x_train[randidx],
       hard_label_ph:y_train[randidx],
