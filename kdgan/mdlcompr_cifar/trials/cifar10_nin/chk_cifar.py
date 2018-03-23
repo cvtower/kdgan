@@ -60,9 +60,7 @@ sess.run(init_op)
 from include.data import get_data_set
 train_x, train_y, train_l = get_data_set()
 test_x, test_y, test_l = get_data_set("test")
-print(type(test_x), type(test_y), type(test_l))
-# print(test_x.shape, test_y.shape, test_l.shape)
-exit()
+# print(type(test_x), type(test_y), type(test_l))
 
 with sess.as_default():
   for tn_batch in range(10000):
