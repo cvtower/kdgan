@@ -48,7 +48,7 @@ pre_losses = [hard_loss]
 pre_losses.extend(reg_losses)
 
 pre_loss = tf.add_n(pre_losses)
-pre_update = tf.train.GradientDescentOptimizer(0.1).minimize(pre_loss)
+pre_update = tf.train.GradientDescentOptimizer(0.05).minimize(pre_loss)
 
 init_op = tf.global_variables_initializer()
 sess.run(init_op)
