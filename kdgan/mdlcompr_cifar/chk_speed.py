@@ -23,7 +23,7 @@ lsum = tf.reduce_sum(hard_label_ph)
 sess = tf.Session()
 with sess.as_default():
   start_time = time.time()
-  for tn_batch in range(1000):
+  for tn_batch in range(4000):
     tn_image_np, tn_label_np = cifar.train.next_batch(batch_size)
     feed_dict = {
       image_ph:tn_image_np,

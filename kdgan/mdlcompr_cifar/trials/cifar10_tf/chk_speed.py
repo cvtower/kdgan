@@ -40,7 +40,7 @@ def train():
     lsum = tf.reduce_sum(labels)
     with tf.train.MonitoredTrainingSession() as mon_sess:
       start_time = time.time()
-      for i in range(1000):
+      for i in range(4000):
         res = mon_sess.run([isum, lsum])
       end_time = time.time()
       print('%.4fs' % (end_time - start_time))
