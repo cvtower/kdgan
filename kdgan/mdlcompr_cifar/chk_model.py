@@ -34,12 +34,9 @@ with tf.Session() as sess:
   model.add(Conv2D(16, (5, 5), padding='valid', activation = 'relu', kernel_initializer='he_normal'))
   model.add(MaxPooling2D((2, 2), strides=(2, 2)))
   model.add(Flatten())
-  # model.add(Dense(120, activation = 'relu', kernel_initializer='he_normal'))
-  # model.add(Dense(84, activation = 'relu', kernel_initializer='he_normal'))
-  # model.add(Dense(10, activation = 'softmax', kernel_initializer='he_normal'))
-  model.add(Dense(120, activation = 'relu', kernel_initializer='he_normal', kernel_regularizer=l2(weight_decay) ))
-  model.add(Dense(84, activation = 'relu', kernel_initializer='he_normal', kernel_regularizer=l2(weight_decay) ))
-  model.add(Dense(10, activation = 'softmax', kernel_initializer='he_normal', kernel_regularizer=l2(weight_decay) ))
+  model.add(Dense(120, activation = 'relu', kernel_initializer='he_normal'))
+  model.add(Dense(84, activation = 'relu', kernel_initializer='he_normal'))
+  model.add(Dense(10, activation = 'softmax', kernel_initializer='he_normal'))
 
   labels = model.output
   print('label', type(labels), labels.shape)
@@ -77,4 +74,4 @@ with tf.Session() as sess:
       K.learning_phase(): 0,
     }
     acc = sess.run(accuracy, feed_dict=feed_dict)
-    print('#batch=%d acc=%.4f' % (tn_num_batch, acc))
+    print('#batch=%d acc=%.4f' % (tn_batch, acc))
