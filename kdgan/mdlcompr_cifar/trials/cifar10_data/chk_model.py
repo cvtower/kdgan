@@ -36,10 +36,11 @@ def train():
     print('images', type(images), images.shape)
     print('labels', type(labels), labels.shape)
 
-    isum = tf.add(tf.reduce_sum(images), tf.reduce_sum(labels))
+    isum = tf.reduce_sum(images)
+    lsum = tf.reduce_sum(labels)
     with tf.train.MonitoredTrainingSession() as mon_sess:
        for i in range(1000):
-          print(mon_sess.run(isum))
+          print(mon_sess.run([isum, lsum]))
 
 
 def main(argv=None):  # pylint: disable=unused-argument
