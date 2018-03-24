@@ -21,7 +21,7 @@ logits = cifar10_utils.inference(image_ph)
 loss = cifar10_utils.loss(logits, label_ph)
 
 top_k_op = tf.nn.in_top_k(logits, label_ph, 1)
-# accuracy = tf.reduce_mean(tf.cast(top_k_op, tf.int32))
+accuracy = tf.reduce_mean(tf.cast(top_k_op, tf.float32))
 
 global_step = tf.Variable(0, trainable=False)
 train_op = cifar10_utils.train(loss, global_step)
@@ -47,9 +47,8 @@ def main(argv=None):
       for vd_batch in range(vd_num_batch):
         vd_image_np, vd_label_np = sess.run([vd_image_ts, vd_label_ts])
         feed_dict = {image_ph:vd_image_np, label_ph:vd_label_np}
-        predictions = sess.run(top_k_op, feed_dict=feed_dict)
-        print(np.sum(predictions))
-        acc = np.sum(predictions) / flags.batch_size
+        acc = sess.run(accuracy, feed_dict=feed_dict)
+        print(acc)
         acc_list.append(acc)
       acc = sum(acc_list) / len(acc_list)
       bst_acc = max(acc, bst_acc)
