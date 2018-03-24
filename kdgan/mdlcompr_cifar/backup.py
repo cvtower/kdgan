@@ -42,29 +42,32 @@ def speed():
 
 def train():
   with tf.device('/cpu:0'):
-    image_ts, label_ts = cifar10_utils.distorted_inputs()
+    image_cpu, label_cpu = cifar10_utils.distorted_inputs()
+    isum_cpu, lsum_cpu = tf.reduce_sum(image_cpu), tf.reduce_sum(label_cpu)
 
-    image_shape = (flags.batch_size, flags.image_size, flags.image_size, flags.channels)
-    image_ph = tf.placeholder(tf.float32, shape=image_shape)
-    label_ph = tf.placeholder(tf.int32, shape=(flags.batch_size,))
+  with tf.device('/gpu:0'):
+    image_gpu, label_gpu = cifar10_utils.distorted_inputs()
+    isum_gpu, lsum_gpu = tf.reduce_sum(image_gpu), tf.reduce_sum(label_gpu)
 
-  logit_ts = cifar10_utils.inference(image_ph)
-  loss_ts = cifar10_utils.loss(logit_ts, label_ph)
-  global_step = tf.Variable(0, trainable=False)
-  train_op = cifar10_utils.train(loss_ts, global_step)
-
-  start_time = time.time()
   with tf.train.MonitoredTrainingSession() as sess:
-    for tn_batch in range(100000):
-      image_np, label_np = sess.run([image_ts, label_ts])
-      feed_dict = {image_ph:image_np, label_ph:label_np}
-      _, loss = sess.run([train_op, loss_ts], feed_dict=feed_dict)
-      if (tn_batch + 1) % 10000 != 0:
-        continue
-      print('#batch=%d loss=%.4f' % (tn_batch, loss))
-  end_time = time.time()
-  duration = end_time - start_time
-  print('duration=%.4f' % (duration))
+    start_time = time.time()
+    for tn_batch in range(10000):
+      isum_np, lsum_np = sess.run([isum_cpu, lsum_cpu])
+      if (tn_batch + 1) % 2000 == 0:
+        print('#cpu=%d' % (tn_batch + 1))
+    end_time = time.time()
+    duration = end_time - start_time
+    print('cpu=%.4fs' % (duration))
+
+    start_time = time.time()
+    for tn_batch in range(10000):
+      isum_np, lsum_np = sess.run([isum_gpu, lsum_gpu])
+      if (tn_batch + 1) % 2000 == 0:
+        print('#gpu=%d' % (tn_batch + 1))
+    end_time = time.time()
+    duration = end_time - start_time
+    print('gpu=%.4fs' % (duration))
+
 
 def main(argv=None):
   cifar10_utils.maybe_download_and_extract()
