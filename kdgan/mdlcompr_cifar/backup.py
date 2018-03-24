@@ -41,12 +41,13 @@ def speed():
     print('bet=%.4fs' % (duration))
 
 def train():
+  eval_data = True
   with tf.device('/cpu:0'):
-    image_cpu, label_cpu = cifar10_utils.distorted_inputs()
+    image_cpu, label_cpu = cifar10_utils.inputs(eval_data=eval_data)
     isum_cpu, lsum_cpu = tf.reduce_sum(image_cpu), tf.reduce_sum(label_cpu)
 
   with tf.device('/gpu:0'):
-    image_gpu, label_gpu = cifar10_utils.distorted_inputs()
+    image_gpu, label_gpu = cifar10_utils.inputs(eval_data=eval_data)
     isum_gpu, lsum_gpu = tf.reduce_sum(image_gpu), tf.reduce_sum(label_gpu)
 
   with tf.train.MonitoredTrainingSession() as sess:
