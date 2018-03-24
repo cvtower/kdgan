@@ -55,7 +55,8 @@ def main(argv=None):
       end_time = time.time()
       duration = end_time - start_time
       avg_time = duration / (tn_batch + 1)
-      print('#batch=%d acc=%.4f time=%.4fs/batch' % (tn_batch + 1, bst_acc, avg_time))
+      print('#batch=%d acc=%.4f time=%.4fs/batch est=%.4fh' % 
+          (tn_batch + 1, bst_acc, avg_time, avg_time * tn_num_batch / 3600))
   print('final=%.4f' % (bst_acc))
 
 if __name__ == '__main__':
