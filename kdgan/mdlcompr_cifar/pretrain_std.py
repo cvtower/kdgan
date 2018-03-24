@@ -3,6 +3,7 @@ from flags import flags
 import cifar10_utils
 
 from datetime import datetime
+import numpy as np
 import tensorflow as tf
 import math
 import time
