@@ -47,6 +47,7 @@ def main(argv=None):
         vd_image_np, vd_label_np = sess.run([vd_image_ts, vd_label_ts])
         feed_dict = {image_ph:vd_image_np, label_ph:vd_label_np}
         acc = sess.run(accuracy, feed_dict=feed_dict)
+        print(acc)
         acc_list.append(acc)
       acc = sum(acc_list) / len(acc_list)
       bst_acc = max(acc, bst_acc)
