@@ -1,4 +1,5 @@
 from kdgan import config
+from flags import flags
 import cifar10_utils
 
 from datetime import datetime
@@ -43,9 +44,9 @@ def train():
   with tf.device('/cpu:0'):
     image_ts, label_ts = cifar10_utils.distorted_inputs()
 
-    image_shape = (None, flags.image_size, flags.image_size, flags.channels)
+    image_shape = (flags.batch_size, flags.image_size, flags.image_size, flags.channels)
     image_ph = tf.placeholder(tf.float32, shape=image_shape)
-    label_ph = tf.placeholder(tf.int32, shape=(None,))
+    label_ph = tf.placeholder(tf.int32, shape=(flags.batch_size,))
 
   logit_ts = cifar10_utils.inference(image_ph)
   loss_ts = cifar10_utils.loss(logit_ts, label_ph)
@@ -53,7 +54,7 @@ def train():
   train_op = cifar10_utils.train(loss_ts, global_step)
 
   with tf.train.MonitoredTrainingSession() as sess:
-    for tn_batch in range(10000):
+    for tn_batch in range(100000):
       image_np, label_np = sess.run([image_ts, label_ts])
       feed_dict = {image_ph:image_np, label_ph:label_np}
       _, loss = sess.run([train_op, loss_ts], feed_dict=feed_dict)
