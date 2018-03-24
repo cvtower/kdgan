@@ -3,12 +3,13 @@ import tensorflow as tf
 tf.app.flags.DEFINE_boolean('collect_cr_data', False, '')
 # dataset
 tf.app.flags.DEFINE_integer('channels', 3, '')
-tf.app.flags.DEFINE_integer('image_size', 32, '')
+tf.app.flags.DEFINE_integer('image_size', 24, '')
 tf.app.flags.DEFINE_integer('num_label', 10, '')
 tf.app.flags.DEFINE_integer('train_size', 60000, '')
 tf.app.flags.DEFINE_integer('valid_size', 0, '')
 tf.app.flags.DEFINE_string('dataset_dir', None, '')
 tf.app.flags.DEFINE_string('preprocessing_name', None, '')
+tf.app.flags.DEFINE_boolean('use_fp16', False, '')
 # model
 tf.app.flags.DEFINE_string('dis_model_name', None, '')
 tf.app.flags.DEFINE_string('std_model_name', None, '')
