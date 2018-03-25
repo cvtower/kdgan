@@ -5,7 +5,11 @@ from std_model import STD
 from data_utils import CIFAR
 import cifar10_utils
 
-from datetime import datetime
+from keras.models import Sequential
+from keras.layers import Conv2D, Dense, Flatten, InputLayer, MaxPooling2D
+from keras.metrics import categorical_accuracy
+from keras.objectives import categorical_crossentropy
+from keras.regularizers import l2
 import numpy as np
 import tensorflow as tf
 import math
