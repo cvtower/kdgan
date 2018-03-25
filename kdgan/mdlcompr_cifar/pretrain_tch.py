@@ -120,7 +120,9 @@ img_rows = img_cols = flags.image_size
 img_channels = flags.channels
 num_classes = flags.num_label
 stack_n = 3
-img_input = Input(shape=(img_rows,img_cols,img_channels))
+img_input = Input(shape=(img_rows,img_cols,img_channels), 
+    batch_shape=(flags.batch_size,img_rows,img_cols,img_channels),
+    tensor=image_ph)
 output    = residual_network(img_input,num_classes,stack_n)
 resnet = Model(img_input, output)
 logits = output
