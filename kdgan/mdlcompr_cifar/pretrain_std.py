@@ -49,6 +49,10 @@ def main(argv=None):
       avg_time = duration / (tn_batch + 1)
       print('#batch=%d acc=%.4f time=%.4fs/batch est=%.4fh' % 
           (tn_batch + 1, bst_acc, avg_time, avg_time * tn_num_batch / 3600))
+
+      if acc < bst_acc:
+        continue
+      tn_std.saver.save(utils.get_session(sess), flags.std_model_ckpt)
   print('final=%.4f' % (bst_acc))
 
 if __name__ == '__main__':

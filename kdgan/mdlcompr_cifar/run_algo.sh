@@ -8,6 +8,6 @@ python pretrain_std.py \
   --dataset_dir=$HOME/Projects/data/cifar \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
-  --num_epoch=200
+  --num_epoch=20
 #cifar=50000 final=0.6536
 exit
