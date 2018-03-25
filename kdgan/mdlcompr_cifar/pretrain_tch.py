@@ -103,7 +103,7 @@ def main(argv=None):
 
         if acc < bst_acc:
           continue
-        tn_std.saver.save(utils.get_session(sess), flags.std_model_ckpt)
+        # tn_std.saver.save(utils.get_session(sess), flags.std_model_ckpt)
     except tf.errors.OutOfRangeError as e:
         coord.request_stop(e)
     finally:
