@@ -10,6 +10,6 @@ python pretrain_std.py \
   --batch_size=${batch_size} \
   --learning_rate_decay_factor=0.96 \
   --num_epochs_per_decay=10.0 \
-  --num_epoch=200
+  --num_epoch=20
 #cifar=50000 final=0.6536
 exit

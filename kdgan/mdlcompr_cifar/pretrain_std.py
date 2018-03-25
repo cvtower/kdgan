@@ -2,7 +2,7 @@ from kdgan import config
 from kdgan import utils
 from flags import flags
 from std_model import STD
-import cifar10_utils
+from data_utils import CIFAR
 
 from datetime import datetime
 import numpy as np
@@ -10,13 +10,10 @@ import tensorflow as tf
 import math
 import time
 
-cifar10_utils.maybe_download_and_extract()
-with tf.device('/cpu:0'):
-  tn_image_ts, tn_label_ts = cifar10_utils.distorted_inputs()
-  vd_image_ts, vd_label_ts = cifar10_utils.inputs(eval_data=True)
+cifar = CIFAR(flags)
+
 tn_num_batch = int(flags.num_epoch * flags.train_size / flags.batch_size)
-vd_num_batch = int(math.ceil(flags.valid_size / flags.batch_size))
-print('#tn_batch=%d #vd_batch=%d' % (tn_num_batch, vd_num_batch))
+print('#tn_batch=%d' % (tn_num_batch))
 eval_interval = int(math.ceil(flags.train_size / flags.batch_size))
 
 tn_std = STD(flags, is_training=True)
@@ -31,18 +28,12 @@ def main(argv=None):
     sess.run(init_op)
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
-      tn_image_np, tn_label_np = sess.run([tn_image_ts, tn_label_ts])
+      tn_image_np, tn_label_np = cifar.next_batch(sess)
       feed_dict = {tn_std.image_ph:tn_image_np, tn_std.hard_label_ph:tn_label_np}
       sess.run(tn_std.pre_train, feed_dict=feed_dict)
       if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
         continue
-      acc_list = []
-      for vd_batch in range(vd_num_batch):
-        vd_image_np, vd_label_np = sess.run([vd_image_ts, vd_label_ts])
-        feed_dict = {vd_std.image_ph:vd_image_np, vd_std.hard_label_ph:vd_label_np}
-        acc = sess.run(vd_std.accuracy, feed_dict=feed_dict)
-        acc_list.append(acc)
-      acc = sum(acc_list) / len(acc_list)
+      acc = cifar.evaluate(sess, vd_std):
       bst_acc = max(acc, bst_acc)
 
       end_time = time.time()
