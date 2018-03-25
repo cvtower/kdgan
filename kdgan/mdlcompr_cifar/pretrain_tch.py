@@ -32,7 +32,7 @@ model.add(Conv2D(6, (5, 5),
     padding='valid', 
     activation='relu',
     kernel_initializer='he_normal',
-    kernel_regularizer=l2(weight_decay),
+    kernel_regularizer=l2(flags.tch_weight_decay),
     input_shape=(flags.image_size, flags.image_size, flags.channels)))
 model.add(MaxPooling2D((2, 2),
     strides=(2, 2)))
@@ -40,21 +40,21 @@ model.add(Conv2D(16, (5, 5),
     padding='valid',
     activation='relu',
     kernel_initializer='he_normal',
-    kernel_regularizer=l2(weight_decay)))
+    kernel_regularizer=l2(flags.tch_weight_decay)))
 model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 model.add(Flatten())
 model.add(Dense(120,
     activation='relu',
     kernel_initializer='he_normal',
-    kernel_regularizer=l2(weight_decay)))
+    kernel_regularizer=l2(flags.tch_weight_decay)))
 model.add(Dense(84,
     activation='relu',
     kernel_initializer='he_normal',
-    kernel_regularizer=l2(weight_decay)))
+    kernel_regularizer=l2(flags.tch_weight_decay)))
 model.add(Dense(10,
     activation='softmax',
     kernel_initializer='he_normal',
-    kernel_regularizer=l2(weight_decay)))
+    kernel_regularizer=l2(flags.tch_weight_decay)))
 labels = model.output
 
 
