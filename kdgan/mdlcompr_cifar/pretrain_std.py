@@ -1,4 +1,5 @@
 from kdgan import config
+from kdgan import utils
 from flags import flags
 from std_model import STD
 import cifar10_utils
