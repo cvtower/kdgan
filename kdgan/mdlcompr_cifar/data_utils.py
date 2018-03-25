@@ -1,5 +1,6 @@
 import cifar10_utils
 
+from keras import backend as K
 import tensorflow as tf
 import math
 
