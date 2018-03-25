@@ -75,7 +75,7 @@ init_op = tf.global_variables_initializer()
 
 def main(argv=None):
   bst_acc = 0.0
-  with tf.train.MonitoredTrainingSession() as sess:
+  with tf.Session() as sess:
     sess.run(init_op)
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
