@@ -27,7 +27,8 @@ import tensorflow as tf
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('dataset', 'cifar10', 'cifar10 or cifar100.')
 tf.app.flags.DEFINE_string('mode', 'train', 'train or eval.')
-tf.app.flags.DEFINE_string('train_data_path', '',
+tf.app.flags.DEFINE_string('train_data_path',
+                           '/home/xiaojie/Projects/data/cifar/cifar-10-batches-bin',
                            'Filepattern for training data.')
 tf.app.flags.DEFINE_string('eval_data_path', '',
                            'Filepattern for eval data')
@@ -43,7 +44,7 @@ tf.app.flags.DEFINE_bool('eval_once', False,
 tf.app.flags.DEFINE_string('log_root', '',
                            'Directory to keep the checkpoints. Should be a '
                            'parent directory of FLAGS.train_dir/eval_dir.')
-tf.app.flags.DEFINE_integer('num_gpus', 0,
+tf.app.flags.DEFINE_integer('num_gpus', 1,
                             'Number of gpus used for training. (0 or 1)')
 
 
