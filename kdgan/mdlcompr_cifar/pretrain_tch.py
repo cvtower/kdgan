@@ -78,33 +78,37 @@ def main(argv=None):
   with tf.Session() as sess:
     sess.run(init_op)
     start_time = time.time()
-    
-    from tensorflow.python.training import coordinator
-    from tensorflow.python.training import queue_runner
-    coord = coordinator.Coordinator(clean_stop_exception_types=[])
-    queue_runner.start_queue_runners(sess=sess, coord=coord)
-    for tn_batch in range(tn_num_batch):
-      tn_image_np, tn_label_np = cifar.next_batch(sess)
-      feed_dict = {
-        image_ph:tn_image_np,
-        hard_label_ph:tn_label_np,
-        K.learning_phase(): 1,
-      }
-      sess.run(pre_train, feed_dict=feed_dict)
-      if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
-        continue
-      acc = cifar.evaluate(sess, image_ph, hard_label_ph, accuracy)
-      bst_acc = max(acc, bst_acc)
 
-      end_time = time.time()
-      duration = end_time - start_time
-      avg_time = duration / (tn_batch + 1)
-      print('#batch=%d acc=%.4f time=%.4fs/batch est=%.4fh' % 
-          (tn_batch + 1, bst_acc, avg_time, avg_time * tn_num_batch / 3600))
+    coord = tf.train.Coordinator()
+    threads = tf.train.start_queue_runners(sess=sess, coord=coord)        
+    try:
+      for tn_batch in range(tn_num_batch):
+        tn_image_np, tn_label_np = cifar.next_batch(sess)
+        feed_dict = {
+          image_ph:tn_image_np,
+          hard_label_ph:tn_label_np,
+          K.learning_phase(): 1,
+        }
+        sess.run(pre_train, feed_dict=feed_dict)
+        if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
+          continue
+        acc = cifar.evaluate(sess, image_ph, hard_label_ph, accuracy)
+        bst_acc = max(acc, bst_acc)
 
-      if acc < bst_acc:
-        continue
-      tn_std.saver.save(utils.get_session(sess), flags.std_model_ckpt)
+        end_time = time.time()
+        duration = end_time - start_time
+        avg_time = duration / (tn_batch + 1)
+        print('#batch=%d acc=%.4f time=%.4fs/batch est=%.4fh' % 
+            (tn_batch + 1, bst_acc, avg_time, avg_time * tn_num_batch / 3600))
+
+        if acc < bst_acc:
+          continue
+        tn_std.saver.save(utils.get_session(sess), flags.std_model_ckpt)
+    except tf.errors.OutOfRangeError as e:
+        coord.request_stop(e)
+    finally:
+        coord.request_stop()
+        coord.join(threads) 
   print('final=%.4f' % (bst_acc))
 
 if __name__ == '__main__':
