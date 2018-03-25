@@ -30,7 +30,7 @@ hard_label_ph = tf.placeholder(tf.int32, shape=(flags.batch_size))
 model = Sequential()
 model.add(InputLayer(input_tensor=image_ph, input_shape=image_shape))
 model.add(Conv2D(64, (5, 5), 
-    padding='valid', 
+    padding='same', 
     activation='relu',
     kernel_initializer=TruncatedNormal(stddev=0.05),
     kernel_regularizer=None,
@@ -38,7 +38,7 @@ model.add(Conv2D(64, (5, 5),
 model.add(MaxPooling2D((3, 3),
     strides=(2, 2)))
 model.add(Conv2D(64, (5, 5),
-    padding='valid',
+    padding='same',
     activation='relu',
     kernel_initializer=TruncatedNormal(stddev=0.05),
     kernel_regularizer=None,
@@ -76,6 +76,10 @@ global_step = tf.Variable(0, trainable=False)
 pre_train = cifar10_utils.get_train_op(flags, pre_loss, global_step)
 
 init_op = tf.global_variables_initializer()
+
+for variable in tf.trainable_variables():
+  print('variable.name', variable.name)
+input()
 
 def main(argv=None):
   bst_acc = 0.0
