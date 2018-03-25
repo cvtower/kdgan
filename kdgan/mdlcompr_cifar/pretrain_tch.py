@@ -20,7 +20,6 @@ import time
 cifar = CIFAR(flags)
 tn_num_batch = int(flags.num_epoch * flags.train_size / flags.batch_size)
 print('#tn_batch=%d' % (tn_num_batch))
-input()
 eval_interval = int(math.ceil(flags.train_size / flags.batch_size))
 
 image_shape = (flags.batch_size, flags.image_size, flags.image_size, flags.channels)
@@ -77,9 +76,8 @@ pre_train = cifar10_utils.get_train_op(flags, pre_loss, global_step)
 
 init_op = tf.global_variables_initializer()
 
-for variable in tf.trainable_variables():
-  print('variable.name', variable.name)
-input()
+# for variable in tf.trainable_variables():
+#   print('variable.name', variable.name)
 
 def main(argv=None):
   bst_acc = 0.0
