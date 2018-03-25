@@ -127,7 +127,7 @@ logits = output
 
 hard_loss = cifar10_utils.loss(logits, hard_label_ph)
 regularization_losses = resnet.losses
-print('#regularization_losses' % len(regularization_losses))
+print('#regularization_losses=%d' % len(regularization_losses))
 pre_losses = [hard_loss]
 pre_losses.extend(regularization_losses)
 pre_loss = tf.add_n(pre_losses)
