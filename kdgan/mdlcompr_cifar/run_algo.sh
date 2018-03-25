@@ -12,9 +12,9 @@ python pretrain_tch.py \
   --dataset_dir=${dataset_dir} \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
-  --learning_rate_decay_factor=0.96 \
+  --learning_rate_decay_factor=0.98 \
   --num_epochs_per_decay=20.0 \
-  --num_epoch=200
+  --num_epoch=400
 #cifar=50000 final=0.6536
 exit
 
