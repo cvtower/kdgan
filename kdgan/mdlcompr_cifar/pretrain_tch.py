@@ -28,10 +28,10 @@ hard_label_ph = tf.placeholder(tf.int32, shape=(flags.batch_size))
 
 from keras.layers.core import Layer
 class LRN(Layer):
-  def __init__(self, n, k=1, alpha=0.0001, beta=0.75, **kwargs):
+  def __init__(self, n, bias=1, alpha=0.0001, beta=0.75, **kwargs):
     self.n = n
     self.alpha = alpha
-    self.k = k
+    self.bias = bias
     self.beta = beta
     super(LRN, self).__init__(**kwargs)
 
@@ -48,7 +48,7 @@ class LRN(Layer):
     extra_channels = K.zeros((b, int(ch) + 2 * half_n, r, c))
     input_sqr = K.concatenate([extra_channels[:, :half_n, :, :],input_sqr, extra_channels[:, half_n + int(ch):, :, :]],axis = 1)
 
-    scale = self.k # offset for the scale
+    scale = self.bias # offset for the scale
     norm_alpha = self.alpha / self.n # normalized alpha
     for i in range(self.n):
       scale += norm_alpha * input_sqr[:, i:i+int(ch), :, :]
@@ -58,7 +58,7 @@ class LRN(Layer):
 
   def get_config(self):
     config = {"alpha": self.alpha,
-              "k": self.k,
+              "bias": self.bias,
               "beta": self.beta,
               "n": self.n}
     base_config = super(LRN, self).get_config()
@@ -75,7 +75,7 @@ model.add(Conv2D(64, (5, 5),
 model.add(MaxPooling2D((3, 3),
     strides=(2, 2)))
 model.add(LRN(4,
-    k=1.0,
+    bias=1.0,
     alpha=0.001 / 9.0,
     beta=0.75))
 model.add(Conv2D(64, (5, 5),
@@ -84,6 +84,10 @@ model.add(Conv2D(64, (5, 5),
     kernel_initializer=TruncatedNormal(stddev=0.05),
     kernel_regularizer=None,
     bias_initializer=Constant(value=0.1)))
+model.add(LRN(4,
+    bias=1.0,
+    alpha=0.001 / 9.0,
+    beta=0.75))
 model.add(MaxPooling2D((3, 3),
     strides=(2, 2)))
 model.add(Flatten())
