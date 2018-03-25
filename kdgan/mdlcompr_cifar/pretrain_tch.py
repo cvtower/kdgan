@@ -164,7 +164,7 @@ def main(argv=None):
         sess.run(pre_train, feed_dict=feed_dict)
         if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
           continue
-        acc = cifar.evaluate(sess, image_ph, hard_label_ph, accuracy)
+        acc = cifar.evaluate(sess, image_ph, hard_label_ph, accuracy, set_phase=True)
         bst_acc = max(acc, bst_acc)
 
         end_time = time.time()
