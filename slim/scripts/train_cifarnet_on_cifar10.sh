@@ -26,9 +26,9 @@ set -e
 
 model_name=cifarnet
 model_name=nasnet_cifar
-model_name=vgg_a
+model_name=resnet_v2_50
 preprocessing_name=inception
-preprocessing_name=vgg_a
+preprocessing_name=resnet_v2_50
 image_size=32
 
 # Where the checkpoint and logs will be saved to.
@@ -36,6 +36,7 @@ TRAIN_DIR=$HOME/Projects/kdgan/kdgan/slimmodels/${model_name}
 
 # Where the dataset is saved to.
 DATASET_DIR=$HOME/Projects/data/cifar10
+DATASET_DIR=$HOME/Projects/data/cifar
 
 # Download the dataset
 python download_and_convert_data.py \
