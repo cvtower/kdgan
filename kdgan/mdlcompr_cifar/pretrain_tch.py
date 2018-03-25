@@ -5,6 +5,7 @@ from std_model import STD
 from data_utils import CIFAR
 import cifar10_utils
 
+from keras import backend as K
 from keras.models import Sequential
 from keras.layers import Conv2D, Dense, Flatten, InputLayer, MaxPooling2D
 from keras.metrics import categorical_accuracy
@@ -51,20 +52,21 @@ model.add(Dense(84,
     activation='relu',
     kernel_initializer='he_normal',
     kernel_regularizer=l2(flags.tch_weight_decay)))
-model.add(Dense(10,
-    activation='softmax',
-    kernel_initializer='he_normal',
-    kernel_regularizer=l2(flags.tch_weight_decay)))
-labels = model.output
+# model.add(Dense(10,
+#     activation='softmax',
+#     kernel_initializer='he_normal',
+#     kernel_regularizer=l2(flags.tch_weight_decay)))
+logits = model.output
 
 
-hard_loss = tf.reduce_mean(categorical_crossentropy(labels, hard_label_ph))
+hard_loss = cifar10_utils.loss(logits, hard_label_ph)
 reg_losses = model.losses
 pre_losses = [hard_loss]
 pre_losses.extend(reg_losses)
 pre_loss = tf.add_n(pre_losses)
 
-accuracy = tf.reduce_mean(categorical_accuracy(hard_label_ph, labels))
+top_k_op = tf.nn.in_top_k(logits, hard_label_ph, 1)
+accuracy = tf.reduce_mean(tf.cast(top_k_op, tf.float32))
 
 global_step = tf.Variable(0, trainable=False)
 pre_train = cifar10_utils.get_train_op(flags, pre_loss, global_step)
@@ -78,7 +80,11 @@ def main(argv=None):
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = cifar.next_batch(sess)
-      feed_dict = {image_ph:tn_image_np, hard_label_ph:tn_label_np}
+      feed_dict = {
+        image_ph:tn_image_np,
+        hard_label_ph:tn_label_np,
+        K.learning_phase(): 1,
+      }
       sess.run(pre_train, feed_dict=feed_dict)
       if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
         continue
