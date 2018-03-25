@@ -6,9 +6,10 @@ from data_utils import CIFAR
 import cifar10_utils
 
 from keras import backend as K
-from keras.models import Sequential
+from keras.initializers import Constant, TruncatedNormal
 from keras.layers import Conv2D, Dense, Flatten, InputLayer, MaxPooling2D
 from keras.metrics import categorical_accuracy
+from keras.models import Sequential
 from keras.objectives import categorical_crossentropy
 from keras.regularizers import l2
 import numpy as np
@@ -26,36 +27,39 @@ image_ph = tf.placeholder(tf.float32, shape=image_shape)
 hard_label_ph = tf.placeholder(tf.int32, shape=(flags.batch_size))
 
 model = Sequential()
-
-model = Sequential()
 model.add(InputLayer(input_tensor=image_ph, input_shape=image_shape))
 model.add(Conv2D(64, (5, 5), 
     padding='valid', 
     activation='relu',
-    kernel_initializer='he_normal',
-    kernel_regularizer=None))
+    kernel_initializer=TruncatedNormal(stddev=0.05),
+    kernel_regularizer=None,
+    bias_initializer=Constant(value=0)))
 model.add(MaxPooling2D((3, 3),
     strides=(2, 2)))
 model.add(Conv2D(64, (5, 5),
     padding='valid',
     activation='relu',
-    kernel_initializer='he_normal',
-    kernel_regularizer=None))
+    kernel_initializer=TruncatedNormal(stddev=0.05),
+    kernel_regularizer=None,
+    bias_initializer=Constant(value=0.1)))
 model.add(MaxPooling2D((3, 3),
     strides=(2, 2)))
 model.add(Flatten())
 model.add(Dense(384,
     activation='relu',
-    kernel_initializer='he_normal',
-    kernel_regularizer=l2(flags.tch_weight_decay)))
+    kernel_initializer=TruncatedNormal(stddev=0.04),
+    kernel_regularizer=l2(flags.tch_weight_decay),
+    bias_initializer=Constant(value=0.1)))
 model.add(Dense(192,
-    activation='relu',
-    kernel_initializer='he_normal',
-    kernel_regularizer=l2(flags.tch_weight_decay)))
+    activation='relu',,
+    kernel_initializer=TruncatedNormal(stddev=0.04),
+    kernel_regularizer=l2(flags.tch_weight_decay),
+    bias_initializer=Constant(value=0.1)))
 model.add(Dense(10,
     activation=None,
-    kernel_initializer='he_normal',
-    kernel_regularizer=None))
+    kernel_initializer=TruncatedNormal(stddev=1/192.0),
+    kernel_regularizer=None,
+    bias_initializer=Constant(value=0.0)))
 logits = model.output
 
 hard_loss = cifar10_utils.loss(logits, hard_label_ph)
