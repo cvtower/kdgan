@@ -28,8 +28,8 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('dataset', 'cifar10', 'cifar10 or cifar100.')
 tf.app.flags.DEFINE_string('mode', 'train', 'train or eval.')
 tf.app.flags.DEFINE_string('train_data_path',
-                           '~/Projects/data/cifar/cifar-10-batches-bin/data_batch*',
-                           'Filepattern for training data.')
+    '/home/xiaojie/Projects/data/cifar/cifar-10-batches-bin/data_batch*',
+    'Filepattern for training data.')
 tf.app.flags.DEFINE_string('eval_data_path', '',
                            'Filepattern for eval data')
 tf.app.flags.DEFINE_integer('image_size', 32, 'Image side length.')
