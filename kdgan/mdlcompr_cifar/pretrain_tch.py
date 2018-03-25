@@ -78,6 +78,11 @@ def main(argv=None):
   with tf.Session() as sess:
     sess.run(init_op)
     start_time = time.time()
+    
+    from tensorflow.python.training import coordinator
+    from tensorflow.python.training import queue_runner
+    coord = coordinator.Coordinator(clean_stop_exception_types=[])
+    queue_runner.start_queue_runners(sess=sess, coord=coord)
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = cifar.next_batch(sess)
       feed_dict = {
