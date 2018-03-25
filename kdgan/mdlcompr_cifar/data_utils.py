@@ -1,6 +1,7 @@
 import cifar10_utils
 
 import tensorflow as tf
+import math
 
 class CIFAR(object):
   def __init__(self, flags):
