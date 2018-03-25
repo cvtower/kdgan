@@ -27,8 +27,10 @@ set -e
 model_name=cifarnet
 model_name=nasnet_cifar
 model_name=resnet_v2_50
+model_name=resnet_v2_18
 preprocessing_name=inception
 preprocessing_name=resnet_v2_50
+preprocessing_name=resnet_v2_18
 image_size=32
 
 # Where the checkpoint and logs will be saved to.

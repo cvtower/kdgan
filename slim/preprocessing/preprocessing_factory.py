@@ -61,6 +61,7 @@ def get_preprocessing(name, is_training=False):
       'resnet_v1_101': vgg_preprocessing,
       'resnet_v1_152': vgg_preprocessing,
       'resnet_v1_200': vgg_preprocessing,
+      'resnet_v2_18': vgg_preprocessing,
       'resnet_v2_50': vgg_preprocessing,
       'resnet_v2_101': vgg_preprocessing,
       'resnet_v2_152': vgg_preprocessing,
