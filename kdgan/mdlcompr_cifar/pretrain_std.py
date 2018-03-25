@@ -31,14 +31,14 @@ def main(argv=None):
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = sess.run([tn_image_ts, tn_label_ts])
-      feed_dict = {tn_std.image_ph:tn_image_np, tn_std.label_ph:tn_label_np}
+      feed_dict = {tn_std.image_ph:tn_image_np, tn_std.hard_label_ph:tn_label_np}
       sess.run(tn_std.pre_train, feed_dict=feed_dict)
       if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
         continue
       acc_list = []
       for vd_batch in range(vd_num_batch):
         vd_image_np, vd_label_np = sess.run([vd_image_ts, vd_label_ts])
-        feed_dict = {vd_std.image_ph:vd_image_np, vd_std.label_ph:vd_label_np}
+        feed_dict = {vd_std.image_ph:vd_image_np, vd_std.hard_label_ph:vd_label_np}
         acc = sess.run(vd_std.accuracy, feed_dict=feed_dict)
         acc_list.append(acc)
       acc = sum(acc_list) / len(acc_list)
