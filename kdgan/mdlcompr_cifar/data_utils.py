@@ -1,5 +1,7 @@
 import cifar10_utils
 
+import tensorflow as tf
+
 class CIFAR(object):
   def __init__(self, flags):
     cifar10_utils.maybe_download_and_extract()
