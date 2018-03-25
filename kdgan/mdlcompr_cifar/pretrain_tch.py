@@ -20,6 +20,7 @@ import time
 cifar = CIFAR(flags)
 tn_num_batch = int(flags.num_epoch * flags.train_size / flags.batch_size)
 print('#tn_batch=%d' % (tn_num_batch))
+input()
 eval_interval = int(math.ceil(flags.train_size / flags.batch_size))
 
 image_shape = (flags.batch_size, flags.image_size, flags.image_size, flags.channels)
@@ -51,7 +52,7 @@ model.add(Dense(384,
     kernel_regularizer=l2(flags.tch_weight_decay),
     bias_initializer=Constant(value=0.1)))
 model.add(Dense(192,
-    activation='relu',,
+    activation='relu',
     kernel_initializer=TruncatedNormal(stddev=0.04),
     kernel_regularizer=l2(flags.tch_weight_decay),
     bias_initializer=Constant(value=0.1)))
