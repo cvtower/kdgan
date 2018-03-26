@@ -2,7 +2,7 @@ from kdgan import config
 from kdgan import utils
 from flags import flags
 from std_model import STD
-from data_utils import CIFAR
+from data_utils import CIFAR_TF
 import cifar10_utils
 
 from keras import backend as K
@@ -20,7 +20,7 @@ import tensorflow as tf
 import math
 import time
 
-cifar = CIFAR(flags)
+cifar = CIFAR_TF(flags)
 tn_num_batch = int(flags.num_epoch * flags.train_size / flags.batch_size)
 print('#tn_batch=%d' % (tn_num_batch))
 eval_interval = int(math.ceil(flags.train_size / flags.batch_size))
