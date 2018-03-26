@@ -32,7 +32,7 @@ import tensorflow as tf  # pylint: disable=g-bad-import-order
 # from official.utils.arg_parsers import parsers
 # from official.utils.logging import hooks_helper
 # from official.utils.logging import logger
-from resnet import resnet_model
+import resnet_model
 from utils.arg_parsers import parsers
 from utils.logging import hooks_helper
 from utils.logging import logger
