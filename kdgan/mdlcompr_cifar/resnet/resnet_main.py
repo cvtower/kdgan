@@ -45,7 +45,7 @@ tf.app.flags.DEFINE_bool('eval_once', False,
 tf.app.flags.DEFINE_string('log_root', '../../checkpoints/mdlcompr_cifar_tch',
                            'Directory to keep the checkpoints. Should be a '
                            'parent directory of FLAGS.train_dir/eval_dir.')
-tf.app.flags.DEFINE_integer('num_gpus', 0,
+tf.app.flags.DEFINE_integer('num_gpus', 1,
                             'Number of gpus used for training. (0 or 1)')
 
 
