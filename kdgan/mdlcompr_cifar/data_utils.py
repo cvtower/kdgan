@@ -87,7 +87,7 @@ class KERAS_DG(object):
   def evaluate(self, sess, image_ph, hard_label_ph, accuracy):
     acc_list = []
     for vd_batch in range(self.vd_num_batch):
-      start = vd_batch * flags.batch_size
+      start = vd_batch * self.batch_size
       vd_image_np = self.x_valid[start, start + self.batch_size]
       vd_label_np = self.y_valid[start, start + self.batch_size]
       feed_dict = {
