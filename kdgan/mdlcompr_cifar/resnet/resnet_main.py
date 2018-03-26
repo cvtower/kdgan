@@ -42,7 +42,7 @@ tf.app.flags.DEFINE_integer('eval_batch_count', 50,
                             'Number of batches to eval.')
 tf.app.flags.DEFINE_bool('eval_once', False,
                          'Whether evaluate the model only once.')
-tf.app.flags.DEFINE_string('log_root', '../../checkpoints',
+tf.app.flags.DEFINE_string('log_root', '../../checkpoints/mdlcompr_cifar_tch',
                            'Directory to keep the checkpoints. Should be a '
                            'parent directory of FLAGS.train_dir/eval_dir.')
 tf.app.flags.DEFINE_integer('num_gpus', 0,
