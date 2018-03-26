@@ -106,9 +106,6 @@ def resnet_v1(input_shape, depth, num_classes=10):
   return model
 
 model = resnet_v1(input_shape=input_shape, depth=depth)
-model.compile(loss='categorical_crossentropy',
-              optimizer=Adam(lr=0.001),
-              metrics=['accuracy'])
 logits = model.output
 # print('logits', logits.shape, logits.dtype)
 
@@ -132,6 +129,10 @@ keras_dg = KERAS_DG(flags)
 tn_num_batch = int(flags.num_epoch * flags.train_size / flags.batch_size)
 print('#tn_batch=%d' % (tn_num_batch))
 eval_interval = int(math.ceil(flags.train_size / flags.batch_size))
+
+model.compile(loss='categorical_crossentropy',
+              optimizer=Adam(lr=0.001),
+              metrics=['accuracy'])
 
 def main(argv=None):
   bst_acc = 0.0
