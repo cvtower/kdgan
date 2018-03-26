@@ -106,6 +106,7 @@ def resnet_v1(input_shape, depth, num_classes=10):
   return model
 
 model = resnet_v1(input_shape=input_shape, depth=depth)
+model.compile(loss='categorical_crossentropy', metrics=['accuracy'])
 logits = model.output
 # print('logits', logits.shape, logits.dtype)
 
@@ -147,7 +148,8 @@ def main(argv=None):
 
       if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
         continue
-      acc = keras_dg.evaluate(sess, image_ph, hard_label_ph, accuracy)
+      # acc = keras_dg.evaluate(sess, image_ph, hard_label_ph, accuracy)
+      _, acc = model.evaluate(keras_dg.x_valid, keras_dg.y_valid)
       bst_acc = max(acc, bst_acc)
 
       end_time = time.time()
