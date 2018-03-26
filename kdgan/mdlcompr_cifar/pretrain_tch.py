@@ -106,7 +106,9 @@ def resnet_v1(input_shape, depth, num_classes=10):
   return model
 
 model = resnet_v1(input_shape=input_shape, depth=depth)
-model.compile(loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy',
+              optimizer=Adam(lr=0.001),
+              metrics=['accuracy'])
 logits = model.output
 # print('logits', logits.shape, logits.dtype)
 
