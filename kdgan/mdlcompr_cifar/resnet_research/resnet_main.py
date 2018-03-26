@@ -29,11 +29,11 @@ import tensorflow as tf
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('dataset', 'cifar10', 'cifar10 or cifar100.')
 tf.app.flags.DEFINE_string('mode', 'train', 'train or eval.')
-tf.app.flags.DEFINE_string('train_data_path', '',
+tf.app.flags.DEFINE_string('train_data_path', '%s/data_batch*' % (config.cifar_ext),
                            'Filepattern for training data.')
-tf.app.flags.DEFINE_string('eval_data_path', '%s/data_batch*' % (config.cifar_ext),
+tf.app.flags.DEFINE_string('eval_data_path', '%s/test_batch*' % (config.cifar_ext),
                            'Filepattern for eval data')
-tf.app.flags.DEFINE_integer('image_size', 32, 'Image side length.')
+rtf.app.flags.DEFINE_integer('image_size', 32, 'Image side length.')
 tf.app.flags.DEFINE_string('train_dir', '',
                            'Directory to keep training outputs.')
 tf.app.flags.DEFINE_string('eval_dir', '',
