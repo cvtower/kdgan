@@ -77,12 +77,28 @@ class KERAS_DG(object):
     self.x_valid, self.y_valid = x_valid, y_valid
     self.batch_size = flags.batch_size
     self.datagen = datagen
+    self.vd_num_batch = int(math.ceil(flags.valid_size / flags.batch_size))
 
   def next_batch(self):
     tn_image_np, tn_label_np = next(self.datagen.flow(self.x_train, self.y_train, 
         batch_size=self.batch_size))
     return tn_image_np, tn_label_np
 
+  def evaluate(self, sess, image_ph, hard_label_ph, accuracy):
+    acc_list = []
+    for vd_batch in range(self.vd_num_batch):
+      start = vd_batch * flags.batch_size
+      vd_image_np = self.x_valid[start, start + flags.batch_size]
+      vd_label_np = self.y_valid[start, start + flags.batch_size]
+      feed_dict = {
+        image_ph:vd_image_np,
+        hard_label_ph:np.squeeze(vd_label_np),
+        K.learning_phase(): 0,
+      }
+      acc = sess.run(accuracy, feed_dict=feed_dict)
+      acc_list.append(acc)
+    acc = sum(acc_list) / len(acc_list)
+    return acc
 
 
 
