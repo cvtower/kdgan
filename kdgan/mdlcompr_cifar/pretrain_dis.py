@@ -120,9 +120,10 @@ img_rows = img_cols = flags.image_size
 img_channels = flags.channels
 num_classes = flags.num_label
 stack_n = 3
-img_input = Input(shape=(img_rows,img_cols,img_channels), 
-    batch_shape=(flags.batch_size,img_rows,img_cols,img_channels),
-    tensor=image_ph)
+# img_input = Input(shape=(img_rows,img_cols,img_channels), 
+#     batch_shape=(flags.batch_size,img_rows,img_cols,img_channels),
+#     tensor=image_ph)
+img_input = Input(shape=(img_rows,img_cols,img_channels))
 output    = residual_network(img_input,num_classes,stack_n)
 resnet = Model(img_input, output)
 logits = output
@@ -156,15 +157,21 @@ def main(argv=None):
     try:
       for tn_batch in range(tn_num_batch):
         tn_image_np, tn_label_np = cifar.next_batch(sess)
+        # feed_dict = {
+        #   image_ph:tn_image_np,
+        #   hard_label_ph:tn_label_np,
+        #   K.learning_phase(): 1,
+        # }
         feed_dict = {
-          image_ph:tn_image_np,
+          img_input:tn_image_np,
           hard_label_ph:tn_label_np,
           K.learning_phase(): 1,
         }
         sess.run(pre_train, feed_dict=feed_dict)
         if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
           continue
-        acc = cifar.evaluate(sess, image_ph, hard_label_ph, accuracy, set_phase=True)
+        # acc = cifar.evaluate(sess, image_ph, hard_label_ph, accuracy, set_phase=True)
+        acc = cifar.evaluate(sess, img_input, hard_label_ph, accuracy, set_phase=True)
         bst_acc = max(acc, bst_acc)
 
         end_time = time.time()
