@@ -2,70 +2,60 @@ from kdgan import config
 from kdgan import utils
 from flags import flags
 from std_model import STD
-import data_utils
+from data_utils import CIFAR
 
-import time
+from datetime import datetime
 import numpy as np
 import tensorflow as tf
+import math
+import time
 
-cifar = data_utils.CIFAR()
-tn_data_size = cifar.train.num_examples
-tn_num_batch = int(flags.num_epoch * tn_data_size / flags.batch_size)
-print('train #data=%d #batch=%d' % (tn_data_size, tn_num_batch))
-eval_interval = int(max(tn_data_size / flags.batch_size, 1.0))
+cifar = CIFAR(flags)
+
+tn_num_batch = int(flags.num_epoch * flags.train_size / flags.batch_size)
+print('#tn_batch=%d' % (tn_num_batch))
+eval_interval = int(math.ceil(flags.train_size / flags.batch_size))
 
 tn_std = STD(flags, is_training=True)
 scope = tf.get_variable_scope()
 scope.reuse_variables()
 vd_std = STD(flags, is_training=False)
-
-tot_params = 0
-for variable in tf.trainable_variables():
-  num_params = 1
-  for dim in variable.shape:
-    num_params *= dim.value
-  print('%-50s (%d params)' % (variable.name, num_params))
-  tot_params += num_params
-print('%-50s (%d params)' % ('mlp', tot_params))
-
-tf.summary.scalar(tn_std.learning_rate.name, tn_std.learning_rate)
-tf.summary.scalar(tn_std.pre_loss.name, tn_std.pre_loss)
-summary_op = tf.summary.merge_all()
 init_op = tf.global_variables_initializer()
 
-def main(_):
+def main(argv=None):
   bst_acc = 0.0
-  writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
-    start = time.time()
+    start_time = time.time()
     for tn_batch in range(tn_num_batch):
-      tn_image_np, tn_label_np = cifar.train.next_batch(flags.batch_size)
-      # print(tn_image_np.shape, tn_label_np.shape)
+      tn_image_np, tn_label_np = cifar.next_batch(sess)
       feed_dict = {tn_std.image_ph:tn_image_np, tn_std.hard_label_ph:tn_label_np}
-      _, summary = sess.run([tn_std.pre_update, summary_op], feed_dict=feed_dict)
-      writer.add_summary(summary, tn_batch)
-      
-      if ((tn_batch + 1) % eval_interval != 0) and (tn_batch != (tn_num_batch - 1)):
+      sess.run(tn_std.pre_train, feed_dict=feed_dict)
+      if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
         continue
-      feed_dict = {
-        vd_std.image_ph:cifar.valid.images,
-        vd_std.hard_label_ph:cifar.valid.labels,
-      }
-      acc = sess.run(vd_std.accuracy, feed_dict=feed_dict)
-
+      acc = cifar.evaluate(sess, vd_std.image_ph, vd_std.hard_label_ph, vd_std.accuracy)
       bst_acc = max(acc, bst_acc)
-      tot_time = time.time() - start
-      global_step = sess.run(tn_std.global_step)
-      avg_time = (tot_time / global_step) * (tn_data_size / flags.batch_size)
-      print('#%08d curacc=%.4f curbst=%.4f tot=%.0fs avg=%.2fs/epoch' % 
-          (tn_batch, acc, bst_acc, tot_time, avg_time))
+
+      end_time = time.time()
+      duration = end_time - start_time
+      avg_time = duration / (tn_batch + 1)
+      print('#batch=%d acc=%.4f time=%.4fs/batch est=%.4fh' % 
+          (tn_batch + 1, bst_acc, avg_time, avg_time * tn_num_batch / 3600))
 
       if acc < bst_acc:
         continue
       tn_std.saver.save(utils.get_session(sess), flags.std_model_ckpt)
-  tot_time = time.time() - start
-  print('#cifar=%d bstacc=%.4f et=%.0fs' % (tn_data_size, bst_acc, tot_time))
+  print('final=%.4f' % (bst_acc))
 
 if __name__ == '__main__':
   tf.app.run()
+
+
+
+
+
+
+
+
+
+
