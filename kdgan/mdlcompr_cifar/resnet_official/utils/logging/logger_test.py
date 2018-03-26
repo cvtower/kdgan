@@ -25,7 +25,8 @@ import tempfile
 
 import tensorflow as tf  # pylint: disable=g-bad-import-order
 
-from official.utils.logging import logger
+# from official.utils.logging import logger
+import logger
 
 
 class BenchmarkLoggerTest(tf.test.TestCase):

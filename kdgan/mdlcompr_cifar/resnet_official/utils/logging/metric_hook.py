@@ -20,7 +20,8 @@ from __future__ import print_function
 
 import tensorflow as tf
 
-from official.utils.logging import logger
+# from official.utils.logging import logger
+import logger
 
 
 class LoggingMetricHook(tf.train.LoggingTensorHook):

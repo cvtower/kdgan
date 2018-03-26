@@ -25,6 +25,7 @@ import os
 
 import tensorflow as tf
 
+
 _METRIC_LOG_FILE_NAME = "metric.log"
 _DATE_TIME_FORMAT_PATTERN = "%Y-%m-%dT%H:%M:%S.%fZ"
 
