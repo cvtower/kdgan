@@ -8,6 +8,7 @@
 
 # pip install --ignore-installed -r requirements.txt
 
+h5py==2.7.1
 nltk==3.2.5
 openpyxl==2.5.1
 scipy==1.0.0

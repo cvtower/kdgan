@@ -10,6 +10,7 @@ tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch
 python pretrain_tch.py \
   --tch_model_ckpt=${tch_model_ckpt} \
   --dataset_dir=${dataset_dir} \
+  --image_size=32 \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
   --learning_rate_decay_factor=0.95 \
