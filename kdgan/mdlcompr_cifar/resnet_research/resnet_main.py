@@ -33,7 +33,7 @@ tf.app.flags.DEFINE_string('train_data_path', '%s/data_batch*' % (config.cifar_e
                            'Filepattern for training data.')
 tf.app.flags.DEFINE_string('eval_data_path', '%s/test_batch*' % (config.cifar_ext),
                            'Filepattern for eval data')
-rtf.app.flags.DEFINE_integer('image_size', 32, 'Image side length.')
+tf.app.flags.DEFINE_integer('image_size', 32, 'Image side length.')
 tf.app.flags.DEFINE_string('train_dir', '',
                            'Directory to keep training outputs.')
 tf.app.flags.DEFINE_string('eval_dir', '',
