@@ -88,8 +88,8 @@ class KERAS_DG(object):
     acc_list = []
     for vd_batch in range(self.vd_num_batch):
       start = vd_batch * flags.batch_size
-      vd_image_np = self.x_valid[start, start + flags.batch_size]
-      vd_label_np = self.y_valid[start, start + flags.batch_size]
+      vd_image_np = self.x_valid[start, start + self.batch_size]
+      vd_label_np = self.y_valid[start, start + self.batch_size]
       feed_dict = {
         image_ph:vd_image_np,
         hard_label_ph:np.squeeze(vd_label_np),
