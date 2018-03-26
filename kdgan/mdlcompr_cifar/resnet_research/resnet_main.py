@@ -205,9 +205,12 @@ def main(_):
 
   with tf.device(dev):
     if FLAGS.mode == 'train':
+      train_start = time.time()
       train(hps)
+      train_duration = time.time() - train_start
     elif FLAGS.mode == 'eval':
       evaluate(hps)
+  print('train=%.4fh' % (train_duration / 3600))
 
 
 if __name__ == '__main__':
