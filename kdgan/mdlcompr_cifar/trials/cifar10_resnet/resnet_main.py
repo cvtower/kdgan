@@ -15,6 +15,8 @@
 
 """ResNet Train/Eval module.
 """
+from kdgan import config
+
 import time
 import six
 import sys
@@ -26,22 +28,22 @@ import tensorflow as tf
 
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('dataset', 'cifar10', 'cifar10 or cifar100.')
-tf.app.flags.DEFINE_string('mode', 'train', 'train or eval.')
-tf.app.flags.DEFINE_string('train_data_path',
-    '/home/xiaojie/Projects/data/cifar/cifar-10-batches-bin/data_batch*',
-    'Filepattern for training data.')
-tf.app.flags.DEFINE_string('eval_data_path', '',
+# tf.app.flags.DEFINE_string('mode', 'train', 'train or eval.')
+tf.app.flags.DEFINE_string('mode', 'eval', 'train or eval.')
+tf.app.flags.DEFINE_string('train_data_path', '%s/data_batch*' % (config.cifar_ext),
+                           'Filepattern for training data.')
+tf.app.flags.DEFINE_string('eval_data_path', '%s/test_batch*' % (config.cifar_ext),
                            'Filepattern for eval data')
 tf.app.flags.DEFINE_integer('image_size', 32, 'Image side length.')
-tf.app.flags.DEFINE_string('train_dir', '',
+tf.app.flags.DEFINE_string('train_dir', '../../logs',
                            'Directory to keep training outputs.')
-tf.app.flags.DEFINE_string('eval_dir', '',
+tf.app.flags.DEFINE_string('eval_dir', '../../logs',
                            'Directory to keep eval outputs.')
 tf.app.flags.DEFINE_integer('eval_batch_count', 50,
                             'Number of batches to eval.')
 tf.app.flags.DEFINE_bool('eval_once', False,
                          'Whether evaluate the model only once.')
-tf.app.flags.DEFINE_string('log_root', '',
+tf.app.flags.DEFINE_string('log_root', '../../checkpoints/mdlcompr_cifar_tch',
                            'Directory to keep the checkpoints. Should be a '
                            'parent directory of FLAGS.train_dir/eval_dir.')
 tf.app.flags.DEFINE_integer('num_gpus', 1,
@@ -191,11 +193,15 @@ def main(_):
   elif FLAGS.dataset == 'cifar100':
     num_classes = 100
 
+  # print('log_root', FLAGS.log_root)
+  # print('train_dir', FLAGS.train_dir)
+
   hps = resnet_model.HParams(batch_size=batch_size,
                              num_classes=num_classes,
                              min_lrn_rate=0.0001,
                              lrn_rate=0.1,
-                             num_residual_units=5,
+                             # num_residual_units=5,
+                             num_residual_units=3,
                              use_bottleneck=False,
                              weight_decay_rate=0.0002,
                              relu_leakiness=0.1,
@@ -203,9 +209,12 @@ def main(_):
 
   with tf.device(dev):
     if FLAGS.mode == 'train':
+      train_start = time.time()
       train(hps)
+      train_duration = time.time() - train_start
     elif FLAGS.mode == 'eval':
       evaluate(hps)
+  print('train=%.4fh' % (train_duration / 3600))
 
 
 if __name__ == '__main__':
