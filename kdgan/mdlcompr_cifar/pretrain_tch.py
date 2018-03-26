@@ -2,6 +2,7 @@ from kdgan import config
 from kdgan import utils
 from flags import flags
 from data_utils import CIFAR_TF, KERAS_DG
+import cifar10_utils
 
 from keras.layers import Dense, Conv2D, BatchNormalization, Activation
 from keras.layers import AveragePooling2D, Input, Flatten
@@ -24,7 +25,7 @@ input_shape = (flags.image_size, flags.image_size, flags.channels)
 n = 3
 depth = n * 6 + 2
 image_ph = Input(shape=input_shape)
-hard_label_ph = tf.placeholder(tf.int32, shape=(None))
+hard_label_ph = tf.placeholder(tf.int32, shape=(flags.batch_size))
 
 def resnet_layer(inputs,
       num_filters=16,
@@ -139,7 +140,7 @@ def main(argv=None):
       tn_image_np, tn_label_np = keras_dg.next_batch()
       feed_dict = {
         image_ph:tn_image_np,
-        hard_label_ph:tn_label_np,
+        hard_label_ph:np.squeeze(tn_label_np),
         K.learning_phase(): 1,
       }
       sess.run(pre_train, feed_dict=feed_dict)
