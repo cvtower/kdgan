@@ -23,8 +23,7 @@ import unittest
 
 import tensorflow as tf  # pylint: disable=g-bad-import-order
 
-# from official.utils.logging import hooks_helper
-import hooks_helper
+from official.utils.logging import hooks_helper
 
 
 class BaseTest(unittest.TestCase):

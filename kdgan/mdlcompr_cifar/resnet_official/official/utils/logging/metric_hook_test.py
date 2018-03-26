@@ -24,8 +24,7 @@ import time
 import tensorflow as tf
 from tensorflow.python.training import monitored_session
 
-# from official.utils.logging import metric_hook
-import metric_hook
+from official.utils.logging import metric_hook
 
 
 class LoggingMetricHookTest(tf.test.TestCase):

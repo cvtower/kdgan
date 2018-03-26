@@ -24,8 +24,7 @@ import time
 import tensorflow as tf  # pylint: disable=g-bad-import-order
 from tensorflow.python.training import monitored_session  # pylint: disable=g-bad-import-order
 
-# from official.utils.logging import hooks
-import hooks
+from official.utils.logging import hooks
 
 
 tf.logging.set_verbosity(tf.logging.ERROR)
