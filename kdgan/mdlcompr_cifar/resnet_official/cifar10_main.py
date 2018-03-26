@@ -23,8 +23,10 @@ import sys
 
 import tensorflow as tf  # pylint: disable=g-bad-import-order
 
-from official.resnet import resnet_model
-from official.resnet import resnet_run_loop
+# from official.resnet import resnet_model
+# from official.resnet import resnet_run_loop
+import resnet_model
+import resnet_run_loop
 
 _HEIGHT = 32
 _WIDTH = 32
