@@ -220,7 +220,8 @@ def main(argv):
   # Set defaults that are reasonable for this model.
   parser.set_defaults(data_dir='/tmp/cifar10_data',
                       model_dir='/tmp/cifar10_model',
-                      resnet_size=32,
+                      # resnet_size=32,
+                      resnet_size=20,
                       train_epochs=250,
                       epochs_between_evals=10,
                       batch_size=128)
