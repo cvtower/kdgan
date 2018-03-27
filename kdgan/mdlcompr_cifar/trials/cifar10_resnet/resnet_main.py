@@ -35,15 +35,15 @@ tf.app.flags.DEFINE_string('train_data_path', '%s/data_batch*' % (config.cifar_e
 tf.app.flags.DEFINE_string('eval_data_path', '%s/test_batch*' % (config.cifar_ext),
                            'Filepattern for eval data')
 tf.app.flags.DEFINE_integer('image_size', 32, 'Image side length.')
-tf.app.flags.DEFINE_string('train_dir', '../../logs',
+tf.app.flags.DEFINE_string('train_dir', '../../../logs',
                            'Directory to keep training outputs.')
-tf.app.flags.DEFINE_string('eval_dir', '../../logs',
+tf.app.flags.DEFINE_string('eval_dir', '../../../logs',
                            'Directory to keep eval outputs.')
 tf.app.flags.DEFINE_integer('eval_batch_count', 50,
                             'Number of batches to eval.')
 tf.app.flags.DEFINE_bool('eval_once', False,
                          'Whether evaluate the model only once.')
-tf.app.flags.DEFINE_string('log_root', '../../checkpoints/mdlcompr_cifar_tch',
+tf.app.flags.DEFINE_string('log_root', '../../../checkpoints/mdlcompr_cifar_tch',
                            'Directory to keep the checkpoints. Should be a '
                            'parent directory of FLAGS.train_dir/eval_dir.')
 tf.app.flags.DEFINE_integer('num_gpus', 1,
