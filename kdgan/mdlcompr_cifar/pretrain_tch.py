@@ -46,7 +46,7 @@ def main(_):
 
       if acc < bst_acc:
         continue
-      tn_tch.saver.save(utils.get_session(sess), flags.std_model_ckpt)
+      tn_tch.saver.save(utils.get_session(sess), flags.tch_model_ckpt)
   print('final=%.4f' % (bst_acc))
 
 if __name__ == '__main__':
