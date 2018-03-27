@@ -48,7 +48,7 @@ tf.app.flags.DEFINE_string('log_root', '../../../checkpoints/mdlcompr_cifar_tch'
                            'parent directory of FLAGS.train_dir/eval_dir.')
 tf.app.flags.DEFINE_integer('num_gpus', 1,
                             'Number of gpus used for training. (0 or 1)')
-tf.app.flags.DEFINE_integer('last_step', 200, '')
+tf.app.flags.DEFINE_integer('last_step', 78125, '')
 
 def train(hps):
   """Training loop."""
