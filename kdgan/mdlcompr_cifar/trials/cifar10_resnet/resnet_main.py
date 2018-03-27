@@ -48,7 +48,7 @@ tf.app.flags.DEFINE_string('log_root', '../../../checkpoints/mdlcompr_cifar_tch'
                            'parent directory of FLAGS.train_dir/eval_dir.')
 tf.app.flags.DEFINE_integer('num_gpus', 1,
                             'Number of gpus used for training. (0 or 1)')
-
+tf.app.flags.DEFINE_integer('last_step', 200, '')
 
 def train(hps):
   """Training loop."""
@@ -110,7 +110,7 @@ def train(hps):
       hooks=[
         logging_hook,
         _LearningRateSetterHook(),
-        tf.train.StopAtStepHook(last_step=1000),
+        tf.train.StopAtStepHook(last_step=FLAGS.last_step),
       ],
       chief_only_hooks=[summary_hook],
       # Since we provide a SummarySaverHook, we need to disable default
