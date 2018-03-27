@@ -38,7 +38,7 @@ HParams = namedtuple('HParams',
 class ResNet(object):
   """ResNet model."""
 
-  def __init__(self, hps, images, labels, mode):
+  def __init__(self, hps, images, labels, mode, scope_name):
     """ResNet constructor.
 
     Args:
@@ -51,6 +51,7 @@ class ResNet(object):
     self._images = images
     self.labels = labels
     self.mode = mode
+    self.scope_name = scope_name
 
     self._extra_train_ops = []
 
@@ -60,6 +61,7 @@ class ResNet(object):
     self._build_model()
     if self.mode == 'train':
       self._build_train_op()
+      self._build_save_dict()
     self.summaries = tf.summary.merge_all()
 
   def _stride_arr(self, stride):
@@ -130,7 +132,7 @@ class ResNet(object):
     self.lrn_rate = tf.constant(self.hps.lrn_rate, tf.float32)
     tf.summary.scalar('learning_rate', self.lrn_rate)
 
-    trainable_variables = tf.trainable_variables()
+    trainable_variables = self._get_trainable_variables()
     grads = tf.gradients(self.cost, trainable_variables)
 
     if self.hps.optimizer == 'sgd':
@@ -144,6 +146,22 @@ class ResNet(object):
 
     train_ops = [apply_op] + self._extra_train_ops
     self.train_op = tf.group(*train_ops)
+
+  def _build_save_dict(self):
+    save_dict = {}
+    for var in self._get_trainable_variables():
+      scope_name = self.scope_name.upper()
+      print('%-50s added to %s saver' % (var.op.name, scope_name))
+      save_dict[var.op.name] = var
+    self.saver = tf.train.Saver(save_dict)
+
+  def _get_trainable_variables(self):
+    var_list = []
+    for var in tf.trainable_variables():
+      if not var.op.name.startswith(self.scope_name):
+        continue
+      var_list.append(var)
+    return var_list
 
   # TODO(xpan): Consider batch_norm in contrib/layers/python/layers/layers.py
   def _batch_norm(self, name, x):
@@ -262,7 +280,7 @@ class ResNet(object):
   def _decay(self):
     """L2 weight decay loss."""
     costs = []
-    for var in tf.trainable_variables():
+    for var in self._get_trainable_variables():
       if var.op.name.find(r'DW') > 0:
         costs.append(tf.nn.l2_loss(var))
         # tf.summary.histogram(var.op.name, var)
