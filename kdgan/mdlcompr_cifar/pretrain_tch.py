@@ -1,4 +1,5 @@
 from kdgan import config
+from kdgan import utils
 from flags import flags
 from data_utils import RES_CIFAR
 from tch_model import TCH
