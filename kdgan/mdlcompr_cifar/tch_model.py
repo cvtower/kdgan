@@ -30,4 +30,5 @@ class TCH():
       if not is_training:
         return
       self.saver = model.saver
+      self.global_step = model.global_step
       self.pre_train = model.train_op
