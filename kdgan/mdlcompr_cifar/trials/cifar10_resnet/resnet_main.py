@@ -29,7 +29,7 @@ import tensorflow as tf
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('dataset', 'cifar10', 'cifar10 or cifar100.')
 # tf.app.flags.DEFINE_string('mode', 'train', 'train or eval.')
-tf.app.flags.DEFINE_string('mode', 'eval', 'train or eval.')
+tf.app.flags.DEFINE_string('mode', 'train', 'train or eval.')
 tf.app.flags.DEFINE_string('train_data_path', '%s/data_batch*' % (config.cifar_ext),
                            'Filepattern for training data.')
 tf.app.flags.DEFINE_string('eval_data_path', '%s/test_batch*' % (config.cifar_ext),
@@ -107,7 +107,11 @@ def train(hps):
 
   with tf.train.MonitoredTrainingSession(
       checkpoint_dir=FLAGS.log_root,
-      hooks=[logging_hook, _LearningRateSetterHook()],
+      hooks=[
+        logging_hook,
+        _LearningRateSetterHook(),
+        tf.train.StopAtStepHook(last_step=1000),
+      ],
       chief_only_hooks=[summary_hook],
       # Since we provide a SummarySaverHook, we need to disable default
       # SummarySaverHook. To do that we set save_summaries_steps to 0.
@@ -200,8 +204,8 @@ def main(_):
                              num_classes=num_classes,
                              min_lrn_rate=0.0001,
                              lrn_rate=0.1,
-                             num_residual_units=5,
-                             # num_residual_units=3,
+                             # num_residual_units=5,
+                             num_residual_units=3,
                              use_bottleneck=False,
                              weight_decay_rate=0.0002,
                              relu_leakiness=0.1,
