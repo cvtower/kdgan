@@ -28,7 +28,7 @@ class LearningRateSetterHook(tf.train.SessionRunHook):
 
   def before_run(self, run_context):
     return tf.train.SessionRunArgs(
-        model.global_step,
+        tn_tch.global_step,
         feed_dict={tn_tch.lrn_rate:self._lrn_rate}
     )
 

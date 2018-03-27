@@ -31,4 +31,7 @@ class TCH():
         return
       self.saver = model.saver
       self.global_step = model.global_step
+      self.lrn_rate = model.lrn_rate
       self.pre_train = model.train_op
+
+
