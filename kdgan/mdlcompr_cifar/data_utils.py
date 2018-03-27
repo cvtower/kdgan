@@ -1,31 +1,16 @@
 import tensorflow as tf
 
-def build_input(dataset, data_path, batch_size, mode):
-  """Build CIFAR image and labels.
-
-  Args:
-    dataset: Either 'cifar10' or 'cifar100'.
-    data_path: Filename for data.
-    batch_size: Input batch size.
-    mode: Either 'train' or 'eval'.
-  Returns:
-    images: Batches of images. [batch_size, image_size, image_size, 3]
-    labels: Batches of labels. [batch_size, num_classes]
-  Raises:
-    ValueError: when the specified dataset is not supported.
-  """
-  image_size = 32
-  if dataset == 'cifar10':
-    label_bytes = 1
-    label_offset = 0
-    num_classes = 10
-  elif dataset == 'cifar100':
-    label_bytes = 1
-    label_offset = 1
-    num_classes = 100
+def build_input(flags, mode):
+  image_size = flags.image_size
+  batch_size = flags.batch_size
+  num_classes = flags.num_label
+  if mode == 'train':
+    data_path = flags.train_filepath
   else:
-    raise ValueError('Not supported dataset %s', dataset)
+    data_path = flags.valid_filepath
 
+  label_bytes = 1
+  label_offset = 0
   depth = 3
   image_bytes = image_size * image_size * depth
   record_bytes = label_bytes + label_offset + image_bytes
