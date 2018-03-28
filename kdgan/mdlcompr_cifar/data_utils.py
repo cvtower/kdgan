@@ -101,10 +101,10 @@ class RES_CIFAR():
         model.image_ph:vd_image_np,
         model.hard_label_ph:vd_label_np,
       }
-      predictions = sess.run(model.labels, feed_dict=feed_dict)
+      predictions = sess.run(model.predictions, feed_dict=feed_dict)
 
+      vd_label_np = np.argmax(vd_label_np, axis=1)
       predictions = np.argmax(predictions, axis=1)
-      groundtruth = np.argmax(vd_label_np, axis=1)
       acc = 1.0 * np.sum(vd_label_np == predictions) / predictions.shape[0]
       acc_list.append(acc)
     acc = sum(acc_list) / len(acc_list)

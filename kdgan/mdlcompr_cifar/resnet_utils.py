@@ -117,12 +117,12 @@ class ResNet(object):
       x = self._global_avg_pool(x)
 
     with tf.variable_scope('logit'):
-      self.logits = self._fully_connected(x, self.hps.num_classes)
-      # self.predictions = tf.nn.softmax(self.logits)
+      logits = self._fully_connected(x, self.hps.num_classes)
+      self.predictions = tf.nn.softmax(logits)
 
     with tf.variable_scope('costs'):
       xent = tf.nn.softmax_cross_entropy_with_logits(
-          logits=self.logits, labels=self.labels)
+          logits=logits, labels=self.labels)
       self.cost = tf.reduce_mean(xent, name='xent')
       self.cost += self._decay()
 

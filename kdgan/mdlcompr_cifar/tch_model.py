@@ -26,9 +26,7 @@ class TCH():
       else:
         model = ResNet(hps, image_ph, hard_label_ph, 'train', tch_scope)
       model.build_graph()
-      self.logits = model.logits
-      self.labels = tf.nn.softmax(self.logits)
-
+      self.predictions = model.predictions
       if not is_training:
         return
       self.saver = model.saver
