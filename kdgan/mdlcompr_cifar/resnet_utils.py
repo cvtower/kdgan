@@ -130,7 +130,11 @@ class ResNet(object):
 
   def _build_train_op(self):
     """Build training specific ops for the graph."""
-    self.lrn_rate = tf.constant(self.hps.lrn_rate, tf.float32)
+
+    ## learning rate session run hook
+    # self.lrn_rate = tf.constant(self.hps.lrn_rate, tf.float32)
+    ## learning rate variable assign
+    self.lrn_rate = tf.Variable(self.hps.lrn_rate, trainable=False)
     tf.summary.scalar('learning_rate', self.lrn_rate)
 
     trainable_variables = self._get_trainable_variables()

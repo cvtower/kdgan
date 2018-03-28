@@ -24,24 +24,24 @@ init_op = tf.global_variables_initializer()
 
 class LearningRateSetterHook(tf.train.SessionRunHook):
   def begin(self):
-    self._lrn_rate = 0.1
+    self.learning_rate = 0.1
 
   def before_run(self, run_context):
     return tf.train.SessionRunArgs(
         tn_tch.global_step,
-        feed_dict={tn_tch.lrn_rate:self._lrn_rate}
+        feed_dict={tn_tch.learning_rate:self.learning_rate}
     )
 
   def after_run(self, run_context, run_values):
     train_step = run_values.results
     if train_step < 40000:
-      self._lrn_rate = 0.1
+      self.learning_rate = 0.1
     elif train_step < 60000:
-      self._lrn_rate = 0.01
+      self.learning_rate = 0.01
     elif train_step < 80000:
-      self._lrn_rate = 0.001
+      self.learning_rate = 0.001
     else:
-      self._lrn_rate = 0.0001
+      self.learning_rate = 0.0001
 
 
 def main(_):
@@ -51,6 +51,16 @@ def main(_):
     sess.run(init_op)
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
+      if tn_batch == (40 - 1):
+        feed_dict = {tn_tch.learning_rate_ph:0.01}
+        sess.run(tn_tch.update_lr, feed_dict=feed_dict)
+      elif tn_batch == (60 - 1):
+        feed_dict = {tn_tch.learning_rate_ph:0.001}
+        sess.run(tn_tch.update_lr, feed_dict=feed_dict)
+      elif tn_batch == (80 - 1):
+        feed_dict = {tn_tch.learning_rate_ph:0.0001}
+        sess.run(tn_tch.update_lr, feed_dict=feed_dict)
+
       tn_image_np, tn_label_np = res_cifar.next_batch(sess)
       feed_dict = {
         tn_tch.image_ph:tn_image_np,
