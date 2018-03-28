@@ -17,7 +17,7 @@ python pretrain_tch.py \
   --batch_size=${batch_size} \
   --learning_rate_decay_factor=0.95 \
   --num_epochs_per_decay=10.0 \
-  --num_epoch=2
+  --num_epoch=250
 #cifar=50000 final=0.8836 #tn_batch=78125
 exit
 
