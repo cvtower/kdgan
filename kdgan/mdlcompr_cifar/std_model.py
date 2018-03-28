@@ -7,10 +7,12 @@ class STD():
     self.is_training = is_training
     
     # None = batch_size
-    image_shape = (flags.batch_size, flags.image_size, flags.image_size, flags.channels)
-    self.image_ph = tf.placeholder(tf.float32, shape=image_shape)
-    self.hard_label_ph = tf.placeholder(tf.int32, shape=(flags.batch_size))
-    self.soft_logit_ph = tf.placeholder(tf.float32, shape=(flags.batch_size, flags.num_label))
+    self.image_ph = tf.placeholder(tf.float32,
+        shape=(flags.batch_size, flags.image_size, flags.image_size, flags.channels))
+    self.hard_label_ph = tf.placeholder(tf.int32,
+        shape=(flags.batch_size, flags.num_label))
+    self.soft_logit_ph = tf.placeholder(tf.float32, 
+        shape=(flags.batch_size, flags.num_label))
 
     # None = batch_size * sample_size
     self.sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
@@ -22,8 +24,10 @@ class STD():
       self.labels = tf.nn.softmax(self.logits)
 
       if not is_training:
-        top_k_op = tf.nn.in_top_k(self.logits, self.hard_label_ph, 1)
-        self.accuracy = tf.reduce_mean(tf.cast(top_k_op, tf.float32))
+        predictions = tf.argmax(self.labels, axis=1)
+        groundtruth = tf.argmax(self.hard_label_ph, axis=1)
+        accuracy_list = tf.equal(predictions, groundtruth)
+        self.accuracy = tf.reduce_mean(tf.cast(accuracy_list, tf.float32))
         return
 
       save_dict, var_list = {}, []

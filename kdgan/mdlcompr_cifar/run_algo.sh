@@ -23,7 +23,8 @@ exit
 
 python pretrain_std.py \
   --std_model_ckpt=${std_model_ckpt} \
-  --dataset_dir=${dataset_dir} \
+  --train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch* \
+  --valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch* \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
   --learning_rate_decay_factor=0.96 \
