@@ -22,42 +22,19 @@ scope.reuse_variables()
 vd_tch = TCH(flags, is_training=False)
 init_op = tf.global_variables_initializer()
 
-class LearningRateSetterHook(tf.train.SessionRunHook):
-  def begin(self):
-    self.learning_rate = 0.1
-
-  def before_run(self, run_context):
-    return tf.train.SessionRunArgs(
-        tn_tch.global_step,
-        feed_dict={tn_tch.learning_rate:self.learning_rate}
-    )
-
-  def after_run(self, run_context, run_values):
-    train_step = run_values.results
-    if train_step < 40000:
-      self.learning_rate = 0.1
-    elif train_step < 60000:
-      self.learning_rate = 0.01
-    elif train_step < 80000:
-      self.learning_rate = 0.001
-    else:
-      self.learning_rate = 0.0001
-
-
 def main(_):
   bst_acc = 0.0
-  # with tf.train.MonitoredTrainingSession(hooks=[LearningRateSetterHook()]) as sess:
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
-      if tn_batch == (40 - 1):
+      if tn_batch == (40000 - 1):
         feed_dict = {tn_tch.learning_rate_ph:0.01}
         sess.run(tn_tch.update_lr, feed_dict=feed_dict)
-      elif tn_batch == (60 - 1):
+      elif tn_batch == (60000 - 1):
         feed_dict = {tn_tch.learning_rate_ph:0.001}
         sess.run(tn_tch.update_lr, feed_dict=feed_dict)
-      elif tn_batch == (80 - 1):
+      elif tn_batch == (80000 - 1):
         feed_dict = {tn_tch.learning_rate_ph:0.0001}
         sess.run(tn_tch.update_lr, feed_dict=feed_dict)
 
