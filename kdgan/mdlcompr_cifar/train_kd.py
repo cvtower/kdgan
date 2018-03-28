@@ -8,6 +8,11 @@ import time
 
 cifar = CIFAR(flags)
 
+tn_num_batch = int(flags.num_epoch * flags.train_size / flags.batch_size)
+print('#tn_batch=%d' % (tn_num_batch))
+eval_interval = int(math.ceil(flags.train_size / flags.batch_size))
+
+
 tn_std = STD(flags, is_training=True)
 tn_tch = TCH(flags, is_training=True)
 scope = tf.get_variable_scope()
