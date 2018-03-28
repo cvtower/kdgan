@@ -9,6 +9,7 @@ class RES_CIFAR():
     vd_input_ts = self.build_input_ts(flags, 'valid')
     self.vd_image_ts, self.vd_label_ts = vd_input_ts
     self.vd_num_batch = int(math.ceil(flags.valid_size / flags.batch_size))
+    self.batch_size = flags.batch_size
 
   def build_input_ts(self, flags, mode):
     image_size = flags.image_size
@@ -103,9 +104,11 @@ class RES_CIFAR():
       }
       predictions = sess.run(model.labels, feed_dict=feed_dict)
 
-      vd_label_np = np.argmax(vd_label_np, axis=1)
       predictions = np.argmax(predictions, axis=1)
-      acc = 1.0 * np.sum(vd_label_np == predictions) / predictions.shape[0]
+      groundtruth = np.argmax(vd_label_np, axis=1)
+      acc = 1.0 * np.sum(predictions==groundtruth) / self.batch_size
       acc_list.append(acc)
     acc = sum(acc_list) / len(acc_list)
     return acc
+
+
