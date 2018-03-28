@@ -43,7 +43,7 @@ class STD():
       pre_losses.extend(self.get_regularization_losses())
       print('#pre_losses wt regularization=%d' % (len(pre_losses)))
       self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % std_scope)
-      self.pre_train = lenet_utils.get_train_op(flags, self.pre_loss, global_step)
+      self.pre_train = lenet_utils.get_train_op(self.pre_loss, global_step)
 
       # kd train
       kd_losses = self.get_kd_losses(flags)
@@ -51,7 +51,7 @@ class STD():
       kd_losses.extend(self.get_regularization_losses())
       print('#kd_losses wt regularization=%d' % (len(kd_losses)))
       self.kd_loss = tf.add_n(kd_losses, name='%s_kd_loss' % std_scope)
-      self.kd_train = lenet_utils.get_train_op(flags, self.kd_loss, global_step)
+      self.kd_train = lenet_utils.get_train_op(self.kd_loss, global_step)
 
       # gan train
       gan_losses = self.get_gan_losses()
@@ -59,7 +59,7 @@ class STD():
       gan_losses.extend(self.get_regularization_losses())
       print('#gan_losses wt regularization=%d' % (len(gan_losses)))
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % std_scope)
-      self.gan_train = lenet_utils.get_train_op(flags, self.gan_loss, global_step)
+      self.gan_train = lenet_utils.get_train_op(self.gan_loss, global_step)
 
       # kdgan train
       kdgan_losses = self.get_kdgan_losses(flags)
@@ -67,7 +67,7 @@ class STD():
       kdgan_losses.extend(self.get_regularization_losses())
       print('#kdgan_losses wt regularization=%d' % (len(kdgan_losses)))
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % std_scope)
-      self.kdgan_train = lenet_utils.get_train_op(flags, self.kdgan_loss, global_step)
+      self.kdgan_train = lenet_utils.get_train_op(self.kdgan_loss, global_step)
 
   def get_hard_loss(self):
     hard_loss = lenet_utils.loss(self.logits, self.hard_label_ph)

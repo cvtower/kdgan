@@ -1,6 +1,5 @@
 from kdgan import config
 from flags import flags
-import cifar10_input
 
 from six.moves import urllib
 import tensorflow as tf
@@ -8,14 +7,6 @@ import os
 import re
 import sys
 import tarfile
-
-
-# Global constants describing the CIFAR-10 data set.
-IMAGE_SIZE = cifar10_input.IMAGE_SIZE
-NUM_CLASSES = cifar10_input.NUM_CLASSES
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
-NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
-
 
 # Constants describing the training process.
 MOVING_AVERAGE_DECAY = 0.9999     # The decay to use for the moving average.
@@ -95,52 +86,6 @@ def _variable_with_weight_decay(name, shape, stddev, wd):
   return var
 
 
-def distorted_inputs():
-  """Construct distorted input for CIFAR training using the Reader ops.
-
-  Returns:
-    images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
-    labels: Labels. 1D tensor of [batch_size] size.
-
-  Raises:
-    ValueError: If no data_dir
-  """
-  if not config.cifar_dir:
-    raise ValueError('Please supply a data_dir')
-  data_dir = os.path.join(config.cifar_dir, 'cifar-10-batches-bin')
-  images, labels = cifar10_input.distorted_inputs(data_dir=data_dir,
-                                                  batch_size=flags.batch_size)
-  if flags.use_fp16:
-    images = tf.cast(images, tf.float16)
-    labels = tf.cast(labels, tf.float16)
-  return images, labels
-
-
-def inputs(eval_data):
-  """Construct input for CIFAR evaluation using the Reader ops.
-
-  Args:
-    eval_data: bool, indicating if one should use the train or eval data set.
-
-  Returns:
-    images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
-    labels: Labels. 1D tensor of [batch_size] size.
-
-  Raises:
-    ValueError: If no data_dir
-  """
-  if not config.cifar_dir:
-    raise ValueError('Please supply a data_dir')
-  data_dir = os.path.join(config.cifar_dir, 'cifar-10-batches-bin')
-  images, labels = cifar10_input.inputs(eval_data=eval_data,
-                                        data_dir=data_dir,
-                                        batch_size=flags.batch_size)
-  if flags.use_fp16:
-    images = tf.cast(images, tf.float16)
-    labels = tf.cast(labels, tf.float16)
-  return images, labels
-
-
 def inference(images):
   """Build the CIFAR-10 model.
 
@@ -217,9 +162,9 @@ def inference(images):
   # tf.nn.sparse_softmax_cross_entropy_with_logits accepts the unscaled logits
   # and performs the softmax internally for efficiency.
   with tf.variable_scope('softmax_linear') as scope:
-    weights = _variable_with_weight_decay('weights', [192, NUM_CLASSES],
+    weights = _variable_with_weight_decay('weights', [192, flags.num_label],
                                           stddev=1/192.0, wd=None)
-    biases = _variable_on_cpu('biases', [NUM_CLASSES],
+    biases = _variable_on_cpu('biases', [flags.num_label],
                               tf.constant_initializer(0.0))
     softmax_linear = tf.add(tf.matmul(local4, weights), biases, name=scope.name)
     _activation_summary(softmax_linear)
@@ -251,6 +196,7 @@ def loss(logits, labels):
   # return tf.add_n(tf.get_collection('losses'), name='total_loss')
   return cross_entropy_mean
 
+
 def _add_loss_summaries(total_loss):
   """Add summaries for losses in CIFAR-10 model.
 
@@ -278,7 +224,7 @@ def _add_loss_summaries(total_loss):
   return loss_averages_op
 
 
-def get_train_op(flags, total_loss, global_step):
+def get_train_op(total_loss, global_step):
   """Train CIFAR-10 model.
 
   Create an optimizer and apply to all trainable variables. Add moving
@@ -292,7 +238,7 @@ def get_train_op(flags, total_loss, global_step):
     train_op: op for training.
   """
   # Variables that affect learning rate.
-  num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / flags.batch_size
+  num_batches_per_epoch = flags.train_size / flags.batch_size
   decay_steps = int(num_batches_per_epoch * flags.num_epochs_per_decay)
 
   # Decay the learning rate exponentially based on the number of steps.
@@ -339,22 +285,3 @@ def get_train_op(flags, total_loss, global_step):
   return train_op
 
 
-def maybe_download_and_extract():
-  """Download and extract the tarball from Alex's website."""
-  dest_directory = config.cifar_dir
-  if not os.path.exists(dest_directory):
-    os.makedirs(dest_directory)
-  filename = DATA_URL.split('/')[-1]
-  filepath = os.path.join(dest_directory, filename)
-  if not os.path.exists(filepath):
-    def _progress(count, block_size, total_size):
-      sys.stdout.write('\r>> Downloading %s %.1f%%' % (filename,
-          float(count * block_size) / float(total_size) * 100.0))
-      sys.stdout.flush()
-    filepath, _ = urllib.request.urlretrieve(DATA_URL, filepath, _progress)
-    print()
-    statinfo = os.stat(filepath)
-    print('Successfully downloaded', filename, statinfo.st_size, 'bytes.')
-  extracted_dir_path = os.path.join(dest_directory, 'cifar-10-batches-bin')
-  if not os.path.exists(extracted_dir_path):
-    tarfile.open(filepath, 'r:gz').extractall(dest_directory)
