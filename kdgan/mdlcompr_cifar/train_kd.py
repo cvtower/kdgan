@@ -39,7 +39,7 @@ def main(_):
     sess.run(init_op)
     # tn_std.saver.restore(sess, flags.std_model_ckpt)
     # tn_tch.saver.restore(sess, flags.tch_model_ckpt)
-    saver.restore(sess, '/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints/mdlcompr_cifar50000_tch.ckpt')
+    saver.restore(sess, flags.tch_model_ckpt)
     # ini_std = cifar.compute_acc(sess, vd_std)
     ini_tch = cifar.compute_acc(sess, vd_tch)
     # tf.logging.info('ini_std=%.4f ini_tch=%.4f' % (ini_std, ini_tch))
