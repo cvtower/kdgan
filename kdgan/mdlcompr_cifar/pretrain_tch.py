@@ -28,13 +28,13 @@ def main(_):
     sess.run(init_op)
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
-      if tn_batch == (40000 - 1):
+      if tn_batch == (20000 - 1):
         feed_dict = {tn_tch.learning_rate_ph:0.01}
         sess.run(tn_tch.update_lr, feed_dict=feed_dict)
-      elif tn_batch == (60000 - 1):
+      elif tn_batch == (40000 - 1):
         feed_dict = {tn_tch.learning_rate_ph:0.001}
         sess.run(tn_tch.update_lr, feed_dict=feed_dict)
-      elif tn_batch == (80000 - 1):
+      elif tn_batch == (60000 - 1):
         feed_dict = {tn_tch.learning_rate_ph:0.0001}
         sess.run(tn_tch.update_lr, feed_dict=feed_dict)
 
