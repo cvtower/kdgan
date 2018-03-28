@@ -1,7 +1,7 @@
 from kdgan import config
 from kdgan import utils
 from flags import flags
-from data_utils import RES_CIFAR
+from data_utils import CIFAR
 from tch_model import TCH
 
 import tensorflow as tf
@@ -10,7 +10,7 @@ import six
 import sys
 import time
 
-res_cifar = RES_CIFAR(flags)
+cifar = CIFAR(flags)
 
 tn_num_batch = int(flags.num_epoch * flags.train_size / flags.batch_size)
 print('#tn_batch=%d' % (tn_num_batch))
@@ -38,7 +38,7 @@ def main(_):
         feed_dict = {tn_tch.learning_rate_ph:0.0001}
         sess.run(tn_tch.update_lr, feed_dict=feed_dict)
 
-      tn_image_np, tn_label_np = res_cifar.next_batch(sess)
+      tn_image_np, tn_label_np = cifar.next_batch(sess)
       feed_dict = {
         tn_tch.image_ph:tn_image_np,
         tn_tch.hard_label_ph:tn_label_np,
@@ -46,7 +46,7 @@ def main(_):
       sess.run(tn_tch.pre_train, feed_dict=feed_dict)
       if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
         continue
-      acc = res_cifar.compute_acc(sess, vd_tch)
+      acc = cifar.compute_acc(sess, vd_tch)
       bst_acc = max(acc, bst_acc)
 
       end_time = time.time()

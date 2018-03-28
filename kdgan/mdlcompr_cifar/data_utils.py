@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import math
 
-class RES_CIFAR():
+class CIFAR():
   def __init__(self, flags):
     tn_input_ts = self.build_input_ts(flags, 'train')
     self.tn_image_ts, self.tn_label_ts = tn_input_ts
@@ -47,9 +47,9 @@ class RES_CIFAR():
       image = tf.random_crop(image, [image_size, image_size, 3])
       image = tf.image.random_flip_left_right(image)
       # brightness/saturation/constrast provides small gains .2%~.5% on cifar
-      # image = tf.image.random_brightness(image, max_delta=63. / 255.)
-      # image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
-      # image = tf.image.random_contrast(image, lower=0.2, upper=1.8)
+      image = tf.image.random_brightness(image, max_delta=63. / 255.)
+      image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
+      image = tf.image.random_contrast(image, lower=0.2, upper=1.8)
       image = tf.image.per_image_standardization(image)
 
       example_queue = tf.RandomShuffleQueue(
@@ -102,7 +102,6 @@ class RES_CIFAR():
         model.image_ph:vd_image_np,
         model.hard_label_ph:vd_label_np,
       }
-
       # predictions = sess.run(model.labels, feed_dict=feed_dict)
       # predictions = np.argmax(predictions, axis=1)
       # groundtruth = np.argmax(vd_label_np, axis=1)
