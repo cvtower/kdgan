@@ -154,7 +154,10 @@ class ResNet(object):
 
   def _build_save_dict(self):
     save_dict = {}
-    for var in self._get_trainable_variables():
+    # for var in self._get_trainable_variables():
+    for var in tf.all_variables():
+      if not var.op.name.startswith(self.scope_name):
+        continue
       scope_name = self.scope_name.upper()
       print('%-64s added to %s saver' % (var.op.name, scope_name))
       save_dict[var.op.name] = var
