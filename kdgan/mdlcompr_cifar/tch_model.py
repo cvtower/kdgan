@@ -26,8 +26,14 @@ class TCH():
       else:
         model = ResNet(hps, image_ph, hard_label_ph, 'train', tch_scope)
       model.build_graph()
-      self.predictions = model.predictions
+      self.logits = model.logits
+      self.labels = tf.nn.softmax(self.logits)
+
       if not is_training:
+        predictions = tf.argmax(self.labels, axis=1)
+        groundtruth = tf.argmax(self.hard_label_ph, axis=1)
+        accuracy_list = tf.equal(predictions, groundtruth)
+        self.accuracy = tf.reduce_mean(tf.cast(accuracy_list, tf.float32))
         return
       self.saver = model.saver
       self.global_step = model.global_step
