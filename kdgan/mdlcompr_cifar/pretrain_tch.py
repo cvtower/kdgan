@@ -22,8 +22,31 @@ scope.reuse_variables()
 vd_tch = TCH(flags, is_training=False)
 init_op = tf.global_variables_initializer()
 
+class LearningRateSetterHook(tf.train.SessionRunHook):
+  def begin(self):
+    self._lrn_rate = 0.1
+
+  def before_run(self, run_context):
+    return tf.train.SessionRunArgs(
+        tn_tch.global_step,
+        feed_dict={tn_tch.lrn_rate:self._lrn_rate}
+    )
+
+  def after_run(self, run_context, run_values):
+    train_step = run_values.results
+    if train_step < 40000:
+      self._lrn_rate = 0.1
+    elif train_step < 60000:
+      self._lrn_rate = 0.01
+    elif train_step < 80000:
+      self._lrn_rate = 0.001
+    else:
+      self._lrn_rate = 0.0001
+
+
 def main(_):
   bst_acc = 0.0
+  # with tf.train.MonitoredTrainingSession(hooks=[LearningRateSetterHook()]) as sess:
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     start_time = time.time()
