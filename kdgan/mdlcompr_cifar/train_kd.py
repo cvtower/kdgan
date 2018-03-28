@@ -1,6 +1,7 @@
 from flags import flags
 from std_model import STD
 from tch_model import TCH
+from data_utils import CIFAR
 
 import tensorflow as tf
 
