@@ -4,9 +4,26 @@ train_size=50000
 batch_size=128
 
 dataset_dir=$HOME/Projects/data/cifar
+train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch*
+valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch*
+
 std_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_std
 tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch
 tch_ckpt_dir=${checkpoint_dir}/mdlcompr_cifar_tch
+
+
+python train_kd.py \
+  --std_model_ckpt=${std_model_ckpt} \
+  --tch_model_ckpt=${tch_model_ckpt} \
+  --train_filepath=${train_filepath} \
+  --valid_filepath=${valid_filepath} \
+  --train_size=${train_size} \
+  --batch_size=${batch_size} \
+  --num_epoch=200 \
+  --kd_model=mimic
+#cifar=50000 final=0.8420
+exit
+
 
 python pretrain_tch.py \
   --tch_model_ckpt=${tch_model_ckpt} \
@@ -21,6 +38,7 @@ python pretrain_tch.py \
 #cifar=50000 final=0.8836 #tn_batch=78125
 exit
 
+
 python pretrain_std.py \
   --std_model_ckpt=${std_model_ckpt} \
   --train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch* \
@@ -30,13 +48,15 @@ python pretrain_std.py \
   --learning_rate_decay_factor=0.96 \
   --num_epochs_per_decay=10.0 \
   --num_epoch=200
-#cifar=50000 final=0.8420
+#cifar=50000 final=0.8402
 exit
+
 
 checkpoint_dir=$HOME/Projects/kdgan_xw/kdgan/checkpoints
 tch_ckpt_dir=${checkpoint_dir}/mdlcompr_cifar_tch
 rm -rf ${tch_ckpt_dir}
 scp -r xiaojie@10.100.228.181:${tch_ckpt_dir} ${checkpoint_dir}
+
 
 train_size=50000
 checkpoint_dir=$HOME/Projects/kdgan_xw/kdgan/checkpoints
