@@ -29,6 +29,9 @@ class TCH():
       self.logits = model.logits
       self.labels = tf.nn.softmax(self.logits)
       if not is_training:
+        self.predictions = tf.argmax(self.labels, axis=1)
+        self.accuracy = tf.equal(self.predictions, tf.argmax(self.hard_label_ph, 1))
+        self.accuracy = tf.reduce_mean(tf.cast(self.accuracy, tf.float32))
         return
       self.saver = model.saver
       self.global_step = model.global_step
