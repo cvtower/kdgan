@@ -37,3 +37,9 @@ checkpoint_dir=$HOME/Projects/kdgan_xw/kdgan/checkpoints
 tch_ckpt_dir=${checkpoint_dir}/mdlcompr_cifar_tch
 rm -rf ${tch_ckpt_dir}
 scp -r xiaojie@10.100.228.181:${tch_ckpt_dir} ${checkpoint_dir}
+
+train_size=50000
+checkpoint_dir=$HOME/Projects/kdgan_xw/kdgan/checkpoints
+tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch
+scp xiaojie@10.100.228.149:${tch_model_ckpt}* ${checkpoint_dir}
+

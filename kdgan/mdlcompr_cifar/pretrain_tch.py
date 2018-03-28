@@ -28,13 +28,19 @@ def main(_):
     sess.run(init_op)
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
-      if tn_batch == (20000 - 1):
+      if tn_batch == (40000 - 1):
         feed_dict = {tn_tch.learning_rate_ph:0.01}
         sess.run(tn_tch.update_lr, feed_dict=feed_dict)
-      elif tn_batch == (40000 - 1):
-        feed_dict = {tn_tch.learning_rate_ph:0.001}
+      elif tn_batch == (50000 - 1):
+        feed_dict = {tn_tch.learning_rate_ph:0.005}
         sess.run(tn_tch.update_lr, feed_dict=feed_dict)
       elif tn_batch == (60000 - 1):
+        feed_dict = {tn_tch.learning_rate_ph:0.001}
+        sess.run(tn_tch.update_lr, feed_dict=feed_dict)
+      elif tn_batch == (70000 - 1):
+        feed_dict = {tn_tch.learning_rate_ph:0.0005}
+        sess.run(tn_tch.update_lr, feed_dict=feed_dict)
+      elif tn_batch == (80000 - 1):
         feed_dict = {tn_tch.learning_rate_ph:0.0001}
         sess.run(tn_tch.update_lr, feed_dict=feed_dict)
 
@@ -58,7 +64,7 @@ def main(_):
       if acc < bst_acc:
         continue
       tn_tch.saver.save(utils.get_session(sess), flags.tch_model_ckpt)
-  print('final=%.4f' % (bst_acc))
+  print('#cifar=%d final=%.4f' % (flags.train_size, bst_acc))
 
 if __name__ == '__main__':
   tf.logging.set_verbosity(tf.logging.INFO)

@@ -34,7 +34,7 @@ class STD():
       for variable in tf.trainable_variables():
         if not variable.name.startswith(std_scope):
           continue
-        print('%-50s added to STD saver' % variable.name)
+        print('%-64s added to STD saver' % variable.name)
         save_dict[variable.name] = variable
         var_list.append(variable)
       self.saver = tf.train.Saver(save_dict)

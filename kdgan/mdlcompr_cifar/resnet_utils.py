@@ -156,7 +156,7 @@ class ResNet(object):
     save_dict = {}
     for var in self._get_trainable_variables():
       scope_name = self.scope_name.upper()
-      print('%-50s added to %s saver' % (var.op.name, scope_name))
+      print('%-64s added to %s saver' % (var.op.name, scope_name))
       save_dict[var.op.name] = var
     self.saver = tf.train.Saver(save_dict)
 
@@ -289,7 +289,8 @@ class ResNet(object):
       if var.op.name.find(r'DW') > 0:
         costs.append(tf.nn.l2_loss(var))
         # tf.summary.histogram(var.op.name, var)
-
+    scope_name = self.scope_name.upper()
+    print('scope=%s #regularization=%d' % (scope_name, len(costs)))
     return tf.multiply(self.hps.weight_decay_rate, tf.add_n(costs))
 
   def _conv(self, name, x, filter_size, in_filters, out_filters, strides):
