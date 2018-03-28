@@ -34,12 +34,12 @@ init_op = tf.global_variables_initializer()
 
 def main(_):
   bst_acc = 0.0
-  saver = tf.train.Saver()
+  # saver = tf.train.Saver()
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     # tn_std.saver.restore(sess, flags.std_model_ckpt)
-    # tn_tch.saver.restore(sess, flags.tch_model_ckpt)
-    saver.restore(sess, flags.tch_model_ckpt)
+    tn_tch.saver.restore(sess, flags.tch_model_ckpt)
+    # saver.restore(sess, flags.tch_model_ckpt)
     # ini_std = cifar.compute_acc(sess, vd_std)
     ini_tch = cifar.compute_acc(sess, vd_tch)
     # tf.logging.info('ini_std=%.4f ini_tch=%.4f' % (ini_std, ini_tch))
