@@ -40,7 +40,8 @@ def main(_):
     tn_tch.saver.restore(sess, flags.tch_model_ckpt)
     # ini_std = cifar.compute_acc(sess, vd_std)
     ini_tch = cifar.compute_acc(sess, vd_tch)
-    tf.logging.info('ini_std=%.4f ini_tch=%.4f' % (ini_std, ini_tch))
+    # tf.logging.info('ini_std=%.4f ini_tch=%.4f' % (ini_std, ini_tch))
+    tf.logging.info('ini_tch=%.4f' % (ini_tch))
 
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
