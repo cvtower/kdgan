@@ -7,8 +7,8 @@ dataset_dir=$HOME/Projects/data/cifar
 train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch*
 valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch*
 
-std_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_std
-tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch
+std_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_std.ckpt
+tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch.ckpt
 tch_ckpt_dir=${checkpoint_dir}/mdlcompr_cifar_tch
 
 
