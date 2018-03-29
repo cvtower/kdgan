@@ -42,7 +42,6 @@ tf.app.flags.DEFINE_string('learning_rate_decay_type', 'exp', 'exp|fix|ply')
 tf.app.flags.DEFINE_integer('num_negative', 10, '')
 tf.app.flags.DEFINE_integer('num_positive', 1, '')
 # kdgan
-tf.app.flags.DEFINE_float('kd_hard_pct', 0.7, '')
 tf.app.flags.DEFINE_float('kd_soft_pct', 0.3, '')
 tf.app.flags.DEFINE_float('temperature', 3.0, '')
 tf.app.flags.DEFINE_float('noisy_ratio', 0.005, '')
