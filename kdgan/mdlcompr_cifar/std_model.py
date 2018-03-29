@@ -11,7 +11,7 @@ class STD():
         shape=(flags.batch_size, flags.image_size, flags.image_size, flags.channels))
     self.hard_label_ph = tf.placeholder(tf.int32,
         shape=(flags.batch_size, flags.num_label))
-    self.soft_label_ph = tf.placeholder(tf.float32, 
+    self.soft_logit_np = tf.placeholder(tf.float32, 
         shape=(flags.batch_size, flags.num_label))
 
     # None = batch_size * sample_size
@@ -91,32 +91,32 @@ class STD():
     return pre_losses
 
   def get_kd_losses(self, flags):
-    hard_loss = self.get_hard_loss()
-    hard_loss *= (1.0 - flags.kd_soft_pct)
-    kd_losses = [hard_loss]
-
-    logits = tf.log(self.labels)
-    soft_logits = tf.log(self.soft_label_ph)
+    kd_losses = []
     if flags.kd_model == 'mimic':
-      # soft_loss = tf.nn.l2_loss(soft_logits - logits)
-      soft_loss = tf.losses.mean_squared_error(soft_logits, logits)
-      soft_loss *= flags.kd_soft_pct
+      soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits) / flags.batch_size
+      kd_losses.append(soft_loss)
     elif flags.kd_model == 'distn':
-      std_logits = logits * (1.0 / flags.temperature)
-      tch_logits = soft_logits * (1.0 / flags.temperature)
-
-      # soft_loss = tf.losses.mean_squared_error(tch_logits, std_logits)
-      # soft_loss *= pow(flags.temperature, 2.0)
-
-      std_labels = tf.nn.softmax(std_logits)
-      tch_labels = tf.nn.softmax(tch_logits)
-      # soft_loss = -1.0 * tf.reduce_mean(tf.log(std_labels) * tch_labels)
-      soft_loss = tf.losses.sigmoid_cross_entropy(tch_labels, tf.log(std_labels))
-
-      soft_loss *= flags.kd_soft_pct
+      hard_loss = self.get_hard_loss()
+      hard_loss *= (1.0 - flags.kd_soft_pct) / flags.batch_size
+      gen_logits = self.logits * (1.0 / flags.temperature)
+      tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
+      soft_loss = tf.losses.mean_squared_error(tch_logits, gen_logits)
+      soft_loss *= (pow(flags.temperature, 2.0) * flags.kd_soft_pct) / flags.batch_size
+      kd_losses.extend([hard_loss, soft_loss])
+    elif flags.kd_model == 'noisy':
+      # self.noisy = noisy = tf.multiply(noisy_mask, gaussian)
+      # tch_logits = tf.multiply(self.soft_logit_ph, tf.tile(noisy, tf.constant([1, flags.num_label])))
+      # soft_loss = tf.nn.l2_loss(tch_logits - self.logits) / flags.batch_size
+      # kd_losses.append(soft_loss)
+      noisy = np.float32(np.ones((flags.batch_size, flags.num_label)))
+      noisy = tf.nn.dropout(noisy, keep_prob=(1.0 - flags.noisy_ratio))
+      noisy += tf.random_normal((flags.batch_size, flags.num_label), stddev=flags.noisy_sigma)
+      tch_logits = tf.multiply(self.soft_logit_ph, noisy)
+      soft_loss = tf.nn.l2_loss(tch_logits - self.logits) / flags.batch_size
+      kd_losses.append(soft_loss)
     else:
       raise ValueError('bad kd model %s', flags.kd_model)
-    kd_losses.append(soft_loss)
+    # print('#kd_losses wo regularization=%d' % (len(kd_losses)))
     return kd_losses
 
   def get_gan_losses(self):
