@@ -36,7 +36,7 @@ def main(_):
   bst_acc = 0.0
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
-    tn_std.saver.restore(sess, flags.std_model_ckpt)
+    # tn_std.saver.restore(sess, flags.std_model_ckpt)
     ini_std = cifar.compute_acc(sess, vd_std)
     tf.logging.info('ini_std=%.4f' % (ini_std))
     tn_tch.saver.restore(sess, flags.tch_model_ckpt)
