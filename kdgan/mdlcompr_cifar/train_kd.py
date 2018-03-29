@@ -36,7 +36,7 @@ def main(_):
   bst_acc = 0.0
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
-    # tn_std.saver.restore(sess, flags.std_model_ckpt)
+    tn_std.saver.restore(sess, flags.std_model_ckpt)
     ini_std = cifar.compute_acc(sess, vd_std)
     tf.logging.info('ini_std=%.4f' % (ini_std))
     tn_tch.saver.restore(sess, flags.tch_model_ckpt)
@@ -51,7 +51,7 @@ def main(_):
       feed_dict = {
         tn_std.image_ph:tn_image_np,
         tn_std.hard_label_ph:tn_label_np,
-        tn_std.soft_logit_np:soft_logit_np,
+        tn_std.soft_logit_ph:soft_logit_np,
       }
       sess.run(tn_std.kd_train, feed_dict=feed_dict)
 
