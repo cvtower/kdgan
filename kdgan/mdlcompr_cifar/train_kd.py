@@ -46,10 +46,8 @@ def main(_):
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = cifar.next_batch(sess)
-      
       feed_dict = {tn_tch.image_ph:tn_image_np}
       soft_label_np = sess.run(tn_tch.labels, feed_dict=feed_dict)
-
       feed_dict = {
         tn_std.image_ph:tn_image_np,
         tn_std.hard_label_ph:tn_label_np,
@@ -57,10 +55,20 @@ def main(_):
       }
       sess.run(tn_std.kd_train, feed_dict=feed_dict)
 
-      print(soft_label_np.shape)
+      if (tn_batch + 1) % eval_interval != 0 and (tn_batch + 1) != tn_num_batch:
+        continue
+      acc = cifar.compute_acc(sess, vd_std)
+      bst_acc = max(acc, bst_acc)
 
-      exit()
+      end_time = time.time()
+      duration = end_time - start_time
+      avg_time = duration / (tn_batch + 1)
+      print('#batch=%d acc=%.4f time=%.4fs/batch est=%.4fh' % 
+          (tn_batch + 1, bst_acc, avg_time, avg_time * tn_num_batch / 3600))
 
+      if acc < bst_acc:
+        continue
+      # save model parameter if necessary
   tf.logging.info('#cifar=%d final=%.4f' % (flags.train_size, bst_acc))
 
 if __name__ == '__main__':

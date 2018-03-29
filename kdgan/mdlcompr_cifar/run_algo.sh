@@ -20,7 +20,8 @@ python train_kd.py \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
   --num_epoch=200 \
-  --kd_model=mimic
+  --kd_model=mimic \
+  --kd_hard_pct=1.0
 #cifar=50000 final=0.8420
 exit
 
