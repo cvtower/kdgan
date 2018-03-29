@@ -293,7 +293,7 @@ class ResNet(object):
         costs.append(tf.nn.l2_loss(var))
         # tf.summary.histogram(var.op.name, var)
     scope_name = self.scope_name.upper()
-    print('scope=%s #regularization=%d' % (scope_name, len(costs)))
+    # print('scope=%s #regularization=%d' % (scope_name, len(costs)))
     return tf.multiply(self.hps.weight_decay_rate, tf.add_n(costs))
 
   def _conv(self, name, x, filter_size, in_filters, out_filters, strides):

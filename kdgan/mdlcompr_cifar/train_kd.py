@@ -45,7 +45,14 @@ def main(_):
 
     start_time = time.time()
     for tn_batch in range(tn_num_batch):
-      pass
+      tn_image_np, tn_label_np = cifar.next_batch(sess)
+      
+      feed_dict = {tn_tch.image_ph:tn_image_np}
+      soft_label_np = sess.run(tn_tch.labels, feed_dict=feed_dict)
+      print(soft_label_np.shape)
+
+      exit()
+
   tf.logging.info('#cifar=%d final=%.4f' % (flags.train_size, bst_acc))
 
 if __name__ == '__main__':
