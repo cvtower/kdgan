@@ -98,7 +98,7 @@ class STD():
     if flags.kd_model == 'mimic':
       # soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits)
       tch_logits = tf.scalar_mul(1.0 / flags.temperature, self.soft_logit_ph)
-      std_logits = tf.scalar_mul(1.0/args.tau, student)
+      std_logits = tf.scalar_mul(1.0 / flags.temperature, self.logits)
       soft_loss = tf.scalar_mul(0.5, tf.square(std_logits - tch_logits))
       soft_loss *= (flags.kd_soft_pct / flags.batch_size)
       kd_losses.append(soft_loss)
