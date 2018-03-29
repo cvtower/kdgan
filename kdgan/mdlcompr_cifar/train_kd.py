@@ -49,6 +49,14 @@ def main(_):
       
       feed_dict = {tn_tch.image_ph:tn_image_np}
       soft_label_np = sess.run(tn_tch.labels, feed_dict=feed_dict)
+
+      feed_dict = {
+        tn_std.image_ph:tn_image_np,
+        tn_std.hard_label_ph:tn_label_np,
+        tn_std.soft_label_ph:soft_label_np,
+      }
+      sess.run(tn_std.kd_train, feed_dict=feed_dict)
+
       print(soft_label_np.shape)
 
       exit()

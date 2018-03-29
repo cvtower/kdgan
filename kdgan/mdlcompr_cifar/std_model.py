@@ -11,7 +11,7 @@ class STD():
         shape=(flags.batch_size, flags.image_size, flags.image_size, flags.channels))
     self.hard_label_ph = tf.placeholder(tf.int32,
         shape=(flags.batch_size, flags.num_label))
-    self.soft_logit_ph = tf.placeholder(tf.float32, 
+    self.soft_label_ph = tf.placeholder(tf.float32, 
         shape=(flags.batch_size, flags.num_label))
 
     # None = batch_size * sample_size
@@ -94,13 +94,16 @@ class STD():
     hard_loss = self.get_hard_loss()
     hard_loss *= (1.0 - flags.kd_soft_pct)
     kd_losses = [hard_loss]
+
+    logits = tf.log(self.labels)
+    soft_logits = tf.log(self.soft_label_ph)
     if flags.kd_model == 'mimic':
-      # soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits)
-      soft_loss = tf.losses.mean_squared_error(self.soft_logit_ph, self.logits)
+      # soft_loss = tf.nn.l2_loss(soft_logits - logits)
+      soft_loss = tf.losses.mean_squared_error(soft_logits, logits)
       soft_loss *= flags.kd_soft_pct
     elif flags.kd_model == 'distn':
-      std_logits = self.logits * (1.0 / flags.temperature)
-      tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
+      std_logits = logits * (1.0 / flags.temperature)
+      tch_logits = soft_logits * (1.0 / flags.temperature)
 
       # soft_loss = tf.losses.mean_squared_error(tch_logits, std_logits)
       # soft_loss *= pow(flags.temperature, 2.0)
