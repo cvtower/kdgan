@@ -11,7 +11,7 @@ class STD():
         shape=(flags.batch_size, flags.image_size, flags.image_size, flags.channels))
     self.hard_label_ph = tf.placeholder(tf.int32,
         shape=(flags.batch_size, flags.num_label))
-    self.soft_logit_np = tf.placeholder(tf.float32, 
+    self.soft_logit_ph = tf.placeholder(tf.float32, 
         shape=(flags.batch_size, flags.num_label))
 
     # None = batch_size * sample_size
