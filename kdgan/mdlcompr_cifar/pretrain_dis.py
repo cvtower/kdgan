@@ -22,8 +22,6 @@ scope.reuse_variables()
 vd_dis = DIS(flags, is_training=False)
 init_op = tf.global_variables_initializer()
 
-exit()
-
 def main(_):
   bst_acc = 0.0
   with tf.train.MonitoredTrainingSession() as sess:
@@ -49,7 +47,7 @@ def main(_):
 
       if acc < bst_acc:
         continue
-      tn_dis.saver.save(utils.get_session(sess), flags.std_model_ckpt)
+      tn_dis.saver.save(utils.get_session(sess), flags.dis_model_ckpt)
   print('#cifar=%d final=%.4f' % (flags.train_size, bst_acc))
 
 if __name__ == '__main__':
