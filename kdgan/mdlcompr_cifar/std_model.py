@@ -97,7 +97,7 @@ class STD():
     
     if flags.kd_model == 'mimic':
       soft_loss = tf.nn.l2_loss(self.soft_logit_ph - self.logits)
-      soft_loss *= (flags.kd_soft_pct / flags.batch_size)
+      soft_loss *= (0.1 * flags.kd_soft_pct / flags.batch_size)
       kd_losses.append(soft_loss)
     elif flags.kd_model == 'distn':
       std_logits = self.logits * (1.0 / flags.temperature)
