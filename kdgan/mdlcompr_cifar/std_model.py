@@ -1,3 +1,4 @@
+from kdgan import utils
 import lenet_utils
 
 import numpy as np
