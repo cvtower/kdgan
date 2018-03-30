@@ -53,8 +53,8 @@ def main(_):
 
       predictions = np.argmax(tn_label_np, axis=1)
       groundtruth = np.argmax(soft_logit_np, axis=1)
-      for pred, real in zip(predictions, groundtruth):
-        print(pred, real)
+      accuracy = np.sum(predictions == groundtruth)
+      print('accuracy=%.4f' % (accuracy))
 
       exit()
       feed_dict = {
