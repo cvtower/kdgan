@@ -1,54 +1,51 @@
-from kdgan import config
 from kdgan import utils
+import lenet_utils
 
+import numpy as np
 import tensorflow as tf
-from nets import nets_factory
-from tensorflow.contrib import slim
 
 class DIS():
   def __init__(self, flags, dataset, is_training=True):
     self.is_training = is_training
     
-    num_feature = flags.image_size * flags.image_size * flags.channels
     # None = batch_size
-    self.image_ph = tf.placeholder(tf.float32, shape=(None, num_feature))
-    self.hard_label_ph = tf.placeholder(tf.float32, shape=(None, flags.num_label))
+    self.image_ph = tf.placeholder(tf.float32,
+        shape=(flags.batch_size, flags.image_size, flags.image_size, flags.channels))
+    self.hard_label_ph = tf.placeholder(tf.int32,
+        shape=(flags.batch_size, flags.num_label))
 
     # None = batch_size * sample_size
-    self.gen_sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
-    self.gen_label_ph = tf.placeholder(tf.float32, shape=(None,))
+    self.std_sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
+    self.std_label_ph = tf.placeholder(tf.float32, shape=(None,))
     self.tch_sample_ph = tf.placeholder(tf.int32, shape=(None, 2))
     self.tch_label_ph = tf.placeholder(tf.float32, shape=(None,))
 
     self.dis_scope = dis_scope = 'dis'
     with tf.variable_scope(dis_scope):
-      self.logits = utils.get_logits(flags, 
-          self.image_ph,
-          flags.dis_model_name,
-          flags.dis_weight_decay,
-          flags.dis_keep_prob, 
-          is_training=is_training)
+      self.logits = lenet_utils.inference(self.image_ph)
+      self.labels = tf.nn.softmax(self.logits)
 
-      self.gen_rewards = self.get_rewards(self.gen_sample_ph)
+      self.std_rewards = self.get_rewards(self.std_sample_ph)
       self.tch_rewards = self.get_rewards(self.tch_sample_ph)
 
       if not is_training:
-        self.predictions = tf.argmax(self.logits, axis=1)
-        self.accuracy = tf.equal(self.predictions, tf.argmax(self.hard_label_ph, 1))
-        self.accuracy = tf.reduce_mean(tf.cast(self.accuracy, tf.float32))
+        predictions = tf.argmax(self.labels, axis=1)
+        groundtruth = tf.argmax(self.hard_label_ph, axis=1)
+        accuracy_list = tf.equal(predictions, groundtruth)
+        self.accuracy = tf.reduce_mean(tf.cast(accuracy_list, tf.float32))
         return
 
-      save_dict = {}
+      save_dict, var_list = {}, []
       for variable in tf.trainable_variables():
         if not variable.name.startswith(dis_scope):
           continue
-        print('%-50s added to DIS saver' % variable.name)
+        print('%-64s added to DIS saver' % variable.name)
         save_dict[variable.name] = variable
+        var_list.append(variable)
       self.saver = tf.train.Saver(save_dict)
 
-      self.global_step = tf.Variable(0, trainable=False)
-      self.learning_rate = tf.Variable(flags.gen_learning_rate, trainable=False)
-      # self.lr_update = tf.assign(self.learning_rate, self.learning_rate * flags.learning_rate_decay_factor)
+      self.global_step = global_step = tf.Variable(0, trainable=False)
+      self.learning_rate = tf.Variable(flags.dis_learning_rate, trainable=False)
 
       # pre train
       pre_losses = self.get_pre_losses()
@@ -87,7 +84,7 @@ class DIS():
     return gan_loss
 
   def get_gan_losses(self, flags):
-    gen_gan_loss = self.get_gan_loss(self.gen_sample_ph, self.gen_label_ph)
+    gen_gan_loss = self.get_gan_loss(self.std_sample_ph, self.std_label_ph)
     gen_gan_loss *= (1.0 - flags.intelltch_weight)
     tch_gan_loss = self.get_gan_loss(self.tch_sample_ph, self.tch_label_ph)
     tch_gan_loss *= flags.intelltch_weight

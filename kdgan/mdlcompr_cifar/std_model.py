@@ -60,7 +60,7 @@ class STD():
       self.kd_loss = tf.add_n(kd_losses, name='%s_kd_loss' % std_scope)
       # self.kd_train = lenet_utils.get_train_op(self.kd_loss, global_step)
       kd_optimizer = utils.get_opt(flags, self.learning_rate)
-      self.kd_train = kd_optimizer.minimize(self.kd_loss, global_step=self.global_step)
+      self.kd_train = kd_optimizer.minimize(self.kd_loss, global_step=global_step)
 
       # gan train
       gan_losses = self.get_gan_losses()
