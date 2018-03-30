@@ -18,11 +18,13 @@ data_dir = path.join(proj_dir, 'data')
 yfcc_dir = path.join(data_dir, 'yfcc100m')
 surv_dir = path.join(yfcc_dir, 'survey_data')
 
+yfcc_top_dir = path.join(yfcc_dir, 'yfcc_top')
+yfcc_rnd_dir = path.join(yfcc_dir, 'yfcc_rnd')
+
 image_dir = path.join(yfcc_dir, 'images')
 mnist_dir = path.join(data_dir, 'mnist')
 cifar_dir = path.join(data_dir, 'cifar')
 cifar_ext = path.join(cifar_dir, 'cifar-10-batches-bin')
-# cifar_ext = path.join(cifar_dir, 'cifar-10-batches-py')
 
 slim_dir = path.join(pypkg_dir, 'slim')
 sys.path.insert(0, slim_dir)

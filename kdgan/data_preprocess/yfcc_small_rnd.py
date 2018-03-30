@@ -1,66 +1,4 @@
-################################################################
-#
-# configuration
-#
-################################################################
-
-import sys
-from os import path
-
-home_dir = path.expanduser('~')
-proj_dir = path.join(home_dir, 'Projects')
-data_dir = path.join(proj_dir, 'data')
-yfcc_dir = path.join(data_dir, 'yfcc100m')
-pypkg_dir = path.join(proj_dir, 'kdgan_xw')
-surv_dir = path.join(yfcc_dir, 'survey_data')
-
-slim_dir = path.join(pypkg_dir, 'slim')
-sys.path.insert(0, slim_dir)
-
-kdgan_dir = path.join(pypkg_dir, 'kdgan')
-logs_dir = path.join(kdgan_dir, 'logs')
-temp_dir = path.join(kdgan_dir, 'temp')
-ckpt_dir = path.join(kdgan_dir, 'checkpoints')
-
-image_dir = path.join(yfcc_dir, 'images')
-rawtag_file = path.join(yfcc_dir, 'sample_00')
-sample_file = path.join(yfcc_dir, 'sample_09')
-
-dataset = 'yfcc10k'
-
-dataset_dir = path.join(yfcc_dir, dataset)
-raw_file = path.join(dataset_dir, '%s.raw' % dataset)
-data_file = path.join(dataset_dir, '%s.data' % dataset)
-train_file = path.join(dataset_dir, '%s.train' % dataset)
-valid_file = path.join(dataset_dir, '%s.valid' % dataset)
-label_file = path.join(dataset_dir, '%s.label' % dataset)
-vocab_file = path.join(dataset_dir, '%s.vocab' % dataset)
-image_data_dir = path.join(dataset_dir, 'ImageData')
-
-train_tfrecord = '%s.tfrecord' % train_file
-valid_tfrecord = '%s.tfrecord' % valid_file
-
-user_key = 'user'
-image_key = 'image'
-text_key = 'text'
-label_key = 'label'
-file_key = 'file'
-
-unk_token = 'unk'
-pad_token = ' '
-num_threads = 4
-channels = 3
-
-num_label = 100
-vocab_size = 7281
-train_data_size = 8000
-valid_data_size = 2000
-train_batch_size = 50
-valid_batch_size = 500
-
-precomputed_dir = path.join(dataset_dir, 'Precomputed')
-tfrecord_tmpl = '{0}_{1}_{2:03d}.{3}.tfrecord'
-
+from kdgan import config
 from kdgan import utils
 
 import operator
@@ -92,21 +30,21 @@ from nltk.tokenize import RegexpTokenizer
 
 from PIL import Image
 
-tf.app.flags.DEFINE_boolean('dev', False, '')
 tf.app.flags.DEFINE_string('model_name', None, '')
 tf.app.flags.DEFINE_string('preprocessing_name', None, '')
-tf.app.flags.DEFINE_string('checkpoint_path', None, '')
 tf.app.flags.DEFINE_string('end_point', None, '')
-tf.app.flags.DEFINE_integer('num_epoch', 500, '')
+tf.app.flags.DEFINE_string('pretrained_ckpt', None, '')
+tf.app.flags.DEFINE_integer('channels', 3, '')
 flags = tf.app.flags.FLAGS
 
 lemmatizer = WordNetLemmatizer()
 
-SPACE_PLUS = '+'
 FIELD_SEPERATOR = '\t'
+EXPECTED_NUM_FIELD = 6
+
+SPACE_PLUS = '+'
 LABEL_SEPERATOR = ','
 
-EXPECTED_NUM_FIELD = 6
 
 POST_INDEX = 0
 USER_INDEX = 1
@@ -115,7 +53,7 @@ TEXT_INDEX = 3
 DESC_INDEX = 4
 LABEL_INDEX = -1
 
-NUM_TOP_LABEL = 100 # select top 100 labels
+NUM_TOP_LABEL = 100 # select rnd 100 labels
 EXPECTED_NUM_POST = 10000
 MIN_IMAGE_PER_USER = 20
 MAX_IMAGE_PER_USER = 1000
@@ -125,17 +63,17 @@ TRAIN_RATIO = 0.95
 SHUFFLE_SEED = 100
 
 def check_num_field():
-    fin = open(sample_file)
-    while True:
-        line = fin.readline()
-        if not line:
-            # print('line=\'{}\' type={}'.format(line, type(line)))
-            break
-        fields = line.strip().split(FIELD_SEPERATOR)
-        num_field = len(fields)
-        if num_field != EXPECTED_NUM_FIELD:
-            raise Exception('wrong number of fields')
-    fin.close()
+  fin = open(config.sample_file)
+  while True:
+    line = fin.readline()
+    if not line:
+      # print('line=\'{}\' type={}'.format(line, type(line)))
+      break
+    fields = line.strip().split(FIELD_SEPERATOR)
+    num_field = len(fields)
+    if num_field != EXPECTED_NUM_FIELD:
+      raise Exception('wrong number of fields')
+  fin.close()
 
 def select_top_label():
     imagenet_labels = {}
@@ -150,7 +88,7 @@ def select_top_label():
                 imagenet_labels[label] = []
             imagenet_labels[label].append(names)
 
-    fin = open(sample_file)
+    fin = open(config.sample_file)
     label_count = {}
     while True:
         line = fin.readline().strip()
@@ -246,7 +184,7 @@ def save_posts(user_posts, infile):
 def select_posts():
     top_labels = utils.load_collection(label_file)
     user_posts = {}
-    fin = open(sample_file)
+    fin = open(config.sample_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -599,7 +537,7 @@ def collect_image(infile, outdir):
         post_image[post] = image
     fin.close()
     utils.create_if_nonexist(outdir)
-    fin = open(sample_file)
+    fin = open(config.sample_file)
     while True:
         line = fin.readline().strip()
         if not line:
@@ -962,7 +900,7 @@ image_size_v = network_fn_v.default_image_size
 assert image_size_t==image_size_v
 image_size = int((image_size_t + image_size_v) / 2)
 print('image size=%d' % (image_size))
-image_ph = tf.placeholder(tf.float32, shape=(None, None, channels))
+image_ph = tf.placeholder(tf.float32, shape=(None, None, flags.channels))
 preprocessing_t = preprocessing_factory.get_preprocessing(flags.preprocessing_name,
         is_training=True)
 preprocessing_v = preprocessing_factory.get_preprocessing(flags.preprocessing_name,
@@ -990,11 +928,8 @@ print('vd', end_point_v.shape, end_point_v.dtype)
 # for name, tensor in end_points_t.items():
 #     print('\t', name, '\t', tensor.shape)
 
-if flags.dev:
-    exit()
-
 variables_to_restore = slim.get_variables_to_restore()
-init_fn = slim.assign_from_checkpoint_fn(flags.checkpoint_path, variables_to_restore)
+init_fn = slim.assign_from_checkpoint_fn(flags.pretrained_ckpt, variables_to_restore)
 
 def build_example(user, image, text, label, file):
     return tf.train.Example(features=tf.train.Features(feature={
@@ -1169,35 +1104,32 @@ def create_test_set():
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'text')), text_npy)
 
 def main(_):
-    create_test_set()
-    exit()
-
-    check_num_field()
-    utils.create_if_nonexist(dataset_dir)
-    if not utils.skip_if_exist(label_file):
-        print('select top labels')
-        select_top_label()
-    if not utils.skip_if_exist(raw_file):
-        print('select posts')
-        select_posts()
-    if not utils.skip_if_exist(data_file):
-        print('tokenize dataset')
-        tokenize_dataset()
-        count_dataset()
-    if (not utils.skip_if_exist(train_file) or 
-            not utils.skip_if_exist(valid_file or 
-            not utils.skip_if_exist(vocab_file))):
-    # if True:
-        print('split dataset')
-        split_dataset()
+  print('create yfcc small rnd dataset')
+  check_num_field()
+  
+    # utils.create_if_nonexist(dataset_dir)
+    # if not utils.skip_if_exist(label_file):
+    #     print('select top labels')
+    #     select_top_label()
+    # if not utils.skip_if_exist(raw_file):
+    #     print('select posts')
+    #     select_posts()
+    # if not utils.skip_if_exist(data_file):
+    #     print('tokenize dataset')
+    #     tokenize_dataset()
+    #     count_dataset()
+    # if (not utils.skip_if_exist(train_file) or 
+    #         not utils.skip_if_exist(valid_file or 
+    #         not utils.skip_if_exist(vocab_file))):
+    #     print('split dataset')
+    #     split_dataset()
 
     # if path.isdir(image_dir):
-    if False:
-        print('collect images')
-        # find ImageData/ -type f | wc -l
-        collect_image(data_file, image_data_dir)
+    #     print('collect images')
+    #     collect_image(data_file, image_data_dir)
     # create_survey_data()
 
+    # create_test_set()
     # create_tfrecord(valid_file, end_point_v, is_training=False)
     # create_tfrecord(train_file, end_point_t, is_training=True)
 

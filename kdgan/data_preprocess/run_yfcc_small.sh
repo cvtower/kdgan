@@ -1,6 +1,14 @@
-kdgan_dir=/home/xiaojie/Projects/kdgan_xw/kdgan
-pretrained_dir=$kdgan_dir/checkpoints/pretrained
-checkpoint_path=$pretrained_dir/vgg_16.ckpt
+kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
+checkpoint_dir=${kdgan_dir}/checkpoints
+pretrained_ckpt=${checkpoint_dir}/vgg_16.ckpt
+
+python yfcc_small_rnd.py \
+    --model_name=vgg_16 \
+    --preprocessing_name=vgg_16 \
+    --end_point=vgg_16/fc7 \
+    --pretrained_ckpt=${pretrained_ckpt}
+exit
+
 
 # tar -zcvf archive-name.tar.gz directory-name
 # scp xiaojie@10.100.228.181:/home/xiaojie/Projects/data/yfcc100m/yfcc10k/* .
@@ -12,6 +20,7 @@ if [ ! -f $checkpoint_path ]; then
     tar -xzvf $temp_path -C $pretrained_dir
     rm $temp_path
 fi
+
 
 python yfcc10k.py \
     --model_name=vgg_16 \
@@ -31,6 +40,7 @@ python yfcc10k.py \
     --num_epoch=500
 # 1536
 exit
+
 
 python yfcc10k_fast.py \
     --model_name=vgg_19 \
