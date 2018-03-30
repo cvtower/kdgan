@@ -23,7 +23,7 @@ python train_kd.py \
   --kd_model=noisy \
   --kd_soft_pct=0.1 \
   --noisy_ratio=0.001 \
-  --noisy_sigma=0.1
+  --noisy_sigma=0.01
 #cifar=50000 final=0.8420
 exit
 
