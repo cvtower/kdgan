@@ -19,6 +19,7 @@ python train_kd.py \
   --valid_filepath=${valid_filepath} \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
+  --optimizer=sgd \
   --std_learning_rate=0.01 \
   --num_epoch=200 \
   --kd_model=mimic \
