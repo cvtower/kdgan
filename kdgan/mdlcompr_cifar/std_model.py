@@ -41,7 +41,8 @@ class STD():
       self.saver = tf.train.Saver(save_dict)
 
       self.global_step = global_step = tf.Variable(0, trainable=False)
-      
+      self.learning_rate = tf.Variable(flags.std_learning_rate, trainable=False)
+
       # pre train
       pre_losses = self.get_pre_losses()
       print('#pre_losses wo regularization=%d' % (len(pre_losses)))
@@ -56,7 +57,9 @@ class STD():
       kd_losses.extend(self.get_regularization_losses())
       print('#kd_losses wt regularization=%d' % (len(kd_losses)))
       self.kd_loss = tf.add_n(kd_losses, name='%s_kd_loss' % std_scope)
-      self.kd_train = lenet_utils.get_train_op(self.kd_loss, global_step)
+      # self.kd_train = lenet_utils.get_train_op(self.kd_loss, global_step)
+      kd_optimizer = utils.get_opt(flags, self.learning_rate)
+      self.kd_update = kd_optimizer.minimize(self.kd_loss, global_step=self.global_step)
 
       # gan train
       gan_losses = self.get_gan_losses()
