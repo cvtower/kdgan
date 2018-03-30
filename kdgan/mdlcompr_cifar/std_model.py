@@ -100,7 +100,7 @@ class STD():
       tch_logits = tf.scalar_mul(1.0 / flags.temperature, self.soft_logit_ph)
       std_logits = tf.scalar_mul(1.0 / flags.temperature, self.logits)
       soft_loss = tf.scalar_mul(0.5, tf.square(std_logits - tch_logits))
-      soft_loss = tf.reduce_sum(soft_loss) * flags.kd_soft_pct / flags.batch_size
+      soft_loss = tf.reduce_sum(soft_loss) * flags.kd_soft_pct
       kd_losses.append(soft_loss)
     elif flags.kd_model == 'distn':
       std_logits = self.logits * (1.0 / flags.temperature)
