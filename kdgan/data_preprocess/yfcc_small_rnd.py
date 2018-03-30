@@ -44,15 +44,12 @@ EXPECTED_NUM_FIELD = 6
 
 SPACE_PLUS = '+'
 LABEL_SEPERATOR = ','
-
-
 POST_INDEX = 0
 USER_INDEX = 1
 IMAGE_INDEX = 2
 TEXT_INDEX = 3
 DESC_INDEX = 4
 LABEL_INDEX = -1
-
 NUM_TOP_LABEL = 100 # select rnd 100 labels
 EXPECTED_NUM_POST = 10000
 MIN_IMAGE_PER_USER = 20
@@ -61,6 +58,16 @@ MIN_IMAGE_PER_LABEL = 100 - 3
 POST_UNIT_SIZE = 20
 TRAIN_RATIO = 0.95
 SHUFFLE_SEED = 100
+
+dataset_dir = config.yfcc_rnd_dir
+utils.create_if_nonexist(dataset_dir)
+raw_file = path.join(dataset_dir, '%s.raw' % dataset)
+data_file = path.join(dataset_dir, '%s.data' % dataset)
+train_file = path.join(dataset_dir, '%s.train' % dataset)
+valid_file = path.join(dataset_dir, '%s.valid' % dataset)
+label_file = path.join(dataset_dir, '%s.label' % dataset)
+vocab_file = path.join(dataset_dir, '%s.vocab' % dataset)
+image_data_dir = path.join(dataset_dir, 'ImageData')
 
 def check_num_field():
   fin = open(config.sample_file)
@@ -75,7 +82,7 @@ def check_num_field():
       raise Exception('wrong number of fields')
   fin.close()
 
-def select_top_label():
+def select_rnd_label():
     imagenet_labels = {}
     label_names = imagenet.create_readable_names_for_imagenet_labels()
     label_names = {k:v.lower() for k, v in label_names.items()}
@@ -1106,11 +1113,10 @@ def create_test_set():
 def main(_):
   print('create yfcc small rnd dataset')
 
-  utils.create_if_nonexist(config.yfcc_rnd_dir)
   check_num_field()
-    # if not utils.skip_if_exist(label_file):
-    #     print('select top labels')
-    #     select_top_label()
+  if not utils.skip_if_exist(label_file):
+    print('select top labels')
+    # select_rnd_label()
     # if not utils.skip_if_exist(raw_file):
     #     print('select posts')
     #     select_posts()
