@@ -48,7 +48,7 @@ def main(_):
     for tn_batch in range(tn_num_batch):
       tn_image_np, tn_label_np = cifar.next_batch(sess)
 
-      feed_dict = {tn_tch.image_ph:tn_image_np}
+      feed_dict = {vd_tch.image_ph:tn_image_np}
       soft_logit_np = sess.run(vd_tch.logits, feed_dict=feed_dict)
 
       # predictions = np.argmax(tn_label_np, axis=1)
