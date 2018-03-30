@@ -12,6 +12,21 @@ std_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_std.ckpt
 tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch.ckpt
 tch_ckpt_dir=${checkpoint_dir}/mdlcompr_cifar_tch
 
+python train_gan.py \
+  --dis_model_ckpt=${dis_model_ckpt} \
+  --std_model_ckpt=${std_model_ckpt} \
+  --train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch* \
+  --valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch* \
+  --train_size=${train_size} \
+  --batch_size=${batch_size} \
+  --num_epoch=200 \
+  --num_dis_epoch=20 \
+  --num_std_epoch=10 \
+  --num_negative=20 \
+  --num_positive=5
+exit
+
+
 python pretrain_dis.py \
   --dis_model_ckpt=${dis_model_ckpt} \
   --train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch* \

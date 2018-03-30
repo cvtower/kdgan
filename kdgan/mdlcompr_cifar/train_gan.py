@@ -3,16 +3,10 @@ from kdgan import utils
 from flags import flags
 from dis_model import DIS
 from std_model import STD
-import data_utils
+from data_utils import CIFAR
 
-import math
-import os
-import pickle
-import time
-import numpy as np
 import tensorflow as tf
-from os import path
-from tensorflow.contrib import slim
+import math
 
 
 tn_size = int((dis_mnist.train.num_examples + gen_mnist.train.num_examples) / 2)
