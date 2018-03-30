@@ -20,7 +20,7 @@ python train_kd.py \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
   --num_epoch=200 \
-  --kd_model=mimic \
+  --kd_model=distn \
   --kd_soft_pct=0.1
   --temperature=3.0
 #cifar=50000 final=0.8420

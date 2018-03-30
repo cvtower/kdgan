@@ -106,16 +106,12 @@ class STD():
       soft_loss = tf.reduce_sum(soft_loss) * flags.kd_soft_pct / flags.batch_size
       kd_losses.append(soft_loss)
     elif flags.kd_model == 'noisy':
-      # self.noisy = noisy = tf.multiply(noisy_mask, gaussian)
-      # tch_logits = tf.multiply(self.soft_logit_ph, tf.tile(noisy, tf.constant([1, flags.num_label])))
-      # soft_loss = tf.nn.l2_loss(tch_logits - self.logits) / flags.batch_size
-      # kd_losses.append(soft_loss)
       noisy = np.float32(np.ones((flags.batch_size, flags.num_label)))
       noisy = tf.nn.dropout(noisy, keep_prob=(1.0 - flags.noisy_ratio))
       noisy += tf.random_normal((flags.batch_size, flags.num_label), stddev=flags.noisy_sigma)
       tch_logits = tf.multiply(self.soft_logit_ph, noisy)
       soft_loss = tf.nn.l2_loss(tch_logits - self.logits)
-      soft_loss *= flags.kd_soft_pct
+      soft_loss *= (0.1 * flags.kd_soft_pct / flags.batch_size)
       kd_losses.append(soft_loss)
     else:
       raise ValueError('bad kd model %s', flags.kd_model)
