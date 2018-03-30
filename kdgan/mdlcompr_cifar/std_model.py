@@ -100,16 +100,10 @@ class STD():
       soft_loss *= (0.1 * flags.kd_soft_pct / flags.batch_size)
       kd_losses.append(soft_loss)
     elif flags.kd_model == 'distn':
-      std_logits = self.logits * (1.0 / flags.temperature)
-      tch_logits = self.soft_logit_ph * (1.0 / flags.temperature)
-      soft_loss = tf.losses.mean_squared_error(tch_logits, std_logits)
-      soft_loss *= (pow(flags.temperature, 2.0) * flags.kd_soft_pct)
-
-      # tch_logits = tf.scalar_mul(1.0 / flags.temperature, self.soft_logit_ph)
-      # std_logits = tf.scalar_mul(1.0 / flags.temperature, self.logits)
-      # soft_loss = tf.scalar_mul(0.5, tf.square(std_logits - tch_logits))
-      # soft_loss = tf.reduce_sum(soft_loss) * flags.kd_soft_pct / flags.batch_size
-
+      tch_logits = tf.scalar_mul(1.0 / flags.temperature, self.soft_logit_ph)
+      std_logits = tf.scalar_mul(1.0 / flags.temperature, self.logits)
+      soft_loss = tf.scalar_mul(0.5, tf.square(std_logits - tch_logits))
+      soft_loss = tf.reduce_sum(soft_loss) * flags.kd_soft_pct / flags.batch_size
       kd_losses.append(soft_loss)
     elif flags.kd_model == 'noisy':
       # self.noisy = noisy = tf.multiply(noisy_mask, gaussian)
