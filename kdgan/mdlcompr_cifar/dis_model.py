@@ -57,6 +57,7 @@ class DIS():
 
       # gan train
       gan_losses = self.get_gan_losses(flags)
+      print('#gan_losses wo regularization=%d' % (len(gan_losses)))
       gan_losses.extend(self.get_regularization_losses())
       print('#gan_losses wt regularization=%d' % (len(gan_losses)))
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % dis_scope)
@@ -93,7 +94,6 @@ class DIS():
     tch_gan_loss = self.get_gan_loss(self.tch_sample_ph, self.tch_label_ph)
     tch_gan_loss *= flags.intelltch_weight
     gan_losses = [gen_gan_loss, tch_gan_loss]
-    print('#gan_losses wo regularization=%d' % (len(gan_losses)))
     return gan_losses
 
   def get_rewards(self, sample_ph):
