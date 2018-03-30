@@ -49,14 +49,13 @@ def main(_):
       tn_image_np, tn_label_np = cifar.next_batch(sess)
 
       feed_dict = {tn_tch.image_ph:tn_image_np}
-      soft_logit_np = sess.run(tn_tch.logits, feed_dict=feed_dict)
+      soft_logit_np = sess.run(vd_tch.logits, feed_dict=feed_dict)
 
-      predictions = np.argmax(tn_label_np, axis=1)
-      groundtruth = np.argmax(soft_logit_np, axis=1)
-      accuracy = np.sum(predictions == groundtruth)
-      print('accuracy=%.4f' % (accuracy))
+      # predictions = np.argmax(tn_label_np, axis=1)
+      # groundtruth = np.argmax(soft_logit_np, axis=1)
+      # accuracy = np.sum(predictions == groundtruth) / flags.batch_size
+      # print('accuracy=%.4f' % (accuracy))
 
-      exit()
       feed_dict = {
         tn_std.image_ph:tn_image_np,
         tn_std.hard_label_ph:tn_label_np,
