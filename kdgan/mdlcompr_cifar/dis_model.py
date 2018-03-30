@@ -49,11 +49,11 @@ class DIS():
 
       # pre train
       pre_losses = self.get_pre_losses()
+      print('#pre_losses wo regularization=%d' % (len(pre_losses)))
       pre_losses.extend(self.get_regularization_losses())
       print('#pre_losses wt regularization=%d' % (len(pre_losses)))
-      self.pre_loss = tf.add_n(pre_losses, '%s_pre_loss' % dis_scope)
-      pre_optimizer = utils.get_opt(flags, self.learning_rate)
-      self.pre_update = pre_optimizer.minimize(self.pre_loss, global_step=self.global_step)
+      self.pre_loss = tf.add_n(pre_losses, name='%s_pre_loss' % dis_scope)
+      self.pre_train = lenet_utils.get_train_op(self.pre_loss, global_step)
 
       # gan train
       gan_losses = self.get_gan_losses(flags)
@@ -70,12 +70,16 @@ class DIS():
     for regularization_loss in tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES):
       if not regularization_loss.name.startswith(self.dis_scope):
         continue
+      print('DIS regularization=%s' % (regularization_loss.name))
       regularization_losses.append(regularization_loss)
     return regularization_losses
 
+  def get_hard_loss(self):
+    hard_loss = lenet_utils.loss(self.logits, self.hard_label_ph)
+    return hard_loss
+
   def get_pre_losses(self):
-    pre_losses = [tf.losses.softmax_cross_entropy(self.hard_label_ph, self.logits)]
-    print('#pre_losses wo regularization=%d' % (len(pre_losses)))
+    pre_losses = [self.get_hard_loss()]
     return pre_losses
 
   def get_gan_loss(self, sample_ph, label_ph):

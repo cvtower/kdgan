@@ -78,18 +78,18 @@ class STD():
       self.kdgan_loss = tf.add_n(kdgan_losses, name='%s_kdgan_loss' % std_scope)
       self.kdgan_train = lenet_utils.get_train_op(self.kdgan_loss, global_step)
 
-  def get_hard_loss(self):
-    hard_loss = lenet_utils.loss(self.logits, self.hard_label_ph)
-    return hard_loss
-
   def get_regularization_losses(self):
     regularization_losses = []
     for regularization_loss in tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES):
       if not regularization_loss.name.startswith(self.std_scope):
         continue
-      print('regularization_loss.name', regularization_loss.name)
+      print('STD regularization=%s' % (regularization_loss.name))
       regularization_losses.append(regularization_loss)
     return regularization_losses
+
+  def get_hard_loss(self):
+    hard_loss = lenet_utils.loss(self.logits, self.hard_label_ph)
+    return hard_loss
 
   def get_pre_losses(self):
     pre_losses = [self.get_hard_loss()]

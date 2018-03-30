@@ -7,9 +7,23 @@ dataset_dir=$HOME/Projects/data/cifar
 train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch*
 valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch*
 
-std_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_std
+dis_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_dis.ckpt
+std_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_std.ckpt
 tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch.ckpt
 tch_ckpt_dir=${checkpoint_dir}/mdlcompr_cifar_tch
+
+python pretrain_dis.py \
+  --dis_model_ckpt=${dis_model_ckpt} \
+  --train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch* \
+  --valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch* \
+  --train_size=${train_size} \
+  --batch_size=${batch_size} \
+  --learning_rate_decay_factor=0.96 \
+  --num_epochs_per_decay=10.0 \
+  --num_epoch=200
+#cifar=50000 final=0.8402
+exit
+
 
 # run this command several times to get good results
 python train_kd.py \
