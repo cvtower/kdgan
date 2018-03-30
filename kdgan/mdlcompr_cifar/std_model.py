@@ -1,5 +1,6 @@
 import lenet_utils
 
+import numpy as np
 import tensorflow as tf
 
 class STD():
