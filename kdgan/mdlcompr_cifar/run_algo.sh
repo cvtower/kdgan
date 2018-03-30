@@ -20,6 +20,22 @@ python train_kd.py \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
   --num_epoch=200 \
+  --kd_model=noisy \
+  --kd_soft_pct=0.1 \
+  --noisy_ratio=0.1 \
+  --noisy_sigma=0.1
+#cifar=50000 final=0.8420
+exit
+
+
+python train_kd.py \
+  --std_model_ckpt=${std_model_ckpt} \
+  --tch_model_ckpt=${tch_model_ckpt} \
+  --train_filepath=${train_filepath} \
+  --valid_filepath=${valid_filepath} \
+  --train_size=${train_size} \
+  --batch_size=${batch_size} \
+  --num_epoch=200 \
   --kd_model=distn \
   --kd_soft_pct=0.1
   --temperature=3.0
@@ -38,7 +54,7 @@ python train_kd.py \
   --num_epoch=200 \
   --kd_model=mimic \
   --kd_soft_pct=0.1
-#cifar=50000 final=0.8298
+#cifar=50000 final=0.8304
 exit
 
 
