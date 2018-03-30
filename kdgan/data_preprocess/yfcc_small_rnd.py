@@ -1105,9 +1105,9 @@ def create_test_set():
 
 def main(_):
   print('create yfcc small rnd dataset')
+
+  utils.create_if_nonexist(config.yfcc_rnd_dir)
   check_num_field()
-  
-    # utils.create_if_nonexist(dataset_dir)
     # if not utils.skip_if_exist(label_file):
     #     print('select top labels')
     #     select_top_label()
