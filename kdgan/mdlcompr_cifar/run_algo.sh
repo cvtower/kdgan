@@ -12,6 +12,7 @@ tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch.ckpt
 tch_ckpt_dir=${checkpoint_dir}/mdlcompr_cifar_tch
 
 
+# run this command several times to get good results
 python train_kd.py \
   --std_model_ckpt=${std_model_ckpt} \
   --tch_model_ckpt=${tch_model_ckpt} \
@@ -22,6 +23,21 @@ python train_kd.py \
   --num_epoch=200 \
   --kd_model=mimic \
   --kd_soft_pct=0.1
+#cifar=50000 final=0.8298
+exit
+
+
+python train_kd.py \
+  --std_model_ckpt=${std_model_ckpt} \
+  --tch_model_ckpt=${tch_model_ckpt} \
+  --train_filepath=${train_filepath} \
+  --valid_filepath=${valid_filepath} \
+  --train_size=${train_size} \
+  --batch_size=${batch_size} \
+  --num_epoch=200 \
+  --kd_model=mimic \
+  --kd_soft_pct=0.1
+  --temperature=3.0
 #cifar=50000 final=0.8420
 exit
 
