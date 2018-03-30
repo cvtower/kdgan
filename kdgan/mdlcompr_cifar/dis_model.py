@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 
 class DIS():
-  def __init__(self, flags, dataset, is_training=True):
+  def __init__(self, flags, is_training=True):
     self.is_training = is_training
     
     # None = batch_size
