@@ -3,6 +3,7 @@ from std_model import STD
 from tch_model import TCH
 from data_utils import CIFAR
 
+import numpy as np
 import tensorflow as tf
 import math
 import time
