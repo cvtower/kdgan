@@ -8,37 +8,27 @@ from data_utils import CIFAR
 import tensorflow as tf
 import math
 
-
-tn_size = int((dis_mnist.train.num_examples + gen_mnist.train.num_examples) / 2)
-vd_size = int((dis_mnist.test.num_examples + gen_mnist.test.num_examples) / 2)
-print('tn size=%d vd size=%d' % (tn_size, vd_size))
-tn_num_batch = int(flags.num_epoch * tn_size / flags.batch_size)
-print('tn #batch=%d' % (tn_num_batch))
-eval_interval = int(tn_size / flags.batch_size)
-print('ev #interval=%d' % (eval_interval))
+cifar = CIFAR(flags)
 
 tn_dis = DIS(flags, dis_mnist.train, is_training=True)
 tn_std = STD(flags, gen_mnist.train, is_training=True)
-dis_summary_op = tf.summary.merge([
-  tf.summary.scalar(tn_dis.learning_rate.name, tn_dis.learning_rate),
-  tf.summary.scalar(tn_dis.gan_loss.name, tn_dis.gan_loss),
-])
-gen_summary_op = tf.summary.merge([
-  tf.summary.scalar(tn_std.learning_rate.name, tn_std.learning_rate),
-  tf.summary.scalar(tn_std.gan_loss.name, tn_std.gan_loss),
-])
-init_op = tf.global_variables_initializer()
-
 scope = tf.get_variable_scope()
 scope.reuse_variables()
 vd_dis = DIS(flags, dis_mnist.test, is_training=False)
 vd_gen = STD(flags, gen_mnist.test, is_training=False)
 
-# for variable in tf.trainable_variables():
-#   num_params = 1
-#   for dim in variable.shape:
-#     num_params *= dim.value
-#   print('%-50s (%d params)' % (variable.name, num_params))
+init_op = tf.global_variables_initializer()
+
+tot_params = 0
+for var in tf.trainable_variables():
+  num_params = 1
+  for dim in var.shape:
+    num_params *= dim.value
+  print('%-64s (%d params)' % (var.name, num_params))
+  tot_params += num_params
+print('%-64s (%d params)' % ('gan', tot_params))
+
+exit()
 
 def main(_):
   bst_acc = 0.0
