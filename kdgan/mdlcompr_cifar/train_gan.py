@@ -19,40 +19,29 @@ vd_gen = STD(flags, is_training=False)
 
 init_op = tf.global_variables_initializer()
 
-tot_params = 0
-for var in tf.trainable_variables():
-  num_params = 1
-  for dim in var.shape:
-    num_params *= dim.value
-  print('%-64s (%d params)' % (var.name, num_params))
-  tot_params += num_params
-print('%-64s (%d params)' % ('gan', tot_params))
-
-exit()
+# tot_params = 0
+# for var in tf.trainable_variables():
+#   num_params = 1
+#   for dim in var.shape:
+#     num_params *= dim.value
+#   print('%-64s (%d params)' % (var.name, num_params))
+#   tot_params += num_params
+# print('%-64s (%d params)' % ('gan', tot_params))
 
 def main(_):
   bst_acc = 0.0
-  acc_list = []
-  writer = tf.summary.FileWriter(config.logs_dir, graph=tf.get_default_graph())
+  start_time = time.time()
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     tn_dis.saver.restore(sess, flags.dis_model_ckpt)
     tn_std.saver.restore(sess, flags.gen_model_ckpt)
 
-    feed_dict = {
-      vd_dis.image_ph:dis_mnist.test.images,
-      vd_dis.hard_label_ph:dis_mnist.test.labels,
-    }
-    ini_dis = sess.run(vd_dis.accuracy, feed_dict=feed_dict)
-    feed_dict = {
-      vd_gen.image_ph:gen_mnist.test.images,
-      vd_gen.hard_label_ph:gen_mnist.test.labels,
-    }
-    ini_gen = sess.run(vd_gen.accuracy, feed_dict=feed_dict)
-    print('ini dis=%.4f ini gen=%.4f' % (ini_dis, ini_gen))
-    # exit()
+    ini_dis = cifar.compute_acc(sess, vd_dis)
+    ini_gen = cifar.compute_acc(sess, vd_gen)
 
-    start = time.time()
+    print('ini dis=%.4f ini gen=%.4f' % (ini_dis, ini_gen))
+    exit()
+
     batch_d, batch_g = -1, -1
     for epoch in range(flags.num_epoch):
       for dis_epoch in range(flags.num_dis_epoch):
@@ -72,7 +61,6 @@ def main(_):
             tn_dis.dis_label_ph:label_np_d,
           }
           _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
-          writer.add_summary(summary_d, batch_d)
 
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
@@ -99,7 +87,6 @@ def main(_):
             tn_std.reward_ph:reward_np_g,
           }
           _, summary_g = sess.run([tn_std.gan_update, gen_summary_op], feed_dict=feed_dict)
-          writer.add_summary(summary_g, batch_g)
 
 
           if flags.collect_cr_data:
@@ -130,12 +117,8 @@ def main(_):
           if acc <= bst_acc:
             continue
           # save gen parameters if necessary
-  tot_time = time.time() - start
-  print('#mnist=%d bstacc=%.4f et=%.0fs' % (tn_size, bst_acc, tot_time))
-
-  if flags.collect_cr_data:
-    utils.create_pardir(flags.all_learning_curve_p)
-    pickle.dump(acc_list, open(flags.all_learning_curve_p, 'wb'))
+  tot_time = time.time() - start_time
+  print('#cifar=%d final=%.4f et=%.0fs' % (flags.train_size, bst_acc, tot_time))
 
 if __name__ == '__main__':
     tf.app.run()
