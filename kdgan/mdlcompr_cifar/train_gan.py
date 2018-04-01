@@ -70,9 +70,9 @@ def main(_):
         tn_image_s, label_dat_s = cifar.next_batch(sess)
         feed_dict = {tn_std.image_ph:tn_image_s}
         label_gen_s = sess.run(tn_std.labels, feed_dict=feed_dict)
-        exit()
         sample_np_s = utils.generate_label(flags, label_dat_s, label_gen_s)
         feed_dict = {tn_dis.image_ph:tn_image_s, tn_dis.std_sample_ph:sample_np_s}
+        exit()
         reward_np_s = sess.run(tn_dis.std_rewards, feed_dict=feed_dict)
         feed_dict = {
           tn_std.image_ph:tn_image_s,
