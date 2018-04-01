@@ -79,7 +79,7 @@ def main(_):
           tn_std.reward_ph:reward_np_s,
         }
         sess.run(tn_std.gan_train, feed_dict=feed_dict)
-        exit()
+
         if (batch_s + 1) % eval_interval != 0:
           continue
         acc = cifar.compute_acc(sess, vd_std)
