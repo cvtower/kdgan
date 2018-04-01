@@ -23,7 +23,7 @@ python train_gan.py \
   --dis_learning_rate=0.05 \
   --std_learning_rate=0.05 \
   --num_epoch=200 \
-  --num_dis_epoch=0 \
+  --num_dis_epoch=20 \
   --num_std_epoch=10 \
   --num_negative=20 \
   --num_positive=5
