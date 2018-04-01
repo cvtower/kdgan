@@ -35,7 +35,7 @@ def main(_):
   with tf.train.MonitoredTrainingSession() as sess:
     sess.run(init_op)
     tn_dis.saver.restore(sess, flags.dis_model_ckpt)
-    tn_std.saver.restore(sess, flags.gen_model_ckpt)
+    tn_std.saver.restore(sess, flags.std_model_ckpt)
 
     ini_dis = cifar.compute_acc(sess, vd_dis)
     ini_gen = cifar.compute_acc(sess, vd_gen)
