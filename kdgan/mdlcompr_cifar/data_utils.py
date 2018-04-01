@@ -1,3 +1,6 @@
+from kdgan import config
+
+from os import path
 import numpy as np
 import tensorflow as tf
 import math
@@ -110,5 +113,12 @@ class CIFAR():
       acc_list.append(acc)
     acc = sum(acc_list) / len(acc_list)
     return acc
+
+if __name__ == '__main__':
+  pass
+
+
+
+
 
 
