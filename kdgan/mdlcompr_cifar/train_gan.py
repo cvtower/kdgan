@@ -52,12 +52,12 @@ def main(_):
         feed_dict = {tn_std.image_ph:tn_image_d}
         label_std_d = sess.run(tn_std.labels, feed_dict=feed_dict)
         sample_std_d, std_label_d = utils.gan_dis_sample(flags, label_dat_d, label_std_d)
-        # feed_dict = {
-        #   tn_dis.image_ph:tn_image_d,
-        #   tn_dis.std_sample_ph:sample_std_d,
-        #   tn_dis.std_label_ph:std_label_d,
-        # }
-        # sess.run(tn_std.gan_train, feed_dict=feed_dict)
+        feed_dict = {
+          tn_dis.image_ph:tn_image_d,
+          tn_dis.std_sample_ph:sample_std_d,
+          tn_dis.std_label_ph:std_label_d,
+        }
+        sess.run(tn_std.gan_train, feed_dict=feed_dict)
 
         if (batch_d + 1) % eval_interval != 0:
           continue
