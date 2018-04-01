@@ -1,7 +1,7 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=${kdgan_dir}/checkpoints
-train_size=5000
-batch_size=64
+train_size=500
+batch_size=128
 
 dataset_dir=$HOME/Projects/data/cifar
 train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch_1.bin
