@@ -10,7 +10,6 @@ valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch*
 dis_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_dis.ckpt
 std_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_std.ckpt
 tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch.ckpt
-tch_ckpt_dir=${checkpoint_dir}/mdlcompr_cifar_tch
 
 python train_gan.py \
   --dis_model_ckpt=${dis_model_ckpt} \

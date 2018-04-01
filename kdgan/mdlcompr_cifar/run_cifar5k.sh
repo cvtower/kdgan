@@ -10,7 +10,6 @@ valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch.bin
 dis_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_dis.ckpt
 std_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_std.ckpt
 tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch.ckpt
-tch_ckpt_dir=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch
 
 
 python pretrain_std.py \
