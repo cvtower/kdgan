@@ -88,7 +88,8 @@ def main(_):
         bst_acc = max(acc, bst_acc)
         end_time = time.time()
         duration = (end_time - start_time) / 3600
-        print('gen #batch=%d acc=%.4f duration=%.4fh' % (batch_s + 1, bst_acc, duration))
+        print('gen #batch=%d acc=%.4f bst_acc=%.4f duration=%.4fh' % 
+            (batch_s + 1, acc, bst_acc, duration))
 
         if acc < bst_acc:
           continue
