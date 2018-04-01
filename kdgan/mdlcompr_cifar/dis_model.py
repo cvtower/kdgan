@@ -64,7 +64,7 @@ class DIS():
       gan_optimizer = utils.get_opt(flags, self.learning_rate)
       # gan_optimizer = tf.train.AdamOptimizer(self.learning_rate)
       # gan_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
-      self.gan_update = gan_optimizer.minimize(self.gan_loss, global_step=self.global_step)
+      self.gan_train = gan_optimizer.minimize(self.gan_loss, global_step=self.global_step)
 
   def get_regularization_losses(self):
     regularization_losses = []
@@ -89,11 +89,12 @@ class DIS():
     return gan_loss
 
   def get_gan_losses(self, flags):
-    gen_gan_loss = self.get_gan_loss(self.std_sample_ph, self.std_label_ph)
-    gen_gan_loss *= (1.0 - flags.intelltch_weight)
-    tch_gan_loss = self.get_gan_loss(self.tch_sample_ph, self.tch_label_ph)
-    tch_gan_loss *= flags.intelltch_weight
-    gan_losses = [gen_gan_loss, tch_gan_loss]
+    std_gan_loss = self.get_gan_loss(self.std_sample_ph, self.std_label_ph)
+    std_gan_loss *= (1.0 - flags.intelltch_weight)
+    gan_losses = [std_gan_loss]
+    # tch_gan_loss = self.get_gan_loss(self.tch_sample_ph, self.tch_label_ph)
+    # tch_gan_loss *= flags.intelltch_weight
+    # gan_losses.append(tch_gan_loss)
     return gan_losses
 
   def get_rewards(self, sample_ph):

@@ -19,6 +19,9 @@ python train_gan.py \
   --valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch* \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
+  --optimizer=sgd \
+  --dis_learning_rate=0.05 \
+  --std_learning_rate=0.05 \
   --num_epoch=200 \
   --num_dis_epoch=20 \
   --num_std_epoch=10 \

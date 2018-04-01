@@ -41,26 +41,37 @@ def main(_):
     ini_gen = cifar.compute_acc(sess, vd_gen)
 
     print('ini dis=%.4f ini gen=%.4f' % (ini_dis, ini_gen))
-    exit()
 
     batch_d, batch_g = -1, -1
     for epoch in range(flags.num_epoch):
+      num_batch_d = math.ceil(flags.num_dis_epoch * flags.train_size / flags.batch_size)
+      for _ in range(num_batch_d):
+        batch_d += 1
+        tn_image_d, label_dat_d = cifar.next_batch(sess)
+        feed_dict = {tn_std.image_ph:tn_image_d}
+        label_std_d = sess.run(tn_std.labels, feed_dict=feed_dict)
+        sample_std_d, std_label_d = utils.gan_dis_sample(flags, label_dat_d, label_std_d)
+        feed_dict = {
+          tn_dis.image_ph:tn_image_d,
+          tn_dis.std_sample_ph:sample_std_d,
+          tn_dis.std_label_ph:std_label_d,
+        }
+        sess.run(tn_std.gan_train, feed_dict=feed_dict)
+
+        if (batch_d + 1) % eval_interval != 0:
+          continue
+        print('dis #batch=%d' % (batch_d))
+
+      exit()
       for dis_epoch in range(flags.num_dis_epoch):
-        # print('epoch %03d dis_epoch %03d' % (epoch, dis_epoch))
         num_batch_d = math.ceil(tn_size / flags.batch_size)
         for image_np_d, label_dat_d in dis_datagen.generate(batch_size=flags.batch_size):
-        # for _ in range(num_batch_d):
-        #   image_np_d, label_dat_d = dis_mnist.train.next_batch(flags.batch_size)
           batch_d += 1
           feed_dict = {tn_std.image_ph:image_np_d}
-          label_gen_d, = sess.run([tn_std.labels], feed_dict=feed_dict)
-          # print('label_dat_d={} label_gen_d={}'.format(label_dat_d.shape, label_gen_d.shape))
-          sample_np_d, label_np_d = utils.gan_dis_sample_dev(flags, label_dat_d, label_gen_d)
-          feed_dict = {
-            tn_dis.image_ph:image_np_d,
-            tn_dis.sample_ph:sample_np_d,
-            tn_dis.dis_label_ph:label_np_d,
-          }
+          label_std_d, = sess.run([tn_std.labels], feed_dict=feed_dict)
+          # print('label_dat_d={} label_std_d={}'.format(label_dat_d.shape, label_std_d.shape))
+          sample_np_d, label_np_d = utils.gan_dis_sample_dev(flags, label_dat_d, label_std_d)
+
           _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
 
       for gen_epoch in range(flags.num_gen_epoch):
