@@ -61,7 +61,9 @@ def main(_):
 
         if (batch_d + 1) % eval_interval != 0:
           continue
-        print('dis #batch=%d' % (batch_d))
+        end_time = time.time()
+        duration = (end_time - start_time) / 3600
+        print('dis #batch=%d duration=%.4h' % (batch_d, duration))
         # evaluate dis if necessary
 
       num_batch_s = math.ceil(flags.num_std_epoch * flags.train_size / flags.batch_size)
@@ -84,11 +86,9 @@ def main(_):
           continue
         acc = cifar.compute_acc(sess, vd_std)
         bst_acc = max(acc, bst_acc)
-
         end_time = time.time()
-        duration = end_time - start_time
-        avg_time = duration / (batch_s + 1)
-        print('gen #batch=%d acc=%.4f time=%.4fs/batch' % (batch_s + 1, bst_acc, avg_time))
+        duration = (end_time - start_time) / 3600
+        print('gen #batch=%d acc=%.4f duration=%.4fh' % (batch_s + 1, bst_acc, duration))
 
         if acc < bst_acc:
           continue
