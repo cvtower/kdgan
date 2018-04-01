@@ -63,7 +63,7 @@ def main(_):
           continue
         end_time = time.time()
         duration = (end_time - start_time) / 3600
-        print('dis #batch=%d duration=%.4h' % (batch_d, duration))
+        print('dis #batch=%d duration=%.4fh' % (batch_d, duration))
         # evaluate dis if necessary
 
       num_batch_s = math.ceil(flags.num_std_epoch * flags.train_size / flags.batch_size)
