@@ -26,7 +26,7 @@ class DIS():
       self.labels = tf.nn.softmax(self.logits)
 
       self.std_rewards = self.get_rewards(self.std_sample_ph)
-      self.tch_rewards = self.get_rewards(self.tch_sample_ph)
+      # self.tch_rewards = self.get_rewards(self.tch_sample_ph)
 
       if not is_training:
         predictions = tf.argmax(self.labels, axis=1)
