@@ -72,7 +72,6 @@ def main(_):
         label_gen_s = sess.run(tn_std.labels, feed_dict=feed_dict)
         sample_np_s = utils.generate_label(flags, label_dat_s, label_gen_s)
         feed_dict = {tn_dis.image_ph:tn_image_s, tn_dis.std_sample_ph:sample_np_s}
-        exit()
         reward_np_s = sess.run(tn_dis.std_rewards, feed_dict=feed_dict)
         feed_dict = {
           tn_std.image_ph:tn_image_s,
@@ -80,7 +79,7 @@ def main(_):
           tn_std.reward_ph:reward_np_s,
         }
         sess.run(tn_std.gan_train, feed_dict=feed_dict)
-        
+        exit()
         if (batch_s + 1) % eval_interval != 0:
           continue
         acc = cifar.compute_acc(sess, vd_std)
