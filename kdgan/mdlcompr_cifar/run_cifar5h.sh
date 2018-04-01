@@ -4,7 +4,7 @@ train_size=500
 batch_size=50
 
 dataset_dir=$HOME/Projects/data/cifar
-train_filepath=${dataset_dir}/cifar-10-batches-bin/cifar10_5000.bin
+train_filepath=${dataset_dir}/cifar-10-batches-bin/cifar10_10000.bin
 valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch.bin
 
 dis_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_dis.ckpt
