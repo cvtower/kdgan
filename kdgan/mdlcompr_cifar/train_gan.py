@@ -10,6 +10,7 @@ import math
 import time
 
 cifar = CIFAR(flags)
+eval_interval = int(math.ceil(flags.train_size / flags.batch_size))
 
 tn_dis = DIS(flags, is_training=True)
 tn_std = STD(flags, is_training=True)
