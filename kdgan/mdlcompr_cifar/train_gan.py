@@ -7,6 +7,7 @@ from data_utils import CIFAR
 
 import tensorflow as tf
 import math
+import time
 
 cifar = CIFAR(flags)
 
