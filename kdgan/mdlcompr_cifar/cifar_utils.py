@@ -21,7 +21,7 @@ def main(_):
   image_bytes = height * width * channel
   record_bytes = label_bytes + image_bytes
 
-  train_set = []
+  record_list = []
   label_count = {}
 
   with open(infile, 'rb') as fin:
@@ -34,7 +34,7 @@ def main(_):
       count = label_count.get(label, 0)
       if count == exp_label:
         continue
-      train_set.append(record_np)
+      record_list.append(record_np)
       label_count[label] = count + 1
       num_image += 1
 
@@ -46,8 +46,9 @@ def main(_):
   outdir = path.dirname(infile)
   outfile = path.join(outdir, 'cifar10_%d.bin' % (exp_image))
   with open(outfile, 'wb') as fout:
-    record_bt = record_np.tobytes()
-    fout.write(record_bt)
+    for record_np in record_list:
+      record_bt = record_np.tobytes()
+      fout.write(record_bt)
 
 if __name__ == '__main__':
   tf.app.run()
