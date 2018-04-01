@@ -63,8 +63,7 @@ class STD():
       self.kd_train = kd_optimizer.minimize(self.kd_loss, global_step=global_step)
 
       # gan train
-      # gan_losses = self.get_gan_losses()
-      gan_losses = []
+      gan_losses = self.get_gan_losses()
       print('#gan_losses wo regularization=%d' % (len(gan_losses)))
       gan_losses.extend(self.get_regularization_losses())
       print('#gan_losses wt regularization=%d' % (len(gan_losses)))
