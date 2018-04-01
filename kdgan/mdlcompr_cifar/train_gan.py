@@ -39,9 +39,9 @@ def main(_):
     tn_std.saver.restore(sess, flags.std_model_ckpt)
 
     ini_dis = cifar.compute_acc(sess, vd_dis)
-    ini_gen = cifar.compute_acc(sess, vd_gen)
+    ini_std = cifar.compute_acc(sess, vd_std)
 
-    print('ini dis=%.4f ini gen=%.4f' % (ini_dis, ini_gen))
+    print('ini dis=%.4f ini std=%.4f' % (ini_dis, ini_std))
 
     batch_d, batch_s = -1, -1
     for epoch in range(flags.num_epoch):
