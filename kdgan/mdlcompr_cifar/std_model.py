@@ -63,12 +63,15 @@ class STD():
       self.kd_train = kd_optimizer.minimize(self.kd_loss, global_step=global_step)
 
       # gan train
-      gan_losses = self.get_gan_losses()
+      # gan_losses = self.get_gan_losses()
+      gan_losses = []
       print('#gan_losses wo regularization=%d' % (len(gan_losses)))
       gan_losses.extend(self.get_regularization_losses())
       print('#gan_losses wt regularization=%d' % (len(gan_losses)))
       self.gan_loss = tf.add_n(gan_losses, name='%s_gan_loss' % std_scope)
-      self.gan_train = lenet_utils.get_train_op(self.gan_loss, global_step)
+      # self.gan_train = lenet_utils.get_train_op(self.gan_loss, global_step)
+      gan_optimizer = utils.get_opt(flags, self.learning_rate)
+      self.gan_train = gan_optimizer.minimize(self.gan_loss, global_step=global_step)
 
       # kdgan train
       kdgan_losses = self.get_kdgan_losses(flags)
