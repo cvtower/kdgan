@@ -10,12 +10,12 @@ import math
 
 cifar = CIFAR(flags)
 
-tn_dis = DIS(flags, dis_mnist.train, is_training=True)
-tn_std = STD(flags, gen_mnist.train, is_training=True)
+tn_dis = DIS(flags, is_training=True)
+tn_std = STD(flags, is_training=True)
 scope = tf.get_variable_scope()
 scope.reuse_variables()
-vd_dis = DIS(flags, dis_mnist.test, is_training=False)
-vd_gen = STD(flags, gen_mnist.test, is_training=False)
+vd_dis = DIS(flags, is_training=False)
+vd_gen = STD(flags, is_training=False)
 
 init_op = tf.global_variables_initializer()
 
