@@ -11,6 +11,20 @@ dis_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_dis.ckpt
 std_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_std.ckpt
 tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch.ckpt
 
+
+python pretrain_dis.py \
+  --dis_model_ckpt=${dis_model_ckpt} \
+  --train_filepath=${train_filepath} \
+  --valid_filepath=${valid_filepath} \
+  --train_size=${train_size} \
+  --batch_size=${batch_size} \
+  --learning_rate_decay_factor=0.96 \
+  --num_epochs_per_decay=10.0 \
+  --num_epoch=200
+#cifar=50000 final=0.8402
+exit
+
+
 python pretrain_std.py \
   --std_model_ckpt=${std_model_ckpt} \
   --train_filepath=${train_filepath} \
@@ -27,8 +41,8 @@ exit
 python train_gan.py \
   --dis_model_ckpt=${dis_model_ckpt} \
   --std_model_ckpt=${std_model_ckpt} \
-  --train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch* \
-  --valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch* \
+  --train_filepath=${train_filepath} \
+  --valid_filepath=${valid_filepath} \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
   --optimizer=sgd \
@@ -39,19 +53,6 @@ python train_gan.py \
   --num_std_epoch=10 \
   --num_negative=20 \
   --num_positive=5
-exit
-
-
-python pretrain_dis.py \
-  --dis_model_ckpt=${dis_model_ckpt} \
-  --train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch* \
-  --valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch* \
-  --train_size=${train_size} \
-  --batch_size=${batch_size} \
-  --learning_rate_decay_factor=0.96 \
-  --num_epochs_per_decay=10.0 \
-  --num_epoch=200
-#cifar=50000 final=0.8402
 exit
 
 
@@ -106,8 +107,8 @@ exit
 python pretrain_tch.py \
   --tch_model_ckpt=${tch_model_ckpt} \
   --tch_ckpt_dir=${tch_ckpt_dir} \
-  --train_filepath=${dataset_dir}/cifar-10-batches-bin/data_batch* \
-  --valid_filepath=${dataset_dir}/cifar-10-batches-bin/test_batch* \
+  --train_filepath=${train_filepath} \
+  --valid_filepath=${valid_filepath} \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
   --learning_rate_decay_factor=0.95 \
