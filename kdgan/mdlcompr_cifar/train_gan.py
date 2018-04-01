@@ -61,19 +61,14 @@ def main(_):
 
         if (batch_d + 1) % eval_interval != 0:
           continue
-        print('dis #batch=%d' % (batch_d))
+        # evaluate dis if necessary
 
-      exit()
-      for dis_epoch in range(flags.num_dis_epoch):
-        num_batch_d = math.ceil(tn_size / flags.batch_size)
-        for image_np_d, label_dat_d in dis_datagen.generate(batch_size=flags.batch_size):
-          batch_d += 1
-          feed_dict = {tn_std.image_ph:image_np_d}
-          label_std_d, = sess.run([tn_std.labels], feed_dict=feed_dict)
-          # print('label_dat_d={} label_std_d={}'.format(label_dat_d.shape, label_std_d.shape))
-          sample_np_d, label_np_d = utils.gan_dis_sample_dev(flags, label_dat_d, label_std_d)
-
-          _, summary_d = sess.run([tn_dis.gan_update, dis_summary_op], feed_dict=feed_dict)
+      num_batch_s = math.ceil(flags.num_std_epoch * flags.train_size / flags.batch_size)
+      for _ in range(num_batch_s):
+        batch_g += 1
+        tn_image_s, label_dat_s = cifar.next_batch(sess)
+        print(tn_image_s.shape, label_dat_s.shape)
+        exit()
 
       for gen_epoch in range(flags.num_gen_epoch):
         # print('epoch %03d gen_epoch %03d' % (epoch, gen_epoch))
