@@ -117,7 +117,7 @@ def select_rnd_label():
     if label not in imagenet_labels:
       continue
     valid_labels[label] = count
-  print('valid #label=%d' % (valid_labels))
+  print('valid #label=%d' % (len(valid_labels)))
   exit()
   for count, label in enumerate(top_labels):
       names = []
