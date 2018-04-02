@@ -108,23 +108,17 @@ def select_rnd_label():
     for label in labels:
       label_count[label] = label_count.get(label, 0) + 1
   fin.close()
-  label_count = label_count.items()
-  label_count = sorted(label_count, key=operator.itemgetter(1), reverse=True)
-  print(len(label_count))
-  exit()
 
   invalid_labels = ['jack', 'maria']
-  top_labels, num_label, = set(), 0
-  for label, _ in label_count:
-      if num_label == NUM_TOP_LABEL:
-          break
-      if label in invalid_labels:
-          continue
-      if label not in imagenet_labels:
-          continue
-      top_labels.add(label)
-      num_label += 1
-  top_labels = sorted(top_labels)
+  valid_labels = {}
+  for label, count in label_count.items():
+    if label in invalid_labels:
+      continue
+    if label not in imagenet_labels:
+      continue
+    valid_labels[label] = count
+  print('valid #label=%d' % (valid_labels))
+  exit()
   for count, label in enumerate(top_labels):
       names = []
       for label_id in range(1, 1001):
