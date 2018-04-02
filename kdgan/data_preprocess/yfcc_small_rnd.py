@@ -171,55 +171,57 @@ def select_rnd_label():
   #   input()
   utils.save_collection(rnd_labels, label_file)
 
-def with_top_label(labels, top_labels):
-    old_labels = labels.split(LABEL_SEPERATOR)
-    new_labels = []
-    for label in old_labels:
-        if label not in top_labels:
-            continue
-        new_labels.append(label)
-    if len(new_labels) == 0:
-        return False
-    return True
+def with_rnd_label(labels, rnd_labels):
+  old_labels = labels.split(LABEL_SEPERATOR)
+  new_labels = []
+  for label in old_labels:
+    if label not in rnd_labels:
+      continue
+    new_labels.append(label)
+  if len(new_labels) == 0:
+    return False
+  return True
 
-def keep_top_label(labels, top_labels):
-    old_labels = labels.split(LABEL_SEPERATOR)
-    new_labels = []
-    for label in old_labels:
-        if label not in top_labels:
-            continue
-        new_labels.append(label)
-    return new_labels
+def keep_rnd_label(labels, rnd_labels):
+  old_labels = labels.split(LABEL_SEPERATOR)
+  new_labels = []
+  for label in old_labels:
+    if label not in rnd_labels:
+      continue
+    new_labels.append(label)
+  return new_labels
 
 def get_user_count(user_posts):
-    user_count = {}
-    for user, posts in user_posts.items():
-        user_count[user] = len(posts)
-    return user_count
+  user_count = {}
+  for user, posts in user_posts.items():
+    user_count[user] = len(posts)
+  return user_count
 
 def get_post_count(user_posts):
-    tot_post = 0
-    for _, posts in user_posts.items():
-        tot_post += len(posts)
-    return tot_post
+  tot_post = 0
+  for _, posts in user_posts.items():
+    tot_post += len(posts)
+  return tot_post
 
 def save_posts(user_posts, infile):
-    image_set = set()
-    with open(infile, 'w') as fout:
-        users = sorted(user_posts.keys())
-        for user in users:
-            posts = user_posts[user]
-            posts = sorted(posts, key=operator.itemgetter(0))
-            for post in posts:
-                fields = post.split(FIELD_SEPERATOR)
-                image = fields[IMAGE_INDEX]
-                image_set.add(image)
-                fout.write('%s\n' % post)
-    print('#image={}'.format(len(image_set)))
+  image_set = set()
+  with open(infile, 'w') as fout:
+    users = sorted(user_posts.keys())
+    for user in users:
+      posts = user_posts[user]
+      posts = sorted(posts, key=operator.itemgetter(0))
+      for post in posts:
+        fields = post.split(FIELD_SEPERATOR)
+        image = fields[IMAGE_INDEX]
+        image_set.add(image)
+        fout.write('%s\n' % post)
+  print('#image={}'.format(len(image_set)))
 
 def select_posts():
+  rnd_labels = utils.load_collection(label_file)
+  print(rnd_labels)
   exit()
-  top_labels = utils.load_collection(label_file)
+
   user_posts = {}
   fin = open(config.sample_file)
   while True:
@@ -229,7 +231,7 @@ def select_posts():
       fields = line.split(FIELD_SEPERATOR)
       user, labels = fields[USER_INDEX], fields[LABEL_INDEX]
       image_url = fields[IMAGE_INDEX]
-      if not with_top_label(labels, top_labels):
+      if not with_rnd_label(labels, rnd_labels):
           continue
       post = fields[POST_INDEX]
       if post in ['38660241',
@@ -238,7 +240,7 @@ def select_posts():
               '96116455',
               '93108491',]:
           continue
-      labels = keep_top_label(labels, top_labels)
+      labels = keep_rnd_label(labels, rnd_labels)
       fields[LABEL_INDEX] = LABEL_SEPERATOR.join(labels)
       fields[IMAGE_INDEX] = path.basename(image_url)
       if user not in user_posts:
@@ -491,8 +493,8 @@ def count_dataset():
     print('#label={} #lemm={}'.format(len(labels), len(lemms)))
 
 def check_dataset(infile):
-    top_labels = utils.load_collection(label_file)
-    top_labels = set(top_labels)
+    rnd_labels = utils.load_collection(label_file)
+    rnd_labels = set(rnd_labels)
     fin = open(infile)
     while True:
         line = fin.readline()
@@ -501,9 +503,9 @@ def check_dataset(infile):
         fields = line.strip().split(FIELD_SEPERATOR)
         labels = fields[LABEL_INDEX].split()
         for label in labels:
-            top_labels.discard(label)
-    print(path.basename(infile), len(top_labels))
-    assert len(top_labels) == 0
+            rnd_labels.discard(label)
+    print(path.basename(infile), len(rnd_labels))
+    assert len(rnd_labels) == 0
 
 def split_dataset():
     user_posts = {}
