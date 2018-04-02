@@ -124,6 +124,7 @@ def select_rnd_label():
   # for label, count in valid_labels:
   #   print('%-16s %d' % (label, count))
   rnd_labels = [label for label, count in valid_labels]
+  rnd_labels = sorted(rnd_labels)
   for count, label in enumerate(rnd_labels):
     names = []
     for label_id in range(1, 1001):
