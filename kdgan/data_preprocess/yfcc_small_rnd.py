@@ -84,64 +84,58 @@ def check_num_field():
   fin.close()
 
 def select_rnd_label():
-    imagenet_labels = {}
-    label_names = imagenet.create_readable_names_for_imagenet_labels()
-    label_names = {k:v.lower() for k, v in label_names.items()}
-    for label_id in range(1, 1001):
-        names = label_names[label_id]
-        for name in names.split(','):
-            name = name.strip()
-            label = name.split()[-1]
-            if label not in imagenet_labels:
-                imagenet_labels[label] = []
-            imagenet_labels[label].append(names)
+  imagenet_labels = {}
+  label_names = imagenet.create_readable_names_for_imagenet_labels()
+  label_names = {k:v.lower() for k, v in label_names.items()}
+  for label_id in range(1, 1001):
+    names = label_names[label_id]
+    for name in names.split(','):
+      name = name.strip()
+      label = name.split()[-1]
+      if label not in imagenet_labels:
+        imagenet_labels[label] = []
+      imagenet_labels[label].append(names)
 
-    fin = open(config.sample_file)
-    label_count = {}
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        labels = fields[LABEL_INDEX]
-        labels = labels.split(LABEL_SEPERATOR)
-        for label in labels:
-            label_count[label] = label_count.get(label, 0) + 1
-    fin.close()
+  fin = open(config.sample_file)
+  label_count = {}
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    labels = fields[LABEL_INDEX]
+    labels = labels.split(LABEL_SEPERATOR)
+    for label in labels:
+      label_count[label] = label_count.get(label, 0) + 1
+  fin.close()
+  label_count = label_count.items()
+  label_count = sorted(label_count, key=operator.itemgetter(1), reverse=True)
+  for label, count in label_count:
+    print('%s->%d' % (label, count))
+  exit()
 
-    invalid_labels = ['bank', 'center', 'home', 'jack', 'maria']
-    invalid_labels.append('apple') # custard apple
-    invalid_labels.append('bar') # horizontal bar, high bar
-    invalid_labels.append('coral') # brain coral
-    invalid_labels.append('dragon') # komodo dragon
-    invalid_labels.append('grand') # grand piano
-    invalid_labels.append('star') # starfish, sea star
-    invalid_labels.append('track') # half track
-    label_count = sorted(label_count.items(),
-            key=operator.itemgetter(1, 0),
-            reverse=True)
-
-    top_labels, num_label, = set(), 0
-    for label, _ in label_count:
-        if num_label == NUM_TOP_LABEL:
-            break
-        if label in invalid_labels:
-            continue
-        if label not in imagenet_labels:
-            continue
-        top_labels.add(label)
-        num_label += 1
-    top_labels = sorted(top_labels)
-    for count, label in enumerate(top_labels):
-        names = []
-        for label_id in range(1, 1001):
-            if label in label_names[label_id]:
-                names.append(label_names[label_id])
-        print('#%d label=%s' % (count + 1, label))
-        for names in imagenet_labels[label]:
-            print('\t%s' %(names))
-        # input()
-    utils.save_collection(top_labels, label_file)
+  invalid_labels = ['jack', 'maria']
+  top_labels, num_label, = set(), 0
+  for label, _ in label_count:
+      if num_label == NUM_TOP_LABEL:
+          break
+      if label in invalid_labels:
+          continue
+      if label not in imagenet_labels:
+          continue
+      top_labels.add(label)
+      num_label += 1
+  top_labels = sorted(top_labels)
+  for count, label in enumerate(top_labels):
+      names = []
+      for label_id in range(1, 1001):
+          if label in label_names[label_id]:
+              names.append(label_names[label_id])
+      print('#%d label=%s' % (count + 1, label))
+      for names in imagenet_labels[label]:
+          print('\t%s' %(names))
+      # input()
+  utils.save_collection(top_labels, label_file)
 
 def with_top_label(labels, top_labels):
     old_labels = labels.split(LABEL_SEPERATOR)
@@ -896,7 +890,7 @@ def create_survey_data():
 num_classes = 1000
 if flags.model_name not in ['vgg_16', 'vgg_19']:
     num_classes = 1001
-print('#class=%d' % (num_classes))
+# print('#class=%d' % (num_classes))
 network_fn_t = nets_factory.get_network_fn(flags.model_name,
         num_classes=num_classes,
         is_training=True)
@@ -907,7 +901,7 @@ image_size_t = network_fn_t.default_image_size
 image_size_v = network_fn_v.default_image_size
 assert image_size_t==image_size_v
 image_size = int((image_size_t + image_size_v) / 2)
-print('image size=%d' % (image_size))
+# print('image size=%d' % (image_size))
 image_ph = tf.placeholder(tf.float32, shape=(None, None, flags.channels))
 preprocessing_t = preprocessing_factory.get_preprocessing(flags.preprocessing_name,
         is_training=True)
@@ -922,9 +916,9 @@ scope = tf.get_variable_scope()
 scope.reuse_variables()
 _, end_points_v = network_fn_v(image_ts_v)
 end_point_t = tf.squeeze(end_points_t[flags.end_point])
-print('tn', end_point_t.shape, end_point_t.dtype)
+# print('tn', end_point_t.shape, end_point_t.dtype)
 end_point_v = tf.squeeze(end_points_v[flags.end_point])
-print('vd', end_point_v.shape, end_point_v.dtype)
+# print('vd', end_point_v.shape, end_point_v.dtype)
 
 # print('trainable parameters')
 # for variable in slim.get_model_variables():
@@ -1117,7 +1111,7 @@ def main(_):
   check_num_field()
   if not utils.skip_if_exist(label_file):
     print('select top labels')
-    # select_rnd_label()
+    select_rnd_label()
     # if not utils.skip_if_exist(raw_file):
     #     print('select posts')
     #     select_posts()
