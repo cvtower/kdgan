@@ -142,8 +142,8 @@ def select_rnd_label():
       if label in label_names[label_id]:
         names.append(label_names[label_id])
     print('#%d label=%s' % (count + 1, label))
-    for names in imagenet_labels[label]:
-      print('\t%s' %(names))
+    # for names in imagenet_labels[label]:
+    #   print('\t%s' %(names))
     # input()
   exit()
   utils.save_collection(rnd_labels, label_file)
