@@ -954,23 +954,22 @@ def main(_):
       break
 
   if flags.overwrite or (not utils.skip_if_exist(data_file)):
-    print('tokenize dataset')
+    print('tokenize and collect images')
     tokenize_dataset()
+    collect_image(data_file, image_data_dir)
 
   if (not utils.skip_if_exist(train_file) or 
         not utils.skip_if_exist(valid_file or 
         not utils.skip_if_exist(vocab_file))):
-    print('split dataset')
+    print('split into train and valid')
     split_dataset()
 
-  print('collect images')
-  collect_image(data_file, image_data_dir)
-
+  print('create survey data')
   # create_survey_data()
 
-    # create_test_set()
-    # create_tfrecord(valid_file, end_point_v, is_training=False)
-    # create_tfrecord(train_file, end_point_t, is_training=True)
+  # create_test_set()
+  # create_tfrecord(valid_file, end_point_v, is_training=False)
+  # create_tfrecord(train_file, end_point_t, is_training=True)
 
 if __name__ == '__main__':
   tf.app.run()
