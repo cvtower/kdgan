@@ -118,6 +118,8 @@ def select_rnd_label():
       continue
     valid_labels[label] = count
   print('valid #label=%d' % (len(valid_labels)))
+  for label, count in valid_labels.items():
+    print('%-32s %d' % (label, count))
   exit()
   for count, label in enumerate(top_labels):
       names = []
