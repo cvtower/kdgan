@@ -125,6 +125,14 @@ def select_rnd_label():
   #   print('%-16s %d' % (label, count))
   rnd_labels = [label for label, count in valid_labels]
   rnd_labels = sorted(rnd_labels)
+  for label in rnd_labels:
+    synsets = wordnet.synsets(label)
+    for synset in synsets:
+      print(- * 10)
+      print('name:', synset.name)
+      print('type:', synset.lexname)
+      print('lemma:', synset.lemma_names)
+    input()
   for count, label in enumerate(rnd_labels):
     names = []
     for label_id in range(1, 1001):
