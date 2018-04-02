@@ -158,8 +158,8 @@ def select_rnd_label():
   valid_labels = sorted(valid_labels.items(), key=operator.itemgetter(1))
   rnd_labels = [label for label, count in valid_labels]
   rnd_labels = sorted(rnd_labels)
-  for label in rnd_labels:
-    print(label)
+  for count, label in enumerate(rnd_labels):
+    print('#%d=%s' % (count, label))
   # for count, label in enumerate(rnd_labels):
   #   names = []
   #   for label_id in range(1, 1001):
