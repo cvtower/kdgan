@@ -220,7 +220,9 @@ def select_posts():
       continue
     labels = keep_rnd_label(labels, rnd_labels)
     fields[LABEL_INDEX] = LABEL_SEPERATOR.join(labels)
-    fields[IMAGE_INDEX] = path.basename(image_url)
+    image_file = path.basename(image_url)
+    image = image_file.split('_')[0]
+    fields[IMAGE_INDEX] = image
     posts.append(FIELD_SEPERATOR.join(fields))
   fin.close()
   print('\t#post=%d/%d' % (NUM_RND_POST, len(posts)))
