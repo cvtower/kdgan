@@ -121,7 +121,29 @@ def select_rnd_label():
       label_count[label] = label_count.get(label, 0) + 1
   fin.close()
 
-  invalid_labels = ['jack', 'maria']
+  invalid_labels = [
+    # people
+    'admiral',
+    'beauty',
+    'feeder',
+    'finch',
+    'harvestman',
+    'jack',
+    'maker',
+    'maria',
+    'mike',
+    'monarch',
+    'monster',
+    'painter',
+    'player',
+    'robin',
+    'smith',
+    'speaker',
+    # abstract
+    'newfoundland',
+    'pickup',
+    'scope',
+  ]
   valid_labels = {}
   for label, count in label_count.items():
     if label in invalid_labels:
