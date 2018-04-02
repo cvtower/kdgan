@@ -55,6 +55,7 @@ EXPECTED_NUM_FIELD = 6
 
 MIN_RND_LABEL = 20
 NUM_RND_LABEL = 100
+MIN_RND_POST = 16
 NUM_RND_POST = 8000
 TRAIN_RATIO = 0.95
 SHUFFLE_SEED = 100
@@ -199,7 +200,6 @@ def save_posts(posts, outfile):
       image = fields[IMAGE_INDEX]
       image_set.add(image)
       fout.write('%s\n' % post)
-  print('#image={}'.format(len(image_set)))
 
 def select_posts():
   rnd_labels = utils.load_collection(label_file)
@@ -1013,11 +1013,11 @@ def main(_):
 
   check_num_field()
   if flags.overwrite or (not utils.skip_if_exist(raw_file)):
-    print('random labels and posts')
     while True:
+      print('random labels and posts')
       select_rnd_label()
       min_count = select_posts()
-      if min_count < 16:
+      if min_count < MIN_RND_POST:
         continue
       break
 
