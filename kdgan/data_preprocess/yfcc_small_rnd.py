@@ -83,6 +83,17 @@ def check_num_field():
       raise Exception('wrong number of fields')
   fin.close()
 
+def only_noun(label):
+  is_noun = True
+  synsets = wordnet.synsets(label)
+  for synset in synsets:
+    lexical_type = synset.lexname()
+    lexical_type = lexical_type.split('.')[0]
+    if lexical_type != 'noun':
+      is_noun = False
+      break
+  return is_noun
+
 def select_rnd_label():
   imagenet_labels = {}
   label_names = imagenet.create_readable_names_for_imagenet_labels()
@@ -118,21 +129,13 @@ def select_rnd_label():
       continue
     if count < 20:
       continue
+    if not is_noun(label):
+      continue
     valid_labels[label] = count
-  # print('valid #label=%d' % (len(valid_labels)))
   valid_labels = sorted(valid_labels.items(), key=operator.itemgetter(1))
-  # for label, count in valid_labels:
-  #   print('%-16s %d' % (label, count))
   rnd_labels = [label for label, count in valid_labels]
   rnd_labels = sorted(rnd_labels)
-  for label in rnd_labels:
-    synsets = wordnet.synsets(label)
-    for synset in synsets:
-      print('-' * 10)
-      print('name:', synset.name())
-      print('type:', synset.lexname())
-      print('lemma:', synset.lemma_names())
-    input()
+
   for count, label in enumerate(rnd_labels):
     names = []
     for label_id in range(1, 1001):
