@@ -19,6 +19,7 @@ from nltk.corpus import stopwords
 from nltk.corpus import wordnet
 from os import path
 from preprocessing import preprocessing_factory
+from sys import stdout
 from tensorflow.contrib import slim
 
 from bs4 import BeautifulSoup
@@ -135,16 +136,17 @@ def select_rnd_label():
   valid_labels = sorted(valid_labels.items(), key=operator.itemgetter(1))
   rnd_labels = [label for label, count in valid_labels]
   rnd_labels = sorted(rnd_labels)
-
-  for count, label in enumerate(rnd_labels):
-    names = []
-    for label_id in range(1, 1001):
-      if label in label_names[label_id]:
-        names.append(label_names[label_id])
-    print('#%d label=%s' % (count + 1, label))
-    # for names in imagenet_labels[label]:
-    #   print('\t%s' %(names))
-    # input()
+  for label in rnd_labels:
+    stdout.write('%s ' % (label))
+  # for count, label in enumerate(rnd_labels):
+  #   names = []
+  #   for label_id in range(1, 1001):
+  #     if label in label_names[label_id]:
+  #       names.append(label_names[label_id])
+  #   print('#%d label=%s' % (count + 1, label))
+  #   for names in imagenet_labels[label]:
+  #     print('\t%s' %(names))
+  #   input()
   exit()
   utils.save_collection(rnd_labels, label_file)
 
