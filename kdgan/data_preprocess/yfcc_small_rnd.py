@@ -36,6 +36,7 @@ tf.app.flags.DEFINE_string('preprocessing_name', None, '')
 tf.app.flags.DEFINE_string('end_point', None, '')
 tf.app.flags.DEFINE_string('pretrained_ckpt', None, '')
 tf.app.flags.DEFINE_integer('channels', 3, '')
+tf.app.flags.DEFINE_boolean('overwrite', False, '')
 flags = tf.app.flags.FLAGS
 
 lemmatizer = WordNetLemmatizer()
@@ -159,8 +160,6 @@ def select_rnd_label():
   rnd_labels = [label for label, count in valid_labels]
   rnd_labels = np.random.choice(rnd_labels, size=NUM_RND_LABEL, replace=False)
   rnd_labels = sorted(rnd_labels)
-  for count, label in enumerate(rnd_labels):
-    print('#%d=%s' % (count, label))
   # for count, label in enumerate(rnd_labels):
   #   names = []
   #   for label_id in range(1, 1001):
@@ -170,7 +169,6 @@ def select_rnd_label():
   #   for names in imagenet_labels[label]:
   #     print('\t%s' %(names))
   #   input()
-  exit()
   utils.save_collection(rnd_labels, label_file)
 
 def with_top_label(labels, top_labels):
@@ -1145,7 +1143,7 @@ def main(_):
   print('create yfcc small rnd dataset')
 
   check_num_field()
-  if not utils.skip_if_exist(label_file):
+  if flags.overwrite or (not utils.skip_if_exist(label_file)):
     print('select top labels')
     select_rnd_label()
     # if not utils.skip_if_exist(raw_file):
