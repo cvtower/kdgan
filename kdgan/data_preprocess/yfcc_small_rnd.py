@@ -53,7 +53,7 @@ LABEL_INDEX = -1
 FIELD_SEPERATOR = '\t'
 EXPECTED_NUM_FIELD = 6
 
-MIN_RND_LABEL = 55
+MIN_RND_LABEL = 50
 NUM_RND_LABEL = 100 # select rnd 100 labels
 EXPECTED_NUM_POST = 10000
 MIN_IMAGE_PER_USER = 20
@@ -160,6 +160,7 @@ def select_rnd_label():
     valid_labels[label] = count
   valid_labels = sorted(valid_labels.items(), key=operator.itemgetter(1))
   rnd_labels = [label for label, count in valid_labels]
+  print('\t#label=%d/%d' % (NUM_RND_LABEL, len(rnd_labels)))
   rnd_labels = np.random.choice(rnd_labels, size=NUM_RND_LABEL, replace=False)
   rnd_labels = sorted(rnd_labels)
   # for count, label in enumerate(rnd_labels):
@@ -171,7 +172,6 @@ def select_rnd_label():
   #   for names in imagenet_labels[label]:
   #     print('\t%s' %(names))
   #   input()
-  print('\t#label=%d' % (len(rnd_labels)))
   utils.save_collection(rnd_labels, label_file)
 
 def with_rnd_label(labels, rnd_labels):
