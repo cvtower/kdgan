@@ -243,120 +243,62 @@ def select_posts():
 
 stopwords = set(stopwords.words('english'))    
 def tokenize_dataset():
-    stemmer = SnowballStemmer('english')
-    tokenizer = RegexpTokenizer('[a-z]+')
-    def _in_wordnet(token):
-        if wordnet.synsets(token):
-            if any(c not in string.ascii_lowercase + '-' for c in token):
-                return False
-            if len(token) < 3:
-                return False
-            return True
-        else:
-            return False
-    def _stop_stem(tokens):
-        tokens = [token for token in tokens if _in_wordnet(token)]
-        tokens = [token for token in tokens if not token in stopwords]
-        tokens = [stemmer.stem(token) for token in tokens]
-        return tokens
+  stemmer = SnowballStemmer('english')
+  tokenizer = RegexpTokenizer('[a-z]+')
+  def _in_wordnet(token):
+    if wordnet.synsets(token):
+      if any(c not in string.ascii_lowercase + '-' for c in token):
+        return False
+      if len(token) < 3:
+        return False
+      return True
+    else:
+      return False
+  def _stop_stem(tokens):
+    tokens = [token for token in tokens if _in_wordnet(token)]
+    tokens = [token for token in tokens if not token in stopwords]
+    tokens = [stemmer.stem(token) for token in tokens]
+    return tokens
 
-    fin = open(raw_file)
-    fout = open(data_file, 'w')
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        post = fields[POST_INDEX]
-        text = fields[TEXT_INDEX]
-        desc = fields[DESC_INDEX]
-        # print('{0}\n{1}\n{0}'.format('#'*80, post))
-        # print(urllib.parse.unquote(text).replace(SPACE_PLUS, ' '))
-        # print('{0}'.format('#'*80))
-        # print(urllib.parse.unquote(desc).replace(SPACE_PLUS, ' '))
-        # print('{0}'.format('#'*80))
-        text = ' '.join([text, desc])
+  fin = open(raw_file)
+  fout = open(data_file, 'w')
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    post = fields[POST_INDEX]
+    text = fields[TEXT_INDEX]
+    desc = fields[DESC_INDEX]
+    text = ' '.join([text, desc])
 
-        text = urllib.parse.unquote(text)
-        text = text.replace(SPACE_PLUS, ' ')
+    text = urllib.parse.unquote(text)
+    text = text.replace(SPACE_PLUS, ' ')
 
-        soup = BeautifulSoup(text, 'html.parser')
-        children = []
-        for child in soup.children:
-            if type(child) == NavigableString:
-                children.append(str(child))
-            else:
-                children.append(str(child.text))
-        text = ' '.join(children)
+    soup = BeautifulSoup(text, 'html.parser')
+    children = []
+    for child in soup.children:
+      if type(child) == NavigableString:
+        children.append(str(child))
+      else:
+        children.append(str(child.text))
+    text = ' '.join(children)
 
-        tokens = word_tokenize(text)
-        tokens = _stop_stem(tokens)
-        if len(tokens) == 0:
-            tokens = tokenizer.tokenize(text)
-            tokens = _stop_stem(tokens)
-        text = ' '.join(tokens)
-        # print(text)
-        # print('{0}\n{0}'.format('#'*80))
-        labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-        labels = ' '.join(labels)
-        fields = [
-            fields[POST_INDEX],
-            fields[USER_INDEX],
-            fields[IMAGE_INDEX],
-            text,
-            labels,
-        ]
-        fout.write('%s\n' % FIELD_SEPERATOR.join(fields))
-    fout.close()
-    fin.close()
-
-def count_dataset():
-    utils.create_if_nonexist(temp_dir)
-    user_count = {}
-    fin = open(data_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        user = fields[USER_INDEX]
-        if user not in user_count:
-            user_count[user] = 0
-        user_count[user] += 1
-    fin.close()
-    sorted_user_count = sorted(user_count.items(), key=operator.itemgetter(0), reverse=True)
-    outfile = path.join(temp_dir, 'user_count')
-    with open(outfile, 'w') as fout:
-        for user, count in sorted_user_count:
-            fout.write('{}\t{}\n'.format(user, count))
-
-    label_count = {}
-    fin = open(data_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        user = fields[USER_INDEX]
-        labels = fields[LABEL_INDEX].split()
-        assert len(labels) != 0
-        for label in labels:
-            if label not in label_count:
-                label_count[label] = 0
-            label_count[label] += 1
-    fin.close()
-    sorted_label_count = sorted(label_count.items(), key=operator.itemgetter(0), reverse=True)
-    outfile = path.join(temp_dir, 'label_count')
-    labels, lemms = set(), set()
-    with open(outfile, 'w') as fout:
-        for label, count in sorted_label_count:
-            labels.add(label)
-            lemm = lemmatizer.lemmatize(label)
-            lemms.add(lemm)
-            if lemm != label:
-                print('{}->{}'.format(lemm, label))
-            fout.write('{}\t{}\n'.format(label, count))
-    print('#label={} #lemm={}'.format(len(labels), len(lemms)))
+    tokens = word_tokenize(text)
+    tokens = _stop_stem(tokens)
+    if len(tokens) == 0:
+      tokens = tokenizer.tokenize(text)
+      tokens = _stop_stem(tokens)
+    if len(tokens) == 0:
+      raise Exception('no textual information')
+    text = ' '.join(tokens)
+    labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+    labels = ' '.join(labels)
+    fields = [fields[POST_INDEX], fields[USER_INDEX], fields[IMAGE_INDEX]]
+    fields.extend([text, labels])
+    fout.write('%s\n' % FIELD_SEPERATOR.join(fields))
+  fout.close()
+  fin.close()
 
 def check_dataset(infile):
     rnd_labels = utils.load_collection(label_file)
@@ -1021,10 +963,10 @@ def main(_):
         continue
       break
 
-    # if not utils.skip_if_exist(data_file):
-    #     print('tokenize dataset')
-    #     tokenize_dataset()
-    #     count_dataset()
+  if flags.overwrite or (not utils.skip_if_exist(data_file)):
+      print('tokenize dataset')
+      tokenize_dataset()
+
     # if (not utils.skip_if_exist(train_file) or 
     #         not utils.skip_if_exist(valid_file or 
     #         not utils.skip_if_exist(vocab_file))):
