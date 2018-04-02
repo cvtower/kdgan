@@ -192,7 +192,7 @@ def keep_rnd_label(labels, rnd_labels):
 
 def save_posts(posts, outfile):
   image_set = set()
-  with open(infile, 'w') as fout:
+  with open(outfile, 'w') as fout:
     posts = sorted(posts, key=operator.itemgetter(0))
     for post in posts:
       fields = post.split(FIELD_SEPERATOR)
