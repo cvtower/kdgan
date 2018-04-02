@@ -128,7 +128,7 @@ def select_rnd_label():
   for label in rnd_labels:
     synsets = wordnet.synsets(label)
     for synset in synsets:
-      print(- * 10)
+      print('-' * 10)
       print('name:', synset.name)
       print('type:', synset.lexname)
       print('lemma:', synset.lemma_names)
