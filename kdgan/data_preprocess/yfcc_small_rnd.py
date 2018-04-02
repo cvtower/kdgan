@@ -965,7 +965,7 @@ def main(_):
         continue
       break
 
-  if True or (not utils.skip_if_exist(data_file)):
+  if flags.overwrite or (not utils.skip_if_exist(data_file)):
       print('tokenize dataset')
       tokenize_dataset()
 
