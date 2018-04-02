@@ -283,19 +283,15 @@ def tokenize_dataset():
       else:
         children.append(str(child.text))
     text = ' '.join(children)
-
     tokens = word_tokenize(text)
     tokens = _stop_stem(tokens)
     if len(tokens) == 0:
       tokens = tokenizer.tokenize(text)
-      tokens = _stop_stem(tokens)
-
-    if len(tokens) == 0:
-      tokens = tokenizer.tokenize(text)
-      print(tokens)
-      print('no textual information', text)
-
+    # if len(tokens) == 0:
+    if True:
+      raise Exception('no textual information', text)
     text = ' '.join(tokens)
+
     labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
     labels = ' '.join(labels)
     fields = [fields[POST_INDEX], fields[USER_INDEX], fields[IMAGE_INDEX]]
