@@ -116,22 +116,25 @@ def select_rnd_label():
       continue
     if label not in imagenet_labels:
       continue
+    if count < 20:
+      continue
     valid_labels[label] = count
-  print('valid #label=%d' % (len(valid_labels)))
+  # print('valid #label=%d' % (len(valid_labels)))
   valid_labels = sorted(valid_labels.items(), key=operator.itemgetter(1))
-  for label, count in valid_labels:
-    print('%-16s %d' % (label, count))
+  # for label, count in valid_labels:
+  #   print('%-16s %d' % (label, count))
+  rnd_labels = valid_labels.keys()
+  for count, label in enumerate(rnd_labels):
+    names = []
+    for label_id in range(1, 1001):
+      if label in label_names[label_id]:
+        names.append(label_names[label_id])
+    print('#%d label=%s' % (count + 1, label))
+    for names in imagenet_labels[label]:
+      print('\t%s' %(names))
+    # input()
   exit()
-  for count, label in enumerate(top_labels):
-      names = []
-      for label_id in range(1, 1001):
-          if label in label_names[label_id]:
-              names.append(label_names[label_id])
-      print('#%d label=%s' % (count + 1, label))
-      for names in imagenet_labels[label]:
-          print('\t%s' %(names))
-      # input()
-  utils.save_collection(top_labels, label_file)
+  utils.save_collection(rnd_labels, label_file)
 
 def with_top_label(labels, top_labels):
     old_labels = labels.split(LABEL_SEPERATOR)
