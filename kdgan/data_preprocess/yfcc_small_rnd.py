@@ -208,7 +208,7 @@ def save_posts(posts, outfile):
 def select_posts():
   rnd_labels = utils.load_collection(label_file)
 
-  posts = {}
+  posts = []
   fin = open(config.sample_file)
   while True:
     line = fin.readline().strip()
