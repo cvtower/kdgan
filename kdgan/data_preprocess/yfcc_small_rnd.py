@@ -110,8 +110,7 @@ def select_rnd_label():
   fin.close()
   label_count = label_count.items()
   label_count = sorted(label_count, key=operator.itemgetter(1), reverse=True)
-  for label, count in label_count:
-    print('%s->%d' % (label, count))
+  print(len(label_count))
   exit()
 
   invalid_labels = ['jack', 'maria']
