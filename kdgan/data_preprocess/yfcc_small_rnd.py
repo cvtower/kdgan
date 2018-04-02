@@ -57,7 +57,7 @@ MIN_RND_LABEL = 20
 NUM_RND_LABEL = 100
 MIN_RND_POST = 16
 NUM_RND_POST = 8000
-TRAIN_RATIO = 0.95
+TRAIN_DATA_RATIO = 0.9375
 SHUFFLE_SEED = 100
 
 dataset = 'yfcc_rnd'
@@ -303,70 +303,58 @@ def tokenize_dataset():
   fin.close()
 
 def check_dataset(infile):
-    rnd_labels = utils.load_collection(label_file)
-    rnd_labels = set(rnd_labels)
-    fin = open(infile)
-    while True:
-        line = fin.readline()
-        if not line:
-            break
-        fields = line.strip().split(FIELD_SEPERATOR)
-        labels = fields[LABEL_INDEX].split()
-        for label in labels:
-            rnd_labels.discard(label)
-    print(path.basename(infile), len(rnd_labels))
-    assert len(rnd_labels) == 0
+  rnd_labels = utils.load_collection(label_file)
+  rnd_labels = set(rnd_labels)
+  fin = open(infile)
+  while True:
+    line = fin.readline()
+    if not line:
+      break
+    fields = line.strip().split(FIELD_SEPERATOR)
+    labels = fields[LABEL_INDEX].split()
+    for label in labels:
+      rnd_labels.discard(label)
+  print(path.basename(infile), len(rnd_labels))
+  assert len(rnd_labels) == 0
 
 def split_dataset():
-    user_posts = {}
-    fin = open(data_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        user = fields[USER_INDEX]
-        if user not in user_posts:
-            user_posts[user] = []
-        user_posts[user].append(line)
-    fin.close()
-    train_user_posts = {}
-    valid_user_posts = {}
-    random.seed(SHUFFLE_SEED)
-    for user, posts in user_posts.items():
-        num_post = len(posts)
-        seed = random.random()
-        random.shuffle(posts, lambda:seed)
-        if (num_post % POST_UNIT_SIZE) == 0:
-            seperator = int(num_post * TRAIN_RATIO)
-        else:
-            seperator = int(num_post * TRAIN_RATIO) + 1
-        train_user_posts[user] = posts[:seperator]
-        valid_user_posts[user] = posts[seperator:]
+  posts = []
+  fin = open(data_file)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    posts.append(line)
+  fin.close()
+  train_posts, valid_posts = [], []
+  random.seed(SHUFFLE_SEED)
+  num_post = len(posts)
+  seed = random.random()
+  random.shuffle(posts, lambda:seed)
+  seperator = int(num_post * TRAIN_DATA_RATIO)
+  train_posts, valid_posts = posts[:seperator], posts[seperator:]
 
-    save_posts(train_user_posts, train_file)
-    save_posts(valid_user_posts, valid_file)
+  save_posts(train_posts, train_file)
+  save_posts(valid_posts, valid_file)
 
-    check_dataset(train_file)
-    check_dataset(valid_file)
+  check_dataset(train_file)
+  check_dataset(valid_file)
 
-    vocab = set()
-    for user, posts in train_user_posts.items():
-        for post in posts:
-            fields = post.split(FIELD_SEPERATOR)
-            tokens = fields[TEXT_INDEX].split()
-            for token in tokens:
-                vocab.add(token)
-    vocab = sorted(vocab)
-    if unk_token in vocab:
-        print('please change unk token')
-        exit()
-    vocab.insert(0, unk_token)
-    if pad_token in vocab:
-        print('please change pad token')
-        exit()
-    vocab.insert(0, pad_token)
-    utils.save_collection(vocab, vocab_file)
+  vocab = set()
+  for post in train_posts:
+    fields = post.split(FIELD_SEPERATOR)
+    tokens = fields[TEXT_INDEX].split()
+    for token in tokens:
+      vocab.add(token)
+  vocab = sorted(vocab)
+  if unk_token in vocab:
+    raise Exception('please change unk token', unk_token)
+  vocab.insert(0, unk_token)
+  if pad_token in vocab:
+    raise Exception('please change pad token', pad_token)
+  vocab.insert(0, pad_token)
+  utils.save_collection(vocab, vocab_file)
 
 def get_image_path(image_dir, image_url):
     fields = image_url.split('/')
@@ -966,14 +954,14 @@ def main(_):
       break
 
   if flags.overwrite or (not utils.skip_if_exist(data_file)):
-      print('tokenize dataset')
-      tokenize_dataset()
+    print('tokenize dataset')
+    tokenize_dataset()
 
-    # if (not utils.skip_if_exist(train_file) or 
-    #         not utils.skip_if_exist(valid_file or 
-    #         not utils.skip_if_exist(vocab_file))):
-    #     print('split dataset')
-    #     split_dataset()
+  if (not utils.skip_if_exist(train_file) or 
+        not utils.skip_if_exist(valid_file or 
+        not utils.skip_if_exist(vocab_file))):
+    print('split dataset')
+    split_dataset()
 
     # if path.isdir(image_dir):
     #     print('collect images')
