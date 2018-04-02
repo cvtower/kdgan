@@ -51,7 +51,7 @@ IMAGE_INDEX = 2
 TEXT_INDEX = 3
 DESC_INDEX = 4
 LABEL_INDEX = -1
-NUM_TOP_LABEL = 100 # select rnd 100 labels
+NUM_RND_LABEL = 100 # select rnd 100 labels
 EXPECTED_NUM_POST = 10000
 MIN_IMAGE_PER_USER = 20
 MAX_IMAGE_PER_USER = 1000
@@ -157,6 +157,7 @@ def select_rnd_label():
     valid_labels[label] = count
   valid_labels = sorted(valid_labels.items(), key=operator.itemgetter(1))
   rnd_labels = [label for label, count in valid_labels]
+  rnd_labels = np.random.choice(rnd_labels, size=NUM_RND_LABEL, replace=False)
   rnd_labels = sorted(rnd_labels)
   for count, label in enumerate(rnd_labels):
     print('#%d=%s' % (count, label))
