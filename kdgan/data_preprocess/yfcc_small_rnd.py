@@ -384,7 +384,7 @@ def collect_image(infile, outdir):
     if post not in post_image:
       continue
     image_url = fields[IMAGE_INDEX]
-    src_file = get_image_path(image_dir, image_url)
+    src_file = get_image_path(config.image_dir, image_url)
     image = post_image[post]
     dst_file = path.join(outdir, '%s.jpg' % image)
     if path.isfile(dst_file):
