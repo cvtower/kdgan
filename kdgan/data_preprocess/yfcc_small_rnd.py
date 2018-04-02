@@ -239,6 +239,7 @@ def select_posts():
   print('\t#label=%d [%d, %d]' % (len(label_count), min(counts), max(counts)))
 
   save_posts(posts, raw_file)
+  return min(counts)
 
 stopwords = set(stopwords.words('english'))    
 def tokenize_dataset():
@@ -1017,7 +1018,11 @@ def main(_):
 
   if flags.overwrite or (not utils.skip_if_exist(raw_file)):
     print('select posts')
-    select_posts()
+    while True:
+      min_count = select_posts()
+      if min_count < 16:
+        continue
+      break
 
     # if not utils.skip_if_exist(data_file):
     #     print('tokenize dataset')
