@@ -219,45 +219,40 @@ def save_posts(user_posts, infile):
 
 def select_posts():
   rnd_labels = utils.load_collection(label_file)
-  print(rnd_labels)
-  exit()
 
   user_posts = {}
   fin = open(config.sample_file)
   while True:
-      line = fin.readline().strip()
-      if not line:
-          break
-      fields = line.split(FIELD_SEPERATOR)
-      user, labels = fields[USER_INDEX], fields[LABEL_INDEX]
-      image_url = fields[IMAGE_INDEX]
-      if not with_rnd_label(labels, rnd_labels):
-          continue
-      post = fields[POST_INDEX]
-      if post in ['38660241',
-              '75168733',
-              '72513144',
-              '96116455',
-              '93108491',]:
-          continue
-      labels = keep_rnd_label(labels, rnd_labels)
-      fields[LABEL_INDEX] = LABEL_SEPERATOR.join(labels)
-      fields[IMAGE_INDEX] = path.basename(image_url)
-      if user not in user_posts:
-          user_posts[user] = []
-      user_posts[user].append(FIELD_SEPERATOR.join(fields))
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    user, labels = fields[USER_INDEX], fields[LABEL_INDEX]
+    image_url = fields[IMAGE_INDEX]
+    if not with_rnd_label(labels, rnd_labels):
+      continue
+    post = fields[POST_INDEX]
+    if post in []:
+      continue
+    labels = keep_rnd_label(labels, rnd_labels)
+    fields[LABEL_INDEX] = LABEL_SEPERATOR.join(labels)
+    fields[IMAGE_INDEX] = path.basename(image_url)
+    if user not in user_posts:
+      user_posts[user] = []
+    user_posts[user].append(FIELD_SEPERATOR.join(fields))
   fin.close()
 
   user_posts_cpy = user_posts
   user_posts = {}
   for user in user_posts_cpy.keys():
-      posts = user_posts_cpy[user]
-      num_post = len(posts)
-      if num_post < MIN_IMAGE_PER_USER:
-          continue
-      user_posts[user] = posts
+    posts = user_posts_cpy[user]
+    num_post = len(posts)
+    if num_post < MIN_IMAGE_PER_USER:
+      continue
+    user_posts[user] = posts
   tot_post = get_post_count(user_posts)
   print('#post=%d' % (tot_post))
+  exit()
 
   label_count = {}
   for user, posts in user_posts.items():
