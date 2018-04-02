@@ -287,8 +287,7 @@ def tokenize_dataset():
     tokens = _stop_stem(tokens)
     if len(tokens) == 0:
       tokens = tokenizer.tokenize(text)
-    # if len(tokens) == 0:
-    if True:
+    if len(tokens) == 0:
       raise Exception('no textual information', text)
     text = ' '.join(tokens)
 
