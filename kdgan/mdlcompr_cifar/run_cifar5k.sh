@@ -19,9 +19,9 @@ python pretrain_std.py \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
   --std_learning_rate=0.1 \
-  --learning_rate_decay_factor=0.98 \
+  --learning_rate_decay_factor=0.96 \
   --num_epochs_per_decay=10.0 \
-  --num_epoch=1000
+  --num_epoch=2000
 #cifar=5000 final=0.8402
 exit
 
