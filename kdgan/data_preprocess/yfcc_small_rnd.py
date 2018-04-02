@@ -41,9 +41,6 @@ flags = tf.app.flags.FLAGS
 
 lemmatizer = WordNetLemmatizer()
 
-FIELD_SEPERATOR = '\t'
-EXPECTED_NUM_FIELD = 6
-
 SPACE_PLUS = '+'
 LABEL_SEPERATOR = ','
 POST_INDEX = 0
@@ -52,6 +49,11 @@ IMAGE_INDEX = 2
 TEXT_INDEX = 3
 DESC_INDEX = 4
 LABEL_INDEX = -1
+
+FIELD_SEPERATOR = '\t'
+EXPECTED_NUM_FIELD = 6
+
+MIN_RND_LABEL = 20
 NUM_RND_LABEL = 100 # select rnd 100 labels
 EXPECTED_NUM_POST = 10000
 MIN_IMAGE_PER_USER = 20
@@ -151,7 +153,7 @@ def select_rnd_label():
       continue
     if label not in imagenet_labels:
       continue
-    if count < 10:
+    if count < MIN_RND_LABEL:
       continue
     if not is_noun(label):
       continue
@@ -169,6 +171,7 @@ def select_rnd_label():
   #   for names in imagenet_labels[label]:
   #     print('\t%s' %(names))
   #   input()
+  print('\t#label=%d' % (len(rnd_labels)))
   utils.save_collection(rnd_labels, label_file)
 
 def with_rnd_label(labels, rnd_labels):
