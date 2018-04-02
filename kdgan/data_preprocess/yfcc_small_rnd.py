@@ -194,36 +194,21 @@ def keep_rnd_label(labels, rnd_labels):
     new_labels.append(label)
   return new_labels
 
-def get_user_count(user_posts):
-  user_count = {}
-  for user, posts in user_posts.items():
-    user_count[user] = len(posts)
-  return user_count
-
-def get_post_count(user_posts):
-  tot_post = 0
-  for _, posts in user_posts.items():
-    tot_post += len(posts)
-  return tot_post
-
-def save_posts(user_posts, infile):
+def save_posts(posts, outfile):
   image_set = set()
   with open(infile, 'w') as fout:
-    users = sorted(user_posts.keys())
-    for user in users:
-      posts = user_posts[user]
-      posts = sorted(posts, key=operator.itemgetter(0))
-      for post in posts:
-        fields = post.split(FIELD_SEPERATOR)
-        image = fields[IMAGE_INDEX]
-        image_set.add(image)
-        fout.write('%s\n' % post)
+    posts = sorted(posts, key=operator.itemgetter(0))
+    for post in posts:
+      fields = post.split(FIELD_SEPERATOR)
+      image = fields[IMAGE_INDEX]
+      image_set.add(image)
+      fout.write('%s\n' % post)
   print('#image={}'.format(len(image_set)))
 
 def select_posts():
   rnd_labels = utils.load_collection(label_file)
 
-  user_posts = {}
+  posts = {}
   fin = open(config.sample_file)
   while True:
     line = fin.readline().strip()
@@ -240,15 +225,12 @@ def select_posts():
     labels = keep_rnd_label(labels, rnd_labels)
     fields[LABEL_INDEX] = LABEL_SEPERATOR.join(labels)
     fields[IMAGE_INDEX] = path.basename(image_url)
-    if user not in user_posts:
-      user_posts[user] = []
-    user_posts[user].append(FIELD_SEPERATOR.join(fields))
+    posts.append(FIELD_SEPERATOR.join(fields))
   fin.close()
-  tot_post = get_post_count(user_posts)
-  print('\t#post=%d' % (tot_post))
+  print('\t#post=%d' % (len(posts)))
   exit()
 
-  save_posts(user_posts, raw_file)
+  save_posts(posts, raw_file)
 
 stopwords = set(stopwords.words('english'))    
 def tokenize_dataset():
