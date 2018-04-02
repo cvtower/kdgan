@@ -127,7 +127,7 @@ def select_rnd_label():
       continue
     if label not in imagenet_labels:
       continue
-    if count < 20:
+    if count < 10:
       continue
     if not is_noun(label):
       continue
