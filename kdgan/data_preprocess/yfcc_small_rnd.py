@@ -55,7 +55,7 @@ EXPECTED_NUM_FIELD = 6
 
 MIN_RND_LABEL = 20
 NUM_RND_LABEL = 100
-NUM_RND_POST = 10000
+NUM_RND_POST = 8000
 TRAIN_RATIO = 0.95
 SHUFFLE_SEED = 100
 
@@ -227,6 +227,17 @@ def select_posts():
   fin.close()
   print('\t#post=%d/%d' % (NUM_RND_POST, len(posts)))
   posts = np.random.choice(posts, size=NUM_RND_POST, replace=False)
+
+  label_count = {}
+  for post in posts:
+    fields = post.split(FIELD_SEPERATOR)
+    user = fields[USER_INDEX]
+    labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+    for label in labels:
+      label_count[label] = label_count.get(label, 0) + 1
+  counts = label_count.values()
+  print('\t#label=%d [%d, %d]' % (len(label_count), min(counts), max(counts)))
+
   save_posts(posts, raw_file)
 
 stopwords = set(stopwords.words('english'))    
