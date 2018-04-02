@@ -12,21 +12,22 @@ std_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_std.ckpt
 tch_model_ckpt=${checkpoint_dir}/mdlcompr_cifar${train_size}_tch.ckpt
 
 
-python pretrain_dis.py \
-  --dis_model_ckpt=${dis_model_ckpt} \
+python pretrain_std.py \
+  --std_model_ckpt=${std_model_ckpt} \
   --train_filepath=${train_filepath} \
   --valid_filepath=${valid_filepath} \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
+  --std_learning_rate=0.5 \
   --learning_rate_decay_factor=0.96 \
   --num_epochs_per_decay=10.0 \
-  --num_epoch=200
-#cifar=50000 final=0.8402
+  --num_epoch=1000
+#cifar=5000 final=0.8402
 exit
 
 
-python pretrain_std.py \
-  --std_model_ckpt=${std_model_ckpt} \
+python pretrain_dis.py \
+  --dis_model_ckpt=${dis_model_ckpt} \
   --train_filepath=${train_filepath} \
   --valid_filepath=${valid_filepath} \
   --train_size=${train_size} \
