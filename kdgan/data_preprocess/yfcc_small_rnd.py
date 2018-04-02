@@ -1012,13 +1012,10 @@ def main(_):
   print('create yfcc small rnd dataset')
 
   check_num_field()
-  if flags.overwrite or (not utils.skip_if_exist(label_file)):
-    print('select top labels')
-    select_rnd_label()
-
   if flags.overwrite or (not utils.skip_if_exist(raw_file)):
-    print('select posts')
+    print('random labels and posts')
     while True:
+      select_rnd_label()
       min_count = select_posts()
       if min_count < 16:
         continue
