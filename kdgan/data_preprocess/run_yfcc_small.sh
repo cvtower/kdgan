@@ -1,13 +1,14 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=${kdgan_dir}/checkpoints
 pretrained_ckpt=${checkpoint_dir}/vgg_16.ckpt
+overwrite=False
 
 python yfcc_small_rnd.py \
     --model_name=vgg_16 \
     --preprocessing_name=vgg_16 \
     --end_point=vgg_16/fc7 \
     --pretrained_ckpt=${pretrained_ckpt} \
-    --overwrite=True
+    --overwrite=${overwrite}
 exit
 
 
