@@ -59,6 +59,7 @@ POST_UNIT_SIZE = 20
 TRAIN_RATIO = 0.95
 SHUFFLE_SEED = 100
 
+dataset = 'yfcc_rnd'
 dataset_dir = config.yfcc_rnd_dir
 utils.create_if_nonexist(dataset_dir)
 raw_file = path.join(dataset_dir, '%s.raw' % dataset)
