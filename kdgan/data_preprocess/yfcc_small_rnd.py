@@ -54,12 +54,8 @@ FIELD_SEPERATOR = '\t'
 EXPECTED_NUM_FIELD = 6
 
 MIN_RND_LABEL = 10
-NUM_RND_LABEL = 100 # select rnd 100 labels
-EXPECTED_NUM_POST = 10000
-MIN_IMAGE_PER_USER = 20
-MAX_IMAGE_PER_USER = 1000
-MIN_IMAGE_PER_LABEL = 100 - 3
-POST_UNIT_SIZE = 20
+NUM_RND_LABEL = 100
+NUM_RND_POST = 10000
 TRAIN_RATIO = 0.95
 SHUFFLE_SEED = 100
 
@@ -227,9 +223,8 @@ def select_posts():
     fields[IMAGE_INDEX] = path.basename(image_url)
     posts.append(FIELD_SEPERATOR.join(fields))
   fin.close()
-  print('\t#post=%d' % (len(posts)))
-  exit()
-
+  print('\t#post=%d/%d' % (NUM_RND_POST, len(posts)))
+  posts = np.random.choice(posts, size=NUM_RND_POST, replace=False)
   save_posts(posts, raw_file)
 
 stopwords = set(stopwords.words('english'))    
