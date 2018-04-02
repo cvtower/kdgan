@@ -357,39 +357,39 @@ def split_dataset():
   utils.save_collection(vocab, vocab_file)
 
 def get_image_path(image_dir, image_url):
-    fields = image_url.split('/')
-    image_path = path.join(image_dir, fields[-2], fields[-1])
-    return image_path
+  fields = image_url.split('/')
+  image_path = path.join(image_dir, fields[-2], fields[-1])
+  return image_path
 
 def collect_image(infile, outdir):
-    post_image = {}
-    fin = open(infile)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        post = fields[POST_INDEX]
-        image = fields[IMAGE_INDEX]
-        post_image[post] = image
-    fin.close()
-    utils.create_if_nonexist(outdir)
-    fin = open(config.sample_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        post = fields[POST_INDEX]
-        if post not in post_image:
-            continue
-        image_url = fields[IMAGE_INDEX]
-        src_file = get_image_path(image_dir, image_url)
-        image = post_image[post]
-        dst_file = path.join(outdir, '%s.jpg' % image)
-        if path.isfile(dst_file):
-            continue
-        shutil.copyfile(src_file, dst_file)
+  post_image = {}
+  fin = open(infile)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    post = fields[POST_INDEX]
+    image = fields[IMAGE_INDEX]
+    post_image[post] = image
+  fin.close()
+  utils.create_if_nonexist(outdir)
+  fin = open(config.sample_file)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    post = fields[POST_INDEX]
+    if post not in post_image:
+      continue
+    image_url = fields[IMAGE_INDEX]
+    src_file = get_image_path(image_dir, image_url)
+    image = post_image[post]
+    dst_file = path.join(outdir, '%s.jpg' % image)
+    if path.isfile(dst_file):
+      continue
+    shutil.copyfile(src_file, dst_file)
 
 ################################################################
 #
@@ -963,10 +963,10 @@ def main(_):
     print('split dataset')
     split_dataset()
 
-    # if path.isdir(image_dir):
-    #     print('collect images')
-    #     collect_image(data_file, image_data_dir)
-    # create_survey_data()
+  print('collect images')
+  collect_image(data_file, image_data_dir)
+
+  # create_survey_data()
 
     # create_test_set()
     # create_tfrecord(valid_file, end_point_v, is_training=False)
