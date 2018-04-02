@@ -2,225 +2,79 @@ create yfcc small rnd dataset
 select top labels
 #1 label=acorn
 	acorn
-#2 label=aid
-	band aid
-#3 label=airliner
+#2 label=airliner
 	airliner
-#4 label=alligator
-	american alligator, alligator mississipiensis
-#5 label=alp
+#3 label=alp
 	alp
-#6 label=altar
+#4 label=altar
 	altar
-#7 label=ambulance
+#5 label=ambulance
 	ambulance
-#8 label=anemone
+#6 label=anemone
 	sea anemone, anemone
 	sea anemone, anemone
-#9 label=ant
+#7 label=ant
 	ant, emmet, pismire
-#10 label=apple
+#8 label=apple
 	custard apple
-#11 label=apron
+#9 label=apron
 	apron
-#12 label=arch
-	triumphal arch
-#13 label=armor
-	chain mail, ring mail, mail, chain armor, chain armour, ring armor, ring armour
-	chain mail, ring mail, mail, chain armor, chain armour, ring armor, ring armour
-#14 label=artichoke
+#10 label=artichoke
 	artichoke, globe artichoke
 	artichoke, globe artichoke
-#15 label=baboon
+#11 label=baboon
 	baboon
-#16 label=badger
-	badger
-#17 label=bag
-	plastic bag
-	punching bag, punch bag, punching ball, punchball
-	punching bag, punch bag, punching ball, punchball
-	sleeping bag
-#18 label=bakery
+#12 label=bakery
 	bakery, bakeshop, bakehouse
-#19 label=ball
-	croquet ball
-	golf ball
-	ping-pong ball
-	punching bag, punch bag, punching ball, punchball
-	rugby ball
-	soccer ball
-	tennis ball
-#20 label=balloon
-	balloon
-#21 label=banana
+#13 label=banana
 	banana
-#22 label=banjo
+#14 label=banjo
 	banjo
-#23 label=bank
-	piggy bank, penny bank
-	piggy bank, penny bank
-#24 label=bar
-	horizontal bar, high bar
-	horizontal bar, high bar
-	space bar
-	sandbar, sand bar
-#25 label=barn
+#15 label=barn
 	barn
-#26 label=barrel
-	ashcan, trash can, garbage can, wastebin, ash bin, ash-bin, ashbin, dustbin, trash barrel, trash bin
-	barrel, cask
-	rain barrel
-#27 label=baseball
+#16 label=baseball
 	baseball
-#28 label=basin
+#17 label=basin
 	washbasin, handbasin, washbowl, lavabo, wash-hand basin
-#29 label=basket
+#18 label=basket
 	shopping basket
-#30 label=basketball
+#19 label=basketball
 	basketball
-#31 label=bath
-	bathtub, bathing tub, bath, tub
-#32 label=beacon
-	beacon, lighthouse, beacon light, pharos
-#33 label=bear
-	koala, koala bear, kangaroo bear, native bear, phascolarctos cinereus
-	koala, koala bear, kangaroo bear, native bear, phascolarctos cinereus
-	koala, koala bear, kangaroo bear, native bear, phascolarctos cinereus
-	brown bear, bruin, ursus arctos
-	american black bear, black bear, ursus americanus, euarctos americanus
-	american black bear, black bear, ursus americanus, euarctos americanus
-	ice bear, polar bear, ursus maritimus, thalarctos maritimus
-	ice bear, polar bear, ursus maritimus, thalarctos maritimus
-	sloth bear, melursus ursinus, ursus ursinus
-	lesser panda, red panda, panda, bear cat, cat bear, ailurus fulgens
-	giant panda, panda, panda bear, coon bear, ailuropoda melanoleuca
-	giant panda, panda, panda bear, coon bear, ailuropoda melanoleuca
-	teddy, teddy bear
-#34 label=beauty
+#20 label=beauty
 	rock beauty, holocanthus tricolor
-#35 label=beaver
-	beaver
-#36 label=bed
-	studio couch, day bed
-#37 label=bee
+#21 label=bee
 	bee
-#38 label=beetle
-	tiger beetle
-	ladybug, ladybeetle, lady beetle, ladybird, ladybird beetle
-	ladybug, ladybeetle, lady beetle, ladybird, ladybird beetle
-	ground beetle, carabid beetle
-	ground beetle, carabid beetle
-	long-horned beetle, longicorn, longicorn beetle
-	long-horned beetle, longicorn, longicorn beetle
-	leaf beetle, chrysomelid
-	dung beetle
-	rhinoceros beetle
-#39 label=bell
-	chime, bell, gong
-#40 label=bench
-	park bench
-#41 label=bicycle
-	bicycle-built-for-two, tandem bicycle, tandem
-#42 label=bike
-	mountain bike, all-terrain bike, off-roader
-	mountain bike, all-terrain bike, off-roader
-#43 label=bikini
+#22 label=bikini
 	bikini, two-piece
-#44 label=bin
-	ashcan, trash can, garbage can, wastebin, ash bin, ash-bin, ashbin, dustbin, trash barrel, trash bin
-	ashcan, trash can, garbage can, wastebin, ash bin, ash-bin, ashbin, dustbin, trash barrel, trash bin
-#45 label=bird
-	indigo bunting, indigo finch, indigo bird, passerina cyanea
-#46 label=birdhouse
+#23 label=birdhouse
 	birdhouse
-#47 label=bison
+#24 label=bison
 	bison
-#48 label=boa
+#25 label=boa
 	feather boa, boa
 	feather boa, boa
-#49 label=board
-	dining table, board
-#50 label=bob
-	bobsled, bobsleigh, bob
-#51 label=book
-	comic book
-#52 label=bookshop
+#26 label=bookshop
 	bookshop, bookstore, bookstall
-#53 label=bookstore
+#27 label=bookstore
 	bookshop, bookstore, bookstall
-#54 label=boot
-	cowboy boot
-#55 label=bottle
-	beer bottle
-	pill bottle
-	pop bottle, soda bottle
-	pop bottle, soda bottle
-	water bottle
-	wine bottle
-#56 label=bow
-	bow
-#57 label=bowl
-	mixing bowl
-	soup bowl
-#58 label=box
-	accordion, piano accordion, squeeze box
-	mailbox, letter box
-	pencil box, pencil case
-#59 label=boxer
+#28 label=boxer
 	boxer
-#60 label=breakwater
+#29 label=breakwater
 	breakwater, groin, groyne, mole, bulwark, seawall, jetty
-#61 label=bridge
-	steel arch bridge
-	suspension bridge
-#62 label=bubble
-	bubble
-#63 label=buffalo
-	water buffalo, water ox, asiatic buffalo, bubalus bubalis
-	water buffalo, water ox, asiatic buffalo, bubalus bubalis
-#64 label=building
-	church, church building
-#65 label=bull
-	boston bull, boston terrier
-#66 label=bunting
-	indigo bunting, indigo finch, indigo bird, passerina cyanea
-#67 label=bus
-	school bus
-#68 label=butterfly
-	ringlet, ringlet butterfly
-	monarch, monarch butterfly, milkweed butterfly, danaus plexippus
-	monarch, monarch butterfly, milkweed butterfly, danaus plexippus
-	cabbage butterfly
-	sulphur butterfly, sulfur butterfly
-	sulphur butterfly, sulfur butterfly
-	lycaenid, lycaenid butterfly
-#69 label=cab
-	cab, hack, taxi, taxicab
-#70 label=cabinet
+#30 label=cabinet
 	china cabinet, china closet
 	file, file cabinet, filing cabinet
 	file, file cabinet, filing cabinet
 	medicine chest, medicine cabinet
-#71 label=cairn
+#31 label=cairn
 	cairn, cairn terrier
-#72 label=camel
+#32 label=camel
 	arabian camel, dromedary, camelus dromedarius
-#73 label=camera
+#33 label=camera
 	polaroid camera, polaroid land camera
 	polaroid camera, polaroid land camera
 	reflex camera
-#74 label=candle
-	candle, taper, wax light
-#75 label=cannon
-	cannon
-#76 label=canoe
-	canoe
-#77 label=cap
-	bathing cap, swimming cap
-	bathing cap, swimming cap
-	lens cap, lens cover
-	shower cap
-#78 label=car
+#34 label=car
 	beach wagon, station wagon, wagon, estate car, beach waggon, station waggon, waggon
 	freight car
 	passenger car, coach, carriage
@@ -230,365 +84,175 @@ select top labels
 	sports car, sport car
 	streetcar, tram, tramcar, trolley, trolley car
 	tow truck, tow car, wrecker
-#79 label=carousel
+#35 label=carousel
 	carousel, carrousel, merry-go-round, roundabout, whirligig
-#80 label=carriage
+#36 label=carriage
 	passenger car, coach, carriage
-#81 label=cart
-	barrow, garden cart, lawn cart, wheelbarrow
-	barrow, garden cart, lawn cart, wheelbarrow
-	golfcart, golf cart
-	horse cart, horse-cart
-	shopping cart
-#82 label=case
-	pencil box, pencil case
-#83 label=castle
-	castle
-#84 label=cat
-	tabby, tabby cat
-	tiger cat
-	persian cat
-	siamese cat, siamese
-	egyptian cat
-	madagascar cat, ring-tailed lemur, lemur catta
-	lesser panda, red panda, panda, bear cat, cat bear, ailurus fulgens
-#85 label=catamaran
+#37 label=catamaran
 	catamaran
-#86 label=cell
+#38 label=cell
 	cellular telephone, cellular phone, cellphone, cell, mobile phone
-#87 label=center
-	entertainment center
-#88 label=chain
-	chain
-#89 label=chair
-	barber chair
-	folding chair
-	rocking chair, rocker
-#90 label=chameleon
+#39 label=chameleon
 	american chameleon, anole, anolis carolinensis
 	african chameleon, chamaeleo chamaeleon
-#91 label=cheetah
+#40 label=cheetah
 	cheetah, chetah, acinonyx jubatus
-#92 label=chestnut
-	buckeye, horse chestnut, conker
-#93 label=chicken
-	prairie chicken, prairie grouse, prairie fowl
-#94 label=chimpanzee
+#41 label=chimpanzee
 	chimpanzee, chimp, pan troglodytes
-#95 label=church
-	church, church building
-#96 label=chute
-	parachute, chute
-#97 label=cicada
+#42 label=cicada
 	cicada, cicala
-#98 label=cinema
+#43 label=cinema
 	cinema, movie theater, movie theatre, movie house, picture palace
-#99 label=cliff
+#44 label=cliff
 	cliff, drop, drop-off
-#100 label=clock
-	analog clock
-	digital clock
-	wall clock
-#101 label=coach
-	passenger car, coach, carriage
-	trolleybus, trolley coach, trackless trolley
-#102 label=coast
-	seashore, coast, seacoast, sea-coast
-#103 label=cockatoo
+#45 label=cockatoo
 	sulphur-crested cockatoo, kakatoe galerita, cacatua galerita
-#104 label=computer
+#46 label=computer
 	desktop computer
 	hand-held computer, hand-held microcomputer
 	laptop, laptop computer
 	notebook, notebook computer
-#105 label=control
-	remote control, remote
-#106 label=coot
+#47 label=coot
 	american coot, marsh hen, mud hen, water hen, fulica americana
-#107 label=coral
-	brain coral
-#108 label=corn
-	corn
-#109 label=cover
-	lens cap, lens cover
-	manhole cover
-	book jacket, dust cover, dust jacket, dust wrapper
-#110 label=coyote
+#48 label=coyote
 	coyote, prairie wolf, brush wolf, canis latrans
-#111 label=crab
-	dungeness crab, cancer magister
-	rock crab, cancer irroratus
-	fiddler crab
-	king crab, alaska crab, alaskan king crab, alaska king crab, paralithodes camtschatica
-	king crab, alaska crab, alaskan king crab, alaska king crab, paralithodes camtschatica
-	king crab, alaska crab, alaskan king crab, alaska king crab, paralithodes camtschatica
-	king crab, alaska crab, alaskan king crab, alaska king crab, paralithodes camtschatica
-	hermit crab
-#112 label=crane
-	crane
-	crane
-#113 label=cream
-	ice cream, icecream
-#114 label=cricket
-	cricket
-#115 label=crocodile
+#49 label=crocodile
 	african crocodile, nile crocodile, crocodylus niloticus
 	african crocodile, nile crocodile, crocodylus niloticus
-#116 label=cup
-	measuring cup
-	cup
-#117 label=curtain
-	shower curtain
-	theater curtain, theatre curtain
-	theater curtain, theatre curtain
-#118 label=daisy
+#50 label=daisy
 	daisy
-#119 label=dam
-	dam, dike, dyke
-#120 label=damselfly
+#51 label=damselfly
 	damselfly
-#121 label=desk
+#52 label=desk
 	desk
-#122 label=dish
-	petri dish
-	solar dish, solar collector, solar furnace
-#123 label=dock
-	dock, dockage, docking facility
-#124 label=dog
-	maltese dog, maltese terrier, maltese
-	tibetan terrier, chrysanthemum dog
-	shetland sheepdog, shetland sheep dog, shetland
-	german shepherd, german shepherd dog, german police dog, alsatian
-	german shepherd, german shepherd dog, german police dog, alsatian
-	greater swiss mountain dog
-	bernese mountain dog
-	eskimo dog, husky
-	dalmatian, coach dog, carriage dog
-	dalmatian, coach dog, carriage dog
-	affenpinscher, monkey pinscher, monkey dog
-	newfoundland, newfoundland dog
-	african hunting dog, hyena dog, cape hunting dog, lycaon pictus
-	african hunting dog, hyena dog, cape hunting dog, lycaon pictus
-	african hunting dog, hyena dog, cape hunting dog, lycaon pictus
-	hotdog, hot dog, red hot
-#125 label=dome
+#53 label=dome
 	dome
-#126 label=door
+#54 label=door
 	sliding door
-#127 label=dragon
+#55 label=dragon
 	komodo dragon, komodo lizard, dragon lizard, giant lizard, varanus komodoensis
-#128 label=dragonfly
+#56 label=dragonfly
 	dragonfly, darning needle, devil's darning needle, sewing needle, snake feeder, snake doctor, mosquito hawk, skeeter hawk
-#129 label=drop
-	cliff, drop, drop-off
-#130 label=drum
-	drum, membranophone, tympan
-	steel drum
-#131 label=eagle
-	bald eagle, american eagle, haliaeetus leucocephalus
-	bald eagle, american eagle, haliaeetus leucocephalus
-#132 label=ear
+#57 label=ear
 	ear, spike, capitulum
-#133 label=eel
+#58 label=eel
 	eel
-#134 label=egret
+#59 label=egret
 	american egret, great white heron, egretta albus
-#135 label=elephant
+#60 label=elephant
 	indian elephant, elephas maximus
 	african elephant, loxodonta africana
-#136 label=engine
+#61 label=engine
 	fire engine, fire truck
-#137 label=envelope
+#62 label=envelope
 	envelope
-#138 label=espresso
+#63 label=espresso
 	espresso
-#139 label=fan
-	electric fan, blower
-#140 label=feeder
+#64 label=feeder
 	dragonfly, darning needle, devil's darning needle, sewing needle, snake feeder, snake doctor, mosquito hawk, skeeter hawk
-#141 label=fence
-	chainlink fence
-	picket fence, paling
-	worm fence, snake fence, snake-rail fence, virginia fence
-	worm fence, snake fence, snake-rail fence, virginia fence
-	worm fence, snake fence, snake-rail fence, virginia fence
-	worm fence, snake fence, snake-rail fence, virginia fence
-#142 label=fig
+#65 label=fig
 	fig
-#143 label=filter
-	oil filter
-#144 label=finch
+#66 label=finch
 	house finch, linnet, carpodacus mexicanus
 	indigo bunting, indigo finch, indigo bird, passerina cyanea
-#145 label=fish
-	anemone fish
-#146 label=flagstaff
+#67 label=flagstaff
 	flagpole, flagstaff
-#147 label=flamingo
+#68 label=flamingo
 	flamingo
-#148 label=fly
-	fly
-	lacewing, lacewing fly
-#149 label=fountain
+#69 label=fountain
 	fountain
-#150 label=fox
-	red fox, vulpes vulpes
-	kit fox, vulpes macrotis
-	arctic fox, white fox, alopex lagopus
-	arctic fox, white fox, alopex lagopus
-	grey fox, gray fox, urocyon cinereoargenteus
-	grey fox, gray fox, urocyon cinereoargenteus
-#151 label=frog
-	tree frog, tree-frog
-	tailed frog, bell toad, ribbed toad, tailed toad, ascaphus trui
-#152 label=gecko
+#70 label=gecko
 	banded gecko
-#153 label=geyser
-	geyser
-#154 label=glass
-	beer glass
-#155 label=goldfinch
+#71 label=goldfinch
 	goldfinch, carduelis carduelis
-#156 label=gondola
+#72 label=gondola
 	gondola
-#157 label=goose
-	goose
-#158 label=gorilla
+#73 label=gorilla
 	gorilla, gorilla gorilla
 	gorilla, gorilla gorilla
-#159 label=grand
-	grand piano, grand
-#160 label=grasshopper
+#74 label=grasshopper
 	grasshopper, hopper
-#161 label=gray
-	african grey, african gray, psittacus erithacus
-#162 label=greyhound
+#75 label=greyhound
 	italian greyhound
-#163 label=guitar
+#76 label=guitar
 	acoustic guitar
 	electric guitar
-#164 label=gun
-	assault rifle, assault gun
-#165 label=hammer
-	hammer
-#166 label=hamster
+#77 label=hamster
 	hamster
-#167 label=hare
-	hare
-#168 label=hat
-	cowboy hat, ten-gallon hat
-	cowboy hat, ten-gallon hat
-#169 label=hawk
-	dragonfly, darning needle, devil's darning needle, sewing needle, snake feeder, snake doctor, mosquito hawk, skeeter hawk
-	dragonfly, darning needle, devil's darning needle, sewing needle, snake feeder, snake doctor, mosquito hawk, skeeter hawk
-#170 label=hay
-	hay
-#171 label=head
-	promontory, headland, head, foreland
-#172 label=hedgehog
+#78 label=hedgehog
 	porcupine, hedgehog
-#173 label=heron
+#79 label=heron
 	little blue heron, egretta caerulea
 	american egret, great white heron, egretta albus
-#174 label=hippo
+#80 label=hippo
 	hippopotamus, hippo, river horse, hippopotamus amphibius
-#175 label=home
-	mobile home, manufactured home
-	mobile home, manufactured home
-#176 label=horse
-	hippopotamus, hippo, river horse, hippopotamus amphibius
-#177 label=hot
-	hotdog, hot dog, red hot
-#178 label=house
-	apiary, bee house
-	cinema, movie theater, movie theatre, movie house, picture palace
-	prison, prison house
-	restaurant, eating house, eating place, eatery
-#179 label=hummingbird
+#81 label=hummingbird
 	hummingbird
-#180 label=ibex
+#82 label=ibex
 	ibex, capra ibex
 	ibex, capra ibex
-#181 label=iguana
+#83 label=iguana
 	common iguana, iguana, iguana iguana
 	common iguana, iguana, iguana iguana
 	common iguana, iguana, iguana iguana
-#182 label=impala
+#84 label=impala
 	impala, aepyceros melampus
-#183 label=insect
+#85 label=insect
 	walking stick, walkingstick, stick insect
-#184 label=iron
-	iron, smoothing iron
-	iron, smoothing iron
-	waffle iron
-#185 label=jaguar
+#86 label=jaguar
 	jaguar, panther, panthera onca, felis onca
-#186 label=jay
+#87 label=jay
 	jay
-#187 label=jean
+#88 label=jean
 	jean, blue jean, denim
 	jean, blue jean, denim
-#188 label=jeep
+#89 label=jeep
 	jeep, landrover
-#189 label=jellyfish
+#90 label=jellyfish
 	jellyfish
-#190 label=jetty
+#91 label=jetty
 	breakwater, groin, groyne, mole, bulwark, seawall, jetty
-#191 label=junco
+#92 label=junco
 	junco, snowbird
-#192 label=kangaroo
+#93 label=kangaroo
 	wallaby, brush kangaroo
-#193 label=keyboard
+#94 label=keyboard
 	computer keyboard, keypad
 	typewriter keyboard
-#194 label=kimono
+#95 label=kimono
 	kimono
-#195 label=kit
-	carpenter's kit, tool kit
-	carpenter's kit, tool kit
-#196 label=kite
-	kite
-#197 label=knife
-	letter opener, paper knife, paperknife
-#198 label=knot
-	knot
-#199 label=koala
+#96 label=koala
 	koala, koala bear, kangaroo bear, native bear, phascolarctos cinereus
-#200 label=labyrinth
+#97 label=labyrinth
 	maze, labyrinth
-#201 label=ladybird
+#98 label=ladybird
 	ladybug, ladybeetle, lady beetle, ladybird, ladybird beetle
-#202 label=ladybug
+#99 label=ladybug
 	ladybug, ladybeetle, lady beetle, ladybird, ladybird beetle
-#203 label=lakeside
+#100 label=lakeside
 	lakeside, lakeshore
-#204 label=lamp
+#101 label=lamp
 	table lamp
-#205 label=laptop
+#102 label=laptop
 	laptop, laptop computer
-#206 label=lemon
+#103 label=lemon
 	lemon
-#207 label=lemur
+#104 label=lemur
 	madagascar cat, ring-tailed lemur, lemur catta
-#208 label=leopard
+#105 label=leopard
 	leopard, panthera pardus
 	snow leopard, ounce, panthera uncia
-#209 label=library
+#106 label=library
 	library
-#210 label=lifeboat
+#107 label=lifeboat
 	lifeboat
-#211 label=light
+#108 label=lighthouse
 	beacon, lighthouse, beacon light, pharos
-	candle, taper, wax light
-	lighter, light, igniter, ignitor
-	traffic light, traffic signal, stoplight
-#212 label=lighthouse
-	beacon, lighthouse, beacon light, pharos
-#213 label=lion
+#109 label=lion
 	sea lion
 	cougar, puma, catamount, mountain lion, painter, panther, felis concolor
 	lion, king of beasts, panthera leo
-#214 label=lizard
+#110 label=lizard
 	whiptail, whiptail lizard
 	frilled lizard, chlamydosaurus kingi
 	alligator lizard
@@ -596,496 +260,215 @@ select top labels
 	komodo dragon, komodo lizard, dragon lizard, giant lizard, varanus komodoensis
 	komodo dragon, komodo lizard, dragon lizard, giant lizard, varanus komodoensis
 	komodo dragon, komodo lizard, dragon lizard, giant lizard, varanus komodoensis
-#215 label=llama
+#111 label=llama
 	llama
-#216 label=lobster
+#112 label=lobster
 	american lobster, northern lobster, maine lobster, homarus americanus
 	american lobster, northern lobster, maine lobster, homarus americanus
 	american lobster, northern lobster, maine lobster, homarus americanus
 	spiny lobster, langouste, rock lobster, crawfish, crayfish, sea crawfish
 	spiny lobster, langouste, rock lobster, crawfish, crayfish, sea crawfish
-#217 label=lock
-	combination lock
-#218 label=locomotive
-	electric locomotive
-	steam locomotive
-#219 label=macaw
+#113 label=macaw
 	macaw
-#220 label=machine
-	cash machine, cash dispenser, automated teller machine, automatic teller machine, automated teller, automatic teller, atm
-	cash machine, cash dispenser, automated teller machine, automatic teller machine, automated teller, automatic teller, atm
-	cash machine, cash dispenser, automated teller machine, automatic teller machine, automated teller, automatic teller, atm
-	dishwasher, dish washer, dishwashing machine
-	scale, weighing machine
-	sewing machine
-	thresher, thrasher, threshing machine
-	vending machine
-	washer, automatic washer, washing machine
-#221 label=magpie
+#114 label=magpie
 	magpie
-#222 label=mail
-	chain mail, ring mail, mail, chain armor, chain armour, ring armor, ring armour
-	chain mail, ring mail, mail, chain armor, chain armour, ring armor, ring armour
-	chain mail, ring mail, mail, chain armor, chain armour, ring armor, ring armour
-#223 label=mailbox
+#115 label=mailbox
 	mailbox, letter box
-#224 label=maker
+#116 label=maker
 	espresso maker
-#225 label=market
-	butcher shop, meat market
-	grocery store, grocery, food market, market
-	grocery store, grocery, food market, market
-#226 label=mask
-	mask
-	oxygen mask
-	ski mask
-#227 label=mat
-	doormat, welcome mat
-	prayer rug, prayer mat
-#228 label=maze
+#117 label=maze
 	maze, labyrinth
-#229 label=menu
+#118 label=menu
 	menu
-#230 label=mike
+#119 label=mike
 	microphone, mike
-#231 label=mini
-	miniskirt, mini
-#232 label=mirror
-	car mirror
-#233 label=monarch
+#120 label=monarch
 	monarch, monarch butterfly, milkweed butterfly, danaus plexippus
-#234 label=monastery
+#121 label=monastery
 	monastery
-#235 label=monkey
-	guenon, guenon monkey
-	patas, hussar monkey, erythrocebus patas
-	colobus, colobus monkey
-	proboscis monkey, nasalis larvatus
-	howler monkey, howler
-	titi, titi monkey
-	spider monkey, ateles geoffroyi
-	squirrel monkey, saimiri sciureus
-#236 label=monster
+#122 label=monster
 	gila monster, heloderma suspectum
-#237 label=mosque
+#123 label=mosque
 	mosque
-#238 label=mouse
-	mouse, computer mouse
-	mouse, computer mouse
-#239 label=mug
-	coffee mug
-#240 label=mushroom
-	mushroom
-#241 label=nail
-	nail
-#242 label=needle
-	dragonfly, darning needle, devil's darning needle, sewing needle, snake feeder, snake doctor, mosquito hawk, skeeter hawk
-	dragonfly, darning needle, devil's darning needle, sewing needle, snake feeder, snake doctor, mosquito hawk, skeeter hawk
-	dragonfly, darning needle, devil's darning needle, sewing needle, snake feeder, snake doctor, mosquito hawk, skeeter hawk
-#243 label=net
-	mosquito net
-#244 label=newfoundland
+#124 label=newfoundland
 	newfoundland, newfoundland dog
-#245 label=newt
+#125 label=newt
 	common newt, triturus vulgaris
-#246 label=obelisk
+#126 label=obelisk
 	obelisk
-#247 label=orange
-	orange
-#248 label=orangutan
+#127 label=orangutan
 	orangutan, orang, orangutang, pongo pygmaeus
-#249 label=organ
+#128 label=organ
 	harmonica, mouth organ, harp, mouth harp
 	organ, pipe organ
 	organ, pipe organ
-#250 label=ostrich
+#129 label=ostrich
 	ostrich, struthio camelus
-#251 label=otter
+#130 label=otter
 	otter
-#252 label=owl
+#131 label=owl
 	great grey owl, great gray owl, strix nebulosa
 	great grey owl, great gray owl, strix nebulosa
-#253 label=palace
+#132 label=palace
 	cinema, movie theater, movie theatre, movie house, picture palace
 	palace
-#254 label=panda
+#133 label=panda
 	lesser panda, red panda, panda, bear cat, cat bear, ailurus fulgens
 	lesser panda, red panda, panda, bear cat, cat bear, ailurus fulgens
 	lesser panda, red panda, panda, bear cat, cat bear, ailurus fulgens
 	giant panda, panda, panda bear, coon bear, ailuropoda melanoleuca
 	giant panda, panda, panda bear, coon bear, ailuropoda melanoleuca
-#255 label=panther
+#134 label=panther
 	cougar, puma, catamount, mountain lion, painter, panther, felis concolor
 	jaguar, panther, panthera onca, felis onca
-#256 label=paper
-	toilet tissue, toilet paper, bathroom tissue
-#257 label=patio
+#135 label=patio
 	patio, terrace
-#258 label=peacock
+#136 label=peacock
 	peacock
-#259 label=pelican
+#137 label=pelican
 	pelican
-#260 label=pen
-	ballpoint, ballpoint pen, ballpen, biro
-	fountain pen
-	quill, quill pen
-#261 label=penguin
+#138 label=penguin
 	king penguin, aptenodytes patagonica
-#262 label=pepper
-	bell pepper
-#263 label=phone
-	cellular telephone, cellular phone, cellphone, cell, mobile phone
-	cellular telephone, cellular phone, cellphone, cell, mobile phone
-	dial telephone, dial phone
-#264 label=piano
-	grand piano, grand
-	upright, upright piano
-#265 label=pickup
+#139 label=pickup
 	pickup, pickup truck
-#266 label=pie
+#140 label=pie
 	pizza, pizza pie
-#267 label=pier
+#141 label=pier
 	pier
-#268 label=pig
-	guinea pig, cavia cobaya
-	hog, pig, grunter, squealer, sus scrofa
-#269 label=pineapple
+#142 label=pineapple
 	pineapple, ananas
-#270 label=pipe
-	panpipe, pandean pipe, syrinx
-#271 label=pirate
-	pirate, pirate ship
-#272 label=pizza
+#143 label=pizza
 	pizza, pizza pie
-#273 label=place
-	restaurant, eating house, eating place, eatery
-#274 label=plane
-	plane, carpenter's plane, woodworking plane
-	plane, carpenter's plane, woodworking plane
-	plane, carpenter's plane, woodworking plane
-	warplane, military plane
-#275 label=planetarium
+#144 label=planetarium
 	planetarium
-#276 label=plaque
+#145 label=plaque
 	brass, memorial tablet, plaque
-#277 label=plate
-	plate
-#278 label=platform
+#146 label=platform
 	drilling platform, offshore rig
-#279 label=player
+#147 label=player
 	cassette player
 	cd player
 	tape player
 	ballplayer, baseball player
-#280 label=pole
-	pole
-	totem pole
-#281 label=porcupine
+#148 label=porcupine
 	porcupine, hedgehog
-#282 label=pot
-	crock pot
-	pot, flowerpot
-	hot pot, hotpot
-#283 label=potato
+#149 label=potato
 	ocarina, sweet potato
 	mashed potato
-#284 label=prison
+#150 label=prison
 	prison, prison house
-#285 label=pump
-	gas pump, gasoline pump, petrol pump, island dispenser
-	gas pump, gasoline pump, petrol pump, island dispenser
-	gas pump, gasoline pump, petrol pump, island dispenser
-#286 label=puppy
+#151 label=puppy
 	axolotl, mud puppy, ambystoma mexicanum
-#287 label=puzzle
-	jigsaw puzzle
-	crossword puzzle, crossword
-#288 label=quilt
-	quilt, comforter, comfort, puff
-#289 label=rabbit
-	wood rabbit, cottontail, cottontail rabbit
-	wood rabbit, cottontail, cottontail rabbit
-	angora, angora rabbit
-#290 label=radio
-	radio, wireless
-#291 label=ram
-	ram, tup
-#292 label=rattlesnake
+#152 label=rattlesnake
 	diamondback, diamondback rattlesnake, crotalus adamanteus
 	sidewinder, horned rattlesnake, crotalus cerastes
-#293 label=ray
-	electric ray, crampfish, numbfish, torpedo
-#294 label=reef
-	coral reef
-#295 label=restaurant
+#153 label=restaurant
 	restaurant, eating house, eating place, eatery
-#296 label=robin
+#154 label=robin
 	robin, american robin, turdus migratorius
 	robin, american robin, turdus migratorius
-#297 label=roof
-	thatch, thatched roof
-	tile roof
-#298 label=roundabout
-	carousel, carrousel, merry-go-round, roundabout, whirligig
-#299 label=salmon
-	coho, cohoe, coho salmon, blue jack, silver salmon, oncorhynchus kisutch
-	coho, cohoe, coho salmon, blue jack, silver salmon, oncorhynchus kisutch
-#300 label=sandal
+#155 label=sandal
 	sandal
-#301 label=sandpiper
+#156 label=sandpiper
 	red-backed sandpiper, dunlin, erolia alpina
-#302 label=sauce
-	chocolate sauce, chocolate syrup
-#303 label=sax
+#157 label=sax
 	sax, saxophone
-#304 label=scale
-	scale, weighing machine
-#305 label=scooter
+#158 label=scooter
 	motor scooter, scooter
 	motor scooter, scooter
-#306 label=scorpion
+#159 label=scorpion
 	scorpion
-#307 label=screen
-	fire screen, fireguard
-	screen, crt screen
-	screen, crt screen
-	window screen
-#308 label=seat
-	toilet seat
-#309 label=seawall
+#160 label=seawall
 	breakwater, groin, groyne, mole, bulwark, seawall, jetty
-#310 label=shade
-	lampshade, lamp shade
-	window shade
-#311 label=shaker
+#161 label=shaker
 	cocktail shaker
 	saltshaker, salt shaker
-#312 label=shark
-	great white shark, white shark, man-eater, man-eating shark, carcharodon carcharias
-	great white shark, white shark, man-eater, man-eating shark, carcharodon carcharias
-	great white shark, white shark, man-eater, man-eating shark, carcharodon carcharias
-	tiger shark, galeocerdo cuvieri
-	hammerhead, hammerhead shark
-#313 label=sheep
+#162 label=sheep
 	bighorn, bighorn sheep, cimarron, rocky mountain bighorn, rocky mountain sheep, ovis canadensis
 	bighorn, bighorn sheep, cimarron, rocky mountain bighorn, rocky mountain sheep, ovis canadensis
-#314 label=shell
-	chiton, coat-of-mail shell, sea cradle, polyplacophore
-#315 label=shepherd
-	german shepherd, german shepherd dog, german police dog, alsatian
-#316 label=shield
-	shield, buckler
-#317 label=ship
-	container ship, containership, container vessel
-	pirate, pirate ship
-#318 label=shirt
-	jersey, t-shirt, tee shirt
-#319 label=shoe
-	running shoe
-#320 label=shop
-	butcher shop, meat market
-	shoe shop, shoe-shop, shoe store
-	tobacco shop, tobacconist shop, tobacconist
-	tobacco shop, tobacconist shop, tobacconist
-#321 label=shuttle
-	space shuttle
-#322 label=sign
-	street sign
-#323 label=signal
-	traffic light, traffic signal, stoplight
-#324 label=site
-	web site, website, internet site, site
-	web site, website, internet site, site
-	web site, website, internet site, site
-#325 label=ski
-	ski
-#326 label=skunk
-	skunk, polecat, wood pussy
-#327 label=slide
-	hair slide
-#328 label=slug
-	slug
-	sea slug, nudibranch
-#329 label=smith
+#163 label=smith
 	granny smith
-#330 label=snail
-	snail
-#331 label=snake
-	thunder snake, worm snake, carphophis amoenus
-	thunder snake, worm snake, carphophis amoenus
-	ringneck snake, ring-necked snake, ring snake
-	ringneck snake, ring-necked snake, ring snake
-	ringneck snake, ring-necked snake, ring snake
-	hognose snake, puff adder, sand viper
-	green snake, grass snake
-	green snake, grass snake
-	king snake, kingsnake
-	garter snake, grass snake
-	garter snake, grass snake
-	water snake
-	vine snake
-	night snake, hypsiglena torquata
-	rock python, rock snake, python sebae
-	sea snake
-#332 label=sock
-	sock
-#333 label=speaker
+#164 label=speaker
 	loudspeaker, speaker, speaker unit, loudspeaker system, speaker system
-#334 label=spider
+#165 label=spider
 	black and gold garden spider, argiope aurantia
 	barn spider, araneus cavaticus
 	garden spider, aranea diademata
 	wolf spider, hunting spider
 	wolf spider, hunting spider
-#335 label=spiral
-	coil, spiral, volute, whorl, helix
-#336 label=spoon
-	wooden spoon
-#337 label=squirrel
+#166 label=squirrel
 	fox squirrel, eastern fox squirrel, sciurus niger
 	fox squirrel, eastern fox squirrel, sciurus niger
-#338 label=stage
-	stage
-#339 label=star
+#167 label=starfish
 	starfish, sea star
-#340 label=starfish
-	starfish, sea star
-#341 label=stick
-	walking stick, walkingstick, stick insect
-#342 label=stingray
+#168 label=stingray
 	stingray
-#343 label=store
-	confectionery, confectionary, candy store
-	grocery store, grocery, food market, market
-	shoe shop, shoe-shop, shoe store
-#344 label=stork
+#169 label=stork
 	white stork, ciconia ciconia
 	black stork, ciconia nigra
-#345 label=strawberry
+#170 label=strawberry
 	strawberry
-#346 label=streetcar
+#171 label=streetcar
 	streetcar, tram, tramcar, trolley, trolley car
-#347 label=structure
-	megalith, megalithic structure
-#348 label=sub
-	submarine, pigboat, sub, u-boat
-#349 label=submarine
-	submarine, pigboat, sub, u-boat
-#350 label=sundial
+#172 label=sundial
 	sundial
-#351 label=sunglass
+#173 label=sunglass
 	sunglass
-#352 label=swan
-	black swan, cygnus atratus
-#353 label=swing
-	swing
-#354 label=system
+#174 label=system
 	loudspeaker, speaker, speaker unit, loudspeaker system, speaker system
 	loudspeaker, speaker, speaker unit, loudspeaker system, speaker system
 	television, television system
-#355 label=t-shirt
+#175 label=t-shirt
 	jersey, t-shirt, tee shirt
-#356 label=table
-	dining table, board
-	pool table, billiard table, snooker table
-	pool table, billiard table, snooker table
-	pool table, billiard table, snooker table
-#357 label=tablet
+#176 label=tablet
 	brass, memorial tablet, plaque
-#358 label=tank
-	tank, army tank, armored combat vehicle, armoured combat vehicle
-	tank, army tank, armored combat vehicle, armoured combat vehicle
-#359 label=taxi
-	cab, hack, taxi, taxicab
-#360 label=telephone
-	cellular telephone, cellular phone, cellphone, cell, mobile phone
-	dial telephone, dial phone
-#361 label=telescope
-	radio telescope, radio reflector
-#362 label=tent
-	mountain tent
-#363 label=terrace
-	patio, terrace
-#364 label=theater
+#177 label=theater
 	cinema, movie theater, movie theatre, movie house, picture palace
 	home theater, home theatre
-#365 label=tie
-	bolo tie, bolo, bola tie, bola
-	bolo tie, bolo, bola tie, bola
-	bow tie, bow-tie, bowtie
-	windsor tie
-#366 label=tiger
+#178 label=tiger
 	tiger, panthera tigris
-#367 label=toad
+#179 label=toad
 	tailed frog, bell toad, ribbed toad, tailed toad, ascaphus trui
 	tailed frog, bell toad, ribbed toad, tailed toad, ascaphus trui
 	tailed frog, bell toad, ribbed toad, tailed toad, ascaphus trui
-#368 label=torch
-	torch
-#369 label=torpedo
-	electric ray, crampfish, numbfish, torpedo
-#370 label=tortoise
+#180 label=tortoise
 	box turtle, box tortoise
-#371 label=tower
-	water tower
-#372 label=track
-	half track
-#373 label=tractor
+#181 label=tractor
 	tractor
-#374 label=trailer
+#182 label=trailer
 	trailer truck, tractor trailer, trucking rig, rig, articulated lorry, semi
-#375 label=train
-	bullet train, bullet
-#376 label=tram
-	streetcar, tram, tramcar, trolley, trolley car
-#377 label=tripod
+#183 label=tripod
 	tripod
-#378 label=trolley
+#184 label=trolley
 	streetcar, tram, tramcar, trolley, trolley car
 	trolleybus, trolley coach, trackless trolley
-#379 label=truck
-	fire engine, fire truck
-	garbage truck, dustcart
-	pickup, pickup truck
-	tow truck, tow car, wrecker
-	trailer truck, tractor trailer, trucking rig, rig, articulated lorry, semi
-#380 label=trump
-	cornet, horn, trumpet, trump
-#381 label=turnstone
+#185 label=turnstone
 	ruddy turnstone, arenaria interpres
-#382 label=turtle
-	loggerhead, loggerhead turtle, caretta caretta
-	leatherback turtle, leatherback, leathery turtle, dermochelys coriacea
-	leatherback turtle, leatherback, leathery turtle, dermochelys coriacea
-	mud turtle
-	box turtle, box tortoise
-#383 label=umbrella
-	umbrella
-#384 label=unit
+#186 label=unit
 	loudspeaker, speaker, speaker unit, loudspeaker system, speaker system
-#385 label=valley
+#187 label=valley
 	valley, vale
-#386 label=van
+#188 label=van
 	moving van
 	police van, police wagon, paddy wagon, patrol wagon, wagon, black maria
-#387 label=vase
+#189 label=vase
 	vase
-#388 label=vehicle
+#190 label=vehicle
 	amphibian, amphibious vehicle
 	recreational vehicle, rv, r.v.
 	tank, army tank, armored combat vehicle, armoured combat vehicle
 	tank, army tank, armored combat vehicle, armoured combat vehicle
-#389 label=vessel
+#191 label=vessel
 	container ship, containership, container vessel
-#390 label=viaduct
+#192 label=viaduct
 	viaduct
-#391 label=volcano
+#193 label=volcano
 	volcano
-#392 label=volleyball
+#194 label=volleyball
 	volleyball
-#393 label=vulture
+#195 label=vulture
 	vulture
-#394 label=wagon
+#196 label=wagon
 	beach wagon, station wagon, wagon, estate car, beach waggon, station waggon, waggon
 	beach wagon, station wagon, wagon, estate car, beach waggon, station waggon, waggon
 	beach wagon, station wagon, wagon, estate car, beach waggon, station waggon, waggon
@@ -1093,46 +476,11 @@ select top labels
 	police van, police wagon, paddy wagon, patrol wagon, wagon, black maria
 	police van, police wagon, paddy wagon, patrol wagon, wagon, black maria
 	police van, police wagon, paddy wagon, patrol wagon, wagon, black maria
-#395 label=wall
-	stone wall
-#396 label=wallaby
+#197 label=wallaby
 	wallaby, brush kangaroo
-#397 label=watch
-	digital watch
-	stopwatch, stop watch
-#398 label=web
-	spider web, spider's web
-	spider web, spider's web
-#399 label=whale
-	grey whale, gray whale, devilfish, eschrichtius gibbosus, eschrichtius robustus
-	grey whale, gray whale, devilfish, eschrichtius gibbosus, eschrichtius robustus
-	killer whale, killer, orca, grampus, sea wolf, orcinus orca
-#400 label=wheel
-	car wheel
-	paddlewheel, paddle wheel
-	potter's wheel
-#401 label=wine
-	red wine
-#402 label=wing
-	wing
-#403 label=wolf
-	killer whale, killer, orca, grampus, sea wolf, orcinus orca
-	timber wolf, grey wolf, gray wolf, canis lupus
-	timber wolf, grey wolf, gray wolf, canis lupus
-	timber wolf, grey wolf, gray wolf, canis lupus
-	white wolf, arctic wolf, canis lupus tundrarum
-	white wolf, arctic wolf, canis lupus tundrarum
-	red wolf, maned wolf, canis rufus, canis niger
-	red wolf, maned wolf, canis rufus, canis niger
-	coyote, prairie wolf, brush wolf, canis latrans
-	coyote, prairie wolf, brush wolf, canis latrans
-#404 label=wombat
+#198 label=wombat
 	wombat
-#405 label=wool
+#199 label=wool
 	wool, woolen, woollen
-#406 label=worm
-	nematode, nematode worm, roundworm
-#407 label=wreck
-	wreck
-#408 label=zebra
+#200 label=zebra
 	zebra
