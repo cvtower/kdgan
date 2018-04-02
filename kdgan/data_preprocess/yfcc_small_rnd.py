@@ -218,159 +218,160 @@ def save_posts(user_posts, infile):
     print('#image={}'.format(len(image_set)))
 
 def select_posts():
-    top_labels = utils.load_collection(label_file)
-    user_posts = {}
-    fin = open(config.sample_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        user, labels = fields[USER_INDEX], fields[LABEL_INDEX]
-        image_url = fields[IMAGE_INDEX]
-        if not with_top_label(labels, top_labels):
-            continue
-        post = fields[POST_INDEX]
-        if post in ['38660241',
-                '75168733',
-                '72513144',
-                '96116455',
-                '93108491',]:
-            continue
-        labels = keep_top_label(labels, top_labels)
-        fields[LABEL_INDEX] = LABEL_SEPERATOR.join(labels)
-        fields[IMAGE_INDEX] = path.basename(image_url)
-        if user not in user_posts:
-            user_posts[user] = []
-        user_posts[user].append(FIELD_SEPERATOR.join(fields))
-    fin.close()
+  exit()
+  top_labels = utils.load_collection(label_file)
+  user_posts = {}
+  fin = open(config.sample_file)
+  while True:
+      line = fin.readline().strip()
+      if not line:
+          break
+      fields = line.split(FIELD_SEPERATOR)
+      user, labels = fields[USER_INDEX], fields[LABEL_INDEX]
+      image_url = fields[IMAGE_INDEX]
+      if not with_top_label(labels, top_labels):
+          continue
+      post = fields[POST_INDEX]
+      if post in ['38660241',
+              '75168733',
+              '72513144',
+              '96116455',
+              '93108491',]:
+          continue
+      labels = keep_top_label(labels, top_labels)
+      fields[LABEL_INDEX] = LABEL_SEPERATOR.join(labels)
+      fields[IMAGE_INDEX] = path.basename(image_url)
+      if user not in user_posts:
+          user_posts[user] = []
+      user_posts[user].append(FIELD_SEPERATOR.join(fields))
+  fin.close()
 
-    user_posts_cpy = user_posts
-    user_posts = {}
-    for user in user_posts_cpy.keys():
-        posts = user_posts_cpy[user]
-        num_post = len(posts)
-        if num_post < MIN_IMAGE_PER_USER:
-            continue
-        user_posts[user] = posts
-    tot_post = get_post_count(user_posts)
-    print('#post=%d' % (tot_post))
+  user_posts_cpy = user_posts
+  user_posts = {}
+  for user in user_posts_cpy.keys():
+      posts = user_posts_cpy[user]
+      num_post = len(posts)
+      if num_post < MIN_IMAGE_PER_USER:
+          continue
+      user_posts[user] = posts
+  tot_post = get_post_count(user_posts)
+  print('#post=%d' % (tot_post))
 
-    label_count = {}
-    for user, posts in user_posts.items():
-        for post in posts:
-            fields = post.split(FIELD_SEPERATOR)
-            user = fields[USER_INDEX]
-            labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-            for label in labels:
-                label_count[label] = label_count.get(label, 0) + 1
-    counts = label_count.values()
-    print('min=%d max=%d' % (min(counts), max(counts)))
+  label_count = {}
+  for user, posts in user_posts.items():
+      for post in posts:
+          fields = post.split(FIELD_SEPERATOR)
+          user = fields[USER_INDEX]
+          labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+          for label in labels:
+              label_count[label] = label_count.get(label, 0) + 1
+  counts = label_count.values()
+  print('min=%d max=%d' % (min(counts), max(counts)))
 
-    user_posts_cpy = user_posts
-    user_posts = {}
-    users = sorted(user_posts_cpy.keys())
-    for user in users:
-        posts = user_posts_cpy[user]
-        num_post = len(posts)
-        num_post = min(num_post // POST_UNIT_SIZE * POST_UNIT_SIZE, MAX_IMAGE_PER_USER)
-        not_keep = len(posts) - num_post
-        user_posts[user] = []
-        count = 0
-        for post in posts:
-            keep = False
-            fields = post.split(FIELD_SEPERATOR)
-            labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-            for label in labels:
-                if (label_count[label] - 1) < MIN_IMAGE_PER_LABEL:
-                    keep = True
-                    break
-            if count >= not_keep:
-                user_posts[user].append(post)
-            else:
-                if keep:
-                    user_posts[user].append(post)
-                else:
-                    count += 1
-                    for label in labels:
-                        label_count[label] -= 1
-        posts = user_posts[user]
-        num_post = len(user_posts[user])
-        if (num_post // POST_UNIT_SIZE) != 0:
-            num_post = num_post // POST_UNIT_SIZE * POST_UNIT_SIZE
-            user_posts[user] = posts[:num_post]
-            for post in posts[num_post:]:
-                fields = post.split(FIELD_SEPERATOR)
-                labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-                for label in labels:
-                    label_count[label] -= 1
-    tot_post = get_post_count(user_posts)
-    dif_post = tot_post - EXPECTED_NUM_POST
-    print('{} to be removed'.format(dif_post))
+  user_posts_cpy = user_posts
+  user_posts = {}
+  users = sorted(user_posts_cpy.keys())
+  for user in users:
+      posts = user_posts_cpy[user]
+      num_post = len(posts)
+      num_post = min(num_post // POST_UNIT_SIZE * POST_UNIT_SIZE, MAX_IMAGE_PER_USER)
+      not_keep = len(posts) - num_post
+      user_posts[user] = []
+      count = 0
+      for post in posts:
+          keep = False
+          fields = post.split(FIELD_SEPERATOR)
+          labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+          for label in labels:
+              if (label_count[label] - 1) < MIN_IMAGE_PER_LABEL:
+                  keep = True
+                  break
+          if count >= not_keep:
+              user_posts[user].append(post)
+          else:
+              if keep:
+                  user_posts[user].append(post)
+              else:
+                  count += 1
+                  for label in labels:
+                      label_count[label] -= 1
+      posts = user_posts[user]
+      num_post = len(user_posts[user])
+      if (num_post // POST_UNIT_SIZE) != 0:
+          num_post = num_post // POST_UNIT_SIZE * POST_UNIT_SIZE
+          user_posts[user] = posts[:num_post]
+          for post in posts[num_post:]:
+              fields = post.split(FIELD_SEPERATOR)
+              labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+              for label in labels:
+                  label_count[label] -= 1
+  tot_post = get_post_count(user_posts)
+  dif_post = tot_post - EXPECTED_NUM_POST
+  print('{} to be removed'.format(dif_post))
 
-    user_posts_cpy = user_posts
-    user_posts = {}
-    user_count = get_user_count(user_posts_cpy)
-    user_count = sorted(user_count.items(), key=operator.itemgetter(1), reverse=True)
-    for user, _ in user_count:
-        posts = user_posts_cpy[user]
-        keep_posts = []
-        disc_posts = []
-        for post in posts:
-            keep = False
-            fields = post.split(FIELD_SEPERATOR)
-            labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-            for label in labels:
-                if (label_count[label] - 1) < MIN_IMAGE_PER_LABEL:
-                    keep = True
-                    break
-            if keep:
-                keep_posts.append(post)
-            else:
-                disc_posts.append(post)
-                for label in labels:
-                    label_count[label] -= 1
+  user_posts_cpy = user_posts
+  user_posts = {}
+  user_count = get_user_count(user_posts_cpy)
+  user_count = sorted(user_count.items(), key=operator.itemgetter(1), reverse=True)
+  for user, _ in user_count:
+      posts = user_posts_cpy[user]
+      keep_posts = []
+      disc_posts = []
+      for post in posts:
+          keep = False
+          fields = post.split(FIELD_SEPERATOR)
+          labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+          for label in labels:
+              if (label_count[label] - 1) < MIN_IMAGE_PER_LABEL:
+                  keep = True
+                  break
+          if keep:
+              keep_posts.append(post)
+          else:
+              disc_posts.append(post)
+              for label in labels:
+                  label_count[label] -= 1
 
-        num_keep = max(len(keep_posts), MIN_IMAGE_PER_USER)
-        if num_keep % POST_UNIT_SIZE != 0:
-            num_keep = (num_keep // POST_UNIT_SIZE + 1) * POST_UNIT_SIZE
+      num_keep = max(len(keep_posts), MIN_IMAGE_PER_USER)
+      if num_keep % POST_UNIT_SIZE != 0:
+          num_keep = (num_keep // POST_UNIT_SIZE + 1) * POST_UNIT_SIZE
 
-        if dif_post == 0:
-            num_keep = len(posts)
-        else:
-            num_disc = len(posts) - num_keep
-            if dif_post - num_disc < 0:
-                num_keep += (num_disc - dif_post)
-                dif_post = 0
-            else:
-                dif_post -= num_disc
+      if dif_post == 0:
+          num_keep = len(posts)
+      else:
+          num_disc = len(posts) - num_keep
+          if dif_post - num_disc < 0:
+              num_keep += (num_disc - dif_post)
+              dif_post = 0
+          else:
+              dif_post -= num_disc
 
-        num_rest = num_keep - len(keep_posts)
-        for post in disc_posts[:num_rest]:
-            keep_posts.append(post)
-            fields = post.split(FIELD_SEPERATOR)
-            labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-            for label in labels:
-                label_count[label] += 1
-        disc_posts = disc_posts[num_rest:]
-        user_posts[user] = keep_posts
-    tot_post = get_post_count(user_posts)
-    dif_post = tot_post - EXPECTED_NUM_POST
-    print('{} to be removed'.format(dif_post))
+      num_rest = num_keep - len(keep_posts)
+      for post in disc_posts[:num_rest]:
+          keep_posts.append(post)
+          fields = post.split(FIELD_SEPERATOR)
+          labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+          for label in labels:
+              label_count[label] += 1
+      disc_posts = disc_posts[num_rest:]
+      user_posts[user] = keep_posts
+  tot_post = get_post_count(user_posts)
+  dif_post = tot_post - EXPECTED_NUM_POST
+  print('{} to be removed'.format(dif_post))
 
-    user_posts_cpy = user_posts
-    user_posts = {}
-    for user, posts in user_posts_cpy.items():
-        user_posts[user] = []
-        for post in posts:
-            fields = post.split(FIELD_SEPERATOR)
-            filename = fields[IMAGE_INDEX]
-            image = filename.split('_')[0]
-            fields[IMAGE_INDEX] = image
-            post = FIELD_SEPERATOR.join(fields)
-            user_posts[user].append(post)
+  user_posts_cpy = user_posts
+  user_posts = {}
+  for user, posts in user_posts_cpy.items():
+      user_posts[user] = []
+      for post in posts:
+          fields = post.split(FIELD_SEPERATOR)
+          filename = fields[IMAGE_INDEX]
+          image = filename.split('_')[0]
+          fields[IMAGE_INDEX] = image
+          post = FIELD_SEPERATOR.join(fields)
+          user_posts[user].append(post)
 
-    save_posts(user_posts, raw_file)
+  save_posts(user_posts, raw_file)
 
 stopwords = set(stopwords.words('english'))    
 def tokenize_dataset():
@@ -1146,9 +1147,11 @@ def main(_):
   if flags.overwrite or (not utils.skip_if_exist(label_file)):
     print('select top labels')
     select_rnd_label()
-    # if not utils.skip_if_exist(raw_file):
-    #     print('select posts')
-    #     select_posts()
+
+  if flags.overwrite (not utils.skip_if_exist(raw_file)):
+    print('select posts')
+    select_posts()
+
     # if not utils.skip_if_exist(data_file):
     #     print('tokenize dataset')
     #     tokenize_dataset()

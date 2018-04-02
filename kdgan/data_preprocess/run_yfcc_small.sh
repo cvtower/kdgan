@@ -6,7 +6,8 @@ python yfcc_small_rnd.py \
     --model_name=vgg_16 \
     --preprocessing_name=vgg_16 \
     --end_point=vgg_16/fc7 \
-    --pretrained_ckpt=${pretrained_ckpt}
+    --pretrained_ckpt=${pretrained_ckpt} \
+    --overwrite=False
 exit
 
 
