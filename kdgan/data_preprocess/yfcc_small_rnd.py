@@ -53,9 +53,9 @@ LABEL_INDEX = -1
 FIELD_SEPERATOR = '\t'
 EXPECTED_NUM_FIELD = 6
 
-MIN_RND_LABEL = 40
+MIN_RND_LABEL = 10
 NUM_RND_LABEL = 100 # select rnd 100 labels
-EXPECTED_NUM_POST = 8000
+EXPECTED_NUM_POST = 10000
 MIN_IMAGE_PER_USER = 20
 MAX_IMAGE_PER_USER = 1000
 MIN_IMAGE_PER_LABEL = 100 - 3
@@ -244,17 +244,8 @@ def select_posts():
       user_posts[user] = []
     user_posts[user].append(FIELD_SEPERATOR.join(fields))
   fin.close()
-
-  user_posts_cpy = user_posts
-  user_posts = {}
-  for user in user_posts_cpy.keys():
-    posts = user_posts_cpy[user]
-    num_post = len(posts)
-    if num_post < MIN_IMAGE_PER_USER:
-      continue
-    user_posts[user] = posts
   tot_post = get_post_count(user_posts)
-  print('#post=%d' % (tot_post))
+  print('\t#post=%d' % (tot_post))
   exit()
 
   save_posts(user_posts, raw_file)
