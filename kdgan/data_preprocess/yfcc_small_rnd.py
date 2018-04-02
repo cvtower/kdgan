@@ -291,6 +291,8 @@ def tokenize_dataset():
       tokens = _stop_stem(tokens)
 
     if len(tokens) == 0:
+      tokens = tokenizer.tokenize(text)
+      print(tokens)
       print('no textual information', text)
 
     text = ' '.join(tokens)
