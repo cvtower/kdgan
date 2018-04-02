@@ -83,7 +83,7 @@ def check_num_field():
       raise Exception('wrong number of fields')
   fin.close()
 
-def only_noun(label):
+def is_noun(label):
   is_noun = True
   synsets = wordnet.synsets(label)
   for synset in synsets:
