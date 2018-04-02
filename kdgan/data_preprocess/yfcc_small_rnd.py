@@ -1150,7 +1150,7 @@ def main(_):
     print('select top labels')
     select_rnd_label()
 
-  if flags.overwrite (not utils.skip_if_exist(raw_file)):
+  if flags.overwrite or (not utils.skip_if_exist(raw_file)):
     print('select posts')
     select_posts()
 
