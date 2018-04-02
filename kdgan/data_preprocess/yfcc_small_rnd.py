@@ -53,9 +53,9 @@ LABEL_INDEX = -1
 FIELD_SEPERATOR = '\t'
 EXPECTED_NUM_FIELD = 6
 
-MIN_RND_LABEL = 32
+MIN_RND_LABEL = 40
 NUM_RND_LABEL = 100 # select rnd 100 labels
-EXPECTED_NUM_POST = 10000
+EXPECTED_NUM_POST = 8000
 MIN_IMAGE_PER_USER = 20
 MAX_IMAGE_PER_USER = 1000
 MIN_IMAGE_PER_LABEL = 100 - 3
@@ -256,120 +256,6 @@ def select_posts():
   tot_post = get_post_count(user_posts)
   print('#post=%d' % (tot_post))
   exit()
-
-  label_count = {}
-  for user, posts in user_posts.items():
-      for post in posts:
-          fields = post.split(FIELD_SEPERATOR)
-          user = fields[USER_INDEX]
-          labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-          for label in labels:
-              label_count[label] = label_count.get(label, 0) + 1
-  counts = label_count.values()
-  print('min=%d max=%d' % (min(counts), max(counts)))
-
-  user_posts_cpy = user_posts
-  user_posts = {}
-  users = sorted(user_posts_cpy.keys())
-  for user in users:
-      posts = user_posts_cpy[user]
-      num_post = len(posts)
-      num_post = min(num_post // POST_UNIT_SIZE * POST_UNIT_SIZE, MAX_IMAGE_PER_USER)
-      not_keep = len(posts) - num_post
-      user_posts[user] = []
-      count = 0
-      for post in posts:
-          keep = False
-          fields = post.split(FIELD_SEPERATOR)
-          labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-          for label in labels:
-              if (label_count[label] - 1) < MIN_IMAGE_PER_LABEL:
-                  keep = True
-                  break
-          if count >= not_keep:
-              user_posts[user].append(post)
-          else:
-              if keep:
-                  user_posts[user].append(post)
-              else:
-                  count += 1
-                  for label in labels:
-                      label_count[label] -= 1
-      posts = user_posts[user]
-      num_post = len(user_posts[user])
-      if (num_post // POST_UNIT_SIZE) != 0:
-          num_post = num_post // POST_UNIT_SIZE * POST_UNIT_SIZE
-          user_posts[user] = posts[:num_post]
-          for post in posts[num_post:]:
-              fields = post.split(FIELD_SEPERATOR)
-              labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-              for label in labels:
-                  label_count[label] -= 1
-  tot_post = get_post_count(user_posts)
-  dif_post = tot_post - EXPECTED_NUM_POST
-  print('{} to be removed'.format(dif_post))
-
-  user_posts_cpy = user_posts
-  user_posts = {}
-  user_count = get_user_count(user_posts_cpy)
-  user_count = sorted(user_count.items(), key=operator.itemgetter(1), reverse=True)
-  for user, _ in user_count:
-      posts = user_posts_cpy[user]
-      keep_posts = []
-      disc_posts = []
-      for post in posts:
-          keep = False
-          fields = post.split(FIELD_SEPERATOR)
-          labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-          for label in labels:
-              if (label_count[label] - 1) < MIN_IMAGE_PER_LABEL:
-                  keep = True
-                  break
-          if keep:
-              keep_posts.append(post)
-          else:
-              disc_posts.append(post)
-              for label in labels:
-                  label_count[label] -= 1
-
-      num_keep = max(len(keep_posts), MIN_IMAGE_PER_USER)
-      if num_keep % POST_UNIT_SIZE != 0:
-          num_keep = (num_keep // POST_UNIT_SIZE + 1) * POST_UNIT_SIZE
-
-      if dif_post == 0:
-          num_keep = len(posts)
-      else:
-          num_disc = len(posts) - num_keep
-          if dif_post - num_disc < 0:
-              num_keep += (num_disc - dif_post)
-              dif_post = 0
-          else:
-              dif_post -= num_disc
-
-      num_rest = num_keep - len(keep_posts)
-      for post in disc_posts[:num_rest]:
-          keep_posts.append(post)
-          fields = post.split(FIELD_SEPERATOR)
-          labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-          for label in labels:
-              label_count[label] += 1
-      disc_posts = disc_posts[num_rest:]
-      user_posts[user] = keep_posts
-  tot_post = get_post_count(user_posts)
-  dif_post = tot_post - EXPECTED_NUM_POST
-  print('{} to be removed'.format(dif_post))
-
-  user_posts_cpy = user_posts
-  user_posts = {}
-  for user, posts in user_posts_cpy.items():
-      user_posts[user] = []
-      for post in posts:
-          fields = post.split(FIELD_SEPERATOR)
-          filename = fields[IMAGE_INDEX]
-          image = filename.split('_')[0]
-          fields[IMAGE_INDEX] = image
-          post = FIELD_SEPERATOR.join(fields)
-          user_posts[user].append(post)
 
   save_posts(user_posts, raw_file)
 
