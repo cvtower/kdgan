@@ -37,6 +37,7 @@ tf.app.flags.DEFINE_string('end_point', None, '')
 tf.app.flags.DEFINE_string('pretrained_ckpt', None, '')
 tf.app.flags.DEFINE_integer('channels', 3, '')
 tf.app.flags.DEFINE_boolean('overwrite', False, '')
+tf.app.flags.DEFINE_boolean('create_survey_data', False, '')
 flags = tf.app.flags.FLAGS
 
 lemmatizer = WordNetLemmatizer()
@@ -976,8 +977,9 @@ def main(_):
     print('split into train and valid')
     split_dataset()
 
-  print('create survey data')
-  create_survey_data()
+  if flags.create_survey_data:
+    print('create survey data')
+    create_survey_data()
 
   # create_test_set()
   # create_tfrecord(valid_file, end_point_v, is_training=False)

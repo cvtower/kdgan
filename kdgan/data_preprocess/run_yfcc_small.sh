@@ -8,7 +8,8 @@ python yfcc_small_rnd.py \
     --preprocessing_name=vgg_16 \
     --end_point=vgg_16/fc7 \
     --pretrained_ckpt=${pretrained_ckpt} \
-    --overwrite=${overwrite}
+    --overwrite=${overwrite} \
+    --create_survey_data=False
 exit
 
 
