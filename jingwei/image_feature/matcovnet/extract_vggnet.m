@@ -1,6 +1,8 @@
 clear
 
-data_folder = '/home/xiaojie/Projects/data/yfcc100m/survey_data/';
+proj_folder = '/home/xiaojie/Projects/';
+yfcc_folder = strcat(proj_folder, 'data/yfcc100m/');
+data_folder = strcat(yfcc_folder, 'survey_data/');
 %ds = 'yfcc0k';
 %ds = 'yfcc1k';
 %ds = 'yfcc9k';
