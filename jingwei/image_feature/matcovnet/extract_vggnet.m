@@ -7,8 +7,8 @@ data_folder = strcat(yfcc_folder, 'survey_data/');
 %ds = 'yfcc1k';
 %ds = 'yfcc9k';
 %ds = 'yfcc19k';
-ds = 'yfcc_rnd_tn';
-%ds = 'yfcc_rnd_vd';
+%ds = 'yfcc_rnd_tn';
+ds = 'yfcc_rnd_vd';
 
 %data_folder = '/fishtank/urix/survey/';   % corresponds to SURVEY_DATA
 %ds = 'train10k';                          % dataset to be processed
