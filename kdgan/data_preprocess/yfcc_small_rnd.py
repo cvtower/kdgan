@@ -708,10 +708,14 @@ def survey_annotations(infile):
         fout.close()
 
 def create_survey_data():
+  print('collect survey train images')
   train_dataset = '%s_tn' % dataset
   survey_image_data(train_file, train_dataset)
+
+  print('collect survey valid images')
   valid_dataset = '%s_vd' % dataset
   survey_image_data(valid_file, valid_dataset)
+
   return
   survey_text_data(train_file)
   survey_text_data(valid_file)
