@@ -17,6 +17,7 @@ export codepath=$SURVEY_CODE
 
 
 ./do_knntagrel.sh yfcc_rnd_tn yfcc_rnd_vd vgg-verydeep-16-fc7relu
+./do_tagvote.sh yfcc_rnd_tn yfcc_rnd_vd vgg-verydeep-16-fc7relu
 
 
 
