@@ -71,6 +71,12 @@ label_file = path.join(dataset_dir, '%s.label' % dataset)
 vocab_file = path.join(dataset_dir, '%s.vocab' % dataset)
 image_data_dir = path.join(dataset_dir, 'ImageData')
 
+################################################################
+#
+# create kdgan data
+#
+################################################################
+
 def check_num_field():
   fin = open(config.sample_file)
   while True:
@@ -241,8 +247,8 @@ def select_posts():
   save_posts(posts, raw_file)
   return min(counts)
 
-stopwords = set(stopwords.words('english'))    
 def tokenize_dataset():
+  stopwords = set(stopwords.words('english'))
   stemmer = SnowballStemmer('english')
   tokenizer = RegexpTokenizer('[a-z]+')
   def _in_wordnet(token):
@@ -397,28 +403,23 @@ def collect_image(infile, outdir):
 #
 ################################################################
 
-def get_dataset(infile):
-    datasize = len(open(infile).readlines())
-    dataset = 'yfcc{}k'.format(datasize // 1000)
-    return dataset
-
-def survey_image_data(infile):
-    dataset = get_dataset(infile)
-    image_data = path.join(surv_dir, dataset, 'ImageData')
-    utils.create_if_nonexist(image_data)
-    fout = open(path.join(image_data, '%s.txt' % dataset), 'w')
-    fin = open(infile)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image = fields[IMAGE_INDEX]
-        image_file = '%s.jpg' % image
-        fout.write('{}\n'.format(image_file))
-    fin.close()
-    fout.close()
-    collect_image(infile, image_data)
+def survey_image_data(infile, dataset):
+  image_data = path.join(config.surv_dir, dataset, 'ImageData')
+  utils.create_if_nonexist(image_data)
+  outfile = path.join(image_data, '%s.txt' % dataset)
+  fout = open(outfile, 'w')
+  fin = open(infile)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    image = fields[IMAGE_INDEX]
+    image_file = '%s.jpg' % image
+    fout.write('{}\n'.format(image_file))
+  fin.close()
+  fout.close()
+  collect_image(infile, image_data)
 
 def survey_text_data(infile):
     seperator = '###'
@@ -434,7 +435,7 @@ def survey_text_data(infile):
         return label_i, label_j
 
     dataset = get_dataset(infile)
-    text_data = path.join(surv_dir, dataset, 'TextData')
+    text_data = path.join(config.surv_dir, dataset, 'TextData')
     utils.create_if_nonexist(text_data)
 
     post_image = {}
@@ -646,7 +647,7 @@ def survey_text_data(infile):
 
 def survey_feature_sets(infile):
     dataset = get_dataset(infile)
-    image_sets = path.join(surv_dir, dataset, 'ImageSets')
+    image_sets = path.join(config.surv_dir, dataset, 'ImageSets')
     utils.create_if_nonexist(image_sets)
 
     fout = open(path.join(image_sets, '%s.txt' % dataset), 'w')
@@ -666,7 +667,7 @@ def survey_feature_sets(infile):
 
 def survey_annotations(infile):
     dataset = get_dataset(infile)
-    annotations = path.join(surv_dir, dataset, 'Annotations')
+    annotations = path.join(config.surv_dir, dataset, 'Annotations')
     utils.create_if_nonexist(annotations)
     concepts = 'concepts.txt'
     
@@ -707,14 +708,17 @@ def survey_annotations(infile):
         fout.close()
 
 def create_survey_data():
-    survey_image_data(train_file)
-    survey_image_data(valid_file)
-    survey_text_data(train_file)
-    survey_text_data(valid_file)
-    survey_feature_sets(train_file)
-    survey_feature_sets(valid_file)
-    survey_annotations(train_file)
-    survey_annotations(valid_file)
+  train_dataset = '%s_tn' % dataset
+  survey_image_data(train_file, train_dataset)
+  return
+  valid_dataset = '%s_vd' % dataset
+  survey_image_data(valid_file, valid_dataset)
+  survey_text_data(train_file)
+  survey_text_data(valid_file)
+  survey_feature_sets(train_file)
+  survey_feature_sets(valid_file)
+  survey_annotations(train_file)
+  survey_annotations(valid_file)
 
 ################################################################
 #
@@ -965,7 +969,7 @@ def main(_):
     split_dataset()
 
   print('create survey data')
-  # create_survey_data()
+  create_survey_data()
 
   # create_test_set()
   # create_tfrecord(valid_file, end_point_v, is_training=False)
