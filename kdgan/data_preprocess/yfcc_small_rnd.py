@@ -710,9 +710,9 @@ def survey_annotations(infile):
 def create_survey_data():
   train_dataset = '%s_tn' % dataset
   survey_image_data(train_file, train_dataset)
-  return
   valid_dataset = '%s_vd' % dataset
   survey_image_data(valid_file, valid_dataset)
+  return
   survey_text_data(train_file)
   survey_text_data(valid_file)
   survey_feature_sets(train_file)
