@@ -37,7 +37,7 @@ tf.app.flags.DEFINE_string('end_point', None, '')
 tf.app.flags.DEFINE_string('pretrained_ckpt', None, '')
 tf.app.flags.DEFINE_integer('channels', 3, '')
 tf.app.flags.DEFINE_boolean('overwrite', False, '')
-tf.app.flags.DEFINE_boolean('create_survey_data', False, '')
+tf.app.flags.DEFINE_boolean('baseline', False, '')
 flags = tf.app.flags.FLAGS
 
 lemmatizer = WordNetLemmatizer()
@@ -707,6 +707,9 @@ def survey_annotations(infile, dataset):
     fout.close()
 
 def create_survey_data():
+
+  return
+  
   print('collect survey train images')
   train_dataset = '%s_tn' % dataset
   survey_image_data(train_file, train_dataset)
@@ -978,7 +981,7 @@ def main(_):
     print('split into train and valid')
     split_dataset()
 
-  if flags.create_survey_data:
+  if flags.baseline:
     print('create survey data')
     create_survey_data()
 

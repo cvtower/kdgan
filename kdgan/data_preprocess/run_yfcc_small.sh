@@ -1,8 +1,8 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
 checkpoint_dir=${kdgan_dir}/checkpoints
 pretrained_ckpt=${checkpoint_dir}/vgg_16.ckpt
-overwrite=True
-create_survey_data=False
+overwrite=False
+baseline=False
 
 python yfcc_small_rnd.py \
     --model_name=vgg_16 \
@@ -10,7 +10,7 @@ python yfcc_small_rnd.py \
     --end_point=vgg_16/fc7 \
     --pretrained_ckpt=${pretrained_ckpt} \
     --overwrite=${overwrite} \
-    --create_survey_data=${create_survey_data}
+    --baseline=${baseline}
 exit
 
 
