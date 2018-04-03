@@ -644,67 +644,66 @@ def survey_text_data(infile, dataset):
     fout.write('{}\n'.format(label))
   fout.close()
 
-def survey_feature_sets(infile):
-    dataset = get_dataset(infile)
-    image_sets = path.join(config.surv_dir, dataset, 'ImageSets')
-    utils.create_if_nonexist(image_sets)
+def survey_feature_sets(infile, dataset):
+  image_sets = path.join(config.surv_dir, dataset, 'ImageSets')
+  utils.create_if_nonexist(image_sets)
 
-    fout = open(path.join(image_sets, '%s.txt' % dataset), 'w')
-    fin = open(infile)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image = fields[IMAGE_INDEX]
-        fout.write('{}\n'.format(image))
-    fin.close()
+  outfile = path.join(image_sets, '%s.txt' % dataset)
+  fout = open(outfile, 'w')
+  fin = open(infile)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    image = fields[IMAGE_INDEX]
+    fout.write('{}\n'.format(image))
+  fin.close()
+  fout.close()
+
+  fout = open(path.join(image_sets, 'holdout.txt'), 'w')
+  fout.close()
+
+def survey_annotations(infile, dataset):
+  annotations = path.join(config.surv_dir, dataset, 'Annotations')
+  utils.create_if_nonexist(annotations)
+  concepts = 'concepts.txt'
+  
+  label_set = set()
+  label_images = {}
+  image_set = set()
+  fin = open(infile)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    image = fields[IMAGE_INDEX]
+    labels = fields[LABEL_INDEX].split()
+    for label in labels:
+      label_set.add(label)
+      if label not in label_images:
+        label_images[label] = []
+      label_images[label].append(image)
+    image_set.add(image)
+  fin.close()
+  fout = open(path.join(annotations, concepts), 'w')
+  for label in sorted(label_set):
+    fout.write('{}\n'.format(label))
+  fout.close()
+
+  concepts_dir = path.join(annotations, 'Image', concepts)
+  utils.create_if_nonexist(concepts_dir)
+  image_list = sorted(image_set)
+  for label in label_set:
+    label_filepath = path.join(concepts_dir, '%s.txt' % label)
+    fout = open(label_filepath, 'w')
+    for image in image_list:
+      assessment = -1
+      if image in label_images[label]:
+        assessment = 1
+      fout.write('{} {}\n'.format(image, assessment))
     fout.close()
-
-    fout = open(path.join(image_sets, 'holdout.txt'), 'w')
-    fout.close()
-
-def survey_annotations(infile):
-    dataset = get_dataset(infile)
-    annotations = path.join(config.surv_dir, dataset, 'Annotations')
-    utils.create_if_nonexist(annotations)
-    concepts = 'concepts.txt'
-    
-    label_set = set()
-    label_images = {}
-    image_set = set()
-    fin = open(infile)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image = fields[IMAGE_INDEX]
-        labels = fields[LABEL_INDEX].split()
-        for label in labels:
-            label_set.add(label)
-            if label not in label_images:
-                label_images[label] = []
-            label_images[label].append(image)
-        image_set.add(image)
-    fin.close()
-    fout = open(path.join(annotations, concepts), 'w')
-    for label in sorted(label_set):
-        fout.write('{}\n'.format(label))
-    fout.close()
-
-    concepts_dir = path.join(annotations, 'Image', concepts)
-    utils.create_if_nonexist(concepts_dir)
-    image_list = sorted(image_set)
-    for label in label_set:
-        label_filepath = path.join(concepts_dir, '%s.txt' % label)
-        fout = open(label_filepath, 'w')
-        for image in image_list:
-            assessment = -1
-            if image in label_images[label]:
-                assessment = 1
-            fout.write('{} {}\n'.format(image, assessment))
-        fout.close()
 
 def create_survey_data():
   print('collect survey train images')
@@ -719,11 +718,15 @@ def create_survey_data():
   print('create survey valid text data')
   survey_text_data(valid_file, valid_dataset)
 
-  return
-  survey_feature_sets(train_file)
-  survey_feature_sets(valid_file)
-  survey_annotations(train_file)
-  survey_annotations(valid_file)
+  print('create survey train feature set')
+  survey_feature_sets(train_file, train_dataset)
+  print('create survey valid feature set')
+  survey_feature_sets(valid_file, valid_dataset)
+
+  print('create survey train annotations')
+  survey_annotations(train_file, train_dataset)
+  print('create survey valid annotations')
+  survey_annotations(valid_file, valid_dataset)
 
 ################################################################
 #
