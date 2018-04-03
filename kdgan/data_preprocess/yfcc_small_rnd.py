@@ -711,7 +711,7 @@ def create_survey_data():
   valid_dataset = '%s_vd' % dataset
   surv_train_dir = path.join(config.surv_dir, train_dataset)
   surv_valid_dir = path.join(config.surv_dir, valid_dataset)
-  print('train=%s\nvalid=%s' % (surv_train_dir, surv_valid_dir))
+  print('train %s\nvalid %s' % (surv_train_dir, surv_valid_dir))
   return
   print('collect survey train images')
   survey_image_data(train_file, train_dataset)
