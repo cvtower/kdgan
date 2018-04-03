@@ -355,9 +355,9 @@ def split_dataset():
     for token in tokens:
       vocab.add(token)
   vocab = sorted(vocab)
-  if unk_token in vocab:
-    raise Exception('please change unk token', unk_token)
-  vocab.insert(0, unk_token)
+  if config.unk_token in vocab:
+    raise Exception('please change unk token', config.unk_token)
+  vocab.insert(0, config.unk_token)
   if pad_token in vocab:
     raise Exception('please change pad token', pad_token)
   vocab.insert(0, pad_token)
@@ -826,7 +826,7 @@ def create_tfrecord(infile, end_point, is_training=False):
     num_label = len(label_to_id)
     print('#label={}'.format(num_label))
     token_to_id = utils.load_sth_to_id(vocab_file)
-    unk_token_id = token_to_id[unk_token]
+    unk_token_id = token_to_id[config.unk_token]
     vocab_size = len(token_to_id)
     print('#vocab={}'.format(vocab_size))
 
@@ -899,7 +899,7 @@ def create_test_set():
     num_label = len(label_to_id)
     print('#label={}'.format(num_label))
     token_to_id = utils.load_sth_to_id(vocab_file)
-    unk_token_id = token_to_id[unk_token]
+    unk_token_id = token_to_id[config.unk_token]
     vocab_size = len(token_to_id)
     print('#vocab={}'.format(vocab_size))
 
