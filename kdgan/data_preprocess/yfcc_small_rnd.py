@@ -421,229 +421,228 @@ def survey_image_data(infile, dataset):
   fout.close()
   collect_image(infile, image_data)
 
-def survey_text_data(infile):
-    seperator = '###'
-    def _get_key(label_i, label_j):
-        if label_i < label_j:
-            key = label_i + seperator + label_j
-        else:
-            key = label_j + seperator + label_i
-        return key
-    def _get_labels(key):
-        fields = key.split(seperator)
-        label_i, label_j = fields[0], fields[1]
-        return label_i, label_j
+def survey_text_data(infile, dataset):
+  seperator = '###'
+  def _get_key(label_i, label_j):
+    if label_i < label_j:
+      key = label_i + seperator + label_j
+    else:
+      key = label_j + seperator + label_i
+    return key
+  def _get_labels(key):
+    fields = key.split(seperator)
+    label_i, label_j = fields[0], fields[1]
+    return label_i, label_j
 
-    dataset = get_dataset(infile)
-    text_data = path.join(config.surv_dir, dataset, 'TextData')
-    utils.create_if_nonexist(text_data)
+  text_data = path.join(config.surv_dir, dataset, 'TextData')
+  utils.create_if_nonexist(text_data)
 
-    post_image = {}
-    fin = open(infile)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        post = fields[POST_INDEX]
-        image = fields[IMAGE_INDEX]
-        post_image[post] = image
-    fin.close()
+  post_image = {}
+  fin = open(infile)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    post = fields[POST_INDEX]
+    image = fields[IMAGE_INDEX]
+    post_image[post] = image
+  fin.close()
 
-    rawtags_file = path.join(text_data, 'id.userid.rawtags.txt')
-    fout = open(rawtags_file, 'w')
-    fin = open(rawtag_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        post = fields[0]
-        if post not in post_image:
-            continue
-        post = fields[POST_INDEX]
-        image = post_image[post]
-        user = fields[USER_INDEX]
-        old_labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-        new_labels = []
-        for old_label in old_labels:
-            old_label = urllib.parse.unquote(old_label)
-            old_label = old_label.lower()
-            new_label = ''
-            for c in old_label:
-                if not c.isalnum():
-                    continue
-                new_label += c
-            if len(new_label) == 0:
-                continue
-            new_labels.append(new_label)
-        labels = ' '.join(new_labels)
-        fout.write('{}\t{}\t{}\n'.format(image, user, labels))
-    fin.close()
-    fout.close()
+  rawtags_file = path.join(text_data, 'id.userid.rawtags.txt')
+  fout = open(rawtags_file, 'w')
+  fin = open(config.rawtag_file)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    post = fields[0]
+    if post not in post_image:
+      continue
+    post = fields[POST_INDEX]
+    image = post_image[post]
+    user = fields[USER_INDEX]
+    old_labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+    new_labels = []
+    for old_label in old_labels:
+      old_label = urllib.parse.unquote(old_label)
+      old_label = old_label.lower()
+      new_label = ''
+      for c in old_label:
+        if not c.isalnum():
+          continue
+        new_label += c
+      if len(new_label) == 0:
+        continue
+      new_labels.append(new_label)
+    labels = ' '.join(new_labels)
+    fout.write('{}\t{}\t{}\n'.format(image, user, labels))
+  fin.close()
+  fout.close()
 
-    lemmtags_file = path.join(text_data, 'id.userid.lemmtags.txt')
-    fout = open(lemmtags_file, 'w')
-    fin = open(rawtags_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        old_labels = fields[-1].split(' ')
-        new_labels = []
-        for old_label in old_labels:
-            new_label = lemmatizer.lemmatize(old_label)
-            new_labels.append(new_label)
-        fields[-1] = ' '.join(new_labels)
-        fout.write('{}\n'.format(FIELD_SEPERATOR.join(fields)))
-    fin.close()
-    fout.close()
+  lemmtags_file = path.join(text_data, 'id.userid.lemmtags.txt')
+  fout = open(lemmtags_file, 'w')
+  fin = open(rawtags_file)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    old_labels = fields[-1].split(' ')
+    new_labels = []
+    for old_label in old_labels:
+      new_label = lemmatizer.lemmatize(old_label)
+      new_labels.append(new_label)
+    fields[-1] = ' '.join(new_labels)
+    fout.write('{}\n'.format(FIELD_SEPERATOR.join(fields)))
+  fin.close()
+  fout.close()
 
-    fin = open(lemmtags_file)
-    label_users, label_images = {}, {}
-    label_set = set()
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image, user = fields[0], fields[1]
-        labels = fields[2].split()
-        for label in labels:
-            if label not in label_users:
-                label_users[label] = set()
-            label_users[label].add(user)
-            if label not in label_images:
-                label_images[label] = set()
-            label_images[label].add(image)
-            label_set.add(label)
-    fin.close()
-    tagfreq_file = path.join(text_data, 'lemmtag.userfreq.imagefreq.txt')
-    fout = open(tagfreq_file, 'w')
-    label_count = {}
-    for label in label_set:
-        label_count[label] = len(label_users[label]) # + len(label_images[label])
-    sorted_label_count = sorted(label_count.items(), key=operator.itemgetter(1), reverse=True)
-    for label, _ in sorted_label_count:
-        userfreq = len(label_users[label])
-        imagefreq = len(label_images[label])
-        fout.write('{} {} {}\n'.format(label, userfreq, imagefreq))
-    fout.close()
+  fin = open(lemmtags_file)
+  label_users, label_images = {}, {}
+  label_set = set()
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    image, user = fields[0], fields[1]
+    labels = fields[2].split()
+    for label in labels:
+      if label not in label_users:
+        label_users[label] = set()
+      label_users[label].add(user)
+      if label not in label_images:
+        label_images[label] = set()
+      label_images[label].add(image)
+      label_set.add(label)
+  fin.close()
+  tagfreq_file = path.join(text_data, 'lemmtag.userfreq.imagefreq.txt')
+  fout = open(tagfreq_file, 'w')
+  label_count = {}
+  for label in label_set:
+    label_count[label] = len(label_users[label]) # + len(label_images[label])
+  sorted_label_count = sorted(label_count.items(), key=operator.itemgetter(1), reverse=True)
+  for label, _ in sorted_label_count:
+    userfreq = len(label_users[label])
+    imagefreq = len(label_images[label])
+    fout.write('{} {} {}\n'.format(label, userfreq, imagefreq))
+  fout.close()
 
-    jointfreq_file = path.join(text_data, 'ucij.uuij.icij.iuij.txt')
-    min_count = 4
-    if not infile.endswith('.valid'):
-        min_count = 8
-    label_count = {}
-    fin = open(lemmtags_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image, user = fields[0], fields[1]
-        labels = fields[2].split()
-        for label in labels:
-            if label not in label_count:
-                label_count[label] = 0
-            label_count[label] += 1
-    fin.close()
-    jointfreq_icij_init = {}
-    fin = open(lemmtags_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image, user = fields[0], fields[1]
-        labels = fields[2].split()
-        num_label = len(labels)
-        for i in range(num_label - 1):
-            for j in range(i + 1, num_label):
-                label_i = labels[i]
-                label_j = labels[j]
-                if label_i == label_j:
-                    continue
-                if label_count[label_i] < min_count:
-                    continue
-                if label_count[label_j] < min_count:
-                    continue
-                key = _get_key(label_i, label_j)
-                if key not in jointfreq_icij_init:
-                    jointfreq_icij_init[key] = 0
-                jointfreq_icij_init[key] += 1
-    fin.close()
-    keys = set()
-    icij_images = {}
-    iuij_images = {}
-    fin = open(lemmtags_file)
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image, user = fields[0], fields[1]
-        labels = fields[2].split()
-        num_label = len(labels)
-        for i in range(num_label - 1):
-            for j in range(i + 1, num_label):
-                label_i = labels[i]
-                label_j = labels[j]
-                if label_i == label_j:
-                    continue
-                if label_i not in iuij_images:
-                    iuij_images[label_i] = set()
-                iuij_images[label_i].add(image)
-                if label_j not in iuij_images:
-                    iuij_images[label_j] = set()
-                iuij_images[label_j].add(image)
-                if label_count[label_i] < min_count:
-                    continue
-                if label_count[label_j] < min_count:
-                    continue
-                key = _get_key(label_i, label_j)
-                if jointfreq_icij_init[key] < min_count:
-                    continue
-                keys.add(key)
-                if key not in icij_images:
-                    icij_images[key] = set()
-                icij_images[key].add(image)
-    fin.close()
-    jointfreq_icij, jointfreq_iuij = {}, {}
-    keys = sorted(keys)
-    for key in keys:
-        jointfreq_icij[key] = len(icij_images[key])
-        label_i, label_j = _get_labels(key)
-        label_i_images = iuij_images[label_i]
-        label_j_images = iuij_images[label_j]
-        jointfreq_iuij[key] = len(label_i_images.union(label_j_images))
-    fout = open(jointfreq_file, 'w')
-    for key in sorted(keys):
-        label_i, label_j = _get_labels(key)
-        fout.write('{} {} {} {} {} {}\n'.format(label_i, label_j, jointfreq_icij[key], jointfreq_iuij[key], jointfreq_icij[key], jointfreq_iuij[key]))
-    fout.close()
+  jointfreq_file = path.join(text_data, 'ucij.uuij.icij.iuij.txt')
+  min_count = 4
+  if not infile.endswith('.valid'):
+    min_count = 8
+  label_count = {}
+  fin = open(lemmtags_file)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    image, user = fields[0], fields[1]
+    labels = fields[2].split()
+    for label in labels:
+      if label not in label_count:
+        label_count[label] = 0
+      label_count[label] += 1
+  fin.close()
+  jointfreq_icij_init = {}
+  fin = open(lemmtags_file)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    image, user = fields[0], fields[1]
+    labels = fields[2].split()
+    num_label = len(labels)
+    for i in range(num_label - 1):
+      for j in range(i + 1, num_label):
+        label_i = labels[i]
+        label_j = labels[j]
+        if label_i == label_j:
+          continue
+        if label_count[label_i] < min_count:
+          continue
+        if label_count[label_j] < min_count:
+          continue
+        key = _get_key(label_i, label_j)
+        if key not in jointfreq_icij_init:
+          jointfreq_icij_init[key] = 0
+        jointfreq_icij_init[key] += 1
+  fin.close()
+  keys = set()
+  icij_images = {}
+  iuij_images = {}
+  fin = open(lemmtags_file)
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    image, user = fields[0], fields[1]
+    labels = fields[2].split()
+    num_label = len(labels)
+    for i in range(num_label - 1):
+      for j in range(i + 1, num_label):
+        label_i = labels[i]
+        label_j = labels[j]
+        if label_i == label_j:
+          continue
+        if label_i not in iuij_images:
+          iuij_images[label_i] = set()
+        iuij_images[label_i].add(image)
+        if label_j not in iuij_images:
+          iuij_images[label_j] = set()
+        iuij_images[label_j].add(image)
+        if label_count[label_i] < min_count:
+          continue
+        if label_count[label_j] < min_count:
+          continue
+        key = _get_key(label_i, label_j)
+        if jointfreq_icij_init[key] < min_count:
+          continue
+        keys.add(key)
+        if key not in icij_images:
+          icij_images[key] = set()
+        icij_images[key].add(image)
+  fin.close()
+  jointfreq_icij, jointfreq_iuij = {}, {}
+  keys = sorted(keys)
+  for key in keys:
+    jointfreq_icij[key] = len(icij_images[key])
+    label_i, label_j = _get_labels(key)
+    label_i_images = iuij_images[label_i]
+    label_j_images = iuij_images[label_j]
+    jointfreq_iuij[key] = len(label_i_images.union(label_j_images))
+  fout = open(jointfreq_file, 'w')
+  for key in sorted(keys):
+    label_i, label_j = _get_labels(key)
+    fout.write('{} {} {} {} {} {}\n'.format(label_i, label_j, jointfreq_icij[key], jointfreq_iuij[key], jointfreq_icij[key], jointfreq_iuij[key]))
+  fout.close()
 
-    fin = open(lemmtags_file)
-    vocab = set()
-    while True:
-        line = fin.readline().strip()
-        if not line:
-            break
-        fields = line.split(FIELD_SEPERATOR)
-        image, user = fields[0], fields[1]
-        labels = fields[2].split()
-        for label in labels:
-            if wordnet.synsets(label):
-                vocab.add(label)
-            else:
-                pass
-    fin.close()
-    vocab_file = path.join(text_data, 'wn.%s.txt' % dataset)
-    fout = open(vocab_file, 'w')
-    for label in sorted(vocab):
-        fout.write('{}\n'.format(label))
-    fout.close()
+  fin = open(lemmtags_file)
+  vocab = set()
+  while True:
+    line = fin.readline().strip()
+    if not line:
+      break
+    fields = line.split(FIELD_SEPERATOR)
+    image, user = fields[0], fields[1]
+    labels = fields[2].split()
+    for label in labels:
+      if wordnet.synsets(label):
+        vocab.add(label)
+      else:
+        pass
+  fin.close()
+  vocab_file = path.join(text_data, 'wn.%s.txt' % dataset)
+  fout = open(vocab_file, 'w')
+  for label in sorted(vocab):
+    fout.write('{}\n'.format(label))
+  fout.close()
 
 def survey_feature_sets(infile):
     dataset = get_dataset(infile)
@@ -711,14 +710,16 @@ def create_survey_data():
   print('collect survey train images')
   train_dataset = '%s_tn' % dataset
   survey_image_data(train_file, train_dataset)
-
   print('collect survey valid images')
   valid_dataset = '%s_vd' % dataset
   survey_image_data(valid_file, valid_dataset)
 
-  return
+  print('create survey train text data')
   survey_text_data(train_file)
+  print('create survey valid text data')
   survey_text_data(valid_file)
+
+  return
   survey_feature_sets(train_file)
   survey_feature_sets(valid_file)
   survey_annotations(train_file)
