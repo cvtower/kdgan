@@ -358,9 +358,9 @@ def split_dataset():
   if config.unk_token in vocab:
     raise Exception('please change unk token', config.unk_token)
   vocab.insert(0, config.unk_token)
-  if pad_token in vocab:
-    raise Exception('please change pad token', pad_token)
-  vocab.insert(0, pad_token)
+  if config.pad_token in vocab:
+    raise Exception('please change pad token', config.pad_token)
+  vocab.insert(0, config.pad_token)
   utils.save_collection(vocab, vocab_file)
 
 def get_image_path(image_dir, image_url):
