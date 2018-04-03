@@ -53,6 +53,9 @@ wget http://lixirong.net/data/csur2016/matconvnet-1.0-beta8.tar.gz
 tar -xzvf matconvnet-1.0-beta8.tar.gz
 wget http://lixirong.net/data/csur2016/matconvnet-models.tar.gz
 tar -xzvf matconvnet-models.tar.gz
+>> http://www.vlfeat.org/matconvnet/install/
+>> addpath matlab
+>> vl_compilenn
 matlab -nodisplay -nosplash -nodesktop -r "run('extract_vggnet.m');"
 # jingwei: precompute k nearest neighbors
 conda install libgcc # ubuntu
