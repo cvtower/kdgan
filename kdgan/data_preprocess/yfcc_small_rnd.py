@@ -715,9 +715,9 @@ def create_survey_data():
   survey_image_data(valid_file, valid_dataset)
 
   print('create survey train text data')
-  survey_text_data(train_file)
+  survey_text_data(train_file, train_dataset)
   print('create survey valid text data')
-  survey_text_data(valid_file)
+  survey_text_data(valid_file, valid_dataset)
 
   return
   survey_feature_sets(train_file)
