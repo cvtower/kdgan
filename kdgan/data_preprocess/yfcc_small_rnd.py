@@ -707,14 +707,15 @@ def survey_annotations(infile, dataset):
     fout.close()
 
 def create_survey_data():
-
-  return
-  
-  print('collect survey train images')
   train_dataset = '%s_tn' % dataset
+  valid_dataset = '%s_vd' % dataset
+  surv_train_dir = path.join(config.surv_dir, train_dataset)
+  surv_valid_dir = path.join(config.surv_dir, valid_dataset)
+  print('train=%s\nvalid=%s' % (surv_train_dir, surv_valid_dir))
+  return
+  print('collect survey train images')
   survey_image_data(train_file, train_dataset)
   print('collect survey valid images')
-  valid_dataset = '%s_vd' % dataset
   survey_image_data(valid_file, valid_dataset)
 
   print('create survey train text data')
