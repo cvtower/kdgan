@@ -283,8 +283,8 @@ def select_posts():
   save_posts(posts, raw_file)
   return min(counts)
 
+stopwords = set(stopwords.words('english'))
 def tokenize_dataset():
-  stopwords = set(stopwords.words('english'))
   stemmer = SnowballStemmer('english')
   tokenizer = RegexpTokenizer('[a-z]+')
   def _in_wordnet(token):
