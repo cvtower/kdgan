@@ -55,10 +55,10 @@ FIELD_SEPERATOR = '\t'
 EXPECTED_NUM_FIELD = 6
 
 MIN_RND_LABEL = 20
-NUM_RND_LABEL = 100
+NUM_RND_LABEL = 200
 MIN_RND_POST = 16
 NUM_RND_POST = 8000
-TRAIN_DATA_RATIO = 0.80
+TRAIN_DATA_RATIO = 0.95
 SHUFFLE_SEED = 100
 
 dataset = 'yfcc_rnd'
@@ -964,20 +964,21 @@ def create_test_set():
 def main(_):
   print('create yfcc small rnd dataset')
 
-  # check_num_field()
-  # if flags.overwrite or (not utils.skip_if_exist(raw_file)):
-  #   while True:
-  #     print('random labels and posts')
-  #     select_rnd_label()
-  #     min_count = select_posts()
-  #     if min_count < MIN_RND_POST:
-  #       continue
-  #     break
+  check_num_field()
+  if flags.overwrite or (not utils.skip_if_exist(raw_file)):
+    while True:
+      print('random labels and posts')
+      select_rnd_label()
+      exit()
+      min_count = select_posts()
+      if min_count < MIN_RND_POST:
+        continue
+      break
 
-  # if flags.overwrite or (not utils.skip_if_exist(data_file)):
-  #   print('tokenize and collect images')
-  #   tokenize_dataset()
-  #   collect_image(data_file, image_data_dir)
+  if flags.overwrite or (not utils.skip_if_exist(data_file)):
+    print('tokenize and collect images')
+    tokenize_dataset()
+    collect_image(data_file, image_data_dir)
 
   if (flags.overwrite
         or not utils.skip_if_exist(train_file)
