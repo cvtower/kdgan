@@ -997,7 +997,9 @@ def create_test_set():
     np.save(path.join(precomputed_dir, filename_tmpl % (flags.model_name, 'text')), text_npy)
 
 def main(_):
-  print('create yfcc small rnd dataset')
+  if flags.overwrite:
+    print('create yfcc small rnd dataset')
+    utils.delete_if_exist(dataset_dir)
 
   check_num_field()
   if flags.overwrite or (not utils.skip_if_exist(raw_file)):
