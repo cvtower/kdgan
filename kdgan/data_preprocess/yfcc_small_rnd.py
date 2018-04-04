@@ -374,8 +374,28 @@ def split_dataset():
   num_post = len(posts)
   seed = random.random()
   random.shuffle(posts, lambda:seed)
+
+  valid_post = []
+  valid_label_count = {}
+  rem_posts = []
+  for post in posts:
+    labels = get_labels(post)
+    skip = True
+    for label in labels:
+      count = valid_label_count.get(label, 0)
+      if count == 0:
+        skip = False
+        break
+    if skip:
+      rem_posts.append(post)
+      continue
+    valid_posts.append(post)
+    for label in labels:
+      count = valid_label_count.get(label, 0)
+      valid_label_count[label] = count + 1
   seperator = int(num_post * TRAIN_DATA_RATIO)
-  train_posts, valid_posts = posts[:seperator], posts[seperator:]
+  train_posts = rem_posts[:seperator]
+  valid_posts.extend(rem_posts[seperator:])
 
   save_posts(train_posts, train_file)
   save_posts(valid_posts, valid_file)
