@@ -220,9 +220,8 @@ def get_label_count(posts):
 
 def sample_posts(in_posts):
   print('\t#post=%d/%d' % (NUM_RND_POST, len(in_posts)))
-
+  label_count = get_label_count(in_posts)
   out_posts = in_posts
-  label_count = get_label_count(posts)
   return out_posts
 
 def select_posts():
