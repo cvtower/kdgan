@@ -224,7 +224,7 @@ def get_label_count(posts):
 
 def sample_posts(in_posts):
   label_count = {}
-  out_posts = []
+  out_posts, rem_posts = [], []
   for post in in_posts:
     labels = get_labels(post)
     skip = True
@@ -234,13 +234,16 @@ def sample_posts(in_posts):
         skip = False
         break
     if skip:
+      rem_posts.append(post)
       continue
     out_posts.append(post)
     for label in labels:
       count = label_count.get(label, 0)
       label_count[label] = count + 1
-  print('#in=%d #out=%d' % (len(in_posts), len(out_posts)))
+  num_post = len(out_posts)
+  print('#in=%d #out=%d rem=%d' % (len(in_posts), num_post, len(rem_posts)))
   # print('\t#post=%d/%d' % (NUM_RND_POST, len(in_posts)))
+  # posts = np.random.choice(posts, size=NUM_RND_POST, replace=False)
   return out_posts
 
 def select_posts():
@@ -268,7 +271,6 @@ def select_posts():
     posts.append(FIELD_SEPERATOR.join(fields))
   fin.close()
 
-  # posts = np.random.choice(posts, size=NUM_RND_POST, replace=False)
   # print('\t#label=%d [%d, %d]' % (len(label_count), min(counts), max(counts)))
   posts = sample_posts(posts)
 
