@@ -276,7 +276,7 @@ def select_posts():
   posts = sample_posts(posts)
   label_count = get_label_count(posts)
   num_label = len(label_count)
-  counts = label_count.keys()
+  counts = label_count.values()
   min_count, max_count = min(counts), max(counts)
   print('\t#label=%d [%d, %d]' % (num_label, min_count, max_count))
 
