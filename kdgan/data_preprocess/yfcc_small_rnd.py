@@ -236,7 +236,7 @@ def sample_posts(in_posts):
     if skip:
       continue
     out_posts.append(post)
-  print('#in=%d #out=%d' % (len(in_posts), out_posts))
+  print('#in=%d #out=%d' % (len(in_posts), len(out_posts)))
   # print('\t#post=%d/%d' % (NUM_RND_POST, len(in_posts)))
   return out_posts
 
