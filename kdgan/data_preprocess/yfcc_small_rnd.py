@@ -240,10 +240,12 @@ def sample_posts(in_posts):
     for label in labels:
       count = label_count.get(label, 0)
       label_count[label] = count + 1
-  num_post = len(out_posts)
-  print('#in=%d #out=%d rem=%d' % (len(in_posts), num_post, len(rem_posts)))
-  # print('\t#post=%d/%d' % (NUM_RND_POST, len(in_posts)))
-  # posts = np.random.choice(posts, size=NUM_RND_POST, replace=False)
+  out_post = len(out_posts)
+  # print('#in=%d #out=%d rem=%d' % (len(in_posts), out_post, len(rem_posts)))
+  rnd_post = NUM_RND_POST - out_post
+  rnd_posts = np.random.choice(rem_posts, size=rnd_posts, replace=False)
+  out_posts.extend(rnd_posts)
+  print('\t#post=%d/%d' % (len(out_posts), len(in_posts)))
   return out_posts
 
 def select_posts():
