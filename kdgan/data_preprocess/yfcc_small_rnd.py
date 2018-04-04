@@ -245,6 +245,8 @@ def select_posts():
   counts = label_count.values()
   print('\t#label=%d [%d, %d]' % (len(label_count), min(counts), max(counts)))
 
+
+  exit()
   save_posts(posts, raw_file)
   return min(counts)
 
@@ -969,7 +971,6 @@ def main(_):
     while True:
       print('random labels and posts')
       select_rnd_label()
-      exit()
       min_count = select_posts()
       if min_count < MIN_RND_POST:
         continue
