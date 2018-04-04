@@ -1000,6 +1000,7 @@ def main(_):
   if flags.overwrite:
     print('create yfcc small rnd dataset')
     utils.delete_if_exist(dataset_dir)
+    utils.create_if_nonexist(dataset_dir)
 
   check_num_field()
   if flags.overwrite or (not utils.skip_if_exist(raw_file)):
