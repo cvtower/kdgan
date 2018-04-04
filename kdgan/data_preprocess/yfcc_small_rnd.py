@@ -241,7 +241,7 @@ def sample_posts(in_posts):
       count = label_count.get(label, 0)
       label_count[label] = count + 1
   out_post = len(out_posts)
-  print('\t#in=%d ##cur=%d rem=%d' % (len(in_posts), out_post, len(rem_posts)))
+  # print('\t#in=%d #cur=%d rem=%d' % (len(in_posts), out_post, len(rem_posts)))
   rnd_post = NUM_RND_POST - out_post
   rnd_posts = np.random.choice(rem_posts, size=rnd_post, replace=False)
   out_posts.extend(rnd_posts)
@@ -273,10 +273,13 @@ def select_posts():
     posts.append(FIELD_SEPERATOR.join(fields))
   fin.close()
 
-  # print('\t#label=%d [%d, %d]' % (len(label_count), min(counts), max(counts)))
   posts = sample_posts(posts)
+  label_count = get_label_count(posts)
+  num_label = len(label_count)
+  counts = label_count.keys()
+  min_count, max_count = min(counts), max(counts)
+  print('\t#label=%d [%d, %d]' % (num_label, min_count, max_count))
 
-  exit()
   save_posts(posts, raw_file)
   return min(counts)
 
