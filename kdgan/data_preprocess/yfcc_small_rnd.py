@@ -1008,7 +1008,6 @@ def main(_):
       if min_count < MIN_RND_POST:
         continue
       break
-  exit()
 
   if flags.overwrite or (not utils.skip_if_exist(data_file)):
     print('tokenize and collect images')
