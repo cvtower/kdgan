@@ -241,9 +241,9 @@ def sample_posts(in_posts):
       count = label_count.get(label, 0)
       label_count[label] = count + 1
   out_post = len(out_posts)
-  # print('#in=%d #out=%d rem=%d' % (len(in_posts), out_post, len(rem_posts)))
+  print('\t#in=%d ##cur=%d rem=%d' % (len(in_posts), out_post, len(rem_posts)))
   rnd_post = NUM_RND_POST - out_post
-  rnd_posts = np.random.choice(rem_posts, size=rnd_posts, replace=False)
+  rnd_posts = np.random.choice(rem_posts, size=rnd_post, replace=False)
   out_posts.extend(rnd_posts)
   print('\t#post=%d/%d' % (len(out_posts), len(in_posts)))
   return out_posts
