@@ -54,8 +54,8 @@ LABEL_INDEX = -1
 FIELD_SEPERATOR = '\t'
 EXPECTED_NUM_FIELD = 6
 
-MIN_RND_LABEL = 10
-NUM_RND_LABEL = 200
+MIN_RND_LABEL = 20
+NUM_RND_LABEL = 150
 MIN_RND_POST = 16
 NUM_RND_POST = 8000
 TRAIN_DATA_RATIO = 0.95
@@ -208,6 +208,23 @@ def save_posts(posts, outfile):
       image_set.add(image)
       fout.write('%s\n' % post)
 
+def get_label_count(posts):
+  label_count = {}
+  for post in posts:
+    fields = post.split(FIELD_SEPERATOR)
+    user = fields[USER_INDEX]
+    labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+    for label in labels:
+      label_count[label] = label_count.get(label, 0) + 1
+  return label_count
+
+def sample_posts(in_posts):
+  print('\t#post=%d/%d' % (NUM_RND_POST, len(in_posts)))
+
+  out_posts = in_posts
+  label_count = get_label_count(posts)
+  return out_posts
+
 def select_posts():
   rnd_labels = utils.load_collection(label_file)
 
@@ -232,19 +249,10 @@ def select_posts():
     fields[IMAGE_INDEX] = image
     posts.append(FIELD_SEPERATOR.join(fields))
   fin.close()
-  print('\t#post=%d/%d' % (NUM_RND_POST, len(posts)))
-  posts = np.random.choice(posts, size=NUM_RND_POST, replace=False)
 
-  label_count = {}
-  for post in posts:
-    fields = post.split(FIELD_SEPERATOR)
-    user = fields[USER_INDEX]
-    labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
-    for label in labels:
-      label_count[label] = label_count.get(label, 0) + 1
-  counts = label_count.values()
-  print('\t#label=%d [%d, %d]' % (len(label_count), min(counts), max(counts)))
-
+  # posts = np.random.choice(posts, size=NUM_RND_POST, replace=False)
+  # print('\t#label=%d [%d, %d]' % (len(label_count), min(counts), max(counts)))
+  posts = sample_posts(posts)
 
   exit()
   save_posts(posts, raw_file)
