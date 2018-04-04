@@ -236,6 +236,9 @@ def sample_posts(in_posts):
     if skip:
       continue
     out_posts.append(post)
+    for label in labels:
+      count = label_count.get(label, 0)
+      label_count[label] = count + 1
   print('#in=%d #out=%d' % (len(in_posts), len(out_posts)))
   # print('\t#post=%d/%d' % (NUM_RND_POST, len(in_posts)))
   return out_posts
