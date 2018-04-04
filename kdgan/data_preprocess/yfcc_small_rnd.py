@@ -57,7 +57,7 @@ EXPECTED_NUM_FIELD = 6
 MIN_RND_LABEL = 20
 NUM_RND_LABEL = 150
 MIN_RND_POST = 16
-NUM_RND_POST = 8000
+NUM_RND_POST = 10000
 TRAIN_DATA_RATIO = 0.95
 SHUFFLE_SEED = 100
 
@@ -208,20 +208,36 @@ def save_posts(posts, outfile):
       image_set.add(image)
       fout.write('%s\n' % post)
 
+def get_labels(post):
+  fields = post.split(FIELD_SEPERATOR)
+  user = fields[USER_INDEX]
+  labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+  return labels
+
 def get_label_count(posts):
   label_count = {}
   for post in posts:
-    fields = post.split(FIELD_SEPERATOR)
-    user = fields[USER_INDEX]
-    labels = fields[LABEL_INDEX].split(LABEL_SEPERATOR)
+    labels = get_labels(post)
     for label in labels:
       label_count[label] = label_count.get(label, 0) + 1
   return label_count
 
 def sample_posts(in_posts):
-  print('\t#post=%d/%d' % (NUM_RND_POST, len(in_posts)))
-  label_count = get_label_count(in_posts)
-  out_posts = in_posts
+  label_count = {}
+  out_posts = []
+  for post in in_posts:
+    labels = get_labels(post)
+    skip = True
+    for label in labels:
+      count = label_count.get(label, 0)
+      if count < MIN_RND_POST:
+        skip = False
+        break
+    if skip:
+      continue
+    out_posts.append(post)
+  print('#in=%d #out=%d' % (len(in_posts), out_posts))
+  # print('\t#post=%d/%d' % (NUM_RND_POST, len(in_posts)))
   return out_posts
 
 def select_posts():
