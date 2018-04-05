@@ -26,6 +26,7 @@ def process(options, collection, annotationName, pos_num):
     skip = 0
     newAnnotationNames = [None] * (pos_bag_num * neg_bag_num)
 
+    print('pos_bag_num', pos_bag_num, 'neg_bag_num', neg_bag_num)
     for idxp in range(pos_bag_num):
         for idxn in range(neg_bag_num):
             anno_idx = idxp * neg_bag_num + idxn
