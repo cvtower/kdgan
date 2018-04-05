@@ -31,6 +31,8 @@ def process(options, collection, annotationName, pos_num):
             anno_idx = idxp * neg_bag_num + idxn
             newAnnotationNames[anno_idx] = annotationNameStr % (idxp, idxn)
             resultfile = os.path.join(rootpath,collection,'Annotations',newAnnotationNames[anno_idx])
+            print('resultfile', resultfile)
+            exit()
             if checkToSkip(resultfile, options.overwrite):
                 skip += 1
                 continue
