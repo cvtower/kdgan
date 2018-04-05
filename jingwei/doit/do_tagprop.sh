@@ -48,6 +48,7 @@ do
   python $codepath/model_based/tagprop/prepare_tagprop_data.py \
       --distance $distance \
       --k $k \
+      --overwrite 1 \
       ${testCollection} ${trainCollection} $testAnnotationName $feature
   # continue
   for variant in ranksigmoids # rank distsigmoids dist
