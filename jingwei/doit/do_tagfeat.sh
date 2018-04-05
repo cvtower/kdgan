@@ -107,6 +107,8 @@ elif [ "$testCollection" == "yfcc0k" ]; then
     testAnnotationName=concepts.txt
 elif [ "$testCollection" == "yfcc9k" ]; then
     testAnnotationName=concepts.txt
+elif [ "$testCollection" == "yfcc_rnd_vd" ]; then
+    testAnnotationName=concepts.txt
 else
     echo "unknown testCollection $testCollection"
     exit
@@ -115,7 +117,7 @@ fi
 for topk in 20 40 60 80 100
 # for topk in 2 4 6 8 10
 do
-  for modelName in fastlinear fik50
+  for modelName in fastlinear # fik50
   do
     python $codepath/model_based/svms/applyConcepts_s.py \
         $testCollection $trainCollection $modelAnnotationName $feature $modelName \

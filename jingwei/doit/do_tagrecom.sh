@@ -23,8 +23,12 @@ valid_data=yfcc_rnd_vd
 # rm -f $SURVEY_DB/*tagvote*
 # ./do_tagvote.sh ${train_data} ${valid_data} vgg-verydeep-16-fc7relu
 
-# wordnet_frequency_tags._min_freq
-./do_getknn.sh ${train_data} ${train_data} vgg-verydeep-16-fc7relu 0 1 1
-./do_tagprop.sh ${train_data} ${valid_data} vgg-verydeep-16-fc7relu
 
+# wordnet_frequency_tags._min_freq
+# rm -f $SURVEY_DB/*tagprop*
+# ./do_getknn.sh ${train_data} ${train_data} vgg-verydeep-16-fc7relu 0 1 1
+# ./do_tagprop.sh ${train_data} ${valid_data} vgg-verydeep-16-fc7relu
+
+
+./do_tagfeat.sh ${train_data} ${valid_data} vgg-verydeep-16-fc7relu
 

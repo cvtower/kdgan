@@ -4,6 +4,10 @@
 /home/xiaojie/Projects/kdgan_xw/results/temp/yfcc_rnd_tn_yfcc_rnd_vd_vgg-verydeep-16-fc7relu,knn,400.pkl
 /home/xiaojie/Projects/kdgan_xw/results/temp/yfcc_rnd_tn_yfcc_rnd_vd_vgg-verydeep-16-fc7relu,knn,600.pkl
 /home/xiaojie/Projects/kdgan_xw/results/temp/yfcc_rnd_tn_yfcc_rnd_vd_vgg-verydeep-16-fc7relu,knn,800.pkl
+/home/xiaojie/Projects/kdgan_xw/results/temp/yfcc_rnd_tn_yfcc_rnd_vd_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,100.pkl
+/home/xiaojie/Projects/kdgan_xw/results/temp/yfcc_rnd_tn_yfcc_rnd_vd_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,10.pkl
+/home/xiaojie/Projects/kdgan_xw/results/temp/yfcc_rnd_tn_yfcc_rnd_vd_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,500.pkl
+/home/xiaojie/Projects/kdgan_xw/results/temp/yfcc_rnd_tn_yfcc_rnd_vd_vgg-verydeep-16-fc7relu,tagprop,ranksigmoids,50.pkl
 /home/xiaojie/Projects/kdgan_xw/results/temp/yfcc_rnd_tn_yfcc_rnd_vd_vgg-verydeep-16-fc7relu,tagvote,16.pkl
 /home/xiaojie/Projects/kdgan_xw/results/temp/yfcc_rnd_tn_yfcc_rnd_vd_vgg-verydeep-16-fc7relu,tagvote,1.pkl
 /home/xiaojie/Projects/kdgan_xw/results/temp/yfcc_rnd_tn_yfcc_rnd_vd_vgg-verydeep-16-fc7relu,tagvote,2.pkl

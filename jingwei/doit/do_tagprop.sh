@@ -43,12 +43,13 @@ if [ ! -f "$tagsh5file" ]; then
   cd -
 fi
 
+overwrite=1
 for k in 500 100 50 10
 do
   python $codepath/model_based/tagprop/prepare_tagprop_data.py \
       --distance $distance \
       --k $k \
-      --overwrite 1 \
+      --overwrite $overwrite \
       ${testCollection} ${trainCollection} $testAnnotationName $feature
   # continue
   for variant in ranksigmoids # rank distsigmoids dist
