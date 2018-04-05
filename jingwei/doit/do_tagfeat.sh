@@ -84,8 +84,9 @@ if [ $do_training == 1 ]; then
     echo "$conceptfile does not exist"
     exit
   fi
+  exit
 
-  for modelName in fastlinear fik
+  for modelName in fastlinear # fik
   do
     python $codepath/model_based/negative_bagging.py \
         $trainCollection $bagfile $feature $modelName
@@ -114,7 +115,6 @@ else
     exit
 fi
 
-exit
 
 for topk in 20 40 60 80 100
 # for topk in 2 4 6 8 10
