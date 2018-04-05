@@ -28,6 +28,8 @@ elif [ "$testCollection" == "yfcc0k" ]; then
   testAnnotationName=concepts.txt
 elif [ "$testCollection" == "yfcc9k" ]; then
   testAnnotationName=concepts.txt
+elif [ "$testCollection" == "yfcc_rnd_vd" ]; then
+  testAnnotationName=concepts.txt
 else
   echo "unknown testCollection $testCollection"
   exit
