@@ -19,8 +19,7 @@ def process(options, collection, annotationName, pos_num):
     neg_pos_ratio = options.neg_pos_ratio
 
     annotationNameStr = annotationName[:-4] + ('.random%d' % pos_num) + '.%d' + ('.npr%d' % neg_pos_ratio) + '.%d.txt'
-    print(annotationNameStr)
-    exit()
+    # print(annotationNameStr)
 
     concepts = readConcepts(collection, annotationName, rootpath=rootpath)
     
@@ -39,6 +38,9 @@ def process(options, collection, annotationName, pos_num):
 
     first,second,last = annotationNameStr.split('%d')
     scriptfile = os.path.join(rootpath,collection,'annotationfiles',first + '0-%d'%(pos_bag_num-1) + second + '0-%d'%(neg_bag_num-1) + last)
+    print(scriptfile)
+    exit()
+
 
     makedirsforfile(scriptfile)
     fout = open(scriptfile,'w')
