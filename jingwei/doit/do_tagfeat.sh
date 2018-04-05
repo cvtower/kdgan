@@ -40,26 +40,26 @@ if [ ! -f "$conceptfile" ]; then
   exit
 fi
 
-# nr_pos=100
+nr_pos=100
 # nr_pos=300
-nr_pos=500
+# nr_pos=500
 neg_pos_ratio=1
 nr_neg=$(($nr_pos * $neg_pos_ratio))
 nr_pos_bags=1
-# nr_neg_bags=1
+nr_neg_bags=1
 # nr_neg_bags=3
-nr_neg_bags=5
+# nr_neg_bags=5
 pos_end=$(($nr_pos_bags - 1))
 neg_end=$(($nr_neg_bags - 1))
-# neg_pos_ratio=1
+neg_pos_ratio=1
 # neg_pos_ratio=3
-neg_pos_ratio=5
+# neg_pos_ratio=5
 neg_bag_num=1
 
 modelAnnotationName=$conceptset.random$nr_pos.0-$pos_end.npr"$neg_pos_ratio".0-$neg_end.txt
-# trainAnnotationName=$conceptset.random$nr_pos.0.npr1.0.txt
+trainAnnotationName=$conceptset.random$nr_pos.0.npr1.0.txt
 # trainAnnotationName=$conceptset.random$nr_pos.0.npr3.0.txt
-trainAnnotationName=$conceptset.random$nr_pos.0.npr5.0.txt
+# trainAnnotationName=$conceptset.random$nr_pos.0.npr5.0.txt
 
 if [ $do_training == 1 ]; then
   python $codepath/model_based/generate_train_bags.py \
@@ -84,8 +84,9 @@ if [ $do_training == 1 ]; then
     echo "$conceptfile does not exist"
     exit
   fi
+  # exit
 
-  for modelName in fastlinear fik
+  for modelName in fastlinear # fik
   do
     python $codepath/model_based/negative_bagging.py \
         $trainCollection $bagfile $feature $modelName
@@ -107,15 +108,18 @@ elif [ "$testCollection" == "yfcc0k" ]; then
     testAnnotationName=concepts.txt
 elif [ "$testCollection" == "yfcc9k" ]; then
     testAnnotationName=concepts.txt
+elif [ "$testCollection" == "yfcc_rnd_vd" ]; then
+    testAnnotationName=concepts.txt
 else
     echo "unknown testCollection $testCollection"
     exit
 fi
 
+
 for topk in 20 40 60 80 100
 # for topk in 2 4 6 8 10
 do
-  for modelName in fastlinear fik50
+  for modelName in fastlinear # fik50
   do
     python $codepath/model_based/svms/applyConcepts_s.py \
         $testCollection $trainCollection $modelAnnotationName $feature $modelName \

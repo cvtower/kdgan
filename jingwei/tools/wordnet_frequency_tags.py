@@ -17,6 +17,7 @@ _min_freq = {
     'flickr51': 50,
     'imagenet166': 10,
     'yfcc9k': 0,
+    'yfcc_rnd_tn': 0,
 }
 
 def validateAnnotation(ann_syns, other_syns):

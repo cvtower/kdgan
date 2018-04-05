@@ -28,6 +28,8 @@ elif [ "$testCollection" == "yfcc0k" ]; then
   testAnnotationName=concepts.txt
 elif [ "$testCollection" == "yfcc9k" ]; then
   testAnnotationName=concepts.txt
+elif [ "$testCollection" == "yfcc_rnd_vd" ]; then
+  testAnnotationName=concepts.txt
 else
   echo "unknown testCollection $testCollection"
   exit
@@ -41,11 +43,13 @@ if [ ! -f "$tagsh5file" ]; then
   cd -
 fi
 
-for k in 1000 500 200 100 50
+overwrite=1
+for k in 500 100 50 10
 do
   python $codepath/model_based/tagprop/prepare_tagprop_data.py \
       --distance $distance \
       --k $k \
+      --overwrite $overwrite \
       ${testCollection} ${trainCollection} $testAnnotationName $feature
   # continue
   for variant in ranksigmoids # rank distsigmoids dist
@@ -57,6 +61,5 @@ do
         --variant $variant \
         ${testCollection} ${trainCollection} $testAnnotationName $feature $resultfile
   done
-  # exit
 done
 

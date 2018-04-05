@@ -14,7 +14,8 @@ patch TagProp/tagprop_predict.m < tagprop_predict.m.patch
 echo "Compiling mex..."
 cd TagProp
 # $MATLAB_PATH/bin/matlab -nodesktop -nosplash -nojvm -r "mex tagpropCmt.c; exit"
-$MATLAB_PATH/bin/matlab -nodesktop -nosplash -r "mex tagpropCmt.c; exit"
+# $MATLAB_PATH/bin/matlab -nodesktop -nosplash -r "mex tagpropCmt.c; exit"
+matlab -nodesktop -nosplash -r "mex tagpropCmt.c; exit"
 cd ..
 
 
