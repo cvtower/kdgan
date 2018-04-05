@@ -50,15 +50,15 @@ fi
 # neg_pos_ratio=3
 # trainAnnotationName=$conceptset.random$nr_pos.0.npr3.0.txt
 
-# nr_pos=500
-# nr_neg_bags=5
-# neg_pos_ratio=5
-# trainAnnotationName=$conceptset.random$nr_pos.0.npr5.0.txt
+nr_pos=500
+nr_neg_bags=5
+neg_pos_ratio=5
+trainAnnotationName=$conceptset.random$nr_pos.0.npr5.0.txt
 
-nr_pos=1000
-nr_neg_bags=10
-neg_pos_ratio=10
-trainAnnotationName=$conceptset.random$nr_pos.0.npr10.0.txt
+# nr_pos=1000
+# nr_neg_bags=10
+# neg_pos_ratio=10
+# trainAnnotationName=$conceptset.random$nr_pos.0.npr10.0.txt
 
 neg_pos_ratio=1
 nr_neg=$(($nr_pos * $neg_pos_ratio))

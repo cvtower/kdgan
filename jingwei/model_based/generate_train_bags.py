@@ -38,9 +38,7 @@ def process(options, collection, annotationName, pos_num):
 
     first,second,last = annotationNameStr.split('%d')
     scriptfile = os.path.join(rootpath,collection,'annotationfiles',first + '0-%d'%(pos_bag_num-1) + second + '0-%d'%(neg_bag_num-1) + last)
-    print('scriptfile', scriptfile)
-    exit()
-
+    # print('scriptfile', scriptfile)
 
     makedirsforfile(scriptfile)
     fout = open(scriptfile,'w')
