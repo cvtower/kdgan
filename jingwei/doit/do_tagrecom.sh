@@ -15,9 +15,10 @@ export codepath=$SURVEY_CODE
 # ./do_tagprop.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
 # ./do_tagfeat.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
 
-# rm -f $SURVEY_DB/*knn*
-# ./do_knntagrel.sh yfcc_rnd_tn yfcc_rnd_vd vgg-verydeep-16-fc7relu
+rm -f $SURVEY_DB/*knn*
+./do_knntagrel.sh yfcc_rnd_tn yfcc_rnd_vd vgg-verydeep-16-fc7relu
 
+rm -f $SURVEY_DB/*tagvote*
 ./do_tagvote.sh yfcc_rnd_tn yfcc_rnd_vd vgg-verydeep-16-fc7relu
 
 
