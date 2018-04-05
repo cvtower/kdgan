@@ -54,8 +54,8 @@ LABEL_INDEX = -1
 FIELD_SEPERATOR = '\t'
 EXPECTED_NUM_FIELD = 6
 
-MIN_RND_LABEL = 20
-NUM_RND_LABEL = 150
+MIN_RND_LABEL = 10
+NUM_RND_LABEL = 200
 MIN_RND_POST = 20
 NUM_RND_POST = 10000
 TRAIN_DATA_RATIO = 0.95
@@ -1041,8 +1041,13 @@ def main(_):
         or not utils.skip_if_exist(train_file)
         or not utils.skip_if_exist(valid_file)
         or not utils.skip_if_exist(vocab_file)):
-    print('split into train and valid')
-    split_dataset()
+    while True:
+      print('split into train and valid')
+      try:
+        split_dataset()
+        break
+      except:
+        continue
 
   if flags.baseline:
     print('create survey data')
