@@ -26,19 +26,18 @@ def process(options, collection, annotationName, pos_num):
     skip = 0
     newAnnotationNames = [None] * (pos_bag_num * neg_bag_num)
 
-    print('pos_bag_num', pos_bag_num, 'neg_bag_num', neg_bag_num)
+    # print('pos_bag_num', pos_bag_num, 'neg_bag_num', neg_bag_num)
     for idxp in range(pos_bag_num):
         for idxn in range(neg_bag_num):
             anno_idx = idxp * neg_bag_num + idxn
             newAnnotationNames[anno_idx] = annotationNameStr % (idxp, idxn)
             resultfile = os.path.join(rootpath,collection,'Annotations',newAnnotationNames[anno_idx])
-            print('resultfile', resultfile)
-            continue
+            # print('resultfile', resultfile)
             if checkToSkip(resultfile, options.overwrite):
                 skip += 1
                 continue
             writeConcepts(concepts,resultfile)
-    exit()
+    # exit()
 
     first,second,last = annotationNameStr.split('%d')
     scriptfile = os.path.join(rootpath,collection,'annotationfiles',first + '0-%d'%(pos_bag_num-1) + second + '0-%d'%(neg_bag_num-1) + last)
