@@ -58,7 +58,7 @@ fi
 nr_pos=1000
 nr_neg_bags=10
 neg_pos_ratio=10
-trainAnnotationName=$conceptset.random$nr_pos.0.npr1.0.txt
+trainAnnotationName=$conceptset.random$nr_pos.0.npr10.0.txt
 
 neg_pos_ratio=1
 nr_neg=$(($nr_pos * $neg_pos_ratio))
