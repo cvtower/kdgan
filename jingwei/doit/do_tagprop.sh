@@ -36,12 +36,14 @@ else
 fi
 
 tagsh5file=$rootpath/$trainCollection/TextData/lemm_wordnet_freq_tags.h5
+echo ${tagsh5file}
 rm $tagsh5file
 if [ ! -f "$tagsh5file" ]; then
   cd $rootpath/${trainCollection}
   python $codepath/tools/wordnet_frequency_tags.py 
   cd -
 fi
+exit
 
 for k in 1000 500 200 100 50
 do
