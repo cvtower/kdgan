@@ -92,7 +92,7 @@ if [ $do_training == 1 ]; then
     echo "$conceptfile does not exist"
     exit
   fi
-  # exit
+  exit
 
   for modelName in fastlinear fik
   do
