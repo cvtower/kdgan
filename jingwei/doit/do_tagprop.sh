@@ -59,6 +59,6 @@ do
         --variant $variant \
         ${testCollection} ${trainCollection} $testAnnotationName $feature $resultfile
   done
-  # exit
+  exit
 done
 

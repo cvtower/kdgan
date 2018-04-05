@@ -69,6 +69,7 @@ sudo apt-get install libboost-dev
 import nltk & nltk.download('wordnet')
 ./do_getknn.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu 0 1 1
 ./do_getknn.sh yfcc9k yfcc9k vgg-verydeep-16-fc7relu 0 1 1
+jingwei/model_based/tagprop
 setup-tagprop.sh
 wget http://lear.inrialpes.fr/people/guillaumin/code/TagProp_0.2.tar.gz
 ./do_tagprop.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
