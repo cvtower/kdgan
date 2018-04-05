@@ -19,6 +19,8 @@ def process(options, collection, annotationName, pos_num):
     neg_pos_ratio = options.neg_pos_ratio
 
     annotationNameStr = annotationName[:-4] + ('.random%d' % pos_num) + '.%d' + ('.npr%d' % neg_pos_ratio) + '.%d.txt'
+    print(annotationNameStr)
+    exit()
 
     concepts = readConcepts(collection, annotationName, rootpath=rootpath)
     
