@@ -15,7 +15,9 @@ https://github.com/xiaojiew1/kdgan/commits/master?after=629993e50c7c5e9a455f4549
 ################################################################
 # todo
 ################################################################
-https://github.com/tflearn/tflearn/blob/master/examples/images/convnet_cifar10.py
+http://jmlr.csail.mit.edu/papers/volume5/greensmith04a/greensmith04a.pdf
+https://danieltakeshi.github.io/2017/03/28/going-deeper-into-reinforcement-learning-fundamentals-of-policy-gradients/
+
 
 # backup
 ssh xiaojie@10.100.228.28 # gpu yz
