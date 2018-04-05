@@ -66,7 +66,7 @@ neg_bag_num=1
 
 modelAnnotationName=$conceptset.random$nr_pos.0-$pos_end.npr"$neg_pos_ratio".0-$neg_end.txt
 trainAnnotationName=$conceptset.random$nr_pos.0.npr1.$neg_end.txt
-echo trainAnnotationName
+echo $trainAnnotationName
 exit
 
 if [ $do_training == 1 ]; then
