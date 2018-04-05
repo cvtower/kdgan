@@ -77,7 +77,7 @@ if [ $do_training == 1 ]; then
 
   bagfile=$rootpath/$trainCollection/annotationfiles/$conceptset.random$nr_pos.0-$pos_end.npr"$neg_pos_ratio".0-$neg_end.txt
   if [ ! -f "$bagfile" ]; then
-    echo "$bagfile does not exist"
+    echo "bagfile $bagfile does not exist"
     exit
   fi
 
@@ -89,7 +89,7 @@ if [ $do_training == 1 ]; then
   conceptfile=$rootpath/$trainCollection/Annotations/$trainAnnotationName
 
   if [ ! -f "$conceptfile" ]; then
-    echo "$conceptfile does not exist"
+    echo "conceptfile $conceptfile does not exist"
     exit
   fi
   exit
