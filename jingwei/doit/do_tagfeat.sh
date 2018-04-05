@@ -66,8 +66,6 @@ neg_bag_num=1
 
 modelAnnotationName=$conceptset.random$nr_pos.0-$pos_end.npr"$neg_pos_ratio".0-$neg_end.txt
 trainAnnotationName=$conceptset.random$nr_pos.0.npr1.$neg_end.txt
-echo $trainAnnotationName
-exit
 
 if [ $do_training == 1 ]; then
   python $codepath/model_based/generate_train_bags.py \
@@ -92,7 +90,6 @@ if [ $do_training == 1 ]; then
     echo "conceptfile $conceptfile does not exist"
     exit
   fi
-  exit
 
   for modelName in fastlinear fik
   do
