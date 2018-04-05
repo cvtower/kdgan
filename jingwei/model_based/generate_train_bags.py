@@ -32,11 +32,12 @@ def process(options, collection, annotationName, pos_num):
             newAnnotationNames[anno_idx] = annotationNameStr % (idxp, idxn)
             resultfile = os.path.join(rootpath,collection,'Annotations',newAnnotationNames[anno_idx])
             print('resultfile', resultfile)
-            exit()
+            continue
             if checkToSkip(resultfile, options.overwrite):
                 skip += 1
                 continue
             writeConcepts(concepts,resultfile)
+    exit()
 
     first,second,last = annotationNameStr.split('%d')
     scriptfile = os.path.join(rootpath,collection,'annotationfiles',first + '0-%d'%(pos_bag_num-1) + second + '0-%d'%(neg_bag_num-1) + last)
