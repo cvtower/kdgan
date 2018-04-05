@@ -43,7 +43,7 @@ if [ ! -f "$tagsh5file" ]; then
   cd -
 fi
 
-for k in 1000 500 200 100 50
+for k in 500 100 50 10
 do
   python $codepath/model_based/tagprop/prepare_tagprop_data.py \
       --distance $distance \
@@ -59,6 +59,5 @@ do
         --variant $variant \
         ${testCollection} ${trainCollection} $testAnnotationName $feature $resultfile
   done
-  exit
 done
 

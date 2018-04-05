@@ -71,12 +71,6 @@ import nltk & nltk.download('wordnet')
 ./do_getknn.sh yfcc9k yfcc9k vgg-verydeep-16-fc7relu 0 1 1
 jingwei/model_based/tagprop
 setup-tagprop.sh
-wget http://lear.inrialpes.fr/people/guillaumin/code/TagProp_0.2.tar.gz
-./do_tagprop.sh yfcc9k yfcc0k vgg-verydeep-16-fc7relu
-patch TagProp/sigmoids.m < sigmoids.m.patch
-patch TagProp/tagprop_learn.m < tagprop_learn.m.patch
-patch TagProp/tagprop_predict.m < tagprop_predict.m.patch
-cd TagProp & matlab -nodesktop -nosplash -r "mex tagpropCmt.c; exit"
 # jingwei: evaluation
 ./eval_pickle.sh yfcc0k
 
