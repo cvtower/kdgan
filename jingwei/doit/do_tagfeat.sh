@@ -49,13 +49,13 @@ fi
 # nr_neg_bags=3
 # neg_pos_ratio=3
 
-nr_pos=500
-nr_neg_bags=5
-neg_pos_ratio=5
+# nr_pos=500
+# nr_neg_bags=5
+# neg_pos_ratio=5
 
-# nr_pos=1000
-# nr_neg_bags=10
-# neg_pos_ratio=10
+nr_pos=1000
+nr_neg_bags=10
+neg_pos_ratio=10
 
 neg_pos_ratio=1
 nr_neg=$(($nr_pos * $neg_pos_ratio))
@@ -65,7 +65,8 @@ neg_end=$(($nr_neg_bags - 1))
 neg_bag_num=1
 
 modelAnnotationName=$conceptset.random$nr_pos.0-$pos_end.npr"$neg_pos_ratio".0-$neg_end.txt
-trainAnnotationName=$conceptset.random$nr_pos.0.npr1.$neg_end.txt
+trainAnnotationName=$conceptset.random$nr_pos.0.npr1.0.txt
+# trainAnnotationName=$conceptset.random$nr_pos.0.npr1.$neg_end.txt
 
 if [ $do_training == 1 ]; then
   python $codepath/model_based/generate_train_bags.py \
