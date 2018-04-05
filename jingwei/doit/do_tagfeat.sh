@@ -94,7 +94,7 @@ if [ $do_training == 1 ]; then
   fi
   # exit
 
-  for modelName in fastlinear # fik
+  for modelName in fastlinear fik
   do
     python $codepath/model_based/negative_bagging.py \
         $trainCollection $bagfile $feature $modelName
@@ -128,7 +128,7 @@ for topk in 5 10 50 100 500
 # for topk in 20 40 60 80 100
 # for topk in 2 4 6 8 10
 do
-  for modelName in fastlinear # fik50
+  for modelName in fastlinear fik50
   do
     python $codepath/model_based/svms/applyConcepts_s.py \
         $testCollection $trainCollection $modelAnnotationName $feature $modelName \
