@@ -92,16 +92,19 @@ def process(options, collection, annotationName, runfile):
       # res[j,:] = [p1, p3, h1, h3, ndcg1, ndcg3, ap, rr]
     avg_perf = res.mean(axis=0)
     name = path.basename(datafiles[run_idx]).split('.')[0]
+    name = name.split(',')[1]
     stdout.write('%s\t' % name)
     # for x in avg_perf:
     for i in range(len(avg_perf)):
       if i == 4 or i == 5:
         continue
-      x = avg_perf[i] * 100.0
+      # x = avg_perf[i] * 100.0
+      x = avg_perf[i]
       if x >= 100.0:
         stdout.write('& %.1f ' % x)
       else:
-        stdout.write('& %.2f ' % x)
+        # stdout.write('& %.2f ' % x)
+        stdout.write('& %s' % (('%.4f ' % x).lstrip('0')))
     stdout.write('\n')
 
 def main(argv=None):
