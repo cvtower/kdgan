@@ -12,8 +12,8 @@ python train_gan.py \
   --dis_model_name=lenet \
   --gen_model_name=mlp \
   --optimizer=adam \
-  --train_size=$train_size \
-  --batch_size=$batch_size \
+  --train_size=${train_size} \
+  --batch_size=${batch_size} \
   --num_epoch=200 \
   --num_dis_epoch=20 \
   --num_gen_epoch=2 \
