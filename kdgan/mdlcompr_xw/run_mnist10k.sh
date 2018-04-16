@@ -14,9 +14,9 @@ python train_gan.py \
   --optimizer=adam \
   --train_size=${train_size} \
   --batch_size=${batch_size} \
-  --num_epoch=10 \
-  --num_dis_epoch=5 \
-  --num_gen_epoch=5 \
+  --num_epoch=20 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=10 \
   --num_negative=20 \
   --num_positive=5
 exit
