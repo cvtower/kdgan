@@ -19,24 +19,29 @@ def process(options, collection, annotationName, pos_num):
     neg_pos_ratio = options.neg_pos_ratio
 
     annotationNameStr = annotationName[:-4] + ('.random%d' % pos_num) + '.%d' + ('.npr%d' % neg_pos_ratio) + '.%d.txt'
+    # print(annotationNameStr)
 
     concepts = readConcepts(collection, annotationName, rootpath=rootpath)
     
     skip = 0
     newAnnotationNames = [None] * (pos_bag_num * neg_bag_num)
 
+    # print('pos_bag_num', pos_bag_num, 'neg_bag_num', neg_bag_num)
     for idxp in range(pos_bag_num):
         for idxn in range(neg_bag_num):
             anno_idx = idxp * neg_bag_num + idxn
             newAnnotationNames[anno_idx] = annotationNameStr % (idxp, idxn)
             resultfile = os.path.join(rootpath,collection,'Annotations',newAnnotationNames[anno_idx])
+            # print('resultfile', resultfile)
             if checkToSkip(resultfile, options.overwrite):
                 skip += 1
                 continue
             writeConcepts(concepts,resultfile)
+    # exit()
 
     first,second,last = annotationNameStr.split('%d')
     scriptfile = os.path.join(rootpath,collection,'annotationfiles',first + '0-%d'%(pos_bag_num-1) + second + '0-%d'%(neg_bag_num-1) + last)
+    # print('scriptfile', scriptfile)
 
     makedirsforfile(scriptfile)
     fout = open(scriptfile,'w')
