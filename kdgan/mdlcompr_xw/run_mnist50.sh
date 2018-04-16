@@ -1,5 +1,5 @@
 kdgan_dir=$HOME/Projects/kdgan_xw/kdgan
-checkpoint_dir=$kdgan_dir/checkpoints
+checkpoint_dir=${kdgan_dir}/checkpoints
 train_size=50
 batch_size=5
 
@@ -22,6 +22,24 @@ xw_server=xiaojie@10.100.228.181 # xw
 # scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.data-00000-of-00001 ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
 # scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.index ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
 # scp ${checkpoint_dir}/mdlcompr_mnist${train_size}_dis.meta ${cz_server}:/home/xiaojie/Projects/kdgan_xw/kdgan/checkpoints
+
+python train_gan.py \
+  --dis_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_dis \
+  --gen_model_ckpt=${checkpoint_dir}/mdlcompr_mnist${train_size}_gen \
+  --dataset_dir=$HOME/Projects/data/mnist \
+  --dis_model_name=lenet \
+  --gen_model_name=mlp \
+  --optimizer=adam \
+  --train_size=$train_size \
+  --batch_size=$batch_size \
+  --dis_learning_rate=1e-3 \
+  --gen_learning_rate=1e-3 \
+  --num_epoch=200 \
+  --num_dis_epoch=20 \
+  --num_gen_epoch=10 \
+  --num_negative=20 \
+  --num_positive=5
+exit
 
 python pretrain_gen.py \
   --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
@@ -127,24 +145,6 @@ python train_kdgan.py \
   --noisy_ratio=0.1 \
   --noisy_sigma=0.1
 #mnist=50 kdgan_ow@87=72.32 et=268s
-exit
-
-python train_gan.py \
-  --dis_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_dis \
-  --gen_model_ckpt=$checkpoint_dir/mdlcompr_mnist${train_size}_gen \
-  --dataset_dir=$HOME/Projects/data/mnist \
-  --dis_model_name=lenet \
-  --gen_model_name=mlp \
-  --optimizer=adam \
-  --train_size=$train_size \
-  --batch_size=$batch_size \
-  --dis_learning_rate=1e-3 \
-  --gen_learning_rate=1e-3 \
-  --num_epoch=200 \
-  --num_dis_epoch=20 \
-  --num_gen_epoch=10 \
-  --num_negative=20 \
-  --num_positive=5
 exit
 
 ################################################################
