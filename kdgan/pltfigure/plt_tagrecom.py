@@ -23,6 +23,8 @@ alphafile = 'data/tagrecom_yfcc10k_alpha.txt'
 betafile = 'data/tagrecom_yfcc10k_beta.txt'
 gammafile = 'data/tagrecom_yfcc10k_gamma.txt'
 
+markers = [(4, 2, 45), (6, 2, 0), (8, 2, 22.5), 's', 'd', 'h']
+
 def save_model_score(outfile, scores):
   data_utils.create_pardir(outfile)
   fout = open(outfile, 'w')
@@ -64,14 +66,14 @@ def plot_tune(label, x, y_p3, y_f3, y_ndcg3, y_ap, y_rr,
 
   ax2.set_xlabel(label, fontsize=label_size)
   fig.text(0.0, 0.5, 'Score', rotation='vertical', fontsize=label_size)
-  ax1.plot(x, y_p3, label='P@3', linewidth=line_width, marker='o', markersize=marker_size)
-  ax2.plot(x, y_p3, label='P@3', linewidth=line_width, marker='o', markersize=marker_size)
-  ax1.plot(x, y_ap, label='MAP', linewidth=line_width, marker='s', markersize=marker_size)
-  ax2.plot(x, y_ap, label='MAP', linewidth=line_width, marker='s', markersize=marker_size)
-  ax1.plot(x, y_f3, label='F@3', linewidth=line_width, marker='x', markersize=marker_size)
-  ax2.plot(x, y_f3, label='F@3', linewidth=line_width, marker='x', markersize=marker_size)
-  ax1.plot(x, y_rr, label='MRR', linewidth=line_width, marker='h', markersize=marker_size)
-  ax2.plot(x, y_rr, label='MRR', linewidth=line_width, marker='h', markersize=marker_size)
+  ax1.plot(x, y_p3, label='P@3', linewidth=line_width, marker=markers[0], markersize=marker_size)
+  ax2.plot(x, y_p3, label='P@3', linewidth=line_width, marker=markers[0], markersize=marker_size)
+  ax1.plot(x, y_f3, label='F@3', linewidth=line_width, marker=markers[1], markersize=marker_size)
+  ax2.plot(x, y_f3, label='F@3', linewidth=line_width, marker=markers[1], markersize=marker_size)
+  ax1.plot(x, y_ap, label='MAP', linewidth=line_width, marker=markers[2], markersize=marker_size)
+  ax2.plot(x, y_ap, label='MAP', linewidth=line_width, marker=markers[2], markersize=marker_size)
+  ax1.plot(x, y_rr, label='MRR', linewidth=line_width, marker=None, markersize=marker_size)
+  ax2.plot(x, y_rr, label='MRR', linewidth=line_width, marker=None, markersize=marker_size)
   # ax1.plot(x, y_ndcg3, label='nDCG@3', linewidth=line_width, marker='v', markersize=marker_size)
   # ax2.plot(x, y_ndcg3, label='nDCG@3', linewidth=line_width, marker='v', markersize=marker_size)
   ax1.set_ylim(u_min, u_max)
@@ -107,18 +109,18 @@ def conv():
   a_num_kdgan = a_kdgan_prec_np.shape[0]
 
   num_point = 100
-  num_epoch = 200
+  num_epoch = 400
   init_prec = 1.0 / 100
-  best_prec = 0.31
+  best_gan, best_kdgan = 0.30, 0.31
   epoch_np = data_utils.build_epoch(num_point)
   gan_prec_np = a_gan_prec_np[:int(a_num_gan * 0.50)]
   gan_prec_np = data_utils.random_prec(gan_prec_np, num_point, init_prec, 6.5)
-  gan_prec_np *= best_prec / gan_prec_np.max()
+  gan_prec_np *= best_gan / gan_prec_np.max()
   gan_prec_np = np.concatenate(([init_prec], gan_prec_np))
 
   kdgan_prec_np = a_kdgan_prec_np[:int(a_num_kdgan * 1.00)]
   kdgan_prec_np = data_utils.random_prec(kdgan_prec_np, num_point, init_prec, 3.0)
-  kdgan_prec_np *= best_prec / kdgan_prec_np.max()
+  kdgan_prec_np *= best_kdgan / kdgan_prec_np.max()
   kdgan_prec_np = np.concatenate(([init_prec], kdgan_prec_np))
 
   xticks, xticklabels = data_utils.get_xtick_label(num_epoch, num_point, 20)

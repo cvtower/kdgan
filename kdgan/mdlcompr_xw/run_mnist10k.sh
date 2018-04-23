@@ -19,6 +19,7 @@ python train_gan.py \
   --num_gen_epoch=10 \
   --num_negative=20 \
   --num_positive=5
+#mnist=10000 bstacc=0.9885 et=1848s
 exit
 
 python pretrain_gen.py \

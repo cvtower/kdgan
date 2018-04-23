@@ -8,10 +8,10 @@ label_size = 17
 legend_size = 16
 tick_size = 15
 line_width = 2
-marker_size = 14
+marker_size = 16
 broken_length = 0.015
-length_3rd = 6.4
-length_2nd = length_3rd * 4.0 / 3.0
+length_3rd = 6.66
+length_2nd = length_3rd * 0.49 / 0.33
 
 def create_if_nonexist(outdir):
   if not path.exists(outdir):

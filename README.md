@@ -13,6 +13,21 @@ ssh xiaojie@10.100.228.181 # gpu xw
 https://github.com/xiaojiew1/kdgan/commits/master?after=629993e50c7c5e9a455f45498491577d16ab1278+1119
 
 ################################################################
+# printer
+################################################################
+find printer
+168L7.xx-ToshibaEstudio3555c @ 4000D-114949-M
+
+modify device url to
+lpd://uom123759.printer.unimelb.net.au
+
+download ppd from
+http://www.openprinting.org/printer/Toshiba/Toshiba-e-Studio_3500c
+
+change printer ppd following
+https://www.utwente.nl/en/lisa/ict/manuals/printing/ubuntu/#before-you-get-started
+
+################################################################
 # todo
 ################################################################
 http://jmlr.csail.mit.edu/papers/volume5/greensmith04a/greensmith04a.pdf
