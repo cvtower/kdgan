@@ -18,6 +18,9 @@ https://github.com/xiaojiew1/kdgan/commits/master?after=629993e50c7c5e9a455f4549
 find printer
 168L7.xx-ToshibaEstudio3555c @ 4000D-114949-M
 
+ping printer
+4000D-114949-M.local
+
 modify device url to
 lpd://uom123759.printer.unimelb.net.au
 
