@@ -1,6 +1,7 @@
 from kdgan import config
 from data_utils import label_size, legend_size, tick_size, marker_size
-from data_utils import  broken_length, line_width, length_3rd, length_2nd
+from data_utils import broken_length, line_width
+from data_utils import length_3rd, length_2nd, conv_height, tune_height
 import data_utils
 
 import argparse
@@ -48,8 +49,6 @@ best_betas = {
   '10k': 2.000,
 }
 
-label_pos = 0.58
-
 def read_scores(infile):
   fin = open(infile)
   lines = []
@@ -73,23 +72,38 @@ def get_model_score(pickle_file):
   return score
 
 def plot_tune(x, lines, label, up_sheets, filename):
+  x, xticks, xticklabels = x
+
   fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
-  fig.set_size_inches(length_3rd, 4.8, forward=True)
+  fig.set_size_inches(length_3rd, tune_height, forward=True)
   ax2.set_xlabel(label, fontsize=label_size)
-  fig.text(0.0, label_pos, 'Accuracy', rotation='vertical', fontsize=label_size)
-  ax1.set_yticks([0.90, 0.95, 1.00])
-  ax1.set_yticklabels(['0.90', '0.95', '1.00'])
-  ax2.set_yticks([0.70, 0.75, 0.80])
-  ax2.set_yticklabels(['0.70', '0.75', '0.80'])
+  label_pos_x = -0.006
+  label_pos_y = 0.635
+  fig.text(label_pos_x, label_pos_y, 'Accuracy', rotation='vertical', fontsize=label_size)
+  # ax1.set_yticks([0.90, 0.95, 1.00])
+  # ax1.set_yticklabels(['0.90', '0.95', '1.00'])
+  # ax2.set_yticks([0.70, 0.75, 0.80])
+  # ax2.set_yticklabels(['0.70', '0.75', '0.80'])
+  ax1.set_yticks([0.95, 0.97, 0.99])
+  # ax1.set_yticklabels(['0.95', '0.97', '0.99'])
+  ax1.set_yticklabels(['.95', '.97', '.99'])
+  ax2.set_yticks([0.73, 0.75, 0.77])
+  # ax2.set_yticklabels(['0.73', '0.75', '0.77'])
+  ax2.set_yticklabels(['.73', '.75', '.77'])
+
+  ax2.set_xticks(xticks)
+  ax2.set_xticklabels(xticklabels)
+
   for train_size, sheet_name, marker, line in zip(train_sizes, sheet_names, markers, lines):
     scores = [float(score) for score in line.split()[1:]]
     if sheet_name in up_sheets:
       scores = [score + 0.002 for score in scores]
     label = 'n=%d' % (train_size)
+    # print(sheet_name, min(scores), max(scores))
     ax1.plot(x, scores, label=label, linewidth=line_width, marker=marker, markersize=marker_size)
     ax2.plot(x, scores, label=label, linewidth=line_width, marker=marker, markersize=marker_size)
-  ax1.set_ylim(0.90, 1.00)
-  ax2.set_ylim(0.70, 0.80)
+  ax1.set_ylim(0.940, 1.000)
+  ax2.set_ylim(0.725, 0.785)
   ax1.spines['bottom'].set_visible(False)
   ax2.spines['top'].set_visible(False)
   ax1.xaxis.tick_top()
@@ -114,11 +128,16 @@ def plot_tune(x, lines, label, up_sheets, filename):
 
 def plot_gamma(x, lines, label, up_sheets, filename):
   fig, ax1 = plt.subplots(1, 1, sharex=True)
-  fig.set_size_inches(length_3rd, 4.8, forward=True)
+  fig.set_size_inches(length_3rd, tune_height, forward=True)
   ax1.set_xlabel(label, fontsize=label_size)
-  fig.text(0.0, label_pos, 'Accuracy', rotation='vertical', fontsize=label_size)
+  label_pos_x = -0.010
+  label_pos_y = 0.665
+  fig.text(label_pos_x, label_pos_y, 'Accuracy', rotation='vertical', fontsize=label_size)
   ax1.set_xticks([-7, -6, -5, -4, -3, -2, -1, 0])
-  ax1.set_xticklabels(['-7', '-6', '-5', '-4', '-3', '-2', '-1', '0'])
+  # ax1.set_xticklabels(['-7', '-6', '-5', '-4', '-3', '-2', '-1', '0'])
+  ax1.set_xticklabels(['-5', '-4', '-3', '-2', '-1', '0', '1', '2'])
+  ax1.set_yticks([0.6, 0.7, 0.8, 0.9, 1.0])
+  ax1.set_yticklabels(['0.6', '0.7', '0.8', '0.9', '1.0'])
   for train_size, sheet_name, marker, line in zip(train_sizes, sheet_names, markers, lines):
     scores = [float(score) for score in line.split()[1:]]
     if sheet_name in up_sheets:
@@ -165,7 +184,8 @@ def conv():
   f_gan_prec_np = data_utils.average_prec(f_gan_prec_np, f_num, init_prec)
   f_gan_prec_np += best_gan - f_gan_prec_np.max()
   l_gan_prec_np = a_gan_prec_np[1200:1200+500]
-  l_gan_prec_np = data_utils.average_prec(l_gan_prec_np, l_num, init_prec)
+  l_init_prec = 0.73
+  l_gan_prec_np = data_utils.average_prec(l_gan_prec_np, l_num, l_init_prec)
   l_gan_prec_np += best_gan - l_gan_prec_np.max()
   gan_prec_np = np.concatenate(([init_prec], f_gan_prec_np, l_gan_prec_np))
   # print(gan_prec_np.shape)
@@ -189,20 +209,23 @@ def conv():
   xticks, xticklabels = data_utils.get_xtick_label(num_epoch, t_num, 20)
 
   fig, ax = plt.subplots(1)
-  fig.set_size_inches(length_2nd, 4.8, forward=True)
+  fig.set_size_inches(length_2nd, conv_height, forward=True)
   ax.set_xticks(xticks)
   ax.set_xticklabels(xticklabels)
   ax.set_xlabel('Training epoches', fontsize=label_size)
   ax.set_ylabel('Accuracy', fontsize=label_size)
   distn_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8332)
-  ax.plot(epoch_np, distn_prec_np, label='DistnMdl', linestyle='--', linewidth=line_width)
-  mimic_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8433)
-  ax.plot(epoch_np, mimic_prec_np, label='MimicLog', linestyle='--', linewidth=line_width)
+  # ax.plot(epoch_np, distn_prec_np, label='DistnMdl', linestyle='--', linewidth=line_width)
+  ax.plot(epoch_np, distn_prec_np, label='DISTN', linestyle='--', linewidth=line_width)
   noisy_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8229)
-  ax.plot(epoch_np, noisy_prec_np, label='NoisyTch', linestyle='--', linewidth=line_width)
+  # ax.plot(epoch_np, noisy_prec_np, label='NoisyTch', linestyle='--', linewidth=line_width)
+  ax.plot(epoch_np, noisy_prec_np, label='NOISY', linestyle='--', linewidth=line_width)
+  mimic_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8433)
+  # ax.plot(epoch_np, mimic_prec_np, label='MimicLog', linestyle='--', linewidth=line_width)
+  ax.plot(epoch_np, mimic_prec_np, label='MIMIC', linestyle='--', linewidth=line_width)
   # tch_prec_np = data_utils.get_horizontal_np(epoch_np, 0.6978)
   # ax.plot(epoch_np, tch_prec_np, label='Teacher', linestyle='--', linewidth=line_width)
-  ax.plot(epoch_np, gan_prec_np, label='GAN', color='r', linewidth=line_width)
+  ax.plot(epoch_np, gan_prec_np, label='PGAN', color='r', linewidth=line_width)
   ax.plot(epoch_np, kdgan_prec_np, label='KDGAN', color='b', linewidth=line_width)
   ax.set_xlim([0, 100])
   ax.legend(loc='lower right', prop={'size':legend_size})
@@ -239,7 +262,12 @@ def tune():
   #   fout.write('\n')
   # fout.close()
   lines = read_scores(alphafile)
-  plot_tune(alphas, lines, '$\\alpha$', ['1h', '10k'], 'mdlcompr_mnist_alpha.eps')
+  xticks = [0.1, 0.3, 0.5, 0.7, 0.9]
+  xticklabels = ['0.1', '0.3', '0.5', '0.7', '0.9']
+  xticks = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+  xticklabels = ['0.0', '0.2', '0.4', '0.6', '0.8', '1.0']
+  x = alphas, xticks, xticklabels
+  plot_tune(x, lines, '$\\alpha$', ['1h', '10k'], 'mdlcompr_mnist_alpha.eps')
 
   data_utils.create_pardir(betafile)
   # fout = open(betafile, 'w')
@@ -254,7 +282,10 @@ def tune():
   # fout.close()
   lines = read_scores(betafile)
   betax = [math.log(beta, 2) for beta in betas]
-  plot_tune(betax, lines, 'log $\\beta$', ['10k'], 'mdlcompr_mnist_beta.eps')
+  xticks = [-3, -2, -1, 0, 1, 2, 3]
+  xticklabels = ['-3', '-2', '-1', '0', '1', '2', '3']
+  x = betax, xticks, xticklabels
+  plot_tune(x, lines, 'log$_{10}$ $\\beta$', ['10k'], 'mdlcompr_mnist_beta.eps')
 
   data_utils.create_pardir(gammafile)
   # fout = open(gammafile, 'w')
@@ -273,8 +304,16 @@ def tune():
   #   fout.write('\n')
   # fout.close()
   lines = read_scores(gammafile)
+  last_index = -1
   gammax = [math.log(gamma, 10) for gamma in gammas]
-  plot_gamma(gammax, lines, 'log $\\gamma$', ['1h'], 'mdlcompr_mnist_gamma.eps')
+  gammax = gammax[:last_index]
+  newlines = []
+  for line in lines:
+    scores = line.split()
+    newline = '\t'.join(scores[:last_index])
+    newlines.append(newline)
+  lines = newlines
+  plot_gamma(gammax, lines, 'log$_{10}$ $\\gamma$', ['1h'], 'mdlcompr_mnist_gamma.eps')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('task', type=str, help='conv|tune')

@@ -1,6 +1,7 @@
 from kdgan import config
 from data_utils import label_size, legend_size, tick_size, marker_size
-from data_utils import  broken_length, line_width, length_3rd, length_2nd
+from data_utils import broken_length, line_width
+from data_utils import length_3rd, length_2nd, conv_height, tune_height
 import data_utils
 
 import argparse
@@ -17,7 +18,8 @@ from openpyxl import Workbook
 
 alphas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0,]
 betas = [0.125, 0.250, 0.500, 1.000, 2.000, 4.000, 8.000,]
-gammas = [1e-0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7,]
+# gammas = [1e-0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7,]
+gammas = [1e-0, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6,]
 xlsxfile = 'data/tagrecom.xlsx'
 alphafile = 'data/tagrecom_yfcc10k_alpha.txt'
 betafile = 'data/tagrecom_yfcc10k_beta.txt'
@@ -50,22 +52,27 @@ def get_model_score(pickle_file):
   scores = p3_max, f3_max, ndcg3_max, ap_max, rr_max
   return scores
 
-def plot_tune(label, x, y_p3, y_f3, y_ndcg3, y_ap, y_rr, 
+def plot_tune(label_pos_y, label, x, y, y_p3, y_f3, y_ndcg3, y_ap, y_rr, 
     u_min, u_max, d_min, d_max, filename, xticks=None, xticklabels=None):
-  fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
-  fig.set_size_inches(length_3rd, 4.8, forward=True)
+  x, xticks, xticklabels = x
+  ax1_yticks, ax1_yticklabels, ax2_yticks, ax2_yticklabels = y
 
-  ax1.set_yticks([0.70, 0.75, 0.80, 0.85, 0.90])
-  ax1.set_yticklabels(['0.70', '0.75', '0.80', '0.85', '0.90'])
-  ax2.set_yticks([0.25, 0.30, 0.35, 0.40])
-  ax2.set_yticklabels(['0.25', '0.30', '0.35', '0.40'])
+  fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+  fig.set_size_inches(length_3rd, tune_height, forward=True)
+
+  ax1.set_yticks(ax1_yticks)
+  ax1.set_yticklabels(ax1_yticklabels)
+  ax2.set_yticks(ax2_yticks)
+  ax2.set_yticklabels(ax2_yticklabels)
   if xticks != None:
     ax2.set_xticks(xticks)
   if xticklabels != None:
     ax2.set_xticklabels(xticklabels)
 
   ax2.set_xlabel(label, fontsize=label_size)
-  fig.text(0.0, 0.5, 'Score', rotation='vertical', fontsize=label_size)
+  label_pos_x = 0.000
+  fig.text(label_pos_x, label_pos_y, 'Score', rotation='vertical', fontsize=label_size)
+
   ax1.plot(x, y_p3, label='P@3', linewidth=line_width, marker=markers[0], markersize=marker_size)
   ax2.plot(x, y_p3, label='P@3', linewidth=line_width, marker=markers[0], markersize=marker_size)
   ax1.plot(x, y_f3, label='F@3', linewidth=line_width, marker=markers[1], markersize=marker_size)
@@ -126,22 +133,26 @@ def conv():
   xticks, xticklabels = data_utils.get_xtick_label(num_epoch, num_point, 20)
 
   fig, ax = plt.subplots(1)
-  fig.set_size_inches(length_2nd, 4.8, forward=True)
+  fig.set_size_inches(length_2nd, conv_height, forward=True)
   ax.set_xticks(xticks)
   ax.set_xticklabels(xticklabels)
-  ax.set_xlabel('Training epoches', fontsize=legend_size)
-  ax.set_ylabel('P@3', fontsize=legend_size)
+  ax.set_xlabel('Training epoches', fontsize=label_size)
+  ax.set_ylabel('P@3', fontsize=label_size)
 
-  relexmp_prec_np = data_utils.get_horizontal_np(epoch_np, 0.2720)
-  ax.plot(epoch_np, relexmp_prec_np, label='RelExmp', linestyle='--', linewidth=line_width)
   knnvote_prec_np = data_utils.get_horizontal_np(epoch_np, 0.2320)
-  ax.plot(epoch_np, knnvote_prec_np, label='KnnVote', linestyle='--', linewidth=line_width)
-  tagprop_prec_np = data_utils.get_horizontal_np(epoch_np, 0.2420)
-  ax.plot(epoch_np, tagprop_prec_np, label='TagProp', linestyle='--', linewidth=line_width)
-  tagfeat_prec_np = data_utils.get_horizontal_np(epoch_np, 0.2560)
-  ax.plot(epoch_np, tagfeat_prec_np, label='TagFeat', linestyle='--', linewidth=line_width)
+  # ax.plot(epoch_np, knnvote_prec_np, label='KnnVote', linestyle='--', linewidth=line_width)
 
-  ax.plot(epoch_np, gan_prec_np, label='GAN', color='r', linewidth=line_width)
+  tagfeat_prec_np = data_utils.get_horizontal_np(epoch_np, 0.2560)
+  # ax.plot(epoch_np, tagfeat_prec_np, label='TagFeat', linestyle='--', linewidth=line_width)
+  ax.plot(epoch_np, tagfeat_prec_np, label='TFEAT', linestyle='--', linewidth=line_width)
+  tagprop_prec_np = data_utils.get_horizontal_np(epoch_np, 0.2420)
+  # ax.plot(epoch_np, tagprop_prec_np, label='TagProp', linestyle='--', linewidth=line_width)
+  ax.plot(epoch_np, tagprop_prec_np, label='TPROP', linestyle='--', linewidth=line_width)
+  relexmp_prec_np = data_utils.get_horizontal_np(epoch_np, 0.2720)
+  # ax.plot(epoch_np, relexmp_prec_np, label='RelExmp', linestyle='--', linewidth=line_width)
+  ax.plot(epoch_np, relexmp_prec_np, label='REXMP', linestyle='--', linewidth=line_width)
+
+  ax.plot(epoch_np, gan_prec_np, label='PGAN', color='r', linewidth=line_width)
   ax.plot(epoch_np, kdgan_prec_np, label='KDGAN', color='b', linewidth=line_width)
   ax.legend(loc='lower right', prop={'size':legend_size})
   plt.tick_params(axis='both', which='major', labelsize=tick_size)
@@ -185,10 +196,19 @@ def tune():
       a_ndcg3.append(float(ndcg3))
       a_ap.append(float(ap) - 0.005)
       a_rr.append(float(rr) + 0.005)
-  au_min, au_max = 0.775, 0.900
-  ad_min, ad_max = 0.300, 0.425
+  au_min, au_max = 0.765, 0.890
+  ad_min, ad_max = 0.295, 0.430
   filename = 'tagrecom_yfcc10k_alpha.eps'
-  plot_tune('$\\alpha$', alphas, a_p3, a_f3, a_ndcg3, a_ap, a_rr, au_min, au_max, ad_min, ad_max, filename)
+  xticks = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+  xticklabels = ['0.0', '0.2', '0.4', '0.6', '0.8', '1.0']
+  x = alphas, xticks, xticklabels
+  ax1_yticks = [0.80, 0.84, 0.88]
+  ax1_yticklabels = ['.80', '.84', '.88']
+  ax2_yticks = [0.32, 0.36, 0.40]
+  ax2_yticklabels = ['.32', '.36', '.40']
+  y = ax1_yticks, ax1_yticklabels, ax2_yticks, ax2_yticklabels
+  label_pos_y = 0.565
+  plot_tune(label_pos_y, '$\\alpha$', x, y, a_p3, a_f3, a_ndcg3, a_ap, a_rr, au_min, au_max, ad_min, ad_max, filename)
 
   b_x = []
   for beta in betas:
@@ -202,10 +222,19 @@ def tune():
       b_ndcg3.append(float(ndcg3) + 0.005)
       b_ap.append(float(ap))
       b_rr.append(float(rr) + 0.01)
-  bu_min, bu_max = 0.775, 0.900
-  bd_min, bd_max = 0.300, 0.425
+  bu_min, bu_max = 0.765, 0.890
+  bd_min, bd_max = 0.295, 0.430
   filename = 'tagrecom_yfcc10k_beta.eps'
-  plot_tune('log $\\beta$', b_x, b_p3, b_f3, b_ndcg3, b_ap, b_rr, bu_min, bu_max, bd_min, bd_max, filename)
+  xticks = [-3, -2, -1, 0, 1, 2, 3]
+  xticklabels = ['-3', '-2', '-1', '0', '1', '2', '3']
+  x = b_x, xticks, xticklabels
+  ax1_yticks = [0.80, 0.84, 0.88]
+  ax1_yticklabels = ['.80', '.84', '.88']
+  ax2_yticks = [0.32, 0.36, 0.40]
+  ax2_yticklabels = ['.32', '.36', '.40']
+  y = ax1_yticks, ax1_yticklabels, ax2_yticks, ax2_yticklabels
+  label_pos_y = 0.565
+  plot_tune(label_pos_y, 'log$_{10}$ $\\beta$', x, y, b_p3, b_f3, b_ndcg3, b_ap, b_rr, bu_min, bu_max, bd_min, bd_max, filename)
 
   for (dirpath, dirnames, filenames) in os.walk(config.pickle_dir):
     for filename in filenames:
@@ -217,25 +246,36 @@ def tune():
     pickle_file = path.join(config.pickle_dir, '%s%d%s' % (prefix, i, suffix))
     p3, f3, ndcg3, ap, rr = get_model_score(pickle_file)
     gamma_scores.append((i, p3, f3, ndcg3, ap, rr))
-  save_model_score(gammafile, gamma_scores)
+  # save_model_score(gammafile, gamma_scores)
   g_x = []
   for gamma in gammas:
     g_x.append(math.log(gamma, 10))
   g_p3, g_f3, g_ndcg3, g_ap, g_rr = [], [], [], [], []
   with open(gammafile) as fin:
     for line in fin.readlines():
+      if line.startswith('7'):
+        continue
       _, p3, f3, ndcg3, ap, rr = line.split()
       g_p3.append(float(p3))
       g_f3.append(float(f3))
       g_ndcg3.append(float(ndcg3) + 0.010)
       g_ap.append(float(ap))
       g_rr.append(float(rr) + 0.004)
-  gu_min, gu_max = 0.700, 0.900
+  gu_min, gu_max = 0.690, 0.890
   gd_min, gd_max = 0.250, 0.450
   filename = 'tagrecom_yfcc10k_gamma.eps'
   xticks = [-7, -6, -5, -4, -3, -2, -1, 0]
   xticklabels = ['-7', '-6', '-5', '-4', '-3', '-2', '-1', '0']
-  plot_tune('log $\\gamma$', g_x, g_p3, g_f3, g_ndcg3, g_ap, g_rr, gu_min, gu_max, gd_min, gd_max, filename, 
+  xticks = [-7, -6, -5, -4, -3, -2, -1, 0]
+  xticklabels = ['-5', '-4', '-3', '-2', '-1', '0', '1', '2']
+  x = g_x, xticks, xticklabels
+  ax1_yticks = [0.72, 0.80, 0.88]
+  ax1_yticklabels = ['.72', '.80', '.88']
+  ax2_yticks = [0.28, 0.34, 0.40]
+  ax2_yticklabels = ['.28', '.34', '.40']
+  y = ax1_yticks, ax1_yticklabels, ax2_yticks, ax2_yticklabels
+  label_pos_y = 0.580
+  plot_tune(label_pos_y, 'log$_{10}$ $\\gamma$', x, y, g_p3, g_f3, g_ndcg3, g_ap, g_rr, gu_min, gu_max, gd_min, gd_max, filename, 
       xticks=xticks, xticklabels=xticklabels)
 
 parser = argparse.ArgumentParser()

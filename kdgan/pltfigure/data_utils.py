@@ -4,14 +4,17 @@ import random
 import numpy as np
 from os import path
 
-label_size = 17
-legend_size = 16
-tick_size = 15
-line_width = 2
+label_size = 23
+legend_size = 17
+tick_size = 19
+line_width = 1.5
 marker_size = 16
 broken_length = 0.015
 length_3rd = 6.66
 length_2nd = length_3rd * 0.49 / 0.33
+# fig_height = 4.80
+conv_height = 3.60
+tune_height = 3.20
 
 def create_if_nonexist(outdir):
   if not path.exists(outdir):
