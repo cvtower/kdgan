@@ -152,7 +152,7 @@ def conv():
   # ax.plot(epoch_np, relexmp_prec_np, label='RelExmp', linestyle='--', linewidth=line_width)
   ax.plot(epoch_np, relexmp_prec_np, label='REXMP', linestyle='--', linewidth=line_width)
 
-  ax.plot(epoch_np, gan_prec_np, label='BaGAN', color='r', linewidth=line_width)
+  ax.plot(epoch_np, gan_prec_np, label='NaGAN', color='r', linewidth=line_width)
   ax.plot(epoch_np, kdgan_prec_np, label='KDGAN', color='b', linewidth=line_width)
   ax.legend(loc='lower right', prop={'size':legend_size})
   plt.tick_params(axis='both', which='major', labelsize=tick_size)

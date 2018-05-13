@@ -158,7 +158,10 @@ def conv():
   f_num, l_num = 70, 30
   init_prec = 5.0 / 10
   num_epoch = 200
-  best_gan, best_kdgan = 0.8534, 0.8700
+  # cifar
+  # best_gan, best_kdgan = 0.8534, 0.8700
+  # mnist
+  best_gan, best_kdgan = 0.9360, 0.9642
   ganfile = path.join(config.pickle_dir, 'mdlcompr_mnist50_gan@200.p')
   kdganfile = path.join(config.pickle_dir, 'mdlcompr_mnist50_kdgan@200.p')
   a_gan_prec_np = data_utils.load_model_prec(ganfile)
@@ -214,18 +217,27 @@ def conv():
   ax.set_xticklabels(xticklabels)
   ax.set_xlabel('Training epoches', fontsize=label_size)
   ax.set_ylabel('Accuracy', fontsize=label_size)
+  # cifar
   distn_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8332)
+  # mnist
+  distn_prec_np = data_utils.get_horizontal_np(epoch_np, 0.9397)
   # ax.plot(epoch_np, distn_prec_np, label='DistnMdl', linestyle='--', linewidth=line_width)
   ax.plot(epoch_np, distn_prec_np, label='DISTN', linestyle='--', linewidth=line_width)
+  # cifar
   noisy_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8229)
+  # mnist
+  noisy_prec_np = data_utils.get_horizontal_np(epoch_np, 0.9345)
   # ax.plot(epoch_np, noisy_prec_np, label='NoisyTch', linestyle='--', linewidth=line_width)
   ax.plot(epoch_np, noisy_prec_np, label='NOISY', linestyle='--', linewidth=line_width)
+  # cifar
   mimic_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8433)
+  # mnist
+  mimic_prec_np = data_utils.get_horizontal_np(epoch_np, 0.9378)
   # ax.plot(epoch_np, mimic_prec_np, label='MimicLog', linestyle='--', linewidth=line_width)
   ax.plot(epoch_np, mimic_prec_np, label='MIMIC', linestyle='--', linewidth=line_width)
   # tch_prec_np = data_utils.get_horizontal_np(epoch_np, 0.6978)
   # ax.plot(epoch_np, tch_prec_np, label='Teacher', linestyle='--', linewidth=line_width)
-  ax.plot(epoch_np, gan_prec_np, label='BaGAN', color='r', linewidth=line_width)
+  ax.plot(epoch_np, gan_prec_np, label='NaGAN', color='r', linewidth=line_width)
   ax.plot(epoch_np, kdgan_prec_np, label='KDGAN', color='b', linewidth=line_width)
   ax.set_xlim([0, 100])
   ax.legend(loc='lower right', prop={'size':legend_size})
