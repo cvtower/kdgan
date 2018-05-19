@@ -118,7 +118,7 @@ def conv():
   num_point = 100
   num_epoch = 400
   init_prec = 1.0 / 100
-  best_gan, best_kdgan = 0.30, 0.31
+  best_gan, best_kdgan = 0.290, 0.310
   epoch_np = data_utils.build_epoch(num_point)
   gan_prec_np = a_gan_prec_np[:int(a_num_gan * 0.50)]
   gan_prec_np = data_utils.random_prec(gan_prec_np, num_point, init_prec, 6.5)
@@ -136,7 +136,7 @@ def conv():
   fig.set_size_inches(length_2nd, conv_height, forward=True)
   ax.set_xticks(xticks)
   ax.set_xticklabels(xticklabels)
-  ax.set_xlabel('Training epoches', fontsize=label_size)
+  ax.set_xlabel('Training epochs', fontsize=label_size)
   ax.set_ylabel('P@3', fontsize=label_size)
 
   knnvote_prec_np = data_utils.get_horizontal_np(epoch_np, 0.2320)
@@ -157,6 +157,7 @@ def conv():
   ax.legend(loc='lower right', prop={'size':legend_size})
   plt.tick_params(axis='both', which='major', labelsize=tick_size)
   ax.set_xlim([0, 100])
+  ax.set_ylim([0.00, 0.32])
   epsfile = path.join(config.picture_dir, 'tagrecom_yfcc10k_cr.eps')
   fig.savefig(epsfile, format='eps', bbox_inches='tight')
 

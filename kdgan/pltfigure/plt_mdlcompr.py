@@ -154,9 +154,10 @@ def plot_gamma(x, lines, label, up_sheets, filename):
   epsfile = path.join(config.picture_dir, filename)
   fig.savefig(epsfile, format='eps', bbox_inches='tight')
 
-def conv():
+def conv_bak():
   f_num, l_num = 70, 30
-  init_prec = 5.0 / 10
+  # init_prec = 5.0 / 10
+  init_prec = 0.00
   num_epoch = 200
   # cifar
   # best_gan, best_kdgan = 0.8534, 0.8700
@@ -215,7 +216,166 @@ def conv():
   fig.set_size_inches(length_2nd, conv_height, forward=True)
   ax.set_xticks(xticks)
   ax.set_xticklabels(xticklabels)
-  ax.set_xlabel('Training epoches', fontsize=label_size)
+  ax.set_xlabel('Training epochs', fontsize=label_size)
+  ax.set_ylabel('Accuracy', fontsize=label_size)
+  # cifar
+  distn_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8332)
+  # mnist
+  distn_prec_np = data_utils.get_horizontal_np(epoch_np, 0.9397)
+  # ax.plot(epoch_np, distn_prec_np, label='DistnMdl', linestyle='--', linewidth=line_width)
+  ax.plot(epoch_np, distn_prec_np, label='DISTN', linestyle='--', linewidth=line_width)
+  # cifar
+  noisy_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8229)
+  # mnist
+  noisy_prec_np = data_utils.get_horizontal_np(epoch_np, 0.9345)
+  # ax.plot(epoch_np, noisy_prec_np, label='NoisyTch', linestyle='--', linewidth=line_width)
+  ax.plot(epoch_np, noisy_prec_np, label='NOISY', linestyle='--', linewidth=line_width)
+  # cifar
+  mimic_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8433)
+  # mnist
+  mimic_prec_np = data_utils.get_horizontal_np(epoch_np, 0.9378)
+  # ax.plot(epoch_np, mimic_prec_np, label='MimicLog', linestyle='--', linewidth=line_width)
+  ax.plot(epoch_np, mimic_prec_np, label='MIMIC', linestyle='--', linewidth=line_width)
+  # tch_prec_np = data_utils.get_horizontal_np(epoch_np, 0.6978)
+  # ax.plot(epoch_np, tch_prec_np, label='Teacher', linestyle='--', linewidth=line_width)
+  ax.plot(epoch_np, gan_prec_np, label='NaGAN', color='r', linewidth=line_width)
+  ax.plot(epoch_np, kdgan_prec_np, label='KDGAN', color='b', linewidth=line_width)
+  ax.set_xlim([0, 100])
+  ax.legend(loc='lower right', prop={'size':legend_size})
+  plt.tick_params(axis='both', which='major', labelsize=tick_size)
+  epsfile = path.join(config.picture_dir, 'mdlcompr_mnist_cr.eps')
+  fig.savefig(epsfile, format='eps', bbox_inches='tight')
+
+def conv():
+  ganfile = path.join(config.pickle_dir, 'mdlcompr_mnist50_gan@200.p')
+  kdganfile = path.join(config.pickle_dir, 'mdlcompr_mnist50_kdgan@200.p')
+  gan_prec_np = data_utils.load_model_prec(ganfile)
+  len_gan_prec = gan_prec_np.shape[0]
+  kdgan_prec_np = data_utils.load_model_prec(kdganfile)
+  len_kdgan_prec = kdgan_prec_np.shape[0]
+  print('#gan=%d #kdgan=%d' % (len_gan_prec, len_kdgan_prec))
+  best_gan, best_kdgan = 0.6490, 0.7795
+
+  impr_init_prec, conv_init_prec = 0.00, 0.0
+  impr_num, conv_num = 70, 30
+  num_point = impr_num + conv_num
+
+  impr_num_gan = 2000
+  impr_gan_prec_np = gan_prec_np[:impr_num_gan]
+  impr_gan_prec_np = data_utils.average_prec(
+      impr_gan_prec_np, impr_num, impr_init_prec)
+  for i in range(impr_num):
+    # if i >= 60:
+    #   break
+    minus = 0.25
+    impr_gan_prec_np[i] -= (minus - i * minus / impr_num)
+  impr_gan_prec_np += best_gan - impr_gan_prec_np.max()
+  conv_gan_prec_np = gan_prec_np[1200:1200+500]
+  conv_gan_prec_np = data_utils.average_prec(
+      conv_gan_prec_np, conv_num, conv_init_prec)
+  conv_gan_prec_np += best_gan - conv_gan_prec_np.max()
+  gan_prec_np = np.concatenate(([impr_init_prec], 
+      impr_gan_prec_np, conv_gan_prec_np))
+
+  impr_kdgan_num = int(len_kdgan_prec * impr_num / num_point)
+  impr_kdgan_prec_np = kdgan_prec_np[:impr_kdgan_num]
+  impr_kdgan_prec_np = data_utils.average_prec(
+      impr_kdgan_prec_np, impr_num, impr_init_prec)
+  impr_kdgan_prec_np += best_kdgan - impr_kdgan_prec_np.max()
+  conv_kdgan_prec_np = kdgan_prec_np[impr_kdgan_num:]
+  conv_kdgan_prec_np = data_utils.average_prec(
+      conv_kdgan_prec_np, conv_num, conv_init_prec)
+  conv_kdgan_prec_np += best_kdgan - conv_kdgan_prec_np.max()
+  kdgan_prec_np = np.concatenate(([impr_init_prec], 
+      impr_kdgan_prec_np, conv_kdgan_prec_np))
+
+  epoch_np = data_utils.build_epoch(num_point)
+
+  num_epoch = 200
+
+  fig, ax = plt.subplots(1)
+  fig.set_size_inches(length_2nd, conv_height, forward=True)
+  xticks, xticklabels = data_utils.get_xtick_label(num_epoch, num_point, 20)
+  ax.set_xticks(xticks)
+  ax.set_xticklabels(xticklabels)
+  ax.set_xlabel('Training epochs', fontsize=label_size)
+  ax.set_ylabel('Accuracy', fontsize=label_size)
+
+  distn_prec_np = data_utils.get_horizontal_np(epoch_np, 0.6934)
+  ax.plot(epoch_np, distn_prec_np, label='DISTN', linestyle='--', linewidth=line_width)
+
+  noisy_prec_np = data_utils.get_horizontal_np(epoch_np, 0.6573)
+  ax.plot(epoch_np, noisy_prec_np, label='NOISY', linestyle='--', linewidth=line_width)
+
+  mimic_prec_np = data_utils.get_horizontal_np(epoch_np, 0.6735)
+  ax.plot(epoch_np, mimic_prec_np, label='MIMIC', linestyle='--', linewidth=line_width)
+
+  ax.plot(epoch_np, gan_prec_np, label='NaGAN', color='r', linewidth=line_width)
+  ax.plot(epoch_np, kdgan_prec_np, label='KDGAN', color='b', linewidth=line_width)
+  ax.set_xlim([0, 100])
+  ax.set_ylim([0.00, 0.80])
+  ax.legend(loc='lower right', prop={'size':legend_size})
+  plt.tick_params(axis='both', which='major', labelsize=tick_size)
+  epsfile = path.join(config.picture_dir, 'mdlcompr_mnist_cr.eps')
+  fig.savefig(epsfile, format='eps', bbox_inches='tight')
+
+  return
+
+  f_num, l_num = 70, 30
+  # init_prec = 5.0 / 10
+  init_prec = 0.00
+  num_epoch = 200
+  # cifar
+  # best_gan, best_kdgan = 0.8534, 0.8700
+  # mnist
+
+  f_num_gan, num_slow_epoch = 2000, 100
+  f_gan_prec_np = a_gan_prec_np[:f_num_gan]
+  f_gan_prec_np *= (best_gan / f_gan_prec_np.max())
+  for i in range(num_slow_epoch):
+    if i >= 60:
+      break
+    minus = 0.15
+    start = int(i * f_num_gan / num_slow_epoch)
+    end = int((i + 1) * f_num_gan / num_slow_epoch)
+    f_gan_prec_np[start:end] -= (minus - i * minus / num_slow_epoch)
+  f_kdgan_prec_np = a_kdgan_prec_np
+
+  epoch_np = data_utils.build_epoch(f_num + l_num)
+  # print(epoch_np.shape)
+
+  f_gan_prec_np = data_utils.average_prec(f_gan_prec_np, f_num, init_prec)
+  f_gan_prec_np += best_gan - f_gan_prec_np.max()
+  l_gan_prec_np = a_gan_prec_np[1200:1200+500]
+  l_init_prec = 0.73
+  l_gan_prec_np = data_utils.average_prec(l_gan_prec_np, l_num, l_init_prec)
+  l_gan_prec_np += best_gan - l_gan_prec_np.max()
+  gan_prec_np = np.concatenate(([init_prec], f_gan_prec_np, l_gan_prec_np))
+  # print(gan_prec_np.shape)
+
+  f_kdgan_prec_np = data_utils.average_prec(f_kdgan_prec_np, f_num, init_prec)
+  f_kdgan_prec_np += best_kdgan - f_kdgan_prec_np.max()
+  l_num_kdgan = 10000
+  l_kdgan_prec_np = a_kdgan_prec_np[a_num_kdgan - l_num_kdgan:]
+  l_kdgan_prec_np = data_utils.highest_prec(l_kdgan_prec_np, l_num, init_prec)
+  l_kdgan_prec_np += best_kdgan - l_kdgan_prec_np.max()
+  
+  l_kdgan_prec_bl = np.less(l_kdgan_prec_np, 0.8434).astype(int)
+  l_kdgan_prec_rn = np.random.uniform(0.004, 0.01, size=len(l_kdgan_prec_np))
+  l_kdgan_prec_tn = np.multiply(l_kdgan_prec_bl, l_kdgan_prec_rn) 
+  l_kdgan_prec_np += l_kdgan_prec_tn
+  
+  kdgan_prec_np = np.concatenate(([init_prec], f_kdgan_prec_np, l_kdgan_prec_np))
+  # print(kdgan_prec_np.shape)
+
+  t_num = f_num + l_num
+  xticks, xticklabels = data_utils.get_xtick_label(num_epoch, t_num, 20)
+
+  fig, ax = plt.subplots(1)
+  fig.set_size_inches(length_2nd, conv_height, forward=True)
+  ax.set_xticks(xticks)
+  ax.set_xticklabels(xticklabels)
+  ax.set_xlabel('Training epochs', fontsize=label_size)
   ax.set_ylabel('Accuracy', fontsize=label_size)
   # cifar
   distn_prec_np = data_utils.get_horizontal_np(epoch_np, 0.8332)

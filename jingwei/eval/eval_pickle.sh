@@ -29,6 +29,8 @@ export SURVEY_EVAL=$BASEDIR/kdgan_xw/results/eval
 [ -d $SURVEY_EVAL ] || mkdir $SURVEY_EVAL
 runfile=$SURVEY_EVAL/runs_"$testCollection".txt
 resfile=$SURVEY_EVAL/runs_"$testCollection".res
+echo $runfile
+echo $resfile
 
 ls -d "$SURVEY_DB"/* > $runfile
 # ls -d "$SURVEY_DB"/* | grep kdgan > $runfile
