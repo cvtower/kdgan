@@ -15,6 +15,26 @@ dl-acm-org.ezp.lib.unimelb.edu.au
 https://github.com/xiaojiew1/kdgan/commits/master?after=629993e50c7c5e9a455f45498491577d16ab1278+1119
 
 ################################################################
+# ulord
+################################################################
+wget https://www.ulord.one/downloads/UlordRig-Linux-V1.0.0.zip
+unzip
+{ 
+    "threads":16,                                 // number of miner threads
+    "pools": [
+        {
+            "url": "stratum+tcp://main-pool.ulorders.com:18888",                // URL of mining server
+            "user": "Ue3jGaQ65waLLsPHHues2axfCE1qtwW36a.worker01",   // username for mining server 
+            "pass": "x"                                            // password for mining server
+                                                        
+        }
+    ]                
+}
+chmod +x ulordrig
+./ulordrig -B -l ulord.log
+ps -e | grep ulord
+
+################################################################
 # printer
 ################################################################
 find printer
